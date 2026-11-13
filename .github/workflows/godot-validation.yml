@@ -1,0 +1,41 @@
+name: Godot validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Import, parse, and smoke-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Godot 4
+        uses: solarlabyrinth/action-setup-godot@v3
+        with:
+          version: 4.7-stable
+          export-templates: false
+
+      - name: Import project resources
+        run: godot --headless --editor --path . --quit
+
+      - name: Parse gameplay scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          for script in \
+            res://main.gd \
+            res://scripts/player/player_controller.gd \
+            res://scripts/camera/third_person_camera.gd \
+            res://scripts/ui/mobile_controls.gd
+          do
+            echo "Checking $script"
+            godot --headless --path . --check-only --script "$script"
+          done
+
+      - name: Run main scene smoke test
+        run: godot --headless --path . --quit-after 180
