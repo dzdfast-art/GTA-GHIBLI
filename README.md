@@ -58,6 +58,15 @@ GitHub Actions run [43513899542](https://github.com/dzdfast-art/GTA-GHIBLI/actio
 
 This is headless CI validation only. It does not prove visual quality, real touchscreen behavior, audio playback, vehicle gameplay, Android export or performance on a physical phone.
 
+## Security and ownership
+
+- [Copyright and rights notice](COPYRIGHT.md)
+- [Security policy and vulnerability reporting](SECURITY.md)
+- [Public repository hardening plan](docs/REPOSITORY_HARDENING.md)
+- [Ownership and asset provenance register](docs/OWNERSHIP_AND_ASSET_REGISTER.md)
+
+The repository intentionally remains public. Automated secret scanning is configured in [Repository security audit](.github/workflows/security-audit.yml); branch protection, GitHub secret-scanning settings, account 2FA/passkeys and off-site backups require owner-side configuration. See the hardening plan for the exact checklist and current limitations.
+
 ## Project documents
 
 - [Master requirements alignment](docs/MASTER_REQUIREMENTS_ALIGNMENT.md)
