@@ -1,5 +1,7 @@
 # GTA GHIBLI
 
+> **© 2026 GTA GHIBLI — All rights reserved.** This is an original project under development. No separate open-source or commercial reuse licence is granted. The repository remains public; GitHub's Terms still permit viewing and forking within GitHub. See [COPYRIGHT.md](COPYRIGHT.md) for the full rights notice and limitations.
+
 An original third-person 3D open-world adventure for Android, built with Godot 4. The current repository is an **early playable-systems prototype**, not the finished game.
 
 ## Current verified status
