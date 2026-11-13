@@ -19,7 +19,7 @@ func _run_test() -> void:
 	if not bool(door.get("is_open")):
 		_fail("Door did not switch to open state.")
 		return
-	door.interact()
+	door.call("interact")
 	if bool(door.get("is_open")):
 		_fail("Door did not switch back to closed state.")
 		return
@@ -35,7 +35,7 @@ func _run_test() -> void:
 	if not bool(prop.get("is_carried")):
 		_fail("Carryable prop did not enter carried state.")
 		return
-	prop.interact()
+	prop.call("interact")
 	if bool(prop.get("is_carried")):
 		_fail("Carryable prop did not drop.")
 		return
