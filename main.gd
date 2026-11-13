@@ -3,11 +3,13 @@ extends Node3D
 ## Main scene bootstrap. Gameplay components live in their own files.
 
 const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
+const VILLAGE_SCENE: PackedScene = preload("res://scenes/world/willow_village.tscn")
 const MOBILE_CONTROLS_SCRIPT = preload("res://scripts/ui/mobile_controls.gd")
 
 
 func _ready() -> void:
 	_create_world()
+	_create_village()
 	_create_player()
 	_create_mobile_controls()
 
@@ -65,10 +67,16 @@ func _create_world() -> void:
 	ground.add_child(ground_collision)
 
 
+func _create_village() -> void:
+	var village: Node3D = VILLAGE_SCENE.instantiate() as Node3D
+	village.name = "WillowVillage"
+	add_child(village)
+
+
 func _create_player() -> void:
 	var player: CharacterBody3D = PLAYER_SCENE.instantiate() as CharacterBody3D
 	player.name = "Player"
-	player.position = Vector3(0.0, 0.95, 0.0)
+	player.position = Vector3(0.0, 0.95, 5.0)
 	add_child(player)
 
 
