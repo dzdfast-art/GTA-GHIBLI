@@ -1,39 +1,41 @@
 {
   "schema_version": 1,
   "mission_id": "meet_the_village",
-  "title": "A New Morning",
+  "title": "صباح جديد في قرية الصفصاف",
   "chapter": 1,
   "mission_type": "tutorial",
-  "description": "Meet the village caretaker and learn the basics of exploring Green Valley.",
+  "description": "تعرّف على ميرا، حارسة القرية، واكتشف أساسيات استكشاف الوادي الأخضر.",
   "start_region": "willow_village",
   "objectives": [
     {
       "id": "reach_square",
       "type": "reach_location",
       "target_id": "village_square",
-      "description": "Walk to the village square",
+      "description": "توجّه إلى ساحة القرية",
       "required": true
     },
     {
       "id": "talk_to_caretaker",
       "type": "interact",
       "target_id": "mira_caretaker",
-      "description": "Speak with Mira, the village caretaker",
+      "description": "تحدّث مع ميرا، حارسة القرية",
       "required": true
     },
     {
       "id": "visit_garden",
       "type": "reach_location",
       "target_id": "community_garden",
-      "description": "Visit the community garden",
+      "description": "زُر الحديقة المجتمعية",
       "required": true
     }
   ],
   "rewards": {
     "currency": 25,
     "items": [],
-    "unlocks": ["basic_interaction"]
+    "unlocks": [
+      "basic_interaction"
+    ]
   },
   "status": "prototype_runtime",
-  "notes": "A first runtime tracker is connected to the player and Mira. Reach-square, dialogue, and garden objectives are tracked in a prototype HUD; rewards are displayed as a prototype and are not yet granted to an inventory or currency system."
+  "notes": "تم ربط متتبع أولي للمهمة باللاعب وميرا. تظهر أهداف الساحة والحوار والحديقة في واجهة المهمة. المكافأة معروضة كنموذج أولي ولم تُضف بعد إلى نظام مخزون أو رصيد فعلي."
 }
