@@ -38,7 +38,7 @@ func _run_test() -> void:
 
 	var collision := CollisionShape3D.new()
 	var sphere := SphereShape3D.new()
-	sphere.radius = 1.0
+	sphere.radius = 3.0
 	collision.shape = sphere
 	collision.position.y = 0.9
 	target_area.add_child(collision)
