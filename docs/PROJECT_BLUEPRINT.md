@@ -32,8 +32,8 @@ must use original characters, locations, missions, dialogue, music, and assets.
   actions.
 - The four Green Valley regions and first tutorial mission remain structured design data. They are
   not loaded by runtime managers.
-- The repository has not yet been launched in the Godot editor or tested on Android in this workflow.
-  Runtime behavior, import success, and performance are therefore not confirmed.
+- GitHub Actions has passed a Godot 4.7 headless validation: project import, parsing of all four gameplay scripts, and a 180-frame main-scene smoke test.
+- This confirms project loading and startup only. Touch input, visual quality, frame rate, Android export, and device compatibility have not yet been tested on a physical phone.
 
 ## Current architecture
 
