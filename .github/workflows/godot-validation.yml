@@ -36,7 +36,8 @@ jobs:
             res://scripts/camera/third_person_camera.gd \
             res://scripts/ui/mobile_controls.gd \
             res://scripts/world/willow_village.gd \
-            res://scripts/characters/mira_npc.gd
+            res://scripts/characters/mira_npc.gd \
+            res://scripts/missions/mission_manager.gd
           do
             echo "Checking $script"
             godot --headless --path . --check-only --script "$script"
