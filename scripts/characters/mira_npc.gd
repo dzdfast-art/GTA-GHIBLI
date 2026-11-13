@@ -3,6 +3,8 @@ extends Node3D
 ## Mira: first Arabic-speaking NPC prototype.
 ## Dialogue is data-driven; voice audio is optional until the recorded asset is added.
 
+signal dialogue_spoken
+
 const DIALOGUE_DATA_PATH := "res://data/dialogue/mira_intro_ar.json"
 
 var _player_nearby := false
@@ -171,6 +173,7 @@ func _show_dialogue() -> void:
 		_emotion_label.text = "ميرا — " + str(_greeting.get("emotion_ar", "سعيدة ومرحّبة"))
 
 	_dialogue_panel.visible = true
+	dialogue_spoken.emit()
 	_play_greeting_voice()
 
 
