@@ -16,26 +16,28 @@ func _ready() -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
-	if event is InputEventScreenTouch:
-		if event.pressed:
+	# Convert viewport touch coordinates into this Control's local space.
+	var local_event := make_input_local(event)
+	if local_event is InputEventScreenTouch:
+		if local_event.pressed:
 			_finger_active = true
-			_update_from_position(event.position)
+			_update_from_position(local_event.position)
 			accept_event()
 		else:
 			_reset_stick()
 			accept_event()
-	elif event is InputEventScreenDrag and _finger_active:
-		_update_from_position(event.position)
+	elif local_event is InputEventScreenDrag and _finger_active:
+		_update_from_position(local_event.position)
 		accept_event()
-	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed:
+	elif local_event is InputEventMouseButton and local_event.button_index == MOUSE_BUTTON_LEFT:
+		if local_event.pressed:
 			_finger_active = true
-			_update_from_position(event.position)
+			_update_from_position(local_event.position)
 		else:
 			_reset_stick()
 		accept_event()
-	elif event is InputEventMouseMotion and _finger_active:
-		_update_from_position(event.position)
+	elif local_event is InputEventMouseMotion and _finger_active:
+		_update_from_position(local_event.position)
 		accept_event()
 
 
