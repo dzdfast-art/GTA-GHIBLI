@@ -45,5 +45,8 @@ jobs:
             godot --headless --path . --check-only --script "$script"
           done
 
+      - name: Test first mission objective flow
+        run: godot --headless --path . --script res://tests/mission_manager_test.gd
+
       - name: Run main scene smoke test
         run: godot --headless --path . --quit-after 180
