@@ -46,18 +46,18 @@ func _run_test() -> void:
 	await physics_frame
 	await physics_frame
 
-	if not interactor._nearby_areas.has(target_area):
+	if not interactor.get("_nearby_areas").has(target_area):
 		_fail("The player detector did not register a nearby interaction area.")
 		return
 
-	interactor._interact_with_nearest()
+	interactor.call("_interact_with_nearest")
 	if target.interaction_count != 1:
 		_fail("The nearest interactable did not receive exactly one interaction.")
 		return
 
 	var invalid_target := Node.new()
 	root.add_child(invalid_target)
-	if interactor.try_interact(invalid_target):
+	if bool(interactor.call("try_interact", invalid_target)):
 		_fail("The shared interactor accepted a node without interact().")
 		return
 
