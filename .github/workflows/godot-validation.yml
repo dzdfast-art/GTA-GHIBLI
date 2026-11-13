@@ -8,7 +8,7 @@ on:
 
 jobs:
   validate:
-    name: Import, parse, and smoke-test
+    name: Import, parse, privacy-audit, and smoke-test
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -24,6 +24,9 @@ jobs:
         run: |
           python -m json.tool data/dialogue/mira_intro_ar.json > /dev/null
           python -m json.tool data/missions/mission_001.json > /dev/null
+
+      - name: Audit Android privacy permissions
+        run: python tools/privacy_audit.py
 
       - name: Import project resources
         run: godot --headless --editor --path . --quit
