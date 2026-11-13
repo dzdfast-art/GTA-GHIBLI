@@ -5,6 +5,7 @@ extends Node3D
 const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
 const VILLAGE_SCENE: PackedScene = preload("res://scenes/world/willow_village.tscn")
 const MOBILE_CONTROLS_SCRIPT = preload("res://scripts/ui/mobile_controls.gd")
+const MISSION_MANAGER_SCRIPT = preload("res://scripts/missions/mission_manager.gd")
 
 
 func _ready() -> void:
@@ -12,6 +13,7 @@ func _ready() -> void:
 	_create_village()
 	_create_player()
 	_create_mobile_controls()
+	_create_mission_manager()
 
 
 func _create_world() -> void:
@@ -84,3 +86,12 @@ func _create_mobile_controls() -> void:
 	var mobile_controls: CanvasLayer = MOBILE_CONTROLS_SCRIPT.new() as CanvasLayer
 	mobile_controls.name = "MobileControls"
 	add_child(mobile_controls)
+
+
+func _create_mission_manager() -> void:
+	var player := get_node_or_null("Player") as Node3D
+	var mira := get_node_or_null("WillowVillage/MiraCaretaker")
+	var mission_manager: CanvasLayer = MISSION_MANAGER_SCRIPT.new() as CanvasLayer
+	mission_manager.name = "MissionManager"
+	add_child(mission_manager)
+	mission_manager.setup(player, mira)
