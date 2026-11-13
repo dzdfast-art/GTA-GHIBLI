@@ -174,7 +174,7 @@ func _build_interactive_objects() -> void:
 	garden_gate.name = "GardenGate"
 	garden_gate.position = Vector3(-6.0, 0.08, 25.25)
 	garden_gate.set_script(door_script)
-	garden_gate.panel_size = Vector3(0.14, 1.15, 3.5)
+	garden_gate.set("panel_size", Vector3(0.14, 1.15, 3.5))
 	add_child(garden_gate)
 
 	var prop_script = preload("res://scripts/systems/carryable_prop.gd")
