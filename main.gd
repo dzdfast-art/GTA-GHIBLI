@@ -6,6 +6,7 @@ const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
 const VILLAGE_SCENE: PackedScene = preload("res://scenes/world/willow_village.tscn")
 const MOBILE_CONTROLS_SCRIPT = preload("res://scripts/ui/mobile_controls.gd")
 const MISSION_MANAGER_SCRIPT = preload("res://scripts/missions/mission_manager.gd")
+const AMBIENCE_SCRIPT = preload("res://scripts/audio/nature_ambience.gd")
 
 
 func _ready() -> void:
@@ -14,6 +15,7 @@ func _ready() -> void:
 	_create_player()
 	_create_mobile_controls()
 	_create_mission_manager()
+	_create_nature_ambience()
 
 
 func _create_world() -> void:
@@ -114,3 +116,10 @@ func _create_mission_manager() -> void:
 	mission_manager.name = "MissionManager"
 	add_child(mission_manager)
 	mission_manager.setup(player, mira)
+
+
+func _create_nature_ambience() -> void:
+	var ambience: Node = AMBIENCE_SCRIPT.new()
+	ambience.name = "NatureAmbience"
+	ambience.set("biome", "village")
+	add_child(ambience)

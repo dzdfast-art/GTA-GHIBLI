@@ -37,6 +37,7 @@ jobs:
           set -euo pipefail
           for script in \
             res://main.gd \
+            res://scripts/audio/nature_ambience.gd \
             res://scripts/player/player_controller.gd \
             res://scripts/systems/player_interactor.gd \
             res://scripts/systems/interactable_door.gd \
