@@ -1,10 +1,12 @@
 extends CanvasLayer
 
-## On-screen directional pad. Buttons simulate the same input actions
-## used by the keyboard, so gameplay does not need a separate touch code path.
+## Mobile-first on-foot HUD. Vehicle and weapon profiles will be enabled
+## only when their gameplay controllers are implemented and tested.
 
-const BUTTON_SIZE := Vector2(68.0, 68.0)
-const BUTTON_GAP := 8
+const JOYSTICK_SCRIPT = preload("res://scripts/ui/virtual_joystick.gd")
+const JOYSTICK_SIZE := Vector2(176.0, 176.0)
+
+var _active_actions: Array[StringName] = []
 
 
 func _ready() -> void:
@@ -18,66 +20,94 @@ func _build_hud() -> void:
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
 
-	var title := Label.new()
-	title.text = "GTA GHIBLI  |  PROTOTYPE"
-	title.position = Vector2(18.0, 16.0)
-	title.add_theme_font_size_override("font_size", 20)
-	root.add_child(title)
+	var mode_label := Label.new()
+	mode_label.text = "ON FOOT"
+	mode_label.position = Vector2(22.0, 18.0)
+	mode_label.add_theme_font_size_override("font_size", 15)
+	mode_label.add_theme_color_override("font_color", Color(1.0, 0.96, 0.82, 0.92))
+	root.add_child(mode_label)
 
-	var hint := Label.new()
-	hint.text = "LEFT: MOVE     RIGHT: LOOK"
-	hint.position = Vector2(18.0, 46.0)
-	hint.add_theme_font_size_override("font_size", 13)
-	root.add_child(hint)
+	var joystick := JOYSTICK_SCRIPT.new() as Control
+	joystick.name = "MovementJoystick"
+	joystick.anchor_left = 0.0
+	joystick.anchor_top = 1.0
+	joystick.anchor_right = 0.0
+	joystick.anchor_bottom = 1.0
+	joystick.offset_left = 22.0
+	joystick.offset_top = -JOYSTICK_SIZE.y - 22.0
+	joystick.offset_right = 22.0 + JOYSTICK_SIZE.x
+	joystick.offset_bottom = -22.0
+	joystick.vector_changed.connect(_on_joystick_vector_changed)
+	root.add_child(joystick)
 
-	var pad := VBoxContainer.new()
-	pad.name = "MovementPad"
-	pad.anchor_left = 0.0
-	pad.anchor_top = 1.0
-	pad.anchor_right = 0.0
-	pad.anchor_bottom = 1.0
-	pad.offset_left = 24.0
-	pad.offset_top = -176.0
-	pad.offset_right = 244.0
-	pad.offset_bottom = -18.0
-	pad.add_theme_constant_override("separation", BUTTON_GAP)
-	root.add_child(pad)
-
-	var talk_button := _make_button("تفاعل", "interact")
-	talk_button.anchor_left = 1.0
-	talk_button.anchor_top = 1.0
-	talk_button.anchor_right = 1.0
-	talk_button.anchor_bottom = 1.0
-	talk_button.offset_left = -150.0
-	talk_button.offset_top = -104.0
-	talk_button.offset_right = -24.0
-	talk_button.offset_bottom = -24.0
-	root.add_child(talk_button)
-
-	var up_button := _make_button("UP", "ui_up")
-	pad.add_child(up_button)
-
-	var direction_row := HBoxContainer.new()
-	direction_row.add_theme_constant_override("separation", BUTTON_GAP)
-	pad.add_child(direction_row)
-	direction_row.add_child(_make_button("LEFT", "ui_left"))
-	direction_row.add_child(_make_button("DOWN", "ui_down"))
-	direction_row.add_child(_make_button("RIGHT", "ui_right"))
+	var interact_button := _make_action_button("USE", Vector2(104.0, 104.0))
+	interact_button.name = "ContextAction"
+	interact_button.anchor_left = 1.0
+	interact_button.anchor_top = 1.0
+	interact_button.anchor_right = 1.0
+	interact_button.anchor_bottom = 1.0
+	interact_button.offset_left = -132.0
+	interact_button.offset_top = -132.0
+	interact_button.offset_right = -24.0
+	interact_button.offset_bottom = -24.0
+	interact_button.button_down.connect(_press_action.bind(&"interact"))
+	interact_button.button_up.connect(_release_action.bind(&"interact"))
+	interact_button.tree_exiting.connect(_release_action.bind(&"interact"))
+	root.add_child(interact_button)
 
 
-func _make_button(caption: String, action: StringName) -> Button:
+func _on_joystick_vector_changed(value: Vector2) -> void:
+	_set_action(&"ui_left", value.x < -0.12)
+	_set_action(&"ui_right", value.x > 0.12)
+	_set_action(&"ui_up", value.y < -0.12)
+	_set_action(&"ui_down", value.y > 0.12)
+
+
+func _set_action(action: StringName, pressed: bool) -> void:
+	if pressed:
+		if not _active_actions.has(action):
+			_active_actions.append(action)
+			Input.action_press(action)
+	elif _active_actions.has(action):
+		_active_actions.erase(action)
+		Input.action_release(action)
+
+
+func _press_action(action: StringName) -> void:
+	_set_action(action, true)
+
+
+func _release_action(action: StringName) -> void:
+	_set_action(action, false)
+
+
+func _make_action_button(caption: String, button_size: Vector2) -> Button:
 	var button := Button.new()
 	button.text = caption
-	button.custom_minimum_size = BUTTON_SIZE
+	button.custom_minimum_size = button_size
 	button.focus_mode = Control.FOCUS_NONE
-	button.add_theme_font_size_override("font_size", 13)
-	button.button_down.connect(func() -> void:
-		Input.action_press(action)
-	)
-	button.button_up.connect(func() -> void:
-		Input.action_release(action)
-	)
-	button.tree_exiting.connect(func() -> void:
-		Input.action_release(action)
-	)
+	button.add_theme_font_size_override("font_size", 17)
+	button.add_theme_color_override("font_color", Color(0.10, 0.12, 0.11, 1.0))
+	button.add_theme_color_override("font_hover_color", Color(0.05, 0.07, 0.06, 1.0))
+	button.add_theme_stylebox_override("normal", _button_style(Color(0.94, 0.91, 0.80, 0.94)))
+	button.add_theme_stylebox_override("hover", _button_style(Color(1.0, 0.97, 0.87, 1.0)))
+	button.add_theme_stylebox_override("pressed", _button_style(Color(0.70, 0.76, 0.63, 1.0)))
+	button.add_theme_stylebox_override("focus", _button_style(Color(0.94, 0.91, 0.80, 0.94)))
 	return button
+
+
+func _button_style(fill_color: Color) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = fill_color
+	style.border_color = Color(0.06, 0.08, 0.07, 0.96)
+	style.set_border_width_all(4)
+	style.set_corner_radius_all(48)
+	style.shadow_color = Color(0.0, 0.0, 0.0, 0.35)
+	style.shadow_size = 5
+	return style
+
+
+func _exit_tree() -> void:
+	for action in _active_actions:
+		Input.action_release(action)
+	_active_actions.clear()
