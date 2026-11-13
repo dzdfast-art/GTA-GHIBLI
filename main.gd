@@ -20,9 +20,19 @@ func _create_world() -> void:
 	var world_environment := WorldEnvironment.new()
 	var environment := Environment.new()
 	environment.background_mode = Environment.BG_SKY
-	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color = Color(0.70, 0.78, 0.88)
-	environment.ambient_light_energy = 0.85
+	environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
+	environment.ambient_light_color = Color(0.78, 0.84, 0.92)
+	environment.ambient_light_energy = 0.82
+	environment.ambient_light_sky_contribution = 0.72
+	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	environment.adjustment_enabled = true
+	environment.adjustment_brightness = 1.04
+	environment.adjustment_contrast = 1.08
+	environment.adjustment_saturation = 1.12
+	environment.fog_enabled = true
+	environment.fog_light_color = Color(0.70, 0.79, 0.82)
+	environment.fog_density = 0.0025
+	environment.fog_sun_scatter = 0.12
 
 	var sky := Sky.new()
 	var sky_material := ProceduralSkyMaterial.new()
@@ -32,6 +42,9 @@ func _create_world() -> void:
 	sky_material.ground_horizon_color = Color(0.58, 0.63, 0.60)
 	sky.sky_material = sky_material
 	environment.sky = sky
+	environment.glow_enabled = true
+	environment.glow_intensity = 0.28
+	environment.glow_strength = 0.35
 	world_environment.environment = environment
 	add_child(world_environment)
 
@@ -39,7 +52,11 @@ func _create_world() -> void:
 	sun.name = "Sun"
 	sun.rotation_degrees = Vector3(-48.0, -32.0, 0.0)
 	sun.light_energy = 1.0
-	sun.shadow_enabled = false
+	sun.shadow_enabled = true
+	sun.directional_shadow_max_distance = 55.0
+	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
+	sun.shadow_bias = 0.06
+	sun.shadow_normal_bias = 1.2
 	add_child(sun)
 
 	var ground := StaticBody3D.new()
@@ -78,6 +95,7 @@ func _create_village() -> void:
 func _create_player() -> void:
 	var player: CharacterBody3D = PLAYER_SCENE.instantiate() as CharacterBody3D
 	player.name = "Player"
+	player.add_to_group("player")
 	player.position = Vector3(0.0, 0.95, -18.0)
 	player.rotation.y = PI
 	add_child(player)
