@@ -9,6 +9,8 @@ Implemented in the prototype:
 - Third-person capsule placeholder, camera-relative movement and touch-orbit camera.
 - On-screen directional controls and a shared contextual interaction action.
 - A reusable player interaction router that detects nearby registered interaction areas and dispatches the nearest target's `interact()` method; Mira is the first integrated target.
+- An animated garden gate that opens and closes, plus a physics basket that can be picked up, carried and dropped with the interaction button.
+- Initial graphics pass: filmic tonemapping, sky-based ambient lighting, distance fog, subtle glow, directional shadows, layered tree canopies and small wildflower/stone details.
 - Procedural Willow Village greybox with a square, placeholder houses, paths, garden, trees, well and sign.
 - Mira NPC prototype with proximity detection and Arabic dialogue text/emotion metadata.
 - First tutorial mission tracking: reach the square → talk to Mira → visit the garden.
