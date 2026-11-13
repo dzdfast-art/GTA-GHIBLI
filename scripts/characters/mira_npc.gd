@@ -146,7 +146,7 @@ func _build_dialogue_ui() -> void:
 func _on_body_entered(body: Node3D) -> void:
 	if body is CharacterBody3D:
 		_player_nearby = true
-		_hint_label.text = "اقترب من ميرا واضغط زر التحدث"
+		_hint_label.text = "اقترب من ميرا واضغط زر التفاعل"
 		_hint_label.visible = true
 
 
