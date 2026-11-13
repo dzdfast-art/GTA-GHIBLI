@@ -58,6 +58,10 @@ GitHub Actions run [43513899542](https://github.com/dzdfast-art/GTA-GHIBLI/actio
 
 This is headless CI validation only. It does not prove visual quality, real touchscreen behavior, audio playback, vehicle gameplay, Android export or performance on a physical phone.
 
+## Android test build
+
+The repository includes an automated ARM64 debug APK export workflow. See [Android debug test build](docs/ANDROID_TEST_BUILD.md) for build status, artifact download steps and testing limitations. A successful CI build is not a substitute for testing on a physical Android device.
+
 ## Privacy by default
 
 GTA GHIBLI is designed not to access the player's personal photos, videos, messages, contacts, camera, microphone or general files. No automatic device scan or background media access is part of the game. See [Privacy by Default](docs/PRIVACY_BY_DEFAULT.md). CI checks repository-side Android permission declarations; every final APK/AAB still requires merged-manifest inspection before release.
