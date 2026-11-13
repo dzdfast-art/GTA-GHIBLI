@@ -36,6 +36,7 @@ func _pick_up() -> void:
 	collision_layer = 0
 	collision_mask = 0
 	_interaction_area.monitoring = false
+	add_to_group("carried_props")
 	reparent(player, true)
 	position = carry_offset
 	rotation = Vector3.ZERO
@@ -58,6 +59,7 @@ func _drop() -> void:
 	linear_velocity = -_holder.global_basis.z * 1.5
 	_holder = null
 	is_carried = false
+	remove_from_group("carried_props")
 	_interaction_area.monitoring = true
 
 
