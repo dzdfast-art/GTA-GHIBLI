@@ -31,6 +31,9 @@ The canonical region/cast requirements are not yet implemented in the current pr
 - `scripts/camera/third_person_camera.gd` implements touch/desktop camera orbit.
 - `scripts/ui/mobile_controls.gd` creates directional buttons and a shared interaction action.
 - `scripts/systems/player_interactor.gd` routes that action to the nearest registered interaction area; Mira is the first integrated target.
+- `scripts/systems/interactable_door.gd` provides a reusable animated swing gate; the village garden has one working prototype gate.
+- `scripts/systems/carryable_prop.gd` provides a physics prop that can be picked up, carried and dropped; a garden basket is included in the prototype.
+- `main.gd` now uses filmic tonemapping, sky-based ambient light, subtle distance fog, restrained glow and real-time directional shadows. These are initial graphics settings, not final art assets or a measured performance result.
 - Willow Village is a procedural greybox.
 - Mira has proximity interaction, Arabic dialogue text and emotion metadata. Her audio path is pending; real integrated Arabic voice playback is not verified.
 - The first mission reads JSON, tracks reaching the square, talking to Mira and visiting the garden, and persists those three flags locally.
