@@ -116,7 +116,8 @@ Repository inspection confirms:
 - Mira's audio asset is still marked `pending_generation`; no real integrated Arabic voice file is verified.
 - The first mission reads JSON objectives, tracks the square/Mira/garden sequence and saves/restores those mission flags locally.
 - The mission reward is displayed as prototype information; it is not a real currency/inventory system.
-- No working drivable vehicle, full physics interaction system, complete NPC population, campaign, Android package or physical-device test is verified.
+- A shared player interaction router now detects nearby registered interaction areas and dispatches the common `interact()` contract; Mira is the first target migrated to it. A new physics-backed proximity/dispatch test has been added to CI, but its latest run is not yet verified.
+- No working drivable vehicle, full movable-object physics system, complete NPC population, campaign, Android package or physical-device test is verified.
 
 GitHub Actions run **43513899542** completed successfully: JSON validation, Godot 4.7 import, gameplay-script parsing, first-mission flow test and 180-frame main-scene smoke test all passed. This is a headless CI result, not Android/device validation.
 
