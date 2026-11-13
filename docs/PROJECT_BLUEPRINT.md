@@ -29,7 +29,8 @@ The canonical region/cast requirements are not yet implemented in the current pr
 - `scenes/player/player.tscn` contains a capsule placeholder, collision, camera pivot, spring arm and camera.
 - `scripts/player/player_controller.gd` implements camera-relative movement and gravity.
 - `scripts/camera/third_person_camera.gd` implements touch/desktop camera orbit.
-- `scripts/ui/mobile_controls.gd` creates directional buttons and a TALK action.
+- `scripts/ui/mobile_controls.gd` creates directional buttons and a shared interaction action.
+- `scripts/systems/player_interactor.gd` routes that action to the nearest registered interaction area; Mira is the first integrated target.
 - Willow Village is a procedural greybox.
 - Mira has proximity interaction, Arabic dialogue text and emotion metadata. Her audio path is pending; real integrated Arabic voice playback is not verified.
 - The first mission reads JSON, tracks reaching the square, talking to Mira and visiting the garden, and persists those three flags locally.
