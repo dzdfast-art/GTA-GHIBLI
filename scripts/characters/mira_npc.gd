@@ -17,16 +17,10 @@ var _greeting: Dictionary = {}
 
 
 func _ready() -> void:
-	_register_interaction_action()
 	_load_dialogue_data()
 	_build_character()
 	_build_interaction_area()
 	_build_dialogue_ui()
-
-
-func _process(_delta: float) -> void:
-	if _player_nearby and Input.is_action_just_pressed("interact"):
-		_show_dialogue()
 
 
 func _load_dialogue_data() -> void:
@@ -44,14 +38,6 @@ func _load_dialogue_data() -> void:
 		_greeting = parsed.get("greeting", {})
 	else:
 		push_warning("Mira Arabic dialogue data has an invalid format.")
-
-
-func _register_interaction_action() -> void:
-	if not InputMap.has_action("interact"):
-		InputMap.add_action("interact")
-		var key_event := InputEventKey.new()
-		key_event.physical_keycode = KEY_E
-		InputMap.action_add_event("interact", key_event)
 
 
 func _build_character() -> void:
@@ -86,8 +72,9 @@ func _build_character() -> void:
 func _build_interaction_area() -> void:
 	var area := Area3D.new()
 	area.name = "InteractionArea"
-	area.collision_layer = 0
+	area.collision_layer = 2
 	area.collision_mask = 1
+	area.add_to_group("interaction_areas")
 	add_child(area)
 
 	var collision := CollisionShape3D.new()
@@ -116,7 +103,7 @@ func _build_dialogue_ui() -> void:
 	layer.add_child(root)
 
 	_hint_label = Label.new()
-	_hint_label.text = "اقترب من ميرا واضغط زر التحدث"
+	_hint_label.text = "اقترب من ميرا واضغط زر التفاعل"
 	_hint_label.text_direction = Control.TEXT_DIRECTION_RTL
 	_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_hint_label.anchor_left = 0.18
@@ -172,6 +159,11 @@ func _on_body_exited(body: Node3D) -> void:
 			_voice_player.stop()
 
 
+func interact() -> void:
+	if _player_nearby:
+		_show_dialogue()
+
+
 func _show_dialogue() -> void:
 	if _greeting.is_empty():
 		_dialogue_label.text = "صباح الخير! أهلاً بك في قرية الصفصاف."
@@ -181,7 +173,7 @@ func _show_dialogue() -> void:
 		_emotion_label.text = "ميرا — " + str(_greeting.get("emotion_ar", "سعيدة ومرحّبة"))
 
 	_dialogue_panel.visible = true
-	_hint_label.text = "اضغط TALK لإعادة سماع ميرا"
+	_hint_label.text = "اضغط زر التفاعل لإعادة سماع ميرا"
 	_hint_label.visible = true
 	dialogue_spoken.emit()
 	_play_greeting_voice()
