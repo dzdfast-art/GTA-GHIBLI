@@ -4,9 +4,9 @@ An original third-person 3D open-world adventure for Android, built with Godot 4
 
 ## Project status
 
-**Early prototype — headless validated, not yet Android/device validated.** The project now has a modular player scene,
+**Early prototype with a first village blockout — headless validated, not yet Android/device validated.** The project now has a modular player scene,
 camera-relative movement, a touch-orbit camera rig, and on-screen directional controls.
-The visible character is still a simple capsule and the world is still a flat test area.
+The visible character is still a simple capsule. Willow Village now has a procedural blockout with a central square, four placeholder houses, paths, a garden, trees, a well, and a village sign.
 No finished art, vehicles, NPCs, or playable mission system are included yet.
 
 ## Open the project
@@ -30,6 +30,13 @@ The GitHub Actions validation passed with Godot 4.7: project import, GDScript pa
 - [Core gameplay systems](docs/GAMEPLAY_SYSTEMS.md)
 - [Initial quality audit](docs/QUALITY_AUDIT.md)
 - [Android 4 GiB content budget](docs/ANDROID_4GB_BUDGET.md)
+
+## First world slice
+
+- [Willow Village scene](scenes/world/willow_village.tscn)
+- [Willow Village generator](scripts/world/willow_village.gd)
+
+This is a lightweight greybox made from primitive shapes, not finished art. NPC dialogue, mission triggers, and final terrain are still future work.
 
 ## Structured game data
 
