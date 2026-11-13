@@ -15,6 +15,8 @@ func _ready() -> void:
 	_build_trees()
 	_build_well()
 	_build_signpost()
+	_build_interactive_objects()
+	_build_flora_details()
 
 
 func _build_mira() -> void:
@@ -104,8 +106,10 @@ func _build_garden() -> void:
 		Vector3(12.0, 0.16, 0.16), Color(0.48, 0.33, 0.20), false)
 	_add_box(self, "GardenFenceEast", garden_origin + Vector3(6.0, 0.48, 0.0),
 		Vector3(0.16, 0.16, 8.0), Color(0.48, 0.33, 0.20), false)
-	_add_box(self, "GardenFenceWest", garden_origin + Vector3(-6.0, 0.48, 0.0),
-		Vector3(0.16, 0.16, 8.0), Color(0.48, 0.33, 0.20), false)
+	_add_box(self, "GardenFenceWestNorth", garden_origin + Vector3(-6.0, 0.48, -3.25),
+		Vector3(0.16, 0.16, 1.5), Color(0.48, 0.33, 0.20), false)
+	_add_box(self, "GardenFenceWestSouth", garden_origin + Vector3(-6.0, 0.48, 3.25),
+		Vector3(0.16, 0.16, 1.5), Color(0.48, 0.33, 0.20), false)
 
 	for x in [-3.5, 0.0, 3.5]:
 		_add_box(self, "GardenBed", garden_origin + Vector3(x, 0.18, 0.0),
@@ -145,6 +149,14 @@ func _add_tree(tree_name: String, origin: Vector3, scale_factor: float) -> void:
 	crown.height = 3.0
 	_add_mesh(tree, "Canopy", crown, Vector3(0.0, 3.2, 0.0),
 		Color(0.30, 0.52, 0.29))
+	var canopy_colors := [Color(0.34, 0.58, 0.32), Color(0.26, 0.47, 0.28)]
+	for index in range(2):
+		var cluster := SphereMesh.new()
+		cluster.radius = 1.05
+		cluster.height = 1.85
+		var offset := Vector3(-0.82 if index == 0 else 0.82, 3.05, 0.18)
+		_add_mesh(tree, "CanopyCluster_%d" % index, cluster, offset,
+			canopy_colors[index])
 
 
 func _build_well() -> void:
@@ -154,6 +166,61 @@ func _build_well() -> void:
 	well.height = 0.75
 	_add_mesh(self, "VillageWell", well, Vector3(4.0, 0.43, 0.0),
 		Color(0.53, 0.52, 0.47))
+
+
+func _build_interactive_objects() -> void:
+	var door_script = preload("res://scripts/systems/interactable_door.gd")
+	var garden_gate := Node3D.new()
+	garden_gate.name = "GardenGate"
+	garden_gate.position = Vector3(-6.0, 0.08, 25.875)
+	garden_gate.set_script(door_script)
+	add_child(garden_gate)
+
+	var prop_script = preload("res://scripts/systems/carryable_prop.gd")
+	var carryable := RigidBody3D.new()
+	carryable.name = "CarryableGardenBasket"
+	carryable.position = Vector3(3.0, 0.45, -2.0)
+	carryable.set_script(prop_script)
+	carryable.display_name_ar = "سلة الحديقة"
+	add_child(carryable)
+
+
+func _build_flora_details() -> void:
+	var flower_colors := [
+		Color(0.95, 0.67, 0.42),
+		Color(0.88, 0.76, 0.82),
+		Color(0.93, 0.84, 0.48)
+	]
+	var flower_positions := [
+		Vector3(-5.2, 0.0, -7.0), Vector3(5.4, 0.0, -7.8),
+		Vector3(-5.0, 0.0, 8.0), Vector3(5.0, 0.0, 8.5),
+		Vector3(-17.0, 0.0, -13.0), Vector3(17.0, 0.0, -13.0),
+		Vector3(-15.0, 0.0, 23.0), Vector3(15.0, 0.0, 23.0)
+	]
+	for index in range(flower_positions.size()):
+		var flower := Node3D.new()
+		flower.name = "Wildflower_%02d" % index
+		flower.position = flower_positions[index]
+		add_child(flower)
+		var stem := CylinderMesh.new()
+		stem.top_radius = 0.025
+		stem.bottom_radius = 0.035
+		stem.height = 0.42
+		_add_mesh(flower, "Stem", stem, Vector3(0.0, 0.21, 0.0),
+			Color(0.25, 0.43, 0.22))
+		var bloom := SphereMesh.new()
+		bloom.radius = 0.16
+		bloom.height = 0.18
+		_add_mesh(flower, "Bloom", bloom, Vector3(0.0, 0.45, 0.0),
+			flower_colors[index % flower_colors.size()])
+
+	for index in range(6):
+		var stone := SphereMesh.new()
+		stone.radius = 0.34
+		stone.height = 0.22
+		_add_mesh(self, "PathStone_%02d" % index, stone,
+			Vector3(-2.5 + float(index) * 0.9, 0.12, -13.0),
+			Color(0.55, 0.55, 0.48))
 
 
 func _build_signpost() -> void:
