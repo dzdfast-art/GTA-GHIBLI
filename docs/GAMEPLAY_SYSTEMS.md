@@ -23,6 +23,8 @@ Acceptance: movement, collisions, camera and touch release behavior must be test
 
 ## 3. Universal interaction system
 
+**Prototype implementation added:** `scripts/systems/player_interactor.gd` detects nearby registered interaction areas, selects the nearest target and calls its `interact()` method. Mira is the first target migrated to this contract; the shared mobile/keyboard action is routed through the player. A physics-backed proximity test is included in CI, pending confirmation of the latest run.
+
 All usable entities should follow a shared interaction contract rather than implementing unrelated input logic in every object.
 
 Each interactable should provide:
