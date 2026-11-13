@@ -78,7 +78,8 @@ func _create_village() -> void:
 func _create_player() -> void:
 	var player: CharacterBody3D = PLAYER_SCENE.instantiate() as CharacterBody3D
 	player.name = "Player"
-	player.position = Vector3(0.0, 0.95, 5.0)
+	player.position = Vector3(0.0, 0.95, -18.0)
+	player.rotation.y = PI
 	add_child(player)
 
 
