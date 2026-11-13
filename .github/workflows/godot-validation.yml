@@ -20,8 +20,10 @@ jobs:
           version: 4.7-stable
           export-templates: false
 
-      - name: Validate dialogue data
-        run: python -m json.tool data/dialogue/mira_intro_ar.json > /dev/null
+      - name: Validate JSON game data
+        run: |
+          python -m json.tool data/dialogue/mira_intro_ar.json > /dev/null
+          python -m json.tool data/missions/mission_001.json > /dev/null
 
       - name: Import project resources
         run: godot --headless --editor --path . --quit
