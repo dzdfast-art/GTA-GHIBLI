@@ -180,7 +180,7 @@ func _build_interactive_objects() -> void:
 	var prop_script = preload("res://scripts/systems/carryable_prop.gd")
 	var carryable := RigidBody3D.new()
 	carryable.name = "CarryableGardenBasket"
-	carryable.position = Vector3(3.0, 0.45, -2.0)
+	carryable.position = Vector3(3.0, 0.45, 27.0)
 	carryable.set_script(prop_script)
 	carryable.set("display_name_ar", "سلة الحديقة")
 	add_child(carryable)
