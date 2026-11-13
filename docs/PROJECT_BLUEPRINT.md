@@ -121,5 +121,5 @@ shared assets across regions.
 
 ## Next implementation
 
-After the movement foundation is verified in Godot, connect the existing region and mission JSON
-to small, testable runtime managers. Do not add vehicles or large world content before this gate.
+Next, add the first villager and interaction prompt, then connect the `meet_the_village` mission data
+to a small objective tracker. Keep the blockout lightweight until touch behavior is tested on Android.
