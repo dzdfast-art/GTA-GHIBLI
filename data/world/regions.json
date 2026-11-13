@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "world_id": "green-valley",
+  "display_name": "Green Valley",
+  "design_goal": "A compact, original countryside region for the first playable slice.",
+  "regions": [
+    {
+      "id": "willow_village",
+      "name": "Willow Village",
+      "type": "village",
+      "description": "A quiet village of painted wooden homes, gardens, and a small central square.",
+      "gameplay_roles": ["player_start", "shops", "starter_quests"],
+      "target_density": "medium"
+    },
+    {
+      "id": "sunmeadow_fields",
+      "name": "Sunmeadow Fields",
+      "type": "countryside",
+      "description": "Open grassy fields, winding paths, orchards, and gentle hills.",
+      "gameplay_roles": ["exploration", "collectibles", "wildlife"],
+      "target_density": "low"
+    },
+    {
+      "id": "old_mill_road",
+      "name": "Old Mill Road",
+      "type": "road",
+      "description": "A curving rural road connecting the village to an abandoned water mill.",
+      "gameplay_roles": ["travel", "first_vehicle_test", "story_events"],
+      "target_density": "low"
+    },
+    {
+      "id": "mistwood_edge",
+      "name": "Mistwood Edge",
+      "type": "forest",
+      "description": "A friendly forest boundary with tall trees, streams, and hidden footpaths.",
+      "gameplay_roles": ["exploration", "gathering", "future_expansion"],
+      "target_density": "medium"
+    }
+  ]
+}
