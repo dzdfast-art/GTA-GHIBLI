@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "mission_id": "meet_the_village",
+  "title": "A New Morning",
+  "chapter": 1,
+  "mission_type": "tutorial",
+  "description": "Meet the village caretaker and learn the basics of exploring Green Valley.",
+  "start_region": "willow_village",
+  "objectives": [
+    {
+      "id": "reach_square",
+      "type": "reach_location",
+      "target_id": "village_square",
+      "description": "Walk to the village square",
+      "required": true
+    },
+    {
+      "id": "talk_to_caretaker",
+      "type": "interact",
+      "target_id": "mira_caretaker",
+      "description": "Speak with Mira, the village caretaker",
+      "required": true
+    },
+    {
+      "id": "visit_garden",
+      "type": "reach_location",
+      "target_id": "community_garden",
+      "description": "Visit the community garden",
+      "required": true
+    }
+  ],
+  "rewards": {
+    "currency": 25,
+    "items": [],
+    "unlocks": ["basic_interaction"]
+  },
+  "status": "design_only",
+  "notes": "Mission data is a design record; mission runtime logic has not yet been implemented."
+}
