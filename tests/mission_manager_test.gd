@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Headless regression test for the first mission objective sequence.
+## Headless regression test for the first mission objective sequence and JSON loading.
 
 const MISSION_MANAGER_SCRIPT = preload("res://scripts/missions/mission_manager.gd")
 
@@ -19,6 +19,14 @@ func _run_mission_test() -> void:
 
 	var manager: CanvasLayer = MISSION_MANAGER_SCRIPT.new() as CanvasLayer
 	root.add_child(manager)
+
+	if manager._objectives.size() != 3:
+		_fail("The mission manager did not load all three objectives from mission_001.json.")
+		return
+	if str(manager._mission_data.get("mission_id", "")) != "meet_the_village":
+		_fail("The mission manager loaded the wrong mission record.")
+		return
+
 	manager.setup(player, mira)
 
 	player.global_position = Vector3(0.0, 0.95, -18.0)
@@ -44,7 +52,7 @@ func _run_mission_test() -> void:
 		_fail("The garden objective did not complete at the community garden.")
 		return
 
-	print("PASS: first mission objectives complete in the correct order.")
+	print("PASS: mission JSON loads and the first mission objectives complete in the correct order.")
 	quit(0)
 
 
