@@ -1,15 +1,22 @@
 extends Node3D
 
-## First village NPC: Mira, the caretaker. Lightweight procedural prototype.
+## Mira: first Arabic-speaking NPC prototype.
+## Dialogue is data-driven; voice audio is optional until the recorded asset is added.
+
+const DIALOGUE_DATA_PATH := "res://data/dialogue/mira_intro_ar.json"
 
 var _player_nearby := false
 var _dialogue_panel: PanelContainer
 var _dialogue_label: Label
+var _emotion_label: Label
 var _hint_label: Label
+var _voice_player: AudioStreamPlayer
+var _greeting: Dictionary = {}
 
 
 func _ready() -> void:
 	_register_interaction_action()
+	_load_dialogue_data()
 	_build_character()
 	_build_interaction_area()
 	_build_dialogue_ui()
@@ -18,6 +25,23 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if _player_nearby and Input.is_action_just_pressed("interact"):
 		_show_dialogue()
+
+
+func _load_dialogue_data() -> void:
+	if not FileAccess.file_exists(DIALOGUE_DATA_PATH):
+		push_warning("Mira Arabic dialogue data is missing.")
+		return
+
+	var file := FileAccess.open(DIALOGUE_DATA_PATH, FileAccess.READ)
+	if file == null:
+		push_warning("Could not open Mira Arabic dialogue data.")
+		return
+
+	var parsed = JSON.parse_string(file.get_as_text())
+	if parsed is Dictionary:
+		_greeting = parsed.get("greeting", {})
+	else:
+		push_warning("Mira Arabic dialogue data has an invalid format.")
 
 
 func _register_interaction_action() -> void:
@@ -50,7 +74,7 @@ func _build_character() -> void:
 
 	var name_tag := Label3D.new()
 	name_tag.name = "NameTag"
-	name_tag.text = "MIRA"
+	name_tag.text = "ميرا"
 	name_tag.position = Vector3(0.0, 2.35, 0.0)
 	name_tag.font_size = 32
 	name_tag.modulate = Color(1.0, 0.94, 0.75)
@@ -80,15 +104,19 @@ func _build_dialogue_ui() -> void:
 	layer.layer = 5
 	add_child(layer)
 
+	_voice_player = AudioStreamPlayer.new()
+	_voice_player.name = "ArabicDialogueVoice"
+	add_child(_voice_player)
+
 	var root := Control.new()
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(root)
 
 	_dialogue_panel = PanelContainer.new()
-	_dialogue_panel.anchor_left = 0.12
-	_dialogue_panel.anchor_top = 0.72
-	_dialogue_panel.anchor_right = 0.88
+	_dialogue_panel.anchor_left = 0.06
+	_dialogue_panel.anchor_top = 0.68
+	_dialogue_panel.anchor_right = 0.94
 	_dialogue_panel.anchor_bottom = 0.96
 	_dialogue_panel.visible = false
 	root.add_child(_dialogue_panel)
@@ -97,14 +125,25 @@ func _build_dialogue_ui() -> void:
 	content.add_theme_constant_override("separation", 8)
 	_dialogue_panel.add_child(content)
 
+	_emotion_label = Label.new()
+	_emotion_label.text = "ميرا — سعيدة ومرحّبة"
+	_emotion_label.text_direction = Control.TEXT_DIRECTION_RTL
+	_emotion_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_emotion_label.add_theme_font_size_override("font_size", 16)
+	content.add_child(_emotion_label)
+
 	_dialogue_label = Label.new()
-	_dialogue_label.text = "Mira"
+	_dialogue_label.text = "صباح الخير!"
+	_dialogue_label.text_direction = Control.TEXT_DIRECTION_RTL
+	_dialogue_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_dialogue_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_dialogue_label.add_theme_font_size_override("font_size", 18)
+	_dialogue_label.add_theme_font_size_override("font_size", 20)
 	content.add_child(_dialogue_label)
 
 	_hint_label = Label.new()
-	_hint_label.text = "Press E or tap TALK to continue exploring."
+	_hint_label.text = "اضغط زر التفاعل للتحدث مع ميرا"
+	_hint_label.text_direction = Control.TEXT_DIRECTION_RTL
+	_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_hint_label.add_theme_font_size_override("font_size", 13)
 	content.add_child(_hint_label)
 
@@ -112,18 +151,41 @@ func _build_dialogue_ui() -> void:
 func _on_body_entered(body: Node3D) -> void:
 	if body is CharacterBody3D:
 		_player_nearby = true
-		_hint_label.text = "Press E or tap TALK to speak with Mira."
+		_hint_label.text = "اضغط زر التحدث مع ميرا"
 
 
 func _on_body_exited(body: Node3D) -> void:
 	if body is CharacterBody3D:
 		_player_nearby = false
 		_dialogue_panel.visible = false
+		if _voice_player != null:
+			_voice_player.stop()
 
 
 func _show_dialogue() -> void:
-	_dialogue_label.text = "Mira: Good morning, traveler! Welcome to Willow Village.\nThe garden needs a little care. Visit it when you are ready."
+	if _greeting.is_empty():
+		_dialogue_label.text = "صباح الخير! أهلاً بك في قرية الصفصاف."
+		_emotion_label.text = "ميرا — سعيدة ومرحّبة"
+	else:
+		_dialogue_label.text = str(_greeting.get("text_ar", "صباح الخير! أهلاً بك في قرية الصفصاف."))
+		_emotion_label.text = "ميرا — " + str(_greeting.get("emotion_ar", "سعيدة ومرحّبة"))
+
 	_dialogue_panel.visible = true
+	_play_greeting_voice()
+
+
+func _play_greeting_voice() -> void:
+	if _voice_player == null or _greeting.is_empty():
+		return
+
+	var audio_path := str(_greeting.get("audio_path", ""))
+	if audio_path.is_empty() or not ResourceLoader.exists(audio_path):
+		return
+
+	var audio_stream = load(audio_path)
+	if audio_stream is AudioStream:
+		_voice_player.stream = audio_stream
+		_voice_player.play()
 
 
 func _add_mesh(node_name: String, mesh: Mesh, local_position: Vector3, color: Color) -> void:
