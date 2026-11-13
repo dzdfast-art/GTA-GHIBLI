@@ -43,6 +43,17 @@ func _build_hud() -> void:
 	pad.add_theme_constant_override("separation", BUTTON_GAP)
 	root.add_child(pad)
 
+	var talk_button := _make_button("TALK", "interact")
+	talk_button.anchor_left = 1.0
+	talk_button.anchor_top = 1.0
+	talk_button.anchor_right = 1.0
+	talk_button.anchor_bottom = 1.0
+	talk_button.offset_left = -150.0
+	talk_button.offset_top = -104.0
+	talk_button.offset_right = -24.0
+	talk_button.offset_bottom = -24.0
+	root.add_child(talk_button)
+
 	var up_button := _make_button("UP", "ui_up")
 	pad.add_child(up_button)
 
