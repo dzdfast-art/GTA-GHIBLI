@@ -1,8 +1,9 @@
 extends SceneTree
 
-## Headless regression test for the first mission objective sequence and JSON loading.
+## Headless regression test for mission JSON loading, objective order, and save persistence.
 
 const MISSION_MANAGER_SCRIPT = preload("res://scripts/missions/mission_manager.gd")
+const SAVE_PATH := "user://gta_ghibli_save.json"
 
 
 func _initialize() -> void:
@@ -10,6 +11,10 @@ func _initialize() -> void:
 
 
 func _run_mission_test() -> void:
+	var absolute_save_path := ProjectSettings.globalize_path(SAVE_PATH)
+	if FileAccess.file_exists(SAVE_PATH):
+		DirAccess.remove_absolute(absolute_save_path)
+
 	var player := Node3D.new()
 	root.add_child(player)
 
@@ -52,7 +57,17 @@ func _run_mission_test() -> void:
 		_fail("The garden objective did not complete at the community garden.")
 		return
 
-	print("PASS: mission JSON loads and the first mission objectives complete in the correct order.")
+	if not FileAccess.file_exists(SAVE_PATH):
+		_fail("Mission progress was not written to the local save file.")
+		return
+
+	var restored_manager: CanvasLayer = MISSION_MANAGER_SCRIPT.new() as CanvasLayer
+	root.add_child(restored_manager)
+	if not restored_manager._square_reached or not restored_manager._mira_spoken_to or not restored_manager._garden_visited:
+		_fail("Mission progress was not restored from the local save file.")
+		return
+
+	print("PASS: mission JSON loads, objectives complete in order, and progress survives manager reload.")
 	quit(0)
 
 
