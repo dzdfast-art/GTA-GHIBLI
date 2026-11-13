@@ -5,7 +5,7 @@ signal vector_changed(value: Vector2)
 
 var _finger_active := false
 var _knob_vector := Vector2.ZERO
-var _radius := 72.0
+var _radius := 58.0
 var _deadzone := 0.16
 
 
