@@ -4,7 +4,7 @@ An original third-person 3D open-world adventure for Android, built with Godot 4
 
 ## Project status
 
-**Early prototype — not yet runtime-validated.** The project now has a modular player scene,
+**Early prototype — headless validated, not yet Android/device validated.** The project now has a modular player scene,
 camera-relative movement, a touch-orbit camera rig, and on-screen directional controls.
 The visible character is still a simple capsule and the world is still a flat test area.
 No finished art, vehicles, NPCs, or playable mission system are included yet.
@@ -22,7 +22,7 @@ No finished art, vehicles, NPCs, or playable mission system are included yet.
 - Phone: hold the directional buttons on the lower-left side.
 - Camera: drag on the right side of the screen; on desktop, hold the right mouse button and move.
 
-These controls are source-level implementation and still need a Godot runtime test.
+The GitHub Actions validation passed with Godot 4.7: project import, GDScript parsing, and a 180-frame headless main-scene smoke test. Visual behavior and touch controls still need testing on a real Android device.
 
 ## Project documents
 
