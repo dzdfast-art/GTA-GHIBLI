@@ -26,6 +26,7 @@ func _run_test() -> void:
 
 	var player := CharacterBody3D.new()
 	player.name = "Player"
+	player.add_to_group("player")
 	root.add_child(player)
 	var prop := RigidBody3D.new()
 	prop.set_script(PROP_SCRIPT)
