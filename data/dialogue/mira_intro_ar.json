@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "language": "ar",
+  "language_name": "العربية",
+  "character_id": "mira_caretaker",
+  "character_name_ar": "ميرا",
+  "voice_profile": {
+    "voice_gender": "female",
+    "voice_style": "warm, gentle, expressive",
+    "accent": "clear Modern Standard Arabic",
+    "performance_notes_ar": "صوت أنثوي دافئ وحنون، ابتسامة مسموعة، سرعة متوسطة، ترحيب صادق مع ارتفاع لطيف في النبرة عند كلمة أهلاً."
+  },
+  "greeting": {
+    "line_id": "mira_greeting_001",
+    "text_ar": "صباح الخير! أهلاً بك في قرية الصفصاف. لقد اشتقنا إلى وجوه جديدة هنا. هل تساعدنا في الاعتناء بالحديقة؟ أزهارها تحتاج إلى قليل من الحب.",
+    "emotion": "joy_warmth",
+    "emotion_ar": "سعيدة ومرحّبة",
+    "delivery_tags": [
+      "smiling_voice",
+      "gentle_warmth",
+      "friendly_welcome",
+      "hopeful_question"
+    ],
+    "performance_direction_ar": "ابدئي بتحية مشرقة ومبتسمة، ثم اجعلي عبارة لقد اشتقنا إلى وجوه جديدة هنا أكثر حناناً، واختمي السؤال بأمل ولطف دون مبالغة.",
+    "audio_path": "res://assets/audio/dialogue/ar/mira_greeting_001.ogg",
+    "audio_status": "pending_generation"
+  },
+  "emotion_library": [
+    {"id": "joy", "name_ar": "فرح", "direction_ar": "نبرة مشرقة وخفيفة مع ابتسامة مسموعة"},
+    {"id": "sadness", "name_ar": "حزن", "direction_ar": "نبرة هادئة ومنخفضة مع وقفات طبيعية"},
+    {"id": "fear", "name_ar": "خوف", "direction_ar": "صوت متردد قليلاً ونَفَس أسرع دون صراخ"},
+    {"id": "anger", "name_ar": "غضب", "direction_ar": "نبرة حازمة ومشدودة دون صراخ مصطنع"},
+    {"id": "surprise", "name_ar": "دهشة", "direction_ar": "بداية قصيرة مرتفعة ثم استقرار طبيعي"},
+    {"id": "tenderness", "name_ar": "حنان", "direction_ar": "صوت لين وقريب وهادئ"}
+  ]
+}
