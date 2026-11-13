@@ -62,9 +62,9 @@ jobs:
           if not sdk:
               raise SystemExit("Android SDK path was not provided by setup-android")
           with open(os.path.expanduser("~/.config/godot/editor_settings-4.tres"), "w") as f:
-              f.write('[gd_resource type="EditorSettings" format=3]\\n[resource]\\n')
-              f.write("export/android/android_sdk_path = " + json.dumps(sdk) + "\\n")
-              f.write("export/android/java_sdk_path = " + json.dumps(java) + "\\n")
+              f.write('[gd_resource type="EditorSettings" format=3]\n[resource]\n')
+              f.write("export/android/android_sdk_path = " + json.dumps(sdk) + "\n")
+              f.write("export/android/java_sdk_path = " + json.dumps(java) + "\n")
           print("Configured Android SDK and Java paths for Godot.")
           PY
 
@@ -87,7 +87,7 @@ jobs:
           unzip -t build/GTA-GHIBLI-debug.apk
           "$ANDROID_HOME/build-tools/35.0.1/aapt" dump badging build/GTA-GHIBLI-debug.apk | tee build/apk-badging.txt
           "$ANDROID_HOME/build-tools/35.0.1/aapt" dump permissions build/GTA-GHIBLI-debug.apk | tee build/apk-permissions.txt
-          if grep -Eiq 'android\\.permission\\.(CAMERA|RECORD_AUDIO|READ_MEDIA_IMAGES|READ_MEDIA_VIDEO|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE|MANAGE_EXTERNAL_STORAGE|READ_CONTACTS|WRITE_CONTACTS|GET_ACCOUNTS|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|ACCESS_BACKGROUND_LOCATION|READ_SMS|RECEIVE_SMS|SEND_SMS|READ_CALL_LOG|WRITE_CALL_LOG|READ_PHONE_STATE|CALL_PHONE)' build/apk-permissions.txt; then
+          if grep -Eiq 'android\.permission\.(CAMERA|RECORD_AUDIO|READ_MEDIA_IMAGES|READ_MEDIA_VIDEO|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE|MANAGE_EXTERNAL_STORAGE|READ_CONTACTS|WRITE_CONTACTS|GET_ACCOUNTS|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|ACCESS_BACKGROUND_LOCATION|READ_SMS|RECEIVE_SMS|SEND_SMS|READ_CALL_LOG|WRITE_CALL_LOG|READ_PHONE_STATE|CALL_PHONE)' build/apk-permissions.txt; then
             echo "Unexpected sensitive Android permission found in exported APK."
             exit 1
           fi
