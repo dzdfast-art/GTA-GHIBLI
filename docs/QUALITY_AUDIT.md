@@ -9,7 +9,7 @@ Audited branch: `main`
 - The project configuration points to `res://main.tscn`.
 - The main scene points to `res://main.gd`.
 - The project uses Godot 4 configuration format 5 and the Compatibility renderer.
-- The current world is a generated flat test floor; the character is a capsule.
+- The player remains a capsule. The main scene now loads a procedural Willow Village blockout containing a square, paths, four placeholder houses, a fenced garden, trees, a well, and a sign.
 - The region catalogue and first mission are JSON design records. They are not loaded by
   runtime gameplay systems yet.
 - There are no imported 3D environment assets, finished character assets, vehicle assets,
@@ -37,17 +37,17 @@ The repository now has:
 - On-screen directional buttons that simulate the same input actions used by the keyboard.
 - A documented 4 GiB content budget and measurement gates.
 
-GitHub Actions run #2 passed with Godot 4.7. It imported the project, parsed all four gameplay scripts,
+GitHub Actions run #9 passed with Godot 4.7. It imported the project, parsed all four gameplay scripts,
   and ran the main scene for 180 headless frames without a failed step. This confirms scene startup and
   headless runtime execution. It does **not** validate rendered visuals, touch gestures, sustained play,
   frame rate, or Android export on a physical phone.
 
 ## Next acceptance gates
 
-1. Open the project in Godot 4 and run the main scene.
+1. Open the project in Godot 4 and inspect the village composition visually.
 2. Confirm movement in all four directions and confirm that forward follows the camera.
 3. Drag on the right half of the touch screen and confirm camera orbit.
-4. Walk close to a wall and confirm that the spring arm prevents camera clipping.
+4. Walk close to a house and confirm that the spring arm prevents camera clipping.
 5. Test button release after lifting a finger or moving a finger away from a button.
 6. Test on the target Android device in landscape orientation.
-7. Only then connect mission data and add the first original world props.
+7. Add the first villager, interaction prompt, and mission objective tracker.
