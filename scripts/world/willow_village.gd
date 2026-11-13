@@ -142,7 +142,7 @@ func _build_well() -> void:
 	well.top_radius = 1.05
 	well.bottom_radius = 1.05
 	well.height = 0.75
-	_add_mesh(self, "VillageWell", well, Vector3(0.0, 0.43, 0.0),
+	_add_mesh(self, "VillageWell", well, Vector3(4.0, 0.43, 0.0),
 		Color(0.53, 0.52, 0.47))
 
 
