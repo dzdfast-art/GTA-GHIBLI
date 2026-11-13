@@ -1,0 +1,18 @@
+# Godot editor/import cache
+.godot/
+
+# Exported builds
+/export.cfg
+/export_presets.cfg
+/build/
+/dist/
+*.apk
+*.aab
+*.pck
+*.zip
+
+# Local/editor files
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
