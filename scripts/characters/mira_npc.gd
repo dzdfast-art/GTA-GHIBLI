@@ -115,6 +115,18 @@ func _build_dialogue_ui() -> void:
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(root)
 
+	_hint_label = Label.new()
+	_hint_label.text = "اقترب من ميرا واضغط زر التحدث"
+	_hint_label.text_direction = Control.TEXT_DIRECTION_RTL
+	_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_hint_label.anchor_left = 0.18
+	_hint_label.anchor_top = 0.61
+	_hint_label.anchor_right = 0.82
+	_hint_label.anchor_bottom = 0.67
+	_hint_label.visible = false
+	_hint_label.add_theme_font_size_override("font_size", 16)
+	root.add_child(_hint_label)
+
 	_dialogue_panel = PanelContainer.new()
 	_dialogue_panel.anchor_left = 0.06
 	_dialogue_panel.anchor_top = 0.68
@@ -142,24 +154,20 @@ func _build_dialogue_ui() -> void:
 	_dialogue_label.add_theme_font_size_override("font_size", 20)
 	content.add_child(_dialogue_label)
 
-	_hint_label = Label.new()
-	_hint_label.text = "اضغط زر التفاعل للتحدث مع ميرا"
-	_hint_label.text_direction = Control.TEXT_DIRECTION_RTL
-	_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	_hint_label.add_theme_font_size_override("font_size", 13)
-	content.add_child(_hint_label)
 
 
 func _on_body_entered(body: Node3D) -> void:
 	if body is CharacterBody3D:
 		_player_nearby = true
-		_hint_label.text = "اضغط زر التحدث مع ميرا"
+		_hint_label.text = "اقترب من ميرا واضغط زر التحدث"
+		_hint_label.visible = true
 
 
 func _on_body_exited(body: Node3D) -> void:
 	if body is CharacterBody3D:
 		_player_nearby = false
 		_dialogue_panel.visible = false
+		_hint_label.visible = false
 		if _voice_player != null:
 			_voice_player.stop()
 
@@ -173,6 +181,8 @@ func _show_dialogue() -> void:
 		_emotion_label.text = "ميرا — " + str(_greeting.get("emotion_ar", "سعيدة ومرحّبة"))
 
 	_dialogue_panel.visible = true
+	_hint_label.text = "اضغط TALK لإعادة سماع ميرا"
+	_hint_label.visible = true
 	dialogue_spoken.emit()
 	_play_greeting_voice()
 
