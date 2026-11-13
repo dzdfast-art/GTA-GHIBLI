@@ -37,8 +37,10 @@ The repository now has:
 - On-screen directional buttons that simulate the same input actions used by the keyboard.
 - A documented 4 GiB content budget and measurement gates.
 
-These changes are source-level implementation only. They have **not** been launched in the Godot editor
-or on an Android device in this workflow, so runtime correctness and frame rate remain unverified.
+GitHub Actions run #2 passed with Godot 4.7. It imported the project, parsed all four gameplay scripts,
+  and ran the main scene for 180 headless frames without a failed step. This confirms scene startup and
+  headless runtime execution. It does **not** validate rendered visuals, touch gestures, sustained play,
+  frame rate, or Android export on a physical phone.
 
 ## Next acceptance gates
 
