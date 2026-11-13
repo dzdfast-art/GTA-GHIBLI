@@ -106,10 +106,10 @@ func _build_garden() -> void:
 		Vector3(12.0, 0.16, 0.16), Color(0.48, 0.33, 0.20), false)
 	_add_box(self, "GardenFenceEast", garden_origin + Vector3(6.0, 0.48, 0.0),
 		Vector3(0.16, 0.16, 8.0), Color(0.48, 0.33, 0.20), false)
-	_add_box(self, "GardenFenceWestNorth", garden_origin + Vector3(-6.0, 0.48, -3.25),
-		Vector3(0.16, 0.16, 1.5), Color(0.48, 0.33, 0.20), false)
-	_add_box(self, "GardenFenceWestSouth", garden_origin + Vector3(-6.0, 0.48, 3.25),
-		Vector3(0.16, 0.16, 1.5), Color(0.48, 0.33, 0.20), false)
+	_add_box(self, "GardenFenceWestNorth", garden_origin + Vector3(-6.0, 0.48, -2.875),
+		Vector3(0.16, 0.16, 2.25), Color(0.48, 0.33, 0.20), false)
+	_add_box(self, "GardenFenceWestSouth", garden_origin + Vector3(-6.0, 0.48, 2.875),
+		Vector3(0.16, 0.16, 2.25), Color(0.48, 0.33, 0.20), false)
 
 	for x in [-3.5, 0.0, 3.5]:
 		_add_box(self, "GardenBed", garden_origin + Vector3(x, 0.18, 0.0),
@@ -172,8 +172,9 @@ func _build_interactive_objects() -> void:
 	var door_script = preload("res://scripts/systems/interactable_door.gd")
 	var garden_gate := Node3D.new()
 	garden_gate.name = "GardenGate"
-	garden_gate.position = Vector3(-6.0, 0.08, 25.875)
+	garden_gate.position = Vector3(-6.0, 0.08, 25.25)
 	garden_gate.set_script(door_script)
+	garden_gate.panel_size = Vector3(0.14, 1.15, 3.5)
 	add_child(garden_gate)
 
 	var prop_script = preload("res://scripts/systems/carryable_prop.gd")
@@ -181,7 +182,7 @@ func _build_interactive_objects() -> void:
 	carryable.name = "CarryableGardenBasket"
 	carryable.position = Vector3(3.0, 0.45, -2.0)
 	carryable.set_script(prop_script)
-	carryable.display_name_ar = "سلة الحديقة"
+	carryable.set("display_name_ar", "سلة الحديقة")
 	add_child(carryable)
 
 
