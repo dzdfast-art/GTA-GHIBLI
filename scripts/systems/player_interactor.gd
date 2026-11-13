@@ -63,6 +63,12 @@ func _on_interaction_area_exited(area: Area3D) -> void:
 
 
 func _interact_with_nearest() -> void:
+	var actor := get_parent() as Node3D
+	if actor != null:
+		for child in actor.get_children():
+			if child.is_in_group("carried_props") and child.has_method("interact"):
+				child.call("interact")
+				return
 	var target := _get_nearest_target()
 	if target != null:
 		try_interact(target)
