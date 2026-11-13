@@ -5,7 +5,7 @@ extends Node
 ## Their Area3D child joins the "interaction_areas" group and uses collision layer 2.
 
 const INTERACTION_MASK := 2
-const DETECTION_RADIUS := 0.1
+const DETECTION_RADIUS := 0.4
 
 var _nearby_areas: Array[Area3D] = []
 
