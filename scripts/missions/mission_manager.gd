@@ -1,9 +1,11 @@
 extends CanvasLayer
 
 ## Runtime tracker for the first playable village mission.
-## Objective copy and reward display are loaded from the mission JSON record.
+## Mission copy is loaded from JSON; progress is persisted locally on the device.
 
 const MISSION_DATA_PATH := "res://data/missions/mission_001.json"
+const SAVE_PATH := "user://gta_ghibli_save.json"
+const SAVE_VERSION := 1
 
 var _player: Node3D
 var _square_reached := false
@@ -18,6 +20,7 @@ var _mission_title_label: Label
 
 func _ready() -> void:
 	_load_mission_data()
+	_load_progress()
 	_build_hud()
 	_refresh_hud()
 
@@ -54,6 +57,52 @@ func _load_mission_data() -> void:
 	_objectives = objectives_value
 
 
+func _load_progress() -> void:
+	if not FileAccess.file_exists(SAVE_PATH):
+		return
+
+	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if file == null:
+		push_warning("Could not read local save file.")
+		return
+
+	var parsed = JSON.parse_string(file.get_as_text())
+	if not parsed is Dictionary:
+		push_warning("Save file is invalid; starting this mission from the beginning.")
+		return
+
+	if int(parsed.get("save_version", 0)) != SAVE_VERSION:
+		push_warning("Save version is not supported; starting this mission from the beginning.")
+		return
+	if str(parsed.get("mission_id", "")) != str(_mission_data.get("mission_id", "")):
+		return
+
+	_square_reached = bool(parsed.get("square_reached", false))
+	_mira_spoken_to = bool(parsed.get("mira_spoken_to", false))
+	_garden_visited = bool(parsed.get("garden_visited", false))
+
+
+func _save_progress() -> bool:
+	var save_data := {
+		"save_version": SAVE_VERSION,
+		"mission_id": str(_mission_data.get("mission_id", "meet_the_village")),
+		"square_reached": _square_reached,
+		"mira_spoken_to": _mira_spoken_to,
+		"garden_visited": _garden_visited
+	}
+	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	if file == null:
+		push_warning("Could not write local save file.")
+		return false
+	file.store_string(JSON.stringify(save_data, "\t"))
+	return file.get_error() == OK
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_PREDELETE:
+		_save_progress()
+
+
 func _objective_description(index: int, fallback: String) -> String:
 	if index >= 0 and index < _objectives.size():
 		var objective = _objectives[index]
@@ -68,17 +117,20 @@ func _process(_delta: float) -> void:
 
 	if not _square_reached and _player.global_position.distance_to(Vector3(0.0, 0.0, 0.0)) <= 7.0:
 		_square_reached = true
+		_save_progress()
 		_refresh_hud()
 
 	if _mira_spoken_to and not _garden_visited:
 		if _player.global_position.distance_to(Vector3(0.0, 0.0, 27.0)) <= 8.0:
 			_garden_visited = true
+			_save_progress()
 			_refresh_hud()
 
 
 func _on_mira_dialogue_spoken() -> void:
 	if not _mira_spoken_to:
 		_mira_spoken_to = true
+		_save_progress()
 		_refresh_hud()
 
 
