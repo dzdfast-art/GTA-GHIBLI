@@ -23,7 +23,9 @@ Acceptance: movement, collisions, camera and touch release behavior must be test
 
 ## 3. Universal interaction system
 
-**Prototype implementation added:** `scripts/systems/player_interactor.gd` detects nearby registered interaction areas, selects the nearest target and calls its `interact()` method. Mira is the first target migrated to this contract; the shared mobile/keyboard action is routed through the player. A physics-backed proximity test is included in CI, pending confirmation of the latest run.
+**Prototype implementation added:** `scripts/systems/player_interactor.gd` detects nearby registered interaction areas, selects the nearest target and calls its `interact()` method. Mira is the first target migrated to this contract. The shared mobile/keyboard action also drops an item currently held by the player.
+
+A reusable animated gate is implemented in `scripts/systems/interactable_door.gd`; the village garden now has an interactive swing gate. A reusable physics prop in `scripts/systems/carryable_prop.gd` can be picked up, carried in front of the player and dropped with the same interaction button. The village prototype includes a carryable garden basket. Automated tests cover door state changes and prop pickup/drop; these remain pending CI confirmation until the new workflow run completes.
 
 All usable entities should follow a shared interaction contract rather than implementing unrelated input logic in every object.
 
