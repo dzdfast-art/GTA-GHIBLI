@@ -34,6 +34,6 @@
     "items": [],
     "unlocks": ["basic_interaction"]
   },
-  "status": "design_only",
-  "notes": "Mission data is a design record; mission runtime logic has not yet been implemented."
+  "status": "prototype_runtime",
+  "notes": "A first runtime tracker is connected to the player and Mira. Reach-square, dialogue, and garden objectives are tracked in a prototype HUD; rewards are displayed as a prototype and are not yet granted to an inventory or currency system."
 }
