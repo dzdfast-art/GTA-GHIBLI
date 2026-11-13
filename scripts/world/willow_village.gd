@@ -7,6 +7,7 @@ const GROUND_Y := 0.03
 
 
 func _ready() -> void:
+	_build_mira()
 	_build_square()
 	_build_paths()
 	_build_houses()
@@ -14,6 +15,15 @@ func _ready() -> void:
 	_build_trees()
 	_build_well()
 	_build_signpost()
+
+
+func _build_mira() -> void:
+	var mira_script = preload("res://scripts/characters/mira_npc.gd")
+	var mira := Node3D.new()
+	mira.name = "MiraCaretaker"
+	mira.position = Vector3(0.0, 0.0, -4.0)
+	mira.set_script(mira_script)
+	add_child(mira)
 
 
 func _build_square() -> void:
