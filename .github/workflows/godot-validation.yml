@@ -36,6 +36,8 @@ jobs:
             res://main.gd \
             res://scripts/player/player_controller.gd \
             res://scripts/systems/player_interactor.gd \
+            res://scripts/systems/interactable_door.gd \
+            res://scripts/systems/carryable_prop.gd \
             res://scripts/camera/third_person_camera.gd \
             res://scripts/ui/mobile_controls.gd \
             res://scripts/world/willow_village.gd \
@@ -48,6 +50,9 @@ jobs:
 
       - name: Test shared interaction contract
         run: godot --headless --path . --script res://tests/interaction_system_test.gd
+
+      - name: Test interactive objects
+        run: godot --headless --path . --script res://tests/interactable_objects_test.gd
 
       - name: Test first mission objective flow
         run: godot --headless --path . --script res://tests/mission_manager_test.gd
