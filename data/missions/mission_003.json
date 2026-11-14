@@ -57,7 +57,7 @@
       "nora_relationship_branch"
     ]
   },
-  "design_notes": "Playable lightweight blockout in scripts/missions/mission_003_runtime.gd. Unlocks after mission_002 completion. Includes contact meeting, harbor gate, three collectible evidence markers, three moving placeholder guards with proximity detection, a three-alert failure limit, retry, return-to-contact completion, and a local completion save. This is not production stealth AI: no line-of-sight cones, sound propagation, disguises, takedowns, final harbor assets, voice acting, or Android device testing.",
+  "design_notes": "Playable lightweight blockout in scripts/missions/mission_003_runtime.gd. Unlocks after mission_002 completion. Includes contact meeting, harbor gate, three collectible evidence markers, three moving placeholder guards, a 100-degree forward field of view, a 3.2-meter detection radius, physics-ray line-of-sight checks against collision layer 1, a three-alert failure limit, retry, return-to-contact completion, and a local completion save. Container collision can block guard sight when the ray intersects it. Still a prototype: no advanced guard navigation, sound propagation, disguises, takedowns, final harbor assets, voice acting, or Android device testing.",
   "runtime_config": {
     "evidence_count": 3,
     "guard_count": 3,
@@ -72,6 +72,13 @@
       22,
       0,
       -29
+    ],
+    "guard_field_of_view_degrees": 100,
+    "line_of_sight": "Physics ray from guard eye height to player; collision layer 1 blockers hide the player",
+    "cover_blockers": [
+      "HarborContainerA",
+      "HarborContainerB",
+      "HarborContainerC"
     ]
   }
 }
