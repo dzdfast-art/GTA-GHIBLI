@@ -64,9 +64,7 @@ func _sync_clock(force: bool) -> void:
 	var total_minutes := int(floor(elapsed_game_seconds / maxf(60.0, seconds_per_game_day) * 1440.0))
 	if not force and total_minutes == _last_total_minute:
 		return
-	var previous_hour := -1
-	if _last_total_minute >= 0:
-		previous_hour = int(floor(_last_total_minute / 60.0)) % 24
+	var previous_hour := posmod(start_hour * 60 + start_minute + _last_total_minute, 1440) / 60
 	_last_total_minute = total_minutes
 	var hour := get_hour()
 	var minute := get_minute()
