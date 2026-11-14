@@ -9,6 +9,7 @@ var _context_button: Button
 var _brake_button: Button
 
 func _ready() -> void:
+	add_to_group("mobile_controls")
 	if not InputMap.has_action("vehicle_brake"):
 		InputMap.add_action("vehicle_brake")
 	_build_hud()
@@ -124,3 +125,17 @@ func _exit_tree() -> void:
 	for action in _active_actions:
 		Input.action_release(action)
 	_active_actions.clear()
+
+
+func set_controls_preferences(scale_value: float, opacity_value: float) -> void:
+	var hud := get_node_or_null("HUD") as Control
+	if hud == null:
+		return
+	hud.modulate.a = clampf(opacity_value, 0.35, 1.0)
+	for node_name in ["MovementJoystick", "ContextAction", "VehicleBrake"]:
+		var control := hud.get_node_or_null(node_name) as Control
+		if control == null:
+			continue
+		control.pivot_offset = control.size * 0.5
+		var safe_scale := clampf(scale_value, 0.75, 1.35)
+		control.scale = Vector2(safe_scale, safe_scale)
