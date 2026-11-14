@@ -82,7 +82,7 @@ func _build_interface() -> void:
 
 	var title := Label.new()
 	title.name = "PauseMenuTitle"
-	title.text = "Pause Menu"
+	title.text = "𝔓𝔞𝔲𝔰𝔢 𝔐𝔢𝔫𝔲"
 	title.position = Vector2(48.0, 30.0)
 	title.size = Vector2(540.0, 90.0)
 	title.add_theme_font_size_override("font_size",  sixty_four())
@@ -170,7 +170,6 @@ func _select_menu_item(index: int) -> void:
 func _refresh_menu_selection() -> void:
 	for i in range(_menu_buttons.size()):
 		var button := _menu_buttons[i]
-		button.text = ("✦  " if i == _selected_menu_index else "     ") + button.name.replace("PauseOption", "")
 		var captions := ["RESUME", "START NEW GAME", "MAP", "STATS", "BRIEF", "OPTIONS", "QUIT GAME"]
 		button.text = ("✦  " if i == _selected_menu_index else "     ") + captions[i]
 		button.add_theme_color_override("font_color", Color(0.86, 0.65, 0.18, 1.0) if i == _selected_menu_index else Color(0.43, 0.32, 0.10, 1.0))
