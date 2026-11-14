@@ -12,6 +12,7 @@ const SIDE_ACTIVITY_DIRECTOR_SCRIPT = preload("res://scripts/world/side_activity
 const CINEMATIC_DIRECTOR_SCRIPT = preload("res://scripts/missions/cinematic_director.gd")
 const AMBIENCE_SCRIPT = preload("res://scripts/audio/nature_ambience.gd")
 const PLAYER_NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
+const CONSUMABLE_INVENTORY_SCRIPT = preload("res://scripts/systems/consumable_inventory.gd")
 
 func _ready() -> void:
 	_create_world()
@@ -172,3 +173,6 @@ func _create_player_needs() -> void:
 	var needs: Node = PLAYER_NEEDS_SCRIPT.new()
 	needs.name = "PlayerNeeds"
 	player.add_child(needs)
+	var inventory: Node = CONSUMABLE_INVENTORY_SCRIPT.new()
+	inventory.name = "ConsumableInventory"
+	player.add_child(inventory)
