@@ -15,6 +15,7 @@ var _camera_pitch: float = 0.0
 
 
 func _ready() -> void:
+	add_to_group("third_person_cameras")
 	_camera_yaw = global_rotation.y
 	_camera_pitch = global_rotation.x
 	_apply_camera_rotation()
