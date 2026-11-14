@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "mission_id": "the_last_train",
+  "title": "القطار الأخير",
+  "chapter": 1,
+  "mission_type": "multi_stage_action_rescue",
+  "status": "designed_not_yet_playable",
+  "description": "تتحول محاولة إخراج كلير وميا من المدينة إلى سباق مع قطار يغادر قبل إغلاق الجسر.",
+  "start_region": "amber_valley",
+  "mission_giver": "claire_bennett",
+  "cinematic_beats": [
+    "A station clock ticks in close-up.",
+    "Claire pulls Mia behind a pillar as a train approaches.",
+    "Leo sees the crossing barriers descend and sprints toward the platform."
+  ],
+  "objectives": [
+    {"id":"reach_station","type":"timed_traversal","description":"اعبر الشوارع واصل إلى المحطة قبل مغادرة القطار","time_limit_seconds":120},
+    {"id":"protect_mia","type":"escort","description":"احمِ ميا أثناء عبور المنصة"},
+    {"id":"disable_alarm","type":"interact_under_pressure","description":"أوقف الإنذار الذي كشف موقعكم"},
+    {"id":"choose_escape","type":"branching_choice","description":"اختر الهروب بالقطار أو عبر الطريق الخلفي"},
+    {"id":"survive_escape","type":"escape_sequence","description":"نجّ بالعائلة من المطاردة"}
+  ],
+  "player_choices": [
+    {"id":"train_or_backroad","description":"القطار أسرع لكنه مكشوف، والطريق الخلفي أطول وأكثر خطورة."}
+  ],
+  "failure_conditions": ["mia_left_behind","timer_expired","player_or_escort_disabled"],
+  "rewards": {"currency":300,"unlocks":["family_story_branch","night_city_events"]},
+  "design_notes": "Mission design only. Requires escort AI, alarm interactions, timed train event, branching route and pursuit gameplay."
+}
