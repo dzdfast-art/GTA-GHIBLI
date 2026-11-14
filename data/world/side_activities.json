@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "system_id": "open_world_side_activities",
+  "status": "runtime_prototype",
+  "description": "Four optional activities distributed around the early open-world area. Each activity uses a different short task pattern and a local save record.",
+  "activities": [
+    {
+      "id": "lost_delivery",
+      "title": "الطرد المفقود",
+      "type": "find_and_return",
+      "start": [
+        -14,
+        0,
+        -12
+      ],
+      "targets": [
+        [
+          12,
+          0,
+          -24
+        ]
+      ],
+      "return": [
+        -14,
+        0,
+        -12
+      ],
+      "reward": 80,
+      "objective": "اعثر على الطرد وأعده إلى صاحب المتجر."
+    },
+    {
+      "id": "farmer_crates",
+      "title": "مساعدة المزارع",
+      "type": "multi_pickup_and_return",
+      "start": [
+        -35,
+        0,
+        -20
+      ],
+      "targets": [
+        [
+          -30,
+          0,
+          -28
+        ],
+        [
+          -24,
+          0,
+          -31
+        ],
+        [
+          -19,
+          0,
+          -34
+        ]
+      ],
+      "return": [
+        -35,
+        0,
+        -20
+      ],
+      "reward": 120,
+      "objective": "اجمع الصناديق الثلاثة وأعدها إلى المزارع."
+    },
+    {
+      "id": "roadside_repair",
+      "title": "مساعدة سائق عالق",
+      "type": "retrieve_tool_and_return",
+      "start": [
+        30,
+        0,
+        -12
+      ],
+      "targets": [
+        [
+          34,
+          0,
+          -26
+        ]
+      ],
+      "return": [
+        30,
+        0,
+        -12
+      ],
+      "reward": 100,
+      "objective": "أحضر حقيبة الإصلاح إلى السائق العالق."
+    },
+    {
+      "id": "missing_dog",
+      "title": "الكلب الضائع",
+      "type": "search_and_reunite",
+      "start": [
+        -42,
+        0,
+        -40
+      ],
+      "targets": [
+        [
+          -20,
+          0,
+          -48
+        ]
+      ],
+      "return": [
+        -42,
+        0,
+        -40
+      ],
+      "reward": 140,
+      "objective": "ابحث عن الكلب وأعده إلى صاحبه."
+    }
+  ],
+  "save_file": "user://gta_ghibli_side_activities.json",
+  "implementation": "scripts/world/side_activity_director.gd",
+  "limitations": [
+    "Placeholder actors and markers",
+    "Pickup and return interactions use proximity",
+    "No final animations, voice acting, or production art yet"
+  ]
+}
