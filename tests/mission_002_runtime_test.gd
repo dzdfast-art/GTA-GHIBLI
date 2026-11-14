@@ -14,6 +14,9 @@ func _initialize() -> void:
 func _run_test() -> void:
 	var player := CharacterBody3D.new()
 	player.set_script(PLAYER_SCRIPT)
+	var camera_pivot := Node3D.new()
+	camera_pivot.name = "CameraPivot"
+	player.add_child(camera_pivot)
 	root.add_child(player)
 	var car := CharacterBody3D.new()
 	car.set_script(CAR_SCRIPT)
