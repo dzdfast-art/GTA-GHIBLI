@@ -105,3 +105,13 @@ The planned total installed content budget is **4,096 MiB (4 GiB)**. This is not
 ## Quality rule
 
 Do not describe a feature as working until it has been run and tested. For mobile features, distinguish headless tests from actual Android-device tests.
+
+
+## Latest playable prototypes (14 November 2026)
+
+- **Mission 002 — الطريق القديم: عملية الإنقاذ:** vehicle checkpoint, blockade, witness rescue, scripted pursuit and retry.
+- **Mission 003 — ظلال فوق الميناء:** harbor investigation, three evidence items, guard field of view and line-of-sight prototype.
+- **Mission 004 — القطار الأخير:** meet Mia, disable two alarms, escort a moving train and choose a north/south route.
+- **Optional world activities:** recover a lost delivery, help a farmer move three crates, bring a repair kit to a stranded driver, and reunite a lost dog with its owner.
+
+These are lightweight gameplay blockouts using primitive placeholder visuals. They are not finished production art, recorded Arabic voice acting, or proof of Android device testing. The Godot validation workflow contains headless regression tests for these systems; see [Godot validation](.github/workflows/godot-validation.yml) for current results.
