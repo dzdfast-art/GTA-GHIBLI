@@ -144,7 +144,7 @@ func _ensure_world_content() -> void:
 		var activity_id := str(activity.get("id", ""))
 		if _completed_ids.has(activity_id):
 			continue
-		var marker := _make_marker("SideActivity_" + activity_id, _position(activity.get("start", [0, 0, 0])), activity.get("color", Color.GOLD))
+		var marker := _make_marker("SideActivity_" + activity_id, _position(activity.get("start", [0, 0, 0])), activity.get("color", Color(0.90, 0.70, 0.22)))
 		_start_nodes[activity_id] = marker
 
 
@@ -193,7 +193,7 @@ func _start_activity(activity_id: String) -> void:
 	var activity := _activity_by_id(activity_id)
 	var target_positions: Array = activity.get("targets", [])
 	for index in range(target_positions.size()):
-		var marker := _make_marker("SideTarget_%s_%d" % [activity_id, index + 1], _position(target_positions[index]), activity.get("color", Color.GOLD))
+		var marker := _make_marker("SideTarget_%s_%d" % [activity_id, index + 1], _position(target_positions[index]), activity.get("color", Color(0.90, 0.70, 0.22)))
 		_target_nodes.append(marker)
 	_status_override = str(activity.get("target_text", "أكمل النشاط الجانبي."))
 	_accept_button.visible = false
