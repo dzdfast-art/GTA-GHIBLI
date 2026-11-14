@@ -10,9 +10,9 @@ enum Phase { LOCKED, MEET_CONTACT, ENTER_HARBOR, COLLECT_EVIDENCE, RETURN_EVIDEN
 const CONTACT_POSITION := Vector3(20.0, 0.0, -18.0)
 const HARBOR_GATE_POSITION := Vector3(22.0, 0.0, -29.0)
 const EVIDENCE_POSITIONS := [
-	Vector3(29.0, 0.0, -37.0),
-	Vector3(35.0, 0.0, -44.0),
-	Vector3(25.0, 0.0, -51.0)
+	Vector3(27.0, 0.0, -34.0),
+	Vector3(41.0, 0.0, -45.0),
+	Vector3(27.0, 0.0, -55.0)
 ]
 const DETECTION_RADIUS := 3.2
 const MAX_DETECTIONS := 3
@@ -76,7 +76,9 @@ func _process(delta: float) -> void:
 			_set_phase(Phase.RETURN_EVIDENCE, "جمعت الأدلة! عد إلى نورا دون أن يمسك بك الحراس.")
 	elif _phase == Phase.RETURN_EVIDENCE:
 		_update_guards(delta)
-		if _player.global_position.distance_to(CONTACT_POSITION) <= 5.0:
+		if _detections >= MAX_DETECTIONS:
+			_fail_mission("كشف الحراس أمرك ثلاث مرات أثناء الانسحاب. حاول مجدداً.")
+		elif _player.global_position.distance_to(CONTACT_POSITION) <= 5.0:
 			_complete_mission()
 	_refresh_hud()
 
