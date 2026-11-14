@@ -24,6 +24,10 @@ jobs:
         run: |
           python -m json.tool data/dialogue/mira_intro_ar.json > /dev/null
           python -m json.tool data/missions/mission_001.json > /dev/null
+          python -m json.tool data/story/chapter_01_opening.json > /dev/null
+          python -m json.tool data/missions/mission_002.json > /dev/null
+          python -m json.tool data/missions/mission_003.json > /dev/null
+          python -m json.tool data/missions/mission_004.json > /dev/null
 
       - name: Audit Android privacy permissions
         run: python tools/privacy_audit.py
@@ -49,7 +53,8 @@ jobs:
             res://scripts/ui/virtual_joystick.gd \
             res://scripts/world/willow_village.gd \
             res://scripts/characters/mira_npc.gd \
-            res://scripts/missions/mission_manager.gd
+            res://scripts/missions/mission_manager.gd \
+            res://scripts/missions/cinematic_director.gd
           do
             echo "Checking $script"
             godot --headless --path . --check-only --script "$script"
