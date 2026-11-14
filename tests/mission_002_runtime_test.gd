@@ -23,26 +23,26 @@ func _run_test() -> void:
 	runtime.setup(player, car)
 	runtime._start_mission()
 
-	if runtime._phase != runtime.Phase.ENTER_VEHICLE:
+	if runtime._phase != 1:
 		_fail("Mission 002 did not begin at the vehicle objective.")
 		return
 
 	player.is_driving = true
 	car.driver = player
 	runtime._process(0.0)
-	if runtime._phase != runtime.Phase.REACH_CHECKPOINT:
+	if runtime._phase != 2:
 		_fail("Entering the car did not advance the mission.")
 		return
 
 	car.global_position = runtime.CHECKPOINT
 	runtime._process(0.0)
-	if runtime._phase != runtime.Phase.PASS_BLOCKADE:
+	if runtime._phase != 3:
 		_fail("Reaching the checkpoint did not advance the mission.")
 		return
 
 	car.global_position = Vector3(0.0, 0.0, -35.0)
 	runtime._process(0.0)
-	if runtime._phase != runtime.Phase.RESCUE_WITNESS:
+	if runtime._phase != 4:
 		_fail("Passing the blockade did not unlock the rescue objective.")
 		return
 
@@ -50,7 +50,7 @@ func _run_test() -> void:
 	car.driver = null
 	player.global_position = runtime.WITNESS_POSITION
 	runtime._process(0.0)
-	if runtime._phase != runtime.Phase.ESCAPE_PURSUIT:
+	if runtime._phase != 5:
 		_fail("Approaching the witness did not start the escape phase.")
 		return
 
@@ -58,7 +58,7 @@ func _run_test() -> void:
 	car.driver = player
 	car.global_position = runtime.HOME_POSITION
 	runtime._process(0.0)
-	if runtime._phase != runtime.Phase.COMPLETE:
+	if runtime._phase != 6:
 		_fail("Returning safely to the village did not complete the mission.")
 		return
 
