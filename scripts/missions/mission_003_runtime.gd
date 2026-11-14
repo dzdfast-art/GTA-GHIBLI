@@ -51,7 +51,7 @@ func setup(player: CharacterBody3D) -> void:
 	_player = player
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if _phase == Phase.LOCKED:
 		if _mission_002_completed():
 			_start_mission()
@@ -156,6 +156,8 @@ func _guard_can_see_player(guard: Node3D, distance: float) -> bool:
 	if guard_forward.normalized().dot(to_player.normalized()) < half_fov_cos:
 		return false
 	if _world_root == null or not is_instance_valid(_world_root):
+		return true
+	if not Engine.is_in_physics_frame():
 		return true
 	var space_state := _world_root.get_world_3d().direct_space_state
 	var ray_start := guard.global_position + Vector3.UP * 1.35
