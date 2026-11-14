@@ -34,6 +34,7 @@ func _ready() -> void:
 	_create_mission_004_runtime()
 	_create_story_cinematic()
 	_create_nature_ambience()
+	_create_world_weather()
 	_create_side_activity_director()
 
 func _create_world() -> void:
@@ -204,3 +205,9 @@ func _create_wildlife() -> void:
 	var wildlife: Node3D = WILDLIFE_DIRECTOR_SCRIPT.new() as Node3D
 	wildlife.name = "WildlifeDirector"
 	add_child(wildlife)
+
+
+func _create_world_weather() -> void:
+	var weather: Node3D = WORLD_WEATHER_SCRIPT.new() as Node3D
+	weather.name = "WorldWeather"
+	add_child(weather)
