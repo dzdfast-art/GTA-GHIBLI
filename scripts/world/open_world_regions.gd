@@ -220,7 +220,8 @@ func _add_tree(parent: Node3D, tree_name: String, at: Vector3, scale_value: floa
 	trunk.material_override = _material(Color(0.32, 0.22, 0.14))
 	tree.add_child(trunk)
 	var crown := MeshInstance3D.new()
-	var crown_mesh := ConeMesh.new()
+	var crown_mesh := CylinderMesh.new()
+	crown_mesh.top_radius = 0.0
 	crown_mesh.bottom_radius = 1.25
 	crown_mesh.height = 3.4
 	crown.mesh = crown_mesh
