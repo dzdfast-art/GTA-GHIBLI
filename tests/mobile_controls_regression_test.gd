@@ -83,6 +83,21 @@ func _run_mobile_controls_test() -> void:
 		_fail("A left-side joystick touch unexpectedly rotated the camera.")
 		return
 
+	# The middle band is deliberately reserved: it must not start camera-look.
+	var middle_touch := InputEventScreenTouch.new()
+	middle_touch.index = 44
+	middle_touch.pressed = true
+	middle_touch.position = Vector2(viewport_size.x * 0.68, viewport_size.y * 0.5)
+	camera_pivot.call("_unhandled_input", middle_touch)
+	var middle_drag := InputEventScreenDrag.new()
+	middle_drag.index = 44
+	middle_drag.position = middle_touch.position + Vector2(35.0, 0.0)
+	middle_drag.relative = Vector2(35.0, 0.0)
+	camera_pivot.call("_unhandled_input", middle_drag)
+	if not camera_pivot.rotation.is_equal_approx(initial_camera_rotation):
+		_fail("A touch in the reserved middle band unexpectedly rotated the camera.")
+		return
+
 	# A right-side touch must still be able to control the camera.
 	var viewport_size: Vector2 = get_root().get_viewport().get_visible_rect().size
 	var right_touch := InputEventScreenTouch.new()
