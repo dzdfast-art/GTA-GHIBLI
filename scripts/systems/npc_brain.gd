@@ -15,6 +15,8 @@ signal relationship_changed(trust: float, familiarity: float)
 @export var alarm_speed_threshold := 5.0
 @export var flee_speed := 2.2
 @export var relationship_memory_enabled := true
+@export var relationship_persistence_enabled := true
+@export var persistence_id := ""
 @export_range(-100.0, 100.0, 1.0) var starting_trust := 0.0
 @export_range(0.0, 100.0, 1.0) var starting_familiarity := 0.0
 @export var schedule_enabled := false
@@ -50,6 +52,7 @@ func _ready() -> void:
 		home_position = _home_position
 	if work_position == Vector3.ZERO:
 		work_position = _home_position
+	_load_relationship()
 
 
 func _process(delta: float) -> void:
@@ -132,6 +135,7 @@ func record_interaction(kind: String = "talk") -> void:
 			record_player_action("aggression")
 			return
 	relationship_changed.emit(trust, familiarity)
+	_save_relationship()
 
 
 func record_player_action(action: String) -> void:
@@ -141,6 +145,7 @@ func record_player_action(action: String) -> void:
 		trust = clampf(trust - 35.0, -100.0, 100.0)
 		familiarity = clampf(familiarity + 5.0, 0.0, 100.0)
 		relationship_changed.emit(trust, familiarity)
+		_save_relationship()
 		hear_alarm(Vector3.ZERO)
 
 
@@ -223,3 +228,55 @@ func _set_state(next_state: String, next_emotion: String) -> void:
 					continue
 				if other.has_method("hear_alarm"):
 					other.call("hear_alarm", actor.global_position)
+
+
+func _relationship_save_path() -> String:
+	var actor := get_parent() as Node3D
+	var stable_id := persistence_id
+	if stable_id.is_empty() and actor != null:
+		stable_id = actor.name
+	stable_id = stable_id.to_lower().strip_edges().replace(" ", "_")
+	var safe_id := ""
+	for character in stable_id:
+		if character.is_valid_identifier() or character == "-":
+			safe_id += character
+	if safe_id.is_empty():
+		return ""
+	return "user://npc_relationships/%s.json" % safe_id
+
+
+func _load_relationship() -> void:
+	if not relationship_persistence_enabled:
+		return
+	var path := _relationship_save_path()
+	if path.is_empty() or not FileAccess.file_exists(path):
+		return
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return
+	var parsed = JSON.parse_string(file.get_as_text())
+	if parsed is Dictionary:
+		trust = clampf(float(parsed.get("trust", trust)), -100.0, 100.0)
+		familiarity = clampf(float(parsed.get("familiarity", familiarity)), 0.0, 100.0)
+
+
+func _save_relationship() -> void:
+	if not relationship_persistence_enabled:
+		return
+	var path := _relationship_save_path()
+	if path.is_empty():
+		return
+	var absolute_directory := ProjectSettings.globalize_path(path.get_base_dir())
+	var error := DirAccess.make_dir_recursive_absolute(absolute_directory)
+	if error != OK and error != ERR_ALREADY_EXISTS:
+		push_warning("Could not create NPC relationship save directory.")
+		return
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		push_warning("Could not save NPC relationship.")
+		return
+	file.store_string(JSON.stringify({
+		"persistence_id": persistence_id,
+		"trust": trust,
+		"familiarity": familiarity
+	}, "\t"))
