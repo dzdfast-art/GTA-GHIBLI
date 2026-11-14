@@ -43,6 +43,7 @@ jobs:
             res://scripts/systems/player_interactor.gd \
             res://scripts/systems/interactable_door.gd \
             res://scripts/systems/carryable_prop.gd \
+            res://scripts/systems/npc_brain.gd \
             res://scripts/camera/third_person_camera.gd \
             res://scripts/ui/mobile_controls.gd \
             res://scripts/ui/virtual_joystick.gd \
@@ -53,6 +54,9 @@ jobs:
             echo "Checking $script"
             godot --headless --path . --check-only --script "$script"
           done
+
+      - name: Test NPC perception and reactions
+        run: godot --headless --path . --script res://tests/npc_brain_test.gd
 
       - name: Test shared interaction contract
         run: godot --headless --path . --script res://tests/interaction_system_test.gd
