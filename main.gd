@@ -12,6 +12,7 @@ const SIDE_ACTIVITY_DIRECTOR_SCRIPT = preload("res://scripts/world/side_activity
 const CINEMATIC_DIRECTOR_SCRIPT = preload("res://scripts/missions/cinematic_director.gd")
 const AMBIENCE_SCRIPT = preload("res://scripts/audio/nature_ambience.gd")
 const WORLD_CLOCK_SCRIPT = preload("res://scripts/world/world_clock.gd")
+const OPEN_WORLD_REGIONS_SCRIPT = preload("res://scripts/world/open_world_regions.gd")
 const PLAYER_NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
 const CONSUMABLE_INVENTORY_SCRIPT = preload("res://scripts/systems/consumable_inventory.gd")
 const PLAYER_WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
@@ -20,6 +21,7 @@ func _ready() -> void:
 	_create_world()
 	_create_world_clock()
 	_create_village()
+	_create_open_world_regions()
 	_create_player()
 	_create_player_needs()
 	_create_starter_car()
@@ -188,3 +190,9 @@ func _create_world_clock() -> void:
 	var clock: Node = WORLD_CLOCK_SCRIPT.new()
 	clock.name = "WorldClock"
 	add_child(clock)
+
+
+func _create_open_world_regions() -> void:
+	var regions: Node3D = OPEN_WORLD_REGIONS_SCRIPT.new() as Node3D
+	regions.name = "OpenWorldRegions"
+	add_child(regions)
