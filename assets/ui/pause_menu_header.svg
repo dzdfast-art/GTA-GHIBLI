@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="360" viewBox="0 0 1536 360">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#66766c"/><stop offset=".48" stop-color="#a69b67"/><stop offset="1" stop-color="#211f19"/></linearGradient>
+ <linearGradient id="haze" x2="0" y2="1"><stop stop-color="#e4c66b" stop-opacity=".55"/><stop offset="1" stop-color="#d3a64a" stop-opacity="0"/></linearGradient>
+ <filter id="soft"><feGaussianBlur stdDeviation="18"/></filter>
+</defs>
+<rect width="1536" height="360" fill="url(#sky)"/>
+<ellipse cx="1130" cy="205" rx="470" ry="120" fill="url(#haze)" filter="url(#soft)"/>
+<path d="M0 235 140 180 240 210 350 128 470 205 590 160 720 232 850 155 980 214 1090 145 1220 210 1360 160 1536 220V360H0Z" fill="#24251f"/>
+<path d="M0 275 170 220 310 260 470 192 620 260 790 200 940 258 1110 190 1270 245 1410 202 1536 232V360H0Z" fill="#10120f"/>
+<g fill="#11130f" opacity=".95">
+ <path d="M70 360V230h55v-30h38v30h42v-70h54v70h32v-45h56v45h28v-88h64v88h32v-55h42v55h38v-30h62v30h30v-66h55v66h35v-40h55v40h34v-85h67v85h30v-50h49v50h35v-32h57v32h28v-75h58v75h38v-42h57v42h40v-58h56v58h48v-38h64v38h60v100H70Z"/>
+</g>
+<path d="M0 310Q270 265 480 306T900 292T1250 285T1536 300V360H0Z" fill="#050605"/>
+<g fill="#c3a24c" opacity=".55"><circle cx="1020" cy="190" r="3"/><circle cx="1100" cy="214" r="2"/><circle cx="1230" cy="180" r="2"/><circle cx="1320" cy="225" r="3"/><circle cx="900" cy="230" r="2"/></g>
+</svg>
