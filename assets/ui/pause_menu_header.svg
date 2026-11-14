@@ -12,5 +12,7 @@
  <path d="M70 360V230h55v-30h38v30h42v-70h54v70h32v-45h56v45h28v-88h64v88h32v-55h42v55h38v-30h62v30h30v-66h55v66h35v-40h55v40h34v-85h67v85h30v-50h49v50h35v-32h57v32h28v-75h58v75h38v-42h57v42h40v-58h56v58h48v-38h64v38h60v100H70Z"/>
 </g>
 <path d="M0 310Q270 265 480 306T900 292T1250 285T1536 300V360H0Z" fill="#050605"/>
+<path d="M760 0 980 0 1220 235 1536 280 1536 360 1040 360 890 185Z" fill="#171914" opacity=".96"/>
+<text x="1010" y="155" transform="rotate(8 1250 155)" font-family="serif" font-size="112" font-weight="900" letter-spacing="8" fill="#d5bd70" stroke="#5e512c" stroke-width="3" paint-order="stroke">GHIBLI</text>
 <g fill="#c3a24c" opacity=".55"><circle cx="1020" cy="190" r="3"/><circle cx="1100" cy="214" r="2"/><circle cx="1230" cy="180" r="2"/><circle cx="1320" cy="225" r="3"/><circle cx="900" cy="230" r="2"/></g>
 </svg>
