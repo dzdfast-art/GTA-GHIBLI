@@ -4,6 +4,7 @@ const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
 const VILLAGE_SCENE: PackedScene = preload("res://scenes/world/willow_village.tscn")
 const STARTER_CAR_SCENE: PackedScene = preload("res://scenes/vehicles/starter_car.tscn")
 const MOBILE_CONTROLS_SCRIPT = preload("res://scripts/ui/mobile_controls.gd")
+const PAUSE_SETTINGS_MENU_SCRIPT = preload("res://scripts/ui/pause_settings_menu.gd")
 const MISSION_MANAGER_SCRIPT = preload("res://scripts/missions/mission_manager.gd")
 const MISSION_002_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_002_runtime.gd")
 const MISSION_003_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_003_runtime.gd")
@@ -29,6 +30,7 @@ func _ready() -> void:
 	_create_player_needs()
 	_create_starter_car()
 	_create_mobile_controls()
+	_create_pause_settings_menu()
 	_create_mission_manager()
 	_create_mission_002_runtime()
 	_create_mission_003_runtime()
@@ -212,3 +214,9 @@ func _create_world_weather() -> void:
 	var weather: Node3D = WORLD_WEATHER_SCRIPT.new() as Node3D
 	weather.name = "WorldWeather"
 	add_child(weather)
+
+
+func _create_pause_settings_menu() -> void:
+	var pause_menu: CanvasLayer = PAUSE_SETTINGS_MENU_SCRIPT.new() as CanvasLayer
+	pause_menu.name = "PauseSettingsMenu"
+	add_child(pause_menu)
