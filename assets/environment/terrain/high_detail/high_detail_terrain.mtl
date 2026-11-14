@@ -1,0 +1,19 @@
+# Materials used by GTA GHIBLI high-detail terrain source meshes
+newmtl ground_green
+Kd 0.23 0.40 0.18
+newmtl ground_meadow
+Kd 0.42 0.55 0.25
+newmtl ground_rock
+Kd 0.34 0.35 0.34
+newmtl ground_dirt
+Kd 0.48 0.34 0.22
+newmtl ground_water_edge
+Kd 0.20 0.35 0.36
+newmtl ground_forest
+Kd 0.17 0.30 0.14
+newmtl ground_soil
+Kd 0.39 0.29 0.18
+newmtl ground_park
+Kd 0.27 0.45 0.21
+newmtl ground_sand
+Kd 0.72 0.62 0.42
