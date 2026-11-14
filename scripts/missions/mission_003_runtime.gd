@@ -130,14 +130,42 @@ func _update_guards(delta: float) -> void:
 		guard.global_position = origin + Vector3(patrol_offset, 0.0, 0.0)
 		var guard_id := guard.get_instance_id()
 		var distance := _player.global_position.distance_to(guard.global_position)
-		if distance <= DETECTION_RADIUS and not bool(_guard_alert_state.get(guard_id, false)):
+		var can_see_player := _guard_can_see_player(guard, distance)
+		if can_see_player and not bool(_guard_alert_state.get(guard_id, false)):
 			_guard_alert_state[guard_id] = true
 			_detections += 1
-			_status_override = "انتبه! أحد الحراس رآك. ابتعد عن دورياتهم."
+			_status_override = "انتبه! رآك الحارس داخل مجال نظره. احتمِ خلف الحاويات وغيّر مسارك."
 			if _detections >= MAX_DETECTIONS:
 				return
 		elif distance > DETECTION_RADIUS + 1.5:
 			_guard_alert_state[guard_id] = false
+
+
+func _guard_can_see_player(guard: Node3D, distance: float) -> bool:
+	if distance > DETECTION_RADIUS:
+		return false
+	var to_player := _player.global_position - guard.global_position
+	to_player.y = 0.0
+	if to_player.length_squared() < 0.01:
+		return true
+	var guard_forward := -guard.global_basis.z
+	guard_forward.y = 0.0
+	if guard_forward.length_squared() < 0.01:
+		guard_forward = Vector3.FORWARD
+	var half_fov_cos := cos(deg_to_rad(50.0))
+	if guard_forward.normalized().dot(to_player.normalized()) < half_fov_cos:
+		return false
+	if _world_root == null or not is_instance_valid(_world_root):
+		return true
+	var space_state := _world_root.get_world_3d().direct_space_state
+	var ray_start := guard.global_position + Vector3.UP * 1.35
+	var ray_end := _player.global_position + Vector3.UP * 0.9
+	var query := PhysicsRayQueryParameters3D.create(ray_start, ray_end)
+	query.collision_mask = 1
+	var hit := space_state.intersect_ray(query)
+	if not hit.is_empty() and hit.get("collider") != _player:
+		return false
+	return true
 
 
 func _check_evidence_pickups() -> void:
