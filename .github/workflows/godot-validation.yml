@@ -56,6 +56,7 @@ jobs:
             res://scripts/characters/mira_npc.gd \
             res://scripts/missions/mission_manager.gd \
             res://scripts/missions/mission_002_runtime.gd \
+            res://scripts/missions/mission_003_runtime.gd \
             res://scripts/missions/cinematic_director.gd
           do
             echo "Checking $script"
@@ -82,6 +83,9 @@ jobs:
 
       - name: Test rescue mission 002 progression and escape
         run: godot --headless --path . --script res://tests/mission_002_runtime_test.gd
+
+      - name: Test harbor stealth investigation mission 003
+        run: godot --headless --path . --script res://tests/mission_003_runtime_test.gd
 
       - name: Run main scene smoke test
         run: godot --headless --path . --quit-after 180
