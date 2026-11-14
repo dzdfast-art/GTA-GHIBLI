@@ -12,6 +12,17 @@ var weather := "clear"
 var master_gain := 0.22
 var _player: AudioStreamPlayer
 var _playback: AudioStreamGeneratorPlayback
+var _field_recording_player: AudioStreamPlayer
+var _field_recording_theme := ""
+var _field_recording_segment := 0
+const FIELD_RECORDING_PATHS := {
+	"dawn": ["res://audio/ambience/dawn_01.wav", "res://audio/ambience/dawn_02.wav"],
+	"forest_day": ["res://audio/ambience/forest_day_01.wav", "res://audio/ambience/forest_day_02.wav"],
+	"night": ["res://audio/ambience/night_01.wav", "res://audio/ambience/night_02.wav"],
+	"coast": ["res://audio/ambience/coast_01.wav", "res://audio/ambience/coast_02.wav"],
+	"rain": ["res://audio/ambience/rain_01.wav", "res://audio/ambience/rain_02.wav"],
+	"storm": ["res://audio/ambience/storm_01.wav", "res://audio/ambience/storm_02.wav"]
+}
 var _sample_clock := 0.0
 var _wind_state := 0.0
 var _bird_timer := 1.0
@@ -45,7 +56,9 @@ func _ready() -> void:
 	add_child(_player)
 	_player.play()
 	_playback = _player.get_stream_playback() as AudioStreamGeneratorPlayback
+	_build_field_recording_player()
 	_update_targets()
+	_sync_field_recording(true)
 
 func _process(delta: float) -> void:
 	elapsed_game_seconds += delta
@@ -57,6 +70,7 @@ func _process(delta: float) -> void:
 	_owl_level = lerpf(_owl_level, _target_owl, blend)
 	_rain_level = lerpf(_rain_level, _target_rain, blend)
 	_fill_audio_buffer()
+	_sync_field_recording()
 
 func _update_targets() -> void:
 	var hour := get_game_hour()
@@ -150,10 +164,73 @@ func get_game_hour() -> float:
 func set_biome(value: String) -> void:
 	if value in ["village", "forest", "fields", "river", "coast", "highlands"]:
 		biome = value
+		_sync_field_recording()
 
 func set_weather(value: String) -> void:
 	if value in ["clear", "rain", "storm"]:
 		weather = value
+		_sync_field_recording()
 
 func set_master_gain(value: float) -> void:
 	master_gain = clampf(value, 0.0, 0.6)
+
+
+func _build_field_recording_player() -> void:
+	_field_recording_player = AudioStreamPlayer.new()
+	_field_recording_player.name = "OriginalFieldAmbience"
+	_field_recording_player.volume_db = -12.0
+	_field_recording_player.finished.connect(_on_field_recording_finished)
+	add_child(_field_recording_player)
+
+
+func _desired_field_theme() -> String:
+	if weather == "storm":
+		return "storm"
+	if weather == "rain":
+		return "rain"
+	if biome == "coast" or biome == "river":
+		return "coast"
+	var hour := get_game_hour()
+	if hour >= 20.0 or hour < 5.0:
+		return "night"
+	if hour >= 4.5 and hour < 8.5:
+		return "dawn"
+	return "forest_day"
+
+
+func _sync_field_recording(force: bool = false) -> void:
+	if _field_recording_player == null:
+		return
+	var wanted := _desired_field_theme()
+	if not force and wanted == _field_recording_theme:
+		return
+	_field_recording_theme = wanted
+	_field_recording_segment = 0
+	_field_recording_player.stop()
+	_play_field_recording_segment()
+
+
+func _play_field_recording_segment() -> void:
+	var tracks: Array = FIELD_RECORDING_PATHS.get(_field_recording_theme, [])
+	if tracks.is_empty():
+		return
+	var path := str(tracks[_field_recording_segment % tracks.size()])
+	if not ResourceLoader.exists(path):
+		push_warning("Ambient recording is missing: " + path)
+		return
+	var stream := load(path) as AudioStream
+	if stream == null:
+		push_warning("Could not load ambient recording: " + path)
+		return
+	_field_recording_player.stream = stream
+	_field_recording_player.play()
+
+
+func _on_field_recording_finished() -> void:
+	if _field_recording_player == null:
+		return
+	var tracks: Array = FIELD_RECORDING_PATHS.get(_field_recording_theme, [])
+	if tracks.is_empty():
+		return
+	_field_recording_segment = (_field_recording_segment + 1) % tracks.size()
+	_play_field_recording_segment()
