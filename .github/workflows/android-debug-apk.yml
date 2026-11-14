@@ -9,6 +9,7 @@ on:
       - "**.tscn"
       - "**.tres"
       - "**.res"
+      - "**.obj"
       - "**.json"
       - "**.godot"
       - "project.godot"
