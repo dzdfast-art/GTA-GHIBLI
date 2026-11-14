@@ -83,6 +83,8 @@ func _run_mobile_controls_test() -> void:
 		_fail("A left-side joystick touch unexpectedly rotated the camera.")
 		return
 
+	var viewport_size: Vector2 = get_root().get_viewport().get_visible_rect().size
+
 	# The middle band is deliberately reserved: it must not start camera-look.
 	var middle_touch := InputEventScreenTouch.new()
 	middle_touch.index = 44
@@ -99,7 +101,6 @@ func _run_mobile_controls_test() -> void:
 		return
 
 	# A right-side touch must still be able to control the camera.
-	var viewport_size: Vector2 = get_root().get_viewport().get_visible_rect().size
 	var right_touch := InputEventScreenTouch.new()
 	right_touch.index = 43
 	right_touch.pressed = true
