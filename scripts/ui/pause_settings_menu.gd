@@ -11,7 +11,7 @@ var _settings_panel: PanelContainer
 var _settings := {
 	"master_volume": 0.85, "music_volume": 0.65, "effects_volume": 0.85,
 	"dialogue_volume": 1.0, "look_sensitivity": 1.0, "graphics_quality": 2,
-	"target_fps": 60, "show_subtitles": true, "language": "ar"
+	"target_fps": 60, "touch_scale": 1.0, "touch_opacity": 0.9, "show_subtitles": true, "language": "ar"
 }
 
 func _ready() -> void:
@@ -148,6 +148,8 @@ func _build_settings_page() -> void:
 	_add_slider(rows, "المؤثرات  |  Effects", "effects_volume", 0.0, 1.0, 0.05)
 	_add_slider(rows, "الحوار  |  Dialogue", "dialogue_volume", 0.0, 1.0, 0.05)
 	_add_slider(rows, "حساسية الكاميرا  |  Camera", "look_sensitivity", 0.2, 2.5, 0.05)
+	_add_slider(rows, "حجم أزرار اللمس  |  Touch size", "touch_scale", 0.75, 1.35, 0.05)
+	_add_slider(rows, "شفافية أزرار اللمس  |  Touch opacity", "touch_opacity", 0.35, 1.0, 0.05)
 
 	var quality_row := HBoxContainer.new()
 	rows.add_child(quality_row)
@@ -283,6 +285,8 @@ func _on_slider_changed(value: float, key: String, label: Label, caption: String
 	label.text = caption + "  " + str(snappedf(value, step))
 	if key.ends_with("_volume"):
 		_apply_audio_settings()
+	if key == "look_sensitivity" or key == "touch_scale" or key == "touch_opacity":
+		_apply_video_and_camera_settings()
 
 func _on_quality_selected(index: int) -> void:
 	_settings.graphics_quality = index
@@ -304,6 +308,8 @@ func _apply_video_and_camera_settings() -> void:
 	get_viewport().msaa_3d = Viewport.MSAA_DISABLED if quality == 0 else (Viewport.MSAA_2X if quality == 1 else Viewport.MSAA_4X)
 	for camera in get_tree().get_nodes_in_group("third_person_cameras"):
 		camera.set("look_sensitivity", 0.006 * float(_settings.look_sensitivity))
+	for controls in get_tree().get_nodes_in_group("mobile_controls"):
+		controls.call("set_controls_preferences", float(_settings.touch_scale), float(_settings.touch_opacity))
 
 func _apply_audio_settings() -> void:
 	_set_bus_volume("Master", float(_settings.master_volume))
