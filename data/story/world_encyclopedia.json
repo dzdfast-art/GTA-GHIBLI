@@ -1,0 +1,782 @@
+{
+  "schema_version": 1,
+  "content_id": "gta_ghibli_world_encyclopedia",
+  "title_ar": "موسوعة عالم GTA GHIBLI",
+  "language": "ar",
+  "content_status": "design_blueprint_not_runtime_content",
+  "originality_rule": "عالم وشخصيات وأحداث ومهمات أصلية. GTA San Andreas مرجع لاتساع الأنظمة وتنوع أسلوب اللعب فقط، وليس مصدراً للنسخ.",
+  "canon_policy": {
+    "canonical_regions": [
+      "Harbor City",
+      "Sapphire Coast",
+      "Pine Highlands",
+      "Amber Valley"
+    ],
+    "required_location": "Marsa Al-Noor",
+    "required_characters": [
+      "Leo Bennett",
+      "Claire Bennett",
+      "Mia Bennett",
+      "Nora Blake"
+    ],
+    "prototype_content": [
+      "Green Valley",
+      "Willow Village",
+      "Mira"
+    ],
+    "note": "تبقى أسماء ومتطلبات العالم الأساسية كما هي في ملف المتطلبات الرئيسي. محتوى النموذج الأولي لا يستبدلها. الشخصيات والأحياء والفصائل المقترحة أدناه تحتاج اعتماداً سردياً قبل تثبيتها نهائياً."
+  },
+  "regions": [
+    {
+      "id": "harbor_city",
+      "name": "Harbor City",
+      "status": "canonical_region_design_proposal",
+      "identity_ar": "مدينة ساحلية كبيرة تجمع الميناء الصناعي والأحياء السكنية والواجهات التجارية والطرق المرتفعة.",
+      "gameplay_pillars": [
+        "قيادة داخل المدينة",
+        "تحقيقات ومطاردات",
+        "أعمال ومخازن",
+        "أحياء ذات نفوذ متغير"
+      ],
+      "proposed_districts": [
+        {
+          "id": "old_quays",
+          "name_ar": "الأرصفة القديمة",
+          "role": "مخازن وسفن ومهمات الميناء"
+        },
+        {
+          "id": "glass_quarter",
+          "name_ar": "حي الزجاج",
+          "role": "مكاتب وشركات ومبانٍ مرتفعة"
+        },
+        {
+          "id": "foundry_row",
+          "name_ar": "شارع المصانع",
+          "role": "ورش وشاحنات ومناطق صناعية"
+        },
+        {
+          "id": "south_terrace",
+          "name_ar": "المصاطب الجنوبية",
+          "role": "أحياء سكنية وأسواق محلية"
+        }
+      ],
+      "signature_activities": [
+        "سباقات شوارع",
+        "توصيل طلبات",
+        "تصوير أدلة",
+        "إنقاذ عمال",
+        "إصلاح مركبات"
+      ]
+    },
+    {
+      "id": "sapphire_coast",
+      "name": "Sapphire Coast",
+      "status": "canonical_region_design_proposal",
+      "identity_ar": "ساحل واسع يضم شواطئ ومرافئ صيد ومنحدرات بحرية وجزراً صغيرة ومناطق سياحية.",
+      "gameplay_pillars": [
+        "قيادة القوارب",
+        "السباحة والإنقاذ",
+        "صيد الأسماك",
+        "استكشاف الساحل"
+      ],
+      "proposed_districts": [
+        {
+          "id": "coral_bay",
+          "name_ar": "خليج المرجان",
+          "role": "شاطئ ومركز أنشطة بحرية"
+        },
+        {
+          "id": "lighthouse_point",
+          "name_ar": "رأس المنارة",
+          "role": "منارة وممرات صخرية ومقتنيات"
+        },
+        {
+          "id": "salt_market",
+          "name_ar": "سوق الملح",
+          "role": "سوق سمك ومحال ومطاعم"
+        },
+        {
+          "id": "outer_reefs",
+          "name_ar": "الشعاب الخارجية",
+          "role": "مناطق قوارب وغوص وإنقاذ"
+        }
+      ],
+      "signature_activities": [
+        "سباقات قوارب",
+        "صيد",
+        "إنقاذ بحري",
+        "جمع حطام",
+        "خدمات المرسى"
+      ]
+    },
+    {
+      "id": "pine_highlands",
+      "name": "Pine Highlands",
+      "status": "canonical_region_design_proposal",
+      "identity_ar": "مرتفعات خضراء وغابات صنوبر وقرى جبلية وطرق ملتوية وبحيرات وممرات ضبابية.",
+      "gameplay_pillars": [
+        "قيادة جبلية",
+        "استكشاف ومشي",
+        "إنقاذ في الطبيعة",
+        "تفاعل مع الحياة البرية"
+      ],
+      "proposed_districts": [
+        {
+          "id": "cedar_ridge",
+          "name_ar": "حافة الأرز",
+          "role": "قرية مرتفعة ومساكن متناثرة"
+        },
+        {
+          "id": "mist_pass",
+          "name_ar": "ممر الضباب",
+          "role": "طريق جبلي ومهمات مطاردة"
+        },
+        {
+          "id": "timber_camp",
+          "name_ar": "معسكر الأخشاب",
+          "role": "شاحنات ومعدات وعمال"
+        },
+        {
+          "id": "echo_lake",
+          "name_ar": "بحيرة الصدى",
+          "role": "صيد وتخييم وإنقاذ"
+        }
+      ],
+      "signature_activities": [
+        "تحديات الطرق الوعرة",
+        "إنقاذ المتنزهين",
+        "تصوير الحياة البرية",
+        "جمع النباتات",
+        "سباقات الدراجات"
+      ]
+    },
+    {
+      "id": "amber_valley",
+      "name": "Amber Valley",
+      "status": "canonical_region_design_proposal",
+      "identity_ar": "وادي زراعي واسع تتخلله بلدات صغيرة ومحاجر وطرق شاحنات ومناطق طاقة وحقول.",
+      "gameplay_pillars": [
+        "نقل البضائع",
+        "الزراعة",
+        "سباقات الطرق المفتوحة",
+        "حل مشكلات الخدمات"
+      ],
+      "proposed_districts": [
+        {
+          "id": "sunfields",
+          "name_ar": "حقول الشمس",
+          "role": "مزارع وبساتين ومهام حصاد"
+        },
+        {
+          "id": "dry_creek",
+          "name_ar": "الجدول الجاف",
+          "role": "بلدة صغيرة ومحطة وقود"
+        },
+        {
+          "id": "quarry_belt",
+          "name_ar": "حزام المحاجر",
+          "role": "معدات ثقيلة وشاحنات"
+        },
+        {
+          "id": "solar_plain",
+          "name_ar": "سهل الطاقة",
+          "role": "منشآت طاقة وطرق خدمة"
+        }
+      ],
+      "signature_activities": [
+        "نقل حمولات",
+        "إصلاح مضخات المياه",
+        "حصاد",
+        "سباقات شاحنات",
+        "مساعدة المزارعين"
+      ]
+    }
+  ],
+  "major_location": {
+    "id": "marsa_al_noor",
+    "name": "Marsa Al-Noor",
+    "status": "canonical_named_location_placement_pending",
+    "identity_ar": "موقع ساحلي مهم يرتبط بخط القصة الرئيسي والميناء وشبكة الإشارات البحرية.",
+    "map_placement": "يجب تثبيت موقعه بدقة على الخريطة قبل بناء الطرق أو ربطه بمنطقة أخرى؛ لا يُفترض هنا أنه حي من Harbor City أو جزء من Sapphire Coast.",
+    "gameplay_roles": [
+      "مركز فصل قصصي",
+      "مرفأ رئيسي",
+      "مهمة ختامية متعددة المراحل"
+    ]
+  },
+  "characters": [
+    {
+      "id": "leo_bennett",
+      "name": "Leo Bennett",
+      "status": "canonical_required",
+      "role_ar": "بطل القصة والشخصية التي يقود بها اللاعب الرحلة.",
+      "arc_proposal_ar": "رحلة من ملاحقة إشارة غامضة إلى كشف شبكة تربط المناطق، مع قرارات تؤثر في الثقة والتحالفات."
+    },
+    {
+      "id": "claire_bennett",
+      "name": "Claire Bennett",
+      "status": "canonical_required",
+      "role_ar": "شخصية أساسية في محور عائلة Bennett.",
+      "arc_proposal_ar": "تُبنى أهميتها عبر ذكريات العائلة والقرارات والمعلومات التي تكشف تدريجياً؛ تفاصيلها النهائية تحتاج مطابقة النص الأصلي."
+    },
+    {
+      "id": "mia_bennett",
+      "name": "Mia Bennett",
+      "status": "canonical_required",
+      "role_ar": "شخصية أساسية في محور العائلة والقرارات.",
+      "arc_proposal_ar": "تملك أهدافاً ومواقف مستقلة، ولا تكون مجرد شخصية يجب حمايتها في كل مهمة."
+    },
+    {
+      "id": "nora_blake",
+      "name": "Nora Blake",
+      "status": "canonical_required",
+      "role_ar": "شخصية محورية مرتبطة بالتحقيق في الإشارة والأدلة.",
+      "arc_proposal_ar": "قد تصبح حليفة موثوقة أو تحتفظ بمسافة من ليو تبعاً للأدلة والقرارات."
+    },
+    {
+      "id": "mira_caretaker",
+      "name": "Mira",
+      "status": "existing_prototype_character",
+      "role_ar": "شخصية حارسة القرية في النموذج الأولي الحالي.",
+      "arc_proposal_ar": "يمكن الاحتفاظ بها كحليفة محلية في افتتاحية Green Valley، دون اعتبارها بديلاً عن الشخصيات الأربع الأساسية."
+    },
+    {
+      "id": "nabil_faris",
+      "name": "Nabil Faris",
+      "status": "supporting_character_proposal",
+      "role_ar": "ميكانيكي يساعد في فهم المركبات وإصلاحها وتعديلها."
+    },
+    {
+      "id": "yara_haddad",
+      "name": "Yara Haddad",
+      "status": "supporting_character_proposal",
+      "role_ar": "قائدة قارب إنقاذ تعرف الممرات البحرية ومخاطر الساحل."
+    },
+    {
+      "id": "sami_rami",
+      "name": "Sami Rami",
+      "status": "supporting_character_proposal",
+      "role_ar": "فني اتصالات يتعامل مع أجهزة الراديو ومحطات الإشارة."
+    },
+    {
+      "id": "hana_idris",
+      "name": "Hana Idris",
+      "status": "supporting_character_proposal",
+      "role_ar": "مسعفة تشرف على مهام الإنقاذ والإسعاف."
+    },
+    {
+      "id": "karim_nader",
+      "name": "Karim Nader",
+      "status": "supporting_character_proposal",
+      "role_ar": "مصور صحفي يجمع الشهادات والأدلة من المناطق المختلفة."
+    },
+    {
+      "id": "rami_qassem",
+      "name": "Rami Qassem",
+      "status": "supporting_character_proposal",
+      "role_ar": "سائق نقل يعرف الطرق الخلفية وخطوط الشحن."
+    }
+  ],
+  "organizations": [
+    {
+      "id": "ashline_network",
+      "name_ar": "شبكة خط الرماد",
+      "status": "antagonist_faction_proposal",
+      "role_ar": "شبكة تهريب وتلاعب بالشحنات تحاول التحكم في طرق النقل والمعلومات."
+    },
+    {
+      "id": "copper_vultures",
+      "name_ar": "نسور النحاس",
+      "status": "road_crew_proposal",
+      "role_ar": "مجموعة طرق في Amber Valley تتنافس على قوافل النقل والسباقات."
+    },
+    {
+      "id": "pine_crown_riders",
+      "name_ar": "فرسان تاج الصنوبر",
+      "status": "mountain_crew_proposal",
+      "role_ar": "مجموعة دراجات جبلية؛ بعض أفرادها يساعدون السكان وبعضهم يدخل في أعمال غير قانونية."
+    },
+    {
+      "id": "sapphire_runners",
+      "name_ar": "عدّاؤو الياقوت",
+      "status": "coastal_crew_proposal",
+      "role_ar": "مجموعة ساحلية تستخدم القوارب والممرات البحرية في نقل البضائع."
+    },
+    {
+      "id": "harbor_blocks",
+      "name_ar": "مجموعات الأرصفة",
+      "status": "neighborhood_factions_proposal",
+      "role_ar": "مجموعات محلية متباينة في Harbor City، وليست عصابة واحدة موحدة."
+    },
+    {
+      "id": "coastal_rescue_network",
+      "name_ar": "شبكة الإنقاذ الساحلي",
+      "status": "civilian_organization_proposal",
+      "role_ar": "متطوعون وخدمات إنقاذ يقدمون مهاماً إنسانية ويفتحون مناطق مساعدة."
+    }
+  ],
+  "campaign": [
+    {
+      "chapter": 1,
+      "id": "chapter_01_signal_in_rain",
+      "title_ar": "إشارة في المطر",
+      "region": "prototype_bridge_to_canonical_world",
+      "synopsis_ar": "تبدأ الحكاية في النموذج الأولي بقرية Willow Village، حين تقود إشارة لاسلكية ليو إلى طريق قديم وشاهد مفقود. تكشف التحقيقات الأولى أن الأمر يتجاوز مشكلة محلية.",
+      "mission_refs": [
+        {
+          "id": "mission_001",
+          "title_ar": "صباح جديد في قرية الصفصاف",
+          "status": "prototype_runtime"
+        },
+        {
+          "id": "mission_002",
+          "title_ar": "الطريق القديم: عملية الإنقاذ",
+          "status": "design_only"
+        },
+        {
+          "id": "mission_003",
+          "title_ar": "ظلال فوق الميناء",
+          "status": "design_only"
+        },
+        {
+          "id": "mission_004",
+          "title_ar": "القطار الأخير",
+          "status": "design_only"
+        }
+      ]
+    },
+    {
+      "chapter": 2,
+      "id": "chapter_02_city_without_sleep",
+      "title_ar": "مدينة لا تنام",
+      "region": "Harbor City",
+      "synopsis_ar": "يدخل ليو مدينة الميناء، ويتتبع شحنات لا تطابق سجلاتها، ويتعرف إلى الميكانيكيين والعمال وأصحاب المصالح المتضاربة.",
+      "missions": [
+        {
+          "id": "main_005",
+          "title_ar": "الواجهة الزجاجية",
+          "gameplay": [
+            "investigation",
+            "urban_driving"
+          ],
+          "hook_ar": "تتبع مركبة تحمل سجلات شحن مزورة."
+        },
+        {
+          "id": "main_006",
+          "title_ar": "صندوق بلا اسم",
+          "gameplay": [
+            "stealth",
+            "evidence_collection"
+          ],
+          "hook_ar": "الدخول إلى مخزن وجمع دليل دون إطلاق إنذار."
+        },
+        {
+          "id": "main_007",
+          "title_ar": "خط الحافلات",
+          "gameplay": [
+            "public_transport",
+            "rescue"
+          ],
+          "hook_ar": "إخلاء ركاب حافلة تعطلت في طريق مزدحم."
+        },
+        {
+          "id": "main_008",
+          "title_ar": "ليلة في الأحياء",
+          "gameplay": [
+            "defense",
+            "relationship_choice"
+          ],
+          "hook_ar": "حماية فعالية مجتمعية وقرار من يستحق المساعدة أولاً."
+        }
+      ]
+    },
+    {
+      "chapter": 3,
+      "id": "chapter_03_blue_tide",
+      "title_ar": "المدّ الأزرق",
+      "region": "Sapphire Coast",
+      "synopsis_ar": "تتحول الأدلة إلى مسارات بحرية، ويتعلم ليو أن البحر ليس خلفية للمدينة بل طريق نقل ومصدر رزق ومكان خطر.",
+      "missions": [
+        {
+          "id": "main_009",
+          "title_ar": "نداء المنارة",
+          "gameplay": [
+            "boat_driving",
+            "rescue"
+          ],
+          "hook_ar": "إنقاذ قارب صيد قرب الشعاب قبل اشتداد العاصفة."
+        },
+        {
+          "id": "main_010",
+          "title_ar": "المد السريع",
+          "gameplay": [
+            "boat_race",
+            "navigation"
+          ],
+          "hook_ar": "سباق بحري يكشف ممراً تستخدمه شبكة التهريب."
+        },
+        {
+          "id": "main_011",
+          "title_ar": "المرسى الصامت",
+          "gameplay": [
+            "investigation",
+            "night_stealth"
+          ],
+          "hook_ar": "تفتيش رصيف مهجور والعثور على سجل ناقص."
+        },
+        {
+          "id": "main_012",
+          "title_ar": "المنحدر الأزرق",
+          "gameplay": [
+            "vehicle_chase",
+            "evacuation"
+          ],
+          "hook_ar": "إخلاء عائلات من طريق ساحلي بعد انهيار صخري."
+        }
+      ]
+    },
+    {
+      "chapter": 4,
+      "id": "chapter_04_echoes_in_pines",
+      "title_ar": "أصداء بين الصنوبر",
+      "region": "Pine Highlands",
+      "synopsis_ar": "تقود آثار الشحنات إلى المرتفعات، حيث يلتقي ليو بسكان الجبال وعمال الغابات وسائقي الطرق الوعرة.",
+      "missions": [
+        {
+          "id": "main_013",
+          "title_ar": "أثر بين الأشجار",
+          "gameplay": [
+            "tracking",
+            "on_foot_exploration"
+          ],
+          "hook_ar": "اتباع آثار مركبة عبر الغابة من دون إتلاف البيئة."
+        },
+        {
+          "id": "main_014",
+          "title_ar": "قافلة الأخشاب",
+          "gameplay": [
+            "heavy_vehicle",
+            "escort"
+          ],
+          "hook_ar": "قيادة شاحنة حمولة عبر منعطفات جبلية وحماية العمال."
+        },
+        {
+          "id": "main_015",
+          "title_ar": "عين الجبل",
+          "gameplay": [
+            "radio_repair",
+            "climbing"
+          ],
+          "hook_ar": "إعادة تشغيل محطة اتصال مع صعود مسار مرتفع."
+        },
+        {
+          "id": "main_016",
+          "title_ar": "ليلة الضباب",
+          "gameplay": [
+            "search_and_rescue",
+            "weather"
+          ],
+          "hook_ar": "العثور على مفقودين وسط ضباب كثيف ووقت محدود."
+        }
+      ]
+    },
+    {
+      "chapter": 5,
+      "id": "chapter_05_amber_routes",
+      "title_ar": "طرق الكهرمان",
+      "region": "Amber Valley",
+      "synopsis_ar": "يكشف الوادي عن صراع على خطوط النقل والمياه والأراضي، ويضطر ليو إلى الاختيار بين مصالح القوافل واحتياجات السكان.",
+      "missions": [
+        {
+          "id": "main_017",
+          "title_ar": "غبار على الطريق",
+          "gameplay": [
+            "convoy_defense",
+            "truck_driving"
+          ],
+          "hook_ar": "حماية قافلة مدنية من كمين على طريق مفتوح."
+        },
+        {
+          "id": "main_018",
+          "title_ar": "ماء الوادي",
+          "gameplay": [
+            "repair",
+            "community_choice"
+          ],
+          "hook_ar": "إعادة تشغيل مضخة مياه وتحديد الجهة التي تحصل على الإمدادات أولاً."
+        },
+        {
+          "id": "main_019",
+          "title_ar": "المحجر القديم",
+          "gameplay": [
+            "infiltration",
+            "machinery"
+          ],
+          "hook_ar": "التسلل إلى محجر لكشف مصدر شحنات غير مسجلة."
+        },
+        {
+          "id": "main_020",
+          "title_ar": "آخر حمولة",
+          "gameplay": [
+            "interception",
+            "driving"
+          ],
+          "hook_ar": "إيقاف شاحنة قبل عبورها حدود المنطقة دون تدمير الحمولة."
+        }
+      ]
+    },
+    {
+      "chapter": 6,
+      "id": "chapter_06_marsa_al_noor",
+      "title_ar": "مرسى النور",
+      "region": "Marsa Al-Noor",
+      "synopsis_ar": "تتجمع خيوط التحقيق في الموقع الساحلي المحوري. يصبح التوقيت والثقة والأدلة أهم من القوة وحدها.",
+      "missions": [
+        {
+          "id": "main_021",
+          "title_ar": "بوابة المرسى",
+          "gameplay": [
+            "port_navigation",
+            "social_infiltration"
+          ],
+          "hook_ar": "الحصول على تصريح دخول عبر بناء الثقة مع العاملين."
+        },
+        {
+          "id": "main_022",
+          "title_ar": "سجل السفن",
+          "gameplay": [
+            "photography",
+            "evidence_chain"
+          ],
+          "hook_ar": "توثيق حركة السفن ومقارنة الشهادات والسجلات."
+        },
+        {
+          "id": "main_023",
+          "title_ar": "الرافعة السابعة",
+          "gameplay": [
+            "industrial_rescue",
+            "vehicle_operation"
+          ],
+          "hook_ar": "إنقاذ عامل عالق وإيقاف معدة ثقيلة بأمان."
+        },
+        {
+          "id": "main_024",
+          "title_ar": "بوابة البحر",
+          "gameplay": [
+            "boat_chase",
+            "weather_navigation"
+          ],
+          "hook_ar": "مطاردة بحرية تنتهي باختيار بين القبض على الهدف وإنقاذ طاقمه."
+        }
+      ]
+    },
+    {
+      "chapter": 7,
+      "id": "chapter_07_crossed_lines",
+      "title_ar": "خطوط متقاطعة",
+      "region": "multi_region",
+      "synopsis_ar": "تعود شخصيات من المناطق السابقة، وتظهر نتائج التحالفات والوعود والقرارات التي اتخذها اللاعب.",
+      "missions": [
+        {
+          "id": "main_025",
+          "title_ar": "ثلاثة مفاتيح",
+          "gameplay": [
+            "multi_character_planning",
+            "choice"
+          ],
+          "hook_ar": "جمع ثلاث معلومات من حلفاء مختلفين بطرق غير متطابقة."
+        },
+        {
+          "id": "main_026",
+          "title_ar": "خط الرجعة",
+          "gameplay": [
+            "route_planning",
+            "convoy"
+          ],
+          "hook_ar": "اختيار مسار قافلة وفق حالة الطرق ونفوذ المجموعات."
+        },
+        {
+          "id": "main_027",
+          "title_ar": "ساعة العاصفة",
+          "gameplay": [
+            "multi_location_rescue",
+            "time_pressure"
+          ],
+          "hook_ar": "توزيع الوقت بين إنقاذ أشخاص وتأمين محطة الإشارة."
+        },
+        {
+          "id": "main_028",
+          "title_ar": "القرار الكبير",
+          "gameplay": [
+            "branching_story",
+            "faction_reputation"
+          ],
+          "hook_ar": "اختيار طريقة كشف الشبكة ومن سيشارك الأدلة."
+        }
+      ]
+    },
+    {
+      "chapter": 8,
+      "id": "chapter_08_dawn_over_harbor",
+      "title_ar": "فجر فوق الميناء",
+      "region": "Marsa Al-Noor_and_Harbor_City",
+      "synopsis_ar": "تصل القصة إلى مواجهة متعددة المراحل في الميناء. تتغير صعوبتها ومساندة الشخصيات وفق الأدلة والتحالفات، وتنتج عنها نهايات مختلفة.",
+      "missions": [
+        {
+          "id": "main_029",
+          "title_ar": "المدينة تستيقظ",
+          "gameplay": [
+            "district_support",
+            "open_world_response"
+          ],
+          "hook_ar": "تنسيق مساعدة الأحياء قبل المواجهة النهائية."
+        },
+        {
+          "id": "main_030",
+          "title_ar": "المخزن الأخير",
+          "gameplay": [
+            "infiltration",
+            "multi_stage_combat"
+          ],
+          "hook_ar": "اختراق مركز الشحن وتعطيل شبكة الإمداد."
+        },
+        {
+          "id": "main_031",
+          "title_ar": "إشارة بلا خوف",
+          "gameplay": [
+            "broadcast",
+            "evidence_delivery"
+          ],
+          "hook_ar": "إرسال الأدلة عبر محطات مترابطة مع حماية الفنيين."
+        },
+        {
+          "id": "main_032",
+          "title_ar": "فجر على المرسى",
+          "gameplay": [
+            "finale",
+            "vehicle_and_on_foot",
+            "branching_outcome"
+          ],
+          "hook_ar": "مواجهة ختامية تتضمن إنقاذاً ومطاردة وقراراً يحدد مصير التحالفات."
+        }
+      ]
+    }
+  ],
+  "side_activities": [
+    {
+      "id": "taxi_service",
+      "name_ar": "خدمة سيارات الأجرة",
+      "gameplay": "نقل ركاب مع اختيار الطرق ومراعاة الوقت."
+    },
+    {
+      "id": "medical_rescue",
+      "name_ar": "الإسعاف والإنقاذ",
+      "gameplay": "نقل المصابين إلى نقاط العلاج دون قيادة متهورة."
+    },
+    {
+      "id": "fire_response",
+      "name_ar": "مكافحة الحرائق",
+      "gameplay": "الوصول بمركبة الإطفاء وإخماد مصادر خطر متغيرة."
+    },
+    {
+      "id": "courier_routes",
+      "name_ar": "التوصيل السريع",
+      "gameplay": "تسليم طرود مختلفة مع طرائق وقيود متبدلة."
+    },
+    {
+      "id": "vehicle_trials",
+      "name_ar": "تحديات المركبات",
+      "gameplay": "اختبارات سيارات ودراجات وشاحنات وقوارب كل حسب تحكمها."
+    },
+    {
+      "id": "fishing",
+      "name_ar": "صيد الأسماك",
+      "gameplay": "أماكن وأنواع وظروف بحرية ومكافآت مرتبطة بالموسم."
+    },
+    {
+      "id": "farming",
+      "name_ar": "الزراعة والمساعدة في الحقول",
+      "gameplay": "بذر وري وحصاد عند ارتباطها بمهمات أو اقتصاد بسيط."
+    },
+    {
+      "id": "wildlife_photo",
+      "name_ar": "تصوير الحياة البرية",
+      "gameplay": "توثيق أنواع ومشاهد طبيعية دون إيذاء الحيوانات."
+    },
+    {
+      "id": "mountain_rescue",
+      "name_ar": "إنقاذ الجبال",
+      "gameplay": "تحديد مواقع متنزهين مفقودين وسط تغير الطقس."
+    },
+    {
+      "id": "street_races",
+      "name_ar": "سباقات الشوارع",
+      "gameplay": "مسارات قصيرة ومتوسطة مع فئات مركبات مختلفة."
+    },
+    {
+      "id": "garage_customization",
+      "name_ar": "المرآب وتعديل المركبات",
+      "gameplay": "إصلاح وتخصيص الأداء والمظهر ضمن حدود المركبة."
+    },
+    {
+      "id": "local_businesses",
+      "name_ar": "الأعمال والمتاجر",
+      "gameplay": "شراء خدمات أو إدارة نشاط صغير عند فتحه بالقصة."
+    }
+  ],
+  "collectible_sets": [
+    {
+      "id": "radio_fragments",
+      "name_ar": "شذرات الإشارة",
+      "purpose_ar": "تكشف أجزاء من الرسالة الغامضة وتفتح سجلات صوتية أصلية.",
+      "count": "يتحدد بعد بناء الخريطة النهائية"
+    },
+    {
+      "id": "harbor_ledgers",
+      "name_ar": "دفاتر الميناء",
+      "purpose_ar": "أدلة توثق مسارات الشحن والشخصيات المتورطة.",
+      "count": "يتحدد بعد بناء الخريطة النهائية"
+    },
+    {
+      "id": "highland_markers",
+      "name_ar": "علامات المرتفعات",
+      "purpose_ar": "تشجع الاستكشاف وتفتح نقاط مشاهدة ومسارات طبيعية.",
+      "count": "يتحدد بعد بناء الخريطة النهائية"
+    },
+    {
+      "id": "amber_field_notes",
+      "name_ar": "دفاتر الوادي",
+      "purpose_ar": "قصص قصيرة عن المزارع والمياه وتاريخ المنطقة.",
+      "count": "يتحدد بعد بناء الخريطة النهائية"
+    },
+    {
+      "id": "family_mementos",
+      "name_ar": "ذكريات العائلة",
+      "purpose_ar": "تضيف مشاهد وحوارات اختيارية عن عائلة Bennett.",
+      "count": "يتحدد بعد بناء الخريطة النهائية"
+    }
+  ],
+  "systemic_world": [
+    "دورة وقت نهار وليل وجداول NPC مرتبطة بساعة عالم فعلية.",
+    "طقس يؤثر في الرؤية والقيادة والإنقاذ والأنشطة البحرية والجبلية.",
+    "سمعة وعلاقات مع الشخصيات والمجموعات؛ لا تكون الاستجابة مجرد عداد واحد.",
+    "مناطق نفوذ تتغير من خلال أحداث ذات معنى، لا من خلال تكرار احتلال نقاط فارغة.",
+    "استجابة الشرطة والخدمات للطوارئ والشهود والأدلة ضمن نظام أصلي.",
+    "مركبات بفئات وتحكم وفيزياء وأصوات وواجهات لمس مناسبة لكل فئة.",
+    "متاجر وورش ومطاعم ومبانٍ داخلية مصنفة بوضوح حسب قابليتها للدخول والتفاعل.",
+    "حفظ تقدم القصة والقرارات والمقتنيات وفتح المناطق بطريقة آمنة قابلة للترقية."
+  ],
+  "anti_repetition_rules": [
+    "لا تُقبل مهمة جديدة إذا كان هدفها وموقعها وحلها ومكافأتها نسخة من مهمة سابقة.",
+    "إعادة استخدام القيادة أو المطاردة مقبول فقط عند اختلاف السياق والخطر والقرار والنتيجة.",
+    "كل شخصية رئيسية تحتاج دافعاً وعلاقة وتحولاً أو أثراً واضحاً في القصة.",
+    "أعداد المقتنيات تحدد بعد تخطيط الخريطة؛ لا نملأ العالم بأشياء متكررة لرفع الأرقام.",
+    "المهمات ذات الخيارات يجب أن تغير علاقة أو معلومة أو مساراً لاحقاً، لا أن تعرض اختياراً شكلياً."
+  ],
+  "production_status": {
+    "campaign_chapter_count": 8,
+    "designed_mission_concept_count": 32,
+    "runtime_playable_campaign_count": 1,
+    "note_ar": "هذه موسوعة تصميم منظمة وليست إعلاناً بأن الحملة أو المناطق أو الأنشطة أصبحت قابلة للعب. المهمة 001 هي النموذج الأولي الجاري، والمهام 002-004 تصاميم موجودة مسبقاً، وبقية المهام أفكار إنتاجية تحتاج التنفيذ والاختبار."
+  }
+}
