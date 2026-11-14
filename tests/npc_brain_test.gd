@@ -37,6 +37,18 @@ func _run_test() -> void:
 
 	brain.call("record_interaction", "talk")
 	brain.call("record_interaction", "help")
+	brain.set("persistence_id", "npc_brain_test_persistent")
+	brain.call("_save_relationship")
+	var returning_npc := Node3D.new()
+	returning_npc.name = "ReturningTestNPC"
+	root.add_child(returning_npc)
+	var returning_brain := Node.new()
+	returning_brain.set_script(BRAIN_SCRIPT)
+	returning_brain.set("persistence_id", "npc_brain_test_persistent")
+	returning_npc.add_child(returning_brain)
+	if not is_equal_approx(float(returning_brain.get("trust")), float(brain.get("trust"))) or not is_equal_approx(float(returning_brain.get("familiarity")), float(brain.get("familiarity"))):
+		_fail("NPC trust and familiarity were not restored in a new session instance.")
+		return
 	if brain.get("trust") <= 0.0 or brain.get("familiarity") <= 0.0:
 		_fail("Positive interactions did not improve trust and familiarity.")
 		return
