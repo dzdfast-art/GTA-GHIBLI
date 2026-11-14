@@ -10,6 +10,7 @@ var _main_panel: PanelContainer
 var _settings_panel: PanelContainer
 var _pause_touch_button: Button
 var _menu_buttons: Array[Button] = []
+var _menu_cursors: Array[Label] = []
 var _selected_menu_index := 2
 var _settings := {
 	"master_volume": 0.85, "music_volume": 0.65, "effects_volume": 0.85,
@@ -147,14 +148,31 @@ func sixty_four() -> int:
 	return 64
 
 func _add_classic_menu_button(parent: VBoxContainer, caption: String, index: int, action: Callable) -> void:
+	var row := HBoxContainer.new()
+	row.name = "PauseOptionRow" + str(index)
+	row.custom_minimum_size = Vector2(600.0, 54.0)
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_theme_constant_override("separation", 0)
+
+	var cursor := Label.new()
+	cursor.name = "SelectionCursor" + str(index)
+	cursor.text = "✥"
+	cursor.custom_minimum_size = Vector2(54.0, 54.0)
+	cursor.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	cursor.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	cursor.add_theme_font_size_override("font_size", 46)
+	cursor.add_theme_color_override("font_color", Color(0.88, 0.91, 1.0, 1.0))
+	row.add_child(cursor)
+	_menu_cursors.append(cursor)
+
 	var button := Button.new()
 	button.name = "PauseOption" + str(index)
 	button.text = caption
-	button.custom_minimum_size = Vector2(600.0, 54.0)
+	button.custom_minimum_size = Vector2(546.0, 54.0)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.focus_mode = Control.FOCUS_ALL
 	button.add_theme_font_size_override("font_size", 34)
-	button.add_theme_color_override("font_color", Color(0.48, 0.34, 0.09, 1.0))
+	button.add_theme_color_override("font_color", Color(0.43, 0.32, 0.10, 1.0))
 	button.add_theme_color_override("font_hover_color", Color(0.86, 0.65, 0.18, 1.0))
 	button.add_theme_color_override("font_pressed_color", Color(0.96, 0.76, 0.25, 1.0))
 	button.add_theme_color_override("font_focus_color", Color(0.86, 0.65, 0.18, 1.0))
@@ -166,7 +184,8 @@ func _add_classic_menu_button(parent: VBoxContainer, caption: String, index: int
 	button.mouse_entered.connect(_select_menu_item.bind(index))
 	button.focus_entered.connect(_select_menu_item.bind(index))
 	button.pressed.connect(action)
-	parent.add_child(button)
+	row.add_child(button)
+	parent.add_child(row)
 	_menu_buttons.append(button)
 
 func _select_menu_item(index: int) -> void:
@@ -176,8 +195,7 @@ func _select_menu_item(index: int) -> void:
 func _refresh_menu_selection() -> void:
 	for i in range(_menu_buttons.size()):
 		var button := _menu_buttons[i]
-		var captions := ["RESUME", "START NEW GAME", "MAP", "STATS", "BRIEF", "OPTIONS", "QUIT GAME"]
-		button.text = ("✥  " if i == _selected_menu_index else "     ") + captions[i]
+		_menu_cursors[i].visible = i == _selected_menu_index
 		button.add_theme_color_override("font_color", Color(0.86, 0.65, 0.18, 1.0) if i == _selected_menu_index else Color(0.43, 0.32, 0.10, 1.0))
 
 func _move_menu_selection(direction: int) -> void:
