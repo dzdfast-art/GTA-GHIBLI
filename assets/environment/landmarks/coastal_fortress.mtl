@@ -1,0 +1,13 @@
+# Original coastal fortress palette
+newmtl fortress_stone
+Kd 0.43 0.42 0.37
+newmtl fortress_trim
+Kd 0.62 0.56 0.43
+newmtl fortress_wood
+Kd 0.25 0.12 0.06
+newmtl fortress_iron
+Kd 0.12 0.14 0.16
+newmtl fortress_paving
+Kd 0.36 0.36 0.33
+newmtl fortress_paving_alt
+Kd 0.48 0.45 0.39
