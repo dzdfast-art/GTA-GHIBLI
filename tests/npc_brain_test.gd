@@ -75,6 +75,7 @@ func _run_test() -> void:
 
 	player.global_position = Vector3(30.0, 0.0, 0.0)
 	player.velocity = Vector3.ZERO
+	brain.set("_alarm_timer", 0.0)
 	brain.call("_find_player")
 	brain.call("_evaluate_reaction")
 	if brain.get("state_id") != "idle":
