@@ -25,6 +25,12 @@ func _ready() -> void:
 		spring_arm.add_excluded_object(followed_body.get_rid())
 
 
+func _process(_delta: float) -> void:
+	# The player body turns toward movement; re-apply the stored world-space
+	# camera angles so that body rotation never drags the view around.
+	_apply_camera_rotation()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
 		if event.pressed:
