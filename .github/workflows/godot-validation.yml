@@ -117,11 +117,5 @@ jobs:
       - name: Test optional world side activities and wallet rewards
         run: godot --headless --path . --script res://tests/side_activity_director_test.gd
 
-      - name: Test optional world side activities
-        run: godot --headless --path . --script res://tests/side_activity_director_test.gd
-
-      - name: Test optional world side activities (legacy label)
-        run: godot --headless --path . --script res://tests/side_activity_director_test.gd
-
       - name: Run main scene smoke test
         run: godot --headless --path . --quit-after 180
