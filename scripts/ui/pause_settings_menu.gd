@@ -18,6 +18,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_load_settings()
 	_apply_audio_settings()
+	_apply_video_and_camera_settings()
 	_build_interface()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -285,15 +286,24 @@ func _on_slider_changed(value: float, key: String, label: Label, caption: String
 
 func _on_quality_selected(index: int) -> void:
 	_settings.graphics_quality = index
+	_apply_video_and_camera_settings()
 
 func _on_fps_selected(index: int, selector: OptionButton) -> void:
 	_settings.target_fps = int(selector.get_item_id(index))
+	_apply_video_and_camera_settings()
 
 func _on_subtitles_toggled(enabled: bool) -> void:
 	_settings.show_subtitles = enabled
 
 func _on_language_selected(index: int) -> void:
 	_settings.language = "ar" if index == 0 else "en"
+
+func _apply_video_and_camera_settings() -> void:
+	Engine.max_fps = int(_settings.target_fps)
+	var quality := int(_settings.graphics_quality)
+	get_viewport().msaa_3d = Viewport.MSAA_DISABLED if quality == 0 else (Viewport.MSAA_2X if quality == 1 else Viewport.MSAA_4X)
+	for camera in get_tree().get_nodes_in_group("third_person_cameras"):
+		camera.set("look_sensitivity", 0.006 * float(_settings.look_sensitivity))
 
 func _apply_audio_settings() -> void:
 	_set_bus_volume("Master", float(_settings.master_volume))
