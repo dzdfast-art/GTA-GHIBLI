@@ -1,6 +1,6 @@
 extends Node3D
 
-## Touch-drag camera for the right side of the screen.
+## Touch-drag camera restricted to the far-right area to avoid joystick overlap.
 ## The pivot follows the player position, but its world yaw stays independent
 ## from the player's facing direction so walking forward cannot orbit the camera.
 
@@ -35,7 +35,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
 		if event.pressed:
 			var screen_width: float = get_viewport().get_visible_rect().size.x
-			if _active_touch_index == -1 and event.position.x >= screen_width * 0.60:
+			if _active_touch_index == -1 and event.position.x >= screen_width * 0.72:
 				_active_touch_index = event.index
 		elif event.index == _active_touch_index:
 			_active_touch_index = -1
