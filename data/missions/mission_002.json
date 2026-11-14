@@ -58,7 +58,7 @@
       "vehicle_pursuit_events"
     ]
   },
-  "design_notes": "Runtime prototype integrated through scripts/missions/mission_002_runtime.gd. It unlocks after mission_001 is complete and implements vehicle entry, checkpoint, a physical blockade with a central gap, witness rescue, a scripted pursuit vehicle, a 90-second escape timer, failure/retry, and a local completion save. This is a lightweight blockout prototype: witness dialogue/voice, advanced pursuit AI, vehicle damage, cinematic camera shots, and production art remain future work.",
+  "design_notes": "Runtime prototype integrated through scripts/missions/mission_002_runtime.gd. It unlocks after mission_001 is complete and implements vehicle entry, checkpoint, a physical blockade with a central gap, witness rescue, two scripted pursuing vehicles, a 90-second escape timer, vehicle-health damage, failure/retry, and a local completion save. This is a lightweight blockout prototype: witness dialogue/voice, advanced pursuit AI, physical vehicle deformation, cinematic camera shots, and production art remain future work.",
   "runtime_config": {
     "escape_timer_seconds": 90,
     "pursuer_speed_meters_per_second": 6.8,
@@ -77,6 +77,8 @@
       0,
       0,
       0
-    ]
+    ],
+    "pursuer_count": 2,
+    "backup_pursuer_speed_multiplier": 0.92
   }
 }
