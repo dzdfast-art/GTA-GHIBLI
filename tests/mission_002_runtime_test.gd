@@ -59,6 +59,13 @@ func _run_test() -> void:
 
 	player.is_driving = true
 	car.driver = player
+	runtime._pursuer.global_position = car.global_position + Vector3(0.0, 0.0, -4.5)
+	runtime._process(0.0)
+	if runtime._vehicle_health != 80:
+		_fail("A close pursuit impact did not reduce vehicle health.")
+		return
+
+	runtime._pursuer.global_position = Vector3(-2.8, 0.0, -49.0)
 	car.global_position = runtime.HOME_POSITION
 	runtime._process(0.0)
 	if runtime._phase != 6:
