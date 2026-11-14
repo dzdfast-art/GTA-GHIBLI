@@ -289,16 +289,17 @@ func _make_marker(node_name: String, at: Vector3, tint: Color) -> Node3D:
 
 
 func _add_box(node_name: String, at: Vector3, size: Vector3, tint: Color) -> void:
-	var body := StaticBody3D.new()
-	body.name = node_name
-	body.position = at
-	_add_box_visual(body, size, tint)
-	var collision := CollisionShape3D.new()
-	var shape := BoxShape3D.new()
-	shape.size = size
-	collision.shape = shape
-	body.add_child(collision)
-	_world_root.add_child(body)
+	var visual := MeshInstance3D.new()
+	visual.name = node_name
+	visual.position = at
+	var mesh := BoxMesh.new()
+	mesh.size = size
+	visual.mesh = mesh
+	var material := StandardMaterial3D.new()
+	material.albedo_color = tint
+	material.roughness = 0.95
+	visual.material_override = material
+	_world_root.add_child(visual)
 
 
 func _add_child_box(parent: Node3D, node_name: String, at: Vector3, size: Vector3, tint: Color) -> void:
