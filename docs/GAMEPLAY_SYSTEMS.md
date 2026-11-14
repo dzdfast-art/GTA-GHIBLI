@@ -72,7 +72,9 @@ Distinguish:
 
 Important characters need a distinct purpose, personality, visual identity, voice profile, relationships and authored dialogue. Generic pedestrians may use shared rigs/animations but should vary in appearance and behavior without creating duplicate named identities.
 
-NPC behaviors may include schedules, work, idle activities, conversations, reactions, help requests, fear, friendliness, conflict and mission behavior. Use distance-based simulation and population limits for mobile performance.
+**First reactive-NPC prototype added:** `scripts/systems/npc_brain.gd` provides distance-based player detection, idle wandering, player-facing, and distinct curious, friendly, cautious and alarmed reactions. Mira is the first integrated character; her contextual Arabic hint and emotion label respond to the player's distance and approach speed. A headless regression test in `tests/npc_brain_test.gd` checks the five reaction transitions, and the Godot validation workflow now parses the brain script and runs that test. This is an initial prototype, not yet a complete human-like AI.
+
+**Still planned:** daily schedules, work and social routines, memory/relationship progression, group coordination, obstacle-aware navigation, combat/flight decisions, dynamic dialogue selection, and broader integration across the named cast and pedestrians. Use distance-based simulation and population limits for mobile performance.
 
 **Arabic audio requirement:** important dialogue must be genuinely voiced in Arabic with expressive emotional performance, consistent character voices and synchronized subtitles. Text plus an empty audio path is not dubbing. Audio remains incomplete until a real audio asset is integrated and playback is tested.
 
