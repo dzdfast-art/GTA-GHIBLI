@@ -183,3 +183,8 @@ This does not verify rendered quality, real touch behavior, Arabic audio playbac
 A first side-activity runtime is integrated through `scripts/world/side_activity_director.gd` and `main.gd`. Four distinct activity patterns are available in the early world: recover a lost delivery, collect and return three farmer crates, retrieve a roadside repair kit, and reunite a lost dog with its owner. Activities are accepted from a nearby mobile-friendly HUD button, use different target counts, award 80–140 currency, and save completed IDs plus total rewards to `user://gta_ghibli_side_activities.json`.
 
 The data catalogue is `data/world/side_activities.json`; the headless regression test is `tests/side_activity_director_test.gd`. This is a functional blockout, not final content: people, dog, package, crates and repair kit are simple visual markers; the current interactions are proximity-based. Final character/animal models, carry animations, voice lines, richer task logic and Android touch testing remain outstanding.
+
+
+### ذاكرة علاقات الشخصيات غير القابلة للعب
+
+يحفظ نظام `npc_brain.gd` مستوى الثقة والألفة لكل شخصية في ملفات محلية منفصلة داخل `user://npc_relationships/`، ويستعيدها عند إنشاء الشخصية مجدداً. يمكن ضبط `persistence_id` كمعرّف ثابت لتفادي الاعتماد على اسم العقدة، وتعطيل الحفظ عبر `relationship_persistence_enabled` عند الحاجة. الحفظ محلي على جهاز اللاعب ولا يرسل بيانات إلى الإنترنت. هذا النظام أولي ولا يربط العلاقات بعد بكل الحوارات والمهام والاختيارات القصصية.
