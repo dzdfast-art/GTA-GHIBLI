@@ -5,6 +5,7 @@ const VILLAGE_SCENE: PackedScene = preload("res://scenes/world/willow_village.ts
 const STARTER_CAR_SCENE: PackedScene = preload("res://scenes/vehicles/starter_car.tscn")
 const MOBILE_CONTROLS_SCRIPT = preload("res://scripts/ui/mobile_controls.gd")
 const MISSION_MANAGER_SCRIPT = preload("res://scripts/missions/mission_manager.gd")
+const MISSION_002_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_002_runtime.gd")
 const CINEMATIC_DIRECTOR_SCRIPT = preload("res://scripts/missions/cinematic_director.gd")
 const AMBIENCE_SCRIPT = preload("res://scripts/audio/nature_ambience.gd")
 
@@ -15,6 +16,7 @@ func _ready() -> void:
 	_create_starter_car()
 	_create_mobile_controls()
 	_create_mission_manager()
+	_create_mission_002_runtime()
 	_create_story_cinematic()
 	_create_nature_ambience()
 
@@ -119,6 +121,14 @@ func _create_nature_ambience() -> void:
 	ambience.name = "NatureAmbience"
 	ambience.set("biome", "village")
 	add_child(ambience)
+
+func _create_mission_002_runtime() -> void:
+	var player := get_node_or_null("Player") as CharacterBody3D
+	var vehicle := get_node_or_null("StarterCar") as CharacterBody3D
+	var mission_runtime: CanvasLayer = MISSION_002_RUNTIME_SCRIPT.new() as CanvasLayer
+	mission_runtime.name = "Mission002Runtime"
+	add_child(mission_runtime)
+	mission_runtime.setup(player, vehicle)
 
 func _create_story_cinematic() -> void:
 	var cinematic: CanvasLayer = CINEMATIC_DIRECTOR_SCRIPT.new() as CanvasLayer
