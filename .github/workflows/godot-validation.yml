@@ -65,6 +65,7 @@ jobs:
             res://scripts/missions/mission_003_runtime.gd \
             res://scripts/missions/mission_004_runtime.gd \
             res://scripts/world/side_activity_director.gd \
+            res://scripts/world/world_clock.gd \
             res://scripts/missions/cinematic_director.gd
           do
             echo "Checking $script"
@@ -113,7 +114,13 @@ jobs:
       - name: Test world clock and day-night phases
         run: godot --headless --path . --script res://tests/world_clock_test.gd
 
+      - name: Test optional world side activities and wallet rewards
+        run: godot --headless --path . --script res://tests/side_activity_director_test.gd
+
       - name: Test optional world side activities
+        run: godot --headless --path . --script res://tests/side_activity_director_test.gd
+
+      - name: Test optional world side activities (legacy label)
         run: godot --headless --path . --script res://tests/side_activity_director_test.gd
 
       - name: Run main scene smoke test
