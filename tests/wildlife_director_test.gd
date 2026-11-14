@@ -48,6 +48,7 @@ func _run_test() -> void:
 	if int(rabbit.get("bond_level")) != 2 or int(inventory.call("get_item_count", "wild_berries")) != 0:
 		_fail("Feeding the rabbit did not consume two treats and improve its bond.")
 		return
+	player.global_position = rabbit.global_position
 	rabbit.call("_find_player")
 	if str(rabbit.call("get_wildlife_state")) != "following":
 		_fail("A bonded rabbit did not enter the follow state.")
