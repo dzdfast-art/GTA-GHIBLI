@@ -30,7 +30,7 @@ func get_hour() -> int:
 	return int(floor(get_game_hour()))
 
 func get_minute() -> int:
-	var fractional := get_game_hour() - floor(get_game_hour())
+	var fractional: float = get_game_hour() - floor(get_game_hour())
 	return int(floor(fractional * 60.0))
 
 func get_day_number() -> int:
