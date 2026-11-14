@@ -79,7 +79,10 @@ jobs:
             godot --headless --path . --check-only --script "$script"
           done
 
-      - name: Test pause menu and saved settings\n        run: godot --headless --path . --script res://tests/pause_settings_menu_test.gd\n\n      - name: Test player wallet and currency
+      - name: Test pause menu and saved settings
+        run: godot --headless --path . --script res://tests/pause_settings_menu_test.gd
+
+      - name: Test player wallet and currency
         run: godot --headless --path . --script res://tests/player_wallet_test.gd
 
       - name: Test village shop purchases
