@@ -25,6 +25,7 @@ var _escape_time_left := ESCAPE_TIME_LIMIT
 var _vehicle_health := 100
 var _impact_cooldown := 0.0
 var _pursuer: Node3D
+var _backup_pursuer: Node3D
 var _witness: Node3D
 var _passenger_visual: Node3D
 var _world_root: Node3D
@@ -79,9 +80,7 @@ func _process(delta: float) -> void:
 		_escape_time_left = maxf(0.0, _escape_time_left - delta)
 		_update_pursuer(delta)
 		_impact_cooldown = maxf(0.0, _impact_cooldown - delta)
-		var pursuit_distance := 999.0
-		if _pursuer != null and is_instance_valid(_pursuer) and _vehicle != null:
-			pursuit_distance = _pursuer.global_position.distance_to(_vehicle.global_position)
+		var pursuit_distance := _closest_pursuer_distance()
 		if pursuit_distance <= 5.5 and pursuit_distance > PURSUER_CATCH_DISTANCE and _impact_cooldown <= 0.0:
 			_vehicle_health = maxi(0, _vehicle_health - 20)
 			_impact_cooldown = 2.5
@@ -90,15 +89,12 @@ func _process(delta: float) -> void:
 				_fail_mission("تعطلت السيارة بسبب اصطدامات المطاردة.")
 				return
 		if _vehicle != null and _vehicle.global_position.distance_to(HOME_POSITION) <= 9.0:
-			var pursuer_distance := 999.0
-			if _pursuer != null and is_instance_valid(_pursuer):
-				pursuer_distance = _pursuer.global_position.distance_to(_vehicle.global_position)
-			if pursuer_distance >= 7.0:
+			if pursuit_distance >= 7.0:
 				_complete_mission()
 				return
 		if _escape_time_left <= 0.0:
 			_fail_mission("انتهى الوقت قبل الإفلات من المطاردين.")
-		elif _pursuer != null and is_instance_valid(_pursuer) and _pursuer.global_position.distance_to(_vehicle.global_position) <= PURSUER_CATCH_DISTANCE:
+		elif pursuit_distance <= PURSUER_CATCH_DISTANCE:
 			_fail_mission("لحق بك المطاردون. حاول مرة أخرى.")
 
 	_refresh_hud()
@@ -177,6 +173,9 @@ func _rescue_witness() -> void:
 	if _pursuer != null and is_instance_valid(_pursuer):
 		_pursuer.visible = true
 		_pursuer.global_position = Vector3(-2.8, 0.0, -49.0)
+	if _backup_pursuer != null and is_instance_valid(_backup_pursuer):
+		_backup_pursuer.visible = true
+		_backup_pursuer.global_position = Vector3(3.4, 0.0, -55.0)
 	_set_phase(Phase.ESCAPE_PURSUIT, "أنقذت الشاهد! ارجع إلى ساحة القرية قبل أن يمسك بك المطاردون.")
 
 
@@ -185,6 +184,8 @@ func _complete_mission() -> void:
 	_save_completion()
 	if _pursuer != null and is_instance_valid(_pursuer):
 		_pursuer.visible = false
+	if _backup_pursuer != null and is_instance_valid(_backup_pursuer):
+		_backup_pursuer.visible = false
 	_set_phase(Phase.COMPLETE, "نجحت العملية! عاد الشاهد إلى الأمان.")
 	if _retry_button != null:
 		_retry_button.visible = false
@@ -215,6 +216,8 @@ func _on_retry_pressed() -> void:
 		_passenger_visual = null
 	if _pursuer != null and is_instance_valid(_pursuer):
 		_pursuer.visible = false
+	if _backup_pursuer != null and is_instance_valid(_backup_pursuer):
+		_backup_pursuer.visible = false
 	_phase = Phase.ENTER_VEHICLE
 	_escape_time_left = ESCAPE_TIME_LIMIT
 	_vehicle_health = 100
@@ -232,15 +235,32 @@ func _player_is_driving() -> bool:
 
 
 func _update_pursuer(delta: float) -> void:
-	if _pursuer == null or not is_instance_valid(_pursuer) or _vehicle == null:
+	if _vehicle == null:
 		return
-	var direction := _vehicle.global_position - _pursuer.global_position
+	_move_pursuer_actor(_pursuer, delta, PURSUER_SPEED)
+	_move_pursuer_actor(_backup_pursuer, delta, PURSUER_SPEED * 0.92)
+
+
+func _move_pursuer_actor(actor: Node3D, delta: float, speed: float) -> void:
+	if actor == null or not is_instance_valid(actor) or not actor.visible:
+		return
+	var direction := _vehicle.global_position - actor.global_position
 	direction.y = 0.0
 	if direction.length_squared() <= 0.01:
 		return
 	direction = direction.normalized()
-	_pursuer.global_position += direction * PURSUER_SPEED * delta
-	_pursuer.rotation.y = atan2(-direction.x, -direction.z)
+	actor.global_position += direction * speed * delta
+	actor.rotation.y = atan2(-direction.x, -direction.z)
+
+
+func _closest_pursuer_distance() -> float:
+	if _vehicle == null:
+		return 999.0
+	var closest := 999.0
+	for actor in [_pursuer, _backup_pursuer]:
+		if actor != null and is_instance_valid(actor) and actor.visible:
+			closest = minf(closest, actor.global_position.distance_to(_vehicle.global_position))
+	return closest
 
 
 func _create_route_visuals() -> void:
@@ -295,20 +315,25 @@ func _create_witness() -> void:
 
 
 func _create_pursuer() -> void:
-	_pursuer = Node3D.new()
-	_pursuer.name = "PursuitVehicle"
-	_pursuer.position = Vector3(-2.8, 0.0, -49.0)
-	_pursuer.visible = false
-	_world_root.add_child(_pursuer)
+	_pursuer = _make_pursuer_actor("PursuitVehicle", Vector3(-2.8, 0.0, -49.0), Color(0.45, 0.12, 0.10))
+	_backup_pursuer = _make_pursuer_actor("BackupPursuitVehicle", Vector3(3.4, 0.0, -55.0), Color(0.12, 0.22, 0.42))
+
+
+func _make_pursuer_actor(actor_name: String, start_position: Vector3, body_color: Color) -> Node3D:
+	var actor := Node3D.new()
+	actor.name = actor_name
+	actor.position = start_position
+	actor.visible = false
+	_world_root.add_child(actor)
 	var body := MeshInstance3D.new()
 	var mesh := BoxMesh.new()
 	mesh.size = Vector3(2.0, 0.8, 3.8)
 	body.mesh = mesh
 	body.position.y = 0.75
 	var material := StandardMaterial3D.new()
-	material.albedo_color = Color(0.45, 0.12, 0.10)
+	material.albedo_color = body_color
 	body.material_override = material
-	_pursuer.add_child(body)
+	actor.add_child(body)
 	var cabin := MeshInstance3D.new()
 	var cabin_mesh := BoxMesh.new()
 	cabin_mesh.size = Vector3(1.5, 0.65, 1.7)
@@ -317,7 +342,8 @@ func _create_pursuer() -> void:
 	var cabin_material := StandardMaterial3D.new()
 	cabin_material.albedo_color = Color(0.16, 0.18, 0.19)
 	cabin.material_override = cabin_material
-	_pursuer.add_child(cabin)
+	actor.add_child(cabin)
+	return actor
 
 
 func _add_passenger_visual() -> void:
