@@ -114,6 +114,14 @@ func _run_mobile_controls_test() -> void:
 		_fail("A right-side touch drag did not rotate the camera.")
 		return
 
+	# Turning the character body must not drag the camera's world-space yaw.
+	var camera_world_yaw: float = camera_pivot.global_rotation.y
+	player.rotation.y += deg_to_rad(90.0)
+	camera_pivot.call("_process", 0.016)
+	if not is_equal_approx(wrapf(camera_pivot.global_rotation.y - camera_world_yaw, -PI, PI), 0.0):
+		_fail("Rotating the player body changed the camera world yaw.")
+		return
+
 	print("PASS: joystick touch drives movement, release clears input, left touch is isolated, and right drag controls camera.")
 	quit(0)
 
