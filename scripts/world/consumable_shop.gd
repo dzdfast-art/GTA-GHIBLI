@@ -8,9 +8,11 @@ const PRICES := {
 	"date_snack": 12,
 	"water_bottle": 8,
 	"herbal_tea": 14,
-	"field_meal": 25
+	"field_meal": 25,
+	"carrot": 9,
+	"wild_berries": 18
 }
-const ITEM_ORDER := ["village_bread", "apple", "date_snack", "water_bottle", "herbal_tea", "field_meal"]
+const ITEM_ORDER := ["village_bread", "apple", "date_snack", "water_bottle", "herbal_tea", "field_meal", "carrot", "wild_berries"]
 
 var _panel: PanelContainer
 var _status_label: Label
