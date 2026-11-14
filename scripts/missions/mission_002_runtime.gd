@@ -22,6 +22,8 @@ var _vehicle: CharacterBody3D
 var _phase: Phase = Phase.LOCKED
 var _mission_data: Dictionary = {}
 var _escape_time_left := ESCAPE_TIME_LIMIT
+var _vehicle_health := 100
+var _impact_cooldown := 0.0
 var _pursuer: Node3D
 var _witness: Node3D
 var _passenger_visual: Node3D
@@ -30,6 +32,7 @@ var _panel: PanelContainer
 var _objective_label: Label
 var _status_label: Label
 var _timer_label: Label
+var _damage_label: Label
 var _retry_button: Button
 var _visuals_created := false
 var _status_override := ""
@@ -75,6 +78,17 @@ func _process(delta: float) -> void:
 	elif _phase == Phase.ESCAPE_PURSUIT:
 		_escape_time_left = maxf(0.0, _escape_time_left - delta)
 		_update_pursuer(delta)
+		_impact_cooldown = maxf(0.0, _impact_cooldown - delta)
+		var pursuit_distance := 999.0
+		if _pursuer != null and is_instance_valid(_pursuer) and _vehicle != null:
+			pursuit_distance = _pursuer.global_position.distance_to(_vehicle.global_position)
+		if pursuit_distance <= 5.5 and pursuit_distance > PURSUER_CATCH_DISTANCE and _impact_cooldown <= 0.0:
+			_vehicle_health = maxi(0, _vehicle_health - 20)
+			_impact_cooldown = 2.5
+			_status_override = "اصطدمت سيارة المطارد بسيارتك! ابتعد عنها بسرعة."
+			if _vehicle_health <= 0:
+				_fail_mission("تعطلت السيارة بسبب اصطدامات المطاردة.")
+				return
 		if _vehicle != null and _vehicle.global_position.distance_to(HOME_POSITION) <= 9.0:
 			var pursuer_distance := 999.0
 			if _pursuer != null and is_instance_valid(_pursuer):
@@ -142,6 +156,8 @@ func _save_completion() -> void:
 func _start_mission() -> void:
 	_phase = Phase.ENTER_VEHICLE
 	_escape_time_left = ESCAPE_TIME_LIMIT
+	_vehicle_health = 100
+	_impact_cooldown = 0.0
 	_create_route_visuals()
 	_refresh_hud()
 
@@ -201,6 +217,8 @@ func _on_retry_pressed() -> void:
 		_pursuer.visible = false
 	_phase = Phase.ENTER_VEHICLE
 	_escape_time_left = ESCAPE_TIME_LIMIT
+	_vehicle_health = 100
+	_impact_cooldown = 0.0
 	_status_override = "ابدأ من جديد: استقل السيارة واتبع الطريق القديم."
 	_refresh_hud()
 
@@ -374,6 +392,10 @@ func _build_hud() -> void:
 	_timer_label = Label.new()
 	_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	content.add_child(_timer_label)
+	_damage_label = Label.new()
+	_damage_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_damage_label.visible = false
+	content.add_child(_damage_label)
 	_retry_button = Button.new()
 	_retry_button.text = "إعادة المحاولة"
 	_retry_button.visible = false
@@ -413,5 +435,8 @@ func _refresh_hud() -> void:
 		_timer_label.text = "الوقت المتبقي: %d ثانية" % ceili(_escape_time_left)
 	elif _phase != Phase.FAILED:
 		_timer_label.text = ""
+	if _damage_label != null:
+		_damage_label.visible = _phase == Phase.ESCAPE_PURSUIT
+		_damage_label.text = "سلامة السيارة: %d%%" % _vehicle_health
 	if not _status_override.is_empty() and _phase != Phase.FAILED:
 		_status_label.text = _status_override
