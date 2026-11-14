@@ -32,6 +32,7 @@ jobs:
           python -m json.tool data/world/side_activities.json > /dev/null
           python -m json.tool data/items/consumables.json > /dev/null
           python -m json.tool data/world/wildlife_catalog.json > /dev/null
+          python -m json.tool audio/ambience/manifest.json > /dev/null
 
       - name: Audit Android privacy permissions
         run: python tools/privacy_audit.py
@@ -115,6 +116,9 @@ jobs:
 
       - name: Test last train escort mission 004
         run: godot --headless --path . --script res://tests/mission_004_runtime_test.gd
+
+      - name: Test original ambience audio assets
+        run: godot --headless --path . --script res://tests/nature_ambience_assets_test.gd
 
       - name: Test global weather transitions
         run: godot --headless --path . --script res://tests/world_weather_test.gd
