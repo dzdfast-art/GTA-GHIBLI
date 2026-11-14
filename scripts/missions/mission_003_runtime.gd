@@ -14,7 +14,7 @@ const EVIDENCE_POSITIONS := [
 	Vector3(35.0, 0.0, -44.0),
 	Vector3(25.0, 0.0, -51.0)
 ]
-const DETECTION_RADIUS := 4.6
+const DETECTION_RADIUS := 3.2
 const MAX_DETECTIONS := 3
 
 var _player: CharacterBody3D
@@ -24,6 +24,7 @@ var _evidence_found := 0
 var _detections := 0
 var _elapsed := 0.0
 var _guards: Array[Node3D] = []
+var _guard_alert_state: Dictionary = {}
 var _evidence_markers: Array[Node3D] = []
 var _panel: PanelContainer
 var _objective_label: Label
@@ -104,6 +105,7 @@ func _start_mission() -> void:
 	_phase = Phase.MEET_CONTACT
 	_evidence_found = 0
 	_detections = 0
+	_guard_alert_state.clear()
 	_elapsed = 0.0
 	_status_override = "مهمة جديدة: قابل نورا قرب الميناء."
 	_create_harbor_blockout()
@@ -124,11 +126,16 @@ func _update_guards(delta: float) -> void:
 		var origin: Vector3 = EVIDENCE_POSITIONS[index % EVIDENCE_POSITIONS.size()] + Vector3(0.0, 0.0, 4.0)
 		var patrol_offset := sin(_elapsed * (0.65 + float(index) * 0.12)) * 3.0
 		guard.global_position = origin + Vector3(patrol_offset, 0.0, 0.0)
-		if _player.global_position.distance_to(guard.global_position) <= DETECTION_RADIUS:
+		var guard_id := guard.get_instance_id()
+		var distance := _player.global_position.distance_to(guard.global_position)
+		if distance <= DETECTION_RADIUS and not bool(_guard_alert_state.get(guard_id, false)):
+			_guard_alert_state[guard_id] = true
 			_detections += 1
 			_status_override = "انتبه! أحد الحراس رآك. ابتعد عن دورياتهم."
 			if _detections >= MAX_DETECTIONS:
 				return
+		elif distance > DETECTION_RADIUS + 1.5:
+			_guard_alert_state[guard_id] = false
 
 
 func _check_evidence_pickups() -> void:
@@ -178,6 +185,7 @@ func _on_retry_pressed() -> void:
 			guard.visible = true
 	_evidence_found = 0
 	_detections = 0
+	_guard_alert_state.clear()
 	_elapsed = 0.0
 	_phase = Phase.MEET_CONTACT
 	_status_override = "حاول مجدداً: قابل نورا قرب الميناء."
@@ -195,7 +203,7 @@ func _create_harbor_blockout() -> void:
 	for index in range(EVIDENCE_POSITIONS.size()):
 		var evidence := _make_marker("Evidence_%d" % (index + 1), EVIDENCE_POSITIONS[index] + Vector3.UP * 0.8, Color(0.95, 0.78, 0.22))
 		_evidence_markers.append(evidence)
-		var guard := _make_guard("HarborGuard_%d" % (index + 1), EVIDENCE_POSITIONS[index] + Vector3(0.0, 0.0, 4.0))
+		var guard := _make_guard("HarborGuard_%d" % (index + 1), EVIDENCE_POSITIONS[index] + Vector3(0.0, 0.0, 7.5))
 		_guards.append(guard)
 	_make_marker("NoraContactMarker", CONTACT_POSITION + Vector3.UP * 0.15, Color(0.25, 0.85, 0.75))
 	_make_marker("HarborGateMarker", HARBOR_GATE_POSITION + Vector3.UP * 0.15, Color(0.95, 0.55, 0.18))
