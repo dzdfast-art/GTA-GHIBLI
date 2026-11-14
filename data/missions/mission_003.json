@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "mission_id": "shadows_over_the_harbor",
+  "title": "ظلال فوق الميناء",
+  "chapter": 1,
+  "mission_type": "stealth_investigation",
+  "status": "designed_not_yet_playable",
+  "description": "تطلب نورا بليك من ليو جمع دليل يربط الإشارة الغامضة بشحنة وصلت إلى الميناء.",
+  "start_region": "harbor_city",
+  "mission_giver": "nora_blake",
+  "cinematic_beats": [
+    "Rain falls on harbor containers as a distant ship horn sounds.",
+    "Nora slides a photograph across a dimly lit table.",
+    "The camera holds on a container number before control returns to the player."
+  ],
+  "objectives": [
+    {"id":"meet_nora","type":"talk","description":"قابل نورا في المقهى القريب من الميناء"},
+    {"id":"enter_harbor","type":"infiltration","description":"ادخل منطقة الميناء دون لفت الانتباه"},
+    {"id":"photograph_evidence","type":"investigation","description":"صوّر ثلاث قطع دليل مختلفة"},
+    {"id":"avoid_patrols","type":"stealth","description":"تجنب دوريات الحراسة"},
+    {"id":"deliver_evidence","type":"return_to_contact","description":"سلّم الأدلة إلى نورا"}
+  ],
+  "player_choices": [
+    {"id":"share_or_hide_evidence","description":"شارك كل الأدلة أو احتفظ بجزء منها؛ تتغير ثقة نورا والنتائج اللاحقة."}
+  ],
+  "failure_conditions": ["detected_too_many_times","evidence_destroyed"],
+  "rewards": {"currency":220,"unlocks":["harbor_investigation","nora_relationship_branch"]},
+  "design_notes": "Mission design only. Requires stealth visibility, evidence pickups, guard patrols and relationship branch runtime systems."
+}
