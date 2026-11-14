@@ -49,8 +49,7 @@
   ],
   "failure_conditions": [
     "timer_expired",
-    "rescued_npc_health_depleted",
-    "vehicle_disabled"
+    "pursuer_caught"
   ],
   "rewards": {
     "currency": 180,
@@ -59,5 +58,25 @@
       "vehicle_pursuit_events"
     ]
   },
-  "design_notes": "Runtime prototype integrated through scripts/missions/mission_002_runtime.gd. It unlocks after mission_001 is complete and implements vehicle entry, checkpoint, a physical blockade with a central gap, witness rescue, a scripted pursuit vehicle, a 90-second escape timer, failure/retry, and a local completion save. This is a lightweight blockout prototype: witness dialogue/voice, advanced pursuit AI, vehicle damage, cinematic camera shots, and production art remain future work."
+  "design_notes": "Runtime prototype integrated through scripts/missions/mission_002_runtime.gd. It unlocks after mission_001 is complete and implements vehicle entry, checkpoint, a physical blockade with a central gap, witness rescue, a scripted pursuit vehicle, a 90-second escape timer, failure/retry, and a local completion save. This is a lightweight blockout prototype: witness dialogue/voice, advanced pursuit AI, vehicle damage, cinematic camera shots, and production art remain future work.",
+  "runtime_config": {
+    "escape_timer_seconds": 90,
+    "pursuer_speed_meters_per_second": 6.8,
+    "pursuer_catch_distance_meters": 3.2,
+    "checkpoint_position": [
+      0,
+      0,
+      -25
+    ],
+    "witness_position": [
+      0,
+      0,
+      -42
+    ],
+    "safe_return_position": [
+      0,
+      0,
+      0
+    ]
+  }
 }
