@@ -66,6 +66,7 @@ jobs:
             res://scripts/missions/mission_004_runtime.gd \
             res://scripts/world/side_activity_director.gd \
             res://scripts/world/world_clock.gd \
+            res://scripts/world/open_world_regions.gd \
             res://scripts/missions/cinematic_director.gd
           do
             echo "Checking $script"
@@ -110,6 +111,9 @@ jobs:
 
       - name: Test last train escort mission 004
         run: godot --headless --path . --script res://tests/mission_004_runtime_test.gd
+
+      - name: Test four open-world districts
+        run: godot --headless --path . --script res://tests/open_world_regions_test.gd
 
       - name: Test world clock and day-night phases
         run: godot --headless --path . --script res://tests/world_clock_test.gd
