@@ -26,13 +26,13 @@ func _run_test() -> void:
 		return
 
 	player.global_position = runtime.CONTACT_POSITION
-	runtime._process(0.0)
+	runtime._physics_process(0.0)
 	if runtime._phase != 2:
 		_fail("Meeting Nora did not unlock harbor entry.")
 		return
 
 	player.global_position = runtime.HARBOR_GATE_POSITION
-	runtime._process(0.0)
+	runtime._physics_process(0.0)
 	if runtime._phase != 3:
 		_fail("Reaching the harbor gate did not start evidence collection.")
 		return
@@ -53,14 +53,14 @@ func _run_test() -> void:
 
 	for marker in runtime._evidence_markers:
 		player.global_position = marker.global_position
-		runtime._process(0.0)
+		runtime._physics_process(0.0)
 
 	if runtime._evidence_found != 3 or runtime._phase != 4:
 		_fail("Collecting all three evidence items did not unlock the return objective.")
 		return
 
 	player.global_position = runtime.CONTACT_POSITION
-	runtime._process(0.0)
+	runtime._physics_process(0.0)
 	if runtime._phase != 5:
 		_fail("Returning to Nora with all evidence did not complete mission 003.")
 		return
