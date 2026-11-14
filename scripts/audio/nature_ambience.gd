@@ -33,6 +33,7 @@ var _owl_level := 0.0
 var _rain_level := 0.0
 
 func _ready() -> void:
+	add_to_group("nature_ambience")
 	_random.randomize()
 	_player = AudioStreamPlayer.new()
 	_player.name = "ProceduralNatureAudio"
