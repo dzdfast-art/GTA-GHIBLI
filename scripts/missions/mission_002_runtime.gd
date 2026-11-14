@@ -201,6 +201,7 @@ func _on_retry_pressed() -> void:
 		_pursuer.visible = false
 	_phase = Phase.ENTER_VEHICLE
 	_escape_time_left = ESCAPE_TIME_LIMIT
+	_status_override = "ابدأ من جديد: استقل السيارة واتبع الطريق القديم."
 	_refresh_hud()
 
 
