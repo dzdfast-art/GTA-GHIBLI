@@ -44,7 +44,7 @@ Do not invent agreed ages, biographies, precise relationships beyond those state
 | Player | Capsule placeholder and basic third-person movement | Finished original character, rig, animations, interactions and state handling | Placeholder only |
 | Dialogue | Arabic text and emotion metadata for Mira | Real expressive Arabic voice acting, consistent character voices, subtitles and synchronized presentation | Audio status remains pending until real audio is integrated and tested |
 | Missions | One tutorial flow: square → Mira → garden | Main story, side missions, jobs, dynamic encounters and varied activities | Current mission is a small prototype, not the campaign |
-| Vehicles | No implemented drivable vehicle confirmed | Cars, motorcycles, bicycles, vans, trucks, heavy vehicles, boats, aircraft, helicopters and other suitable transport | Build reusable vehicle classes and category-specific controls |
+| Vehicles | First drivable road-car prototype added: enter/exit, forward/reverse, steering, braking and contextual mobile HUD; procedural placeholder art | Cars, motorcycles, bicycles, vans, trucks, heavy vehicles, boats, aircraft, helicopters and other suitable transport | Expand vehicle physics and category-specific classes; physical Android handling test remains outstanding |
 | Interaction | Mira proximity and TALK action | Reusable interactions with people, objects, buildings, food, nature and vehicles | General interaction framework remains to be implemented |
 | Save | Local persistence for the first mission flags | Versioned game-wide progress including missions, player, inventory, settings and relevant vehicle/world state | Current save is mission-only |
 | Platform | Godot headless CI | Android export, install, launch and physical-device testing | Not yet verified on device |
@@ -117,7 +117,8 @@ Repository inspection confirms:
 - The first mission reads JSON objectives, tracks the square/Mira/garden sequence and saves/restores those mission flags locally.
 - The mission reward is displayed as prototype information; it is not a real currency/inventory system.
 - A shared player interaction router now detects nearby registered interaction areas and dispatches the common `interact()` contract; Mira is the first target migrated to it. A new physics-backed proximity/dispatch test has been added to CI, but its latest run is not yet verified.
-- No working drivable vehicle, full movable-object physics system, complete NPC population, campaign, Android package or physical-device test is verified.
+- A first drivable road-car prototype is present, with enter/exit, forward/reverse, steering, braking and a contextual mobile HUD. A headless test initially covered enter/forward/exit; the latest test commit adds reverse, steering, braking and collision/visibility restoration assertions. Those expanded assertions are awaiting CI confirmation and have not been run on a physical Android device.
+- Advanced vehicle physics (suspension, tire grip, damage, repair, fuel, audio, passenger seats and traffic AI), other vehicle classes, a complete movable-object physics system, full NPC population and campaign are not implemented.
 
 GitHub Actions run **43513899542** completed successfully: JSON validation, Godot 4.7 import, gameplay-script parsing, first-mission flow test and 180-frame main-scene smoke test all passed. This is a headless CI result, not Android/device validation.
 
