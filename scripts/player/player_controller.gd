@@ -23,8 +23,12 @@ func _physics_process(delta: float) -> void:
 	var move_direction: Vector3 = camera_right * input_vector.x + camera_forward * -input_vector.y
 	if move_direction.length_squared() > 1.0:
 		move_direction = move_direction.normalized()
-	velocity.x = move_toward(velocity.x, move_direction.x * move_speed, acceleration * delta)
-	velocity.z = move_toward(velocity.z, move_direction.z * move_speed, acceleration * delta)
+	var effective_move_speed := move_speed
+	var needs := get_node_or_null("PlayerNeeds")
+	if needs != null and needs.has_method("get_movement_multiplier"):
+		effective_move_speed *= clampf(float(needs.call("get_movement_multiplier")), 0.4, 1.0)
+	velocity.x = move_toward(velocity.x, move_direction.x * effective_move_speed, acceleration * delta)
+	velocity.z = move_toward(velocity.z, move_direction.z * effective_move_speed, acceleration * delta)
 	if is_on_floor():
 		if velocity.y < 0.0:
 			velocity.y = 0.0
