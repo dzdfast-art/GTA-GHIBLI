@@ -31,3 +31,10 @@ These mission records are authored designs, not playable missions yet. The curre
 3. Add the harbor investigation after stealth and evidence systems exist.
 4. Add the train rescue after escort and branching mission support exists.
 5. Record and integrate Arabic character voices and cinematic sound design.
+
+
+## Mission 002 runtime status — 2026-11-14
+
+Mission 002 now has a lightweight playable blockout runtime in `scripts/missions/mission_002_runtime.gd`. It unlocks after the first village mission is completed and includes vehicle entry, a checkpoint, a physical road blockade with a narrow central passage, an on-foot witness rescue, a scripted pursuer vehicle, a 90-second escape phase, failure/retry, and a local completion save. The headless regression test is `tests/mission_002_runtime_test.gd`.
+
+This is not a finished cinematic mission: the witness is a placeholder actor, the pursuer uses simple scripted movement, and vehicle damage, advanced AI, voiced Arabic dialogue, animated camera shots, final art/audio, and Android device playtesting are still outstanding. Missions 003 and 004 remain design-only.
