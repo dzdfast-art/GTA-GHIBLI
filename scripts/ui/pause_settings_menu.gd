@@ -8,6 +8,7 @@ const TEXT_COLOR := Color(0.94, 0.93, 0.86, 1.0)
 var _overlay: Control
 var _main_panel: PanelContainer
 var _settings_panel: PanelContainer
+var _pause_touch_button: Button
 var _menu_buttons: Array[Button] = []
 var _selected_menu_index := 2
 var _settings := {
@@ -46,10 +47,14 @@ func _open_menu() -> void:
 	_overlay.visible = true
 	_main_panel.visible = true
 	_settings_panel.visible = false
+	if _pause_touch_button != null:
+		_pause_touch_button.visible = false
 	get_tree().paused = true
 
 func _close_menu() -> void:
 	_overlay.visible = false
+	if _pause_touch_button != null:
+		_pause_touch_button.visible = true
 	get_tree().paused = false
 
 func _build_interface() -> void:
@@ -126,6 +131,7 @@ func _build_interface() -> void:
 	_build_settings_page()
 
 	var pause_button := _make_button("Ⅱ", 22)
+	_pause_touch_button = pause_button
 	pause_button.name = "PauseTouchButton"
 	pause_button.anchor_left = 1.0
 	pause_button.anchor_right = 1.0
@@ -175,7 +181,7 @@ func _refresh_menu_selection() -> void:
 		button.add_theme_color_override("font_color", Color(0.86, 0.65, 0.18, 1.0) if i == _selected_menu_index else Color(0.43, 0.32, 0.10, 1.0))
 
 func _move_menu_selection(direction: int) -> void:
-	if not _main_panel.visible or _menu_buttons.is_empty():
+	if _overlay == null or not _overlay.visible or not _main_panel.visible or _menu_buttons.is_empty():
 		return
 	_selected_menu_index = posmod(_selected_menu_index + direction, _menu_buttons.size())
 	_refresh_menu_selection()
