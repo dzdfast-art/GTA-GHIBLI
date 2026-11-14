@@ -199,9 +199,12 @@ func _build_civilians(district: Node3D, region_id: String, npc_names: Array) -> 
 		brain.set("schedule_enabled", true)
 		brain.set("work_start_hour", 8 + index)
 		brain.set("work_end_hour", 17 + index)
-		brain.set("work_position", positions[index] + Vector3(1.5, 0.0, 1.0))
-		brain.set("home_position", positions[index])
+		brain.set("work_position", civilian.to_global(positions[index] + Vector3(1.5, 0.0, 1.0)))
+		brain.set("home_position", civilian.global_position)
 		civilian.add_child(brain)
+		var clocks := get_tree().get_nodes_in_group("world_clock")
+		if not clocks.is_empty() and is_instance_valid(clocks[0]):
+			brain.call("set_world_hour", int(clocks[0].call("get_hour")))
 		_population_count += 1
 
 func _add_tree(parent: Node3D, tree_name: String, at: Vector3, scale_value: float) -> void:
