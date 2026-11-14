@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "prototype_wildlife_catalog",
+  "species": [
+    {
+      "id": "deer",
+      "name_ar": "غزال",
+      "habitat": "pine_highlands",
+      "behavior": ["roam", "flee", "bond_after_feeding"],
+      "preferred_food": ["wild_berries", "carrot"],
+      "prototype_population": 3
+    },
+    {
+      "id": "rabbit",
+      "name_ar": "أرنب",
+      "habitat": "amber_valley",
+      "behavior": ["roam", "flee", "bond_after_feeding"],
+      "preferred_food": ["carrot", "wild_berries"],
+      "prototype_population": 5
+    },
+    {
+      "id": "gull",
+      "name_ar": "نورس",
+      "habitat": "sapphire_coast",
+      "behavior": ["roam", "flee", "bond_after_feeding"],
+      "preferred_food": ["wild_berries"],
+      "prototype_population": 4
+    }
+  ],
+  "notes_ar": "أصول الشخصيات الحيوانية الحالية نماذج هندسية أولية بلا رسوم تحريك نهائية أو مؤثرات صوتية فردية."
+}
