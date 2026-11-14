@@ -72,7 +72,7 @@ func _create_world() -> void:
 	var ground_mesh := MeshInstance3D.new()
 	ground_mesh.name = "GroundVisual"
 	var box_mesh := BoxMesh.new()
-	box_mesh.size = Vector3(100.0, 1.0, 100.0)
+	box_mesh.size = Vector3(260.0, 1.0, 200.0)
 	ground_mesh.mesh = box_mesh
 	ground_mesh.position.y = -0.5
 	var grass_material := StandardMaterial3D.new()
@@ -83,7 +83,7 @@ func _create_world() -> void:
 	var ground_collision := CollisionShape3D.new()
 	ground_collision.name = "GroundCollision"
 	var ground_shape := BoxShape3D.new()
-	ground_shape.size = Vector3(100.0, 1.0, 100.0)
+	ground_shape.size = Vector3(260.0, 1.0, 200.0)
 	ground_collision.shape = ground_shape
 	ground_collision.position.y = -0.5
 	ground.add_child(ground_collision)
