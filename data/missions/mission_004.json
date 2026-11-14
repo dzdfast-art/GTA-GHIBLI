@@ -3,27 +3,68 @@
   "mission_id": "the_last_train",
   "title": "القطار الأخير",
   "chapter": 1,
-  "mission_type": "multi_stage_action_rescue",
-  "status": "designed_not_yet_playable",
-  "description": "تتحول محاولة إخراج كلير وميا من المدينة إلى سباق مع قطار يغادر قبل إغلاق الجسر.",
-  "start_region": "amber_valley",
-  "mission_giver": "claire_bennett",
+  "mission_type": "escort_timed_route_choice",
+  "status": "runtime_prototype",
+  "description": "تصل ميا إلى محطة مهجورة وتحاول مغادرة المدينة على متن آخر قطار. على ليو تعطيل الإنذارات ومرافقة القطار حتى المفترق ثم اختيار طريق النجاة.",
+  "start_region": "harbor_city",
+  "mission_giver": "mia_bennett",
   "cinematic_beats": [
-    "A station clock ticks in close-up.",
-    "Claire pulls Mia behind a pillar as a train approaches.",
-    "Leo sees the crossing barriers descend and sprints toward the platform."
+    "صفارة قطار بعيدة تقطع هدوء المحطة.",
+    "تظهر ميا قرب الرصيف وهي تشير إلى لوحة إنذار تومض.",
+    "تتحرك عجلات القطار ببطء بينما يركض ليو بمحاذاته."
   ],
   "objectives": [
-    {"id":"reach_station","type":"timed_traversal","description":"اعبر الشوارع واصل إلى المحطة قبل مغادرة القطار","time_limit_seconds":120},
-    {"id":"protect_mia","type":"escort","description":"احمِ ميا أثناء عبور المنصة"},
-    {"id":"disable_alarm","type":"interact_under_pressure","description":"أوقف الإنذار الذي كشف موقعكم"},
-    {"id":"choose_escape","type":"branching_choice","description":"اختر الهروب بالقطار أو عبر الطريق الخلفي"},
-    {"id":"survive_escape","type":"escape_sequence","description":"نجّ بالعائلة من المطاردة"}
+    {
+      "id": "meet_mia",
+      "type": "meet_character",
+      "description": "قابل ميا في محطة القطار"
+    },
+    {
+      "id": "reach_train",
+      "type": "reach_location",
+      "description": "اتبع ميا إلى القطار الأخير"
+    },
+    {
+      "id": "disable_alarms",
+      "type": "interact_with_objects",
+      "description": "عطّل لوحتي الإنذار قبل مغادرة القطار"
+    },
+    {
+      "id": "escort_train",
+      "type": "escort_moving_vehicle",
+      "description": "ابق قريباً من القطار واحمِ ميا أثناء تحركه"
+    },
+    {
+      "id": "choose_route",
+      "type": "branching_route_choice",
+      "description": "اختر المسار الشمالي أو الجنوبي عند المفترق"
+    }
   ],
   "player_choices": [
-    {"id":"train_or_backroad","description":"القطار أسرع لكنه مكشوف، والطريق الخلفي أطول وأكثر خطورة."}
+    {
+      "id": "north_or_south_route",
+      "description": "المسار الشمالي يمنح مكافأة 350، والجنوبي 400؛ يتم حفظ اختيار اللاعب."
+    }
   ],
-  "failure_conditions": ["mia_left_behind","timer_expired","player_or_escort_disabled"],
-  "rewards": {"currency":300,"unlocks":["family_story_branch","night_city_events"]},
-  "design_notes": "Mission design only. Requires escort AI, alarm interactions, timed train event, branching route and pursuit gameplay."
+  "failure_conditions": [
+    "mission_timer_expired",
+    "player_abandoned_train"
+  ],
+  "rewards": {
+    "north_route_currency": 350,
+    "south_route_currency": 400,
+    "unlocks": [
+      "chapter_02_route_consequences"
+    ]
+  },
+  "design_notes": "Playable lightweight runtime blockout in scripts/missions/mission_004_runtime.gd. Unlocks after mission_003 completion. Includes a primitive train model, station platform and rails, Mia placeholder, two alarm panels, a timed moving-train escort, two route choices, retry, HUD and local completion save. Still needs production train/character models, animation, sound, voice acting, route-specific story consequences and Android device testing.",
+  "runtime_config": {
+    "alarm_panel_count": 2,
+    "escort_duration_seconds": 20,
+    "train_speed_meters_per_second": 2.2,
+    "maximum_mission_time_seconds": 180,
+    "maximum_abandon_time_seconds": 7,
+    "north_route_reward": 350,
+    "south_route_reward": 400
+  }
 }
