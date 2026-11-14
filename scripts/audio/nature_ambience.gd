@@ -140,6 +140,10 @@ func _smooth_band(value: float, rise_start: float, rise_end: float,
 	return clampf(rising * falling, 0.0, 1.0)
 
 func get_game_hour() -> float:
+	if is_inside_tree():
+		var clocks := get_tree().get_nodes_in_group("world_clock")
+		if not clocks.is_empty() and is_instance_valid(clocks[0]) and clocks[0].has_method("get_game_hour"):
+			return float(clocks[0].call("get_game_hour"))
 	return fposmod(5.0 + (elapsed_game_seconds / DAY_LENGTH_SECONDS) * 24.0, 24.0)
 
 func set_biome(value: String) -> void:
