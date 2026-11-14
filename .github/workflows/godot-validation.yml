@@ -30,6 +30,7 @@ jobs:
           python -m json.tool data/missions/mission_003.json > /dev/null
           python -m json.tool data/missions/mission_004.json > /dev/null
           python -m json.tool data/world/side_activities.json > /dev/null
+          python -m json.tool data/items/consumables.json > /dev/null
 
       - name: Audit Android privacy permissions
         run: python tools/privacy_audit.py
