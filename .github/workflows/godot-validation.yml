@@ -58,7 +58,8 @@ jobs:
             res://scripts/systems/player_wallet.gd \
             res://scripts/world/consumable_shop.gd \
             res://scripts/camera/third_person_camera.gd \
-            res://scripts/ui/mobile_controls.gd \
+            res://scripts/ui/mobile_controls.gd \\
+            res://scripts/ui/pause_settings_menu.gd \
             res://scripts/ui/virtual_joystick.gd \
             res://scripts/world/willow_village.gd \
             res://scripts/characters/mira_npc.gd \
@@ -78,7 +79,7 @@ jobs:
             godot --headless --path . --check-only --script "$script"
           done
 
-      - name: Test player wallet and currency
+      - name: Test pause menu and saved settings\n        run: godot --headless --path . --script res://tests/pause_settings_menu_test.gd\n\n      - name: Test player wallet and currency
         run: godot --headless --path . --script res://tests/player_wallet_test.gd
 
       - name: Test village shop purchases
