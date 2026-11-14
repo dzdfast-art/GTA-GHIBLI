@@ -55,6 +55,7 @@ jobs:
             res://scripts/world/willow_village.gd \
             res://scripts/characters/mira_npc.gd \
             res://scripts/missions/mission_manager.gd \
+            res://scripts/missions/mission_002_runtime.gd \\
             res://scripts/missions/cinematic_director.gd
           do
             echo "Checking $script"
@@ -78,6 +79,9 @@ jobs:
 
       - name: Test first mission objective flow
         run: godot --headless --path . --script res://tests/mission_manager_test.gd
+
+      - name: Test rescue mission 002 progression and escape
+        run: godot --headless --path . --script res://tests/mission_002_runtime_test.gd
 
       - name: Run main scene smoke test
         run: godot --headless --path . --quit-after 180
