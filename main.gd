@@ -11,11 +11,13 @@ const MISSION_004_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_004_r
 const SIDE_ACTIVITY_DIRECTOR_SCRIPT = preload("res://scripts/world/side_activity_director.gd")
 const CINEMATIC_DIRECTOR_SCRIPT = preload("res://scripts/missions/cinematic_director.gd")
 const AMBIENCE_SCRIPT = preload("res://scripts/audio/nature_ambience.gd")
+const WORLD_CLOCK_SCRIPT = preload("res://scripts/world/world_clock.gd")
 const PLAYER_NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
 const CONSUMABLE_INVENTORY_SCRIPT = preload("res://scripts/systems/consumable_inventory.gd")
 
 func _ready() -> void:
 	_create_world()
+	_create_world_clock()
 	_create_village()
 	_create_player()
 	_create_player_needs()
@@ -176,3 +178,9 @@ func _create_player_needs() -> void:
 	var inventory: Node = CONSUMABLE_INVENTORY_SCRIPT.new()
 	inventory.name = "ConsumableInventory"
 	player.add_child(inventory)
+
+
+func _create_world_clock() -> void:
+	var clock: Node = WORLD_CLOCK_SCRIPT.new()
+	clock.name = "WorldClock"
+	add_child(clock)
