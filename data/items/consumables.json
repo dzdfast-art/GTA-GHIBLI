@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "status": "prototype_gameplay_data",
+  "items": [
+    {"id":"village_bread","name_ar":"خبز القرية","category":"food","nutrition":24,"hydration":2,"energy":3,"description_ar":"وجبة بسيطة من مخبز القرية."},
+    {"id":"apple","name_ar":"تفاحة طازجة","category":"food","nutrition":12,"hydration":8,"energy":1,"description_ar":"فاكهة خفيفة من بساتين الوادي."},
+    {"id":"date_snack","name_ar":"تمر","category":"food","nutrition":18,"hydration":1,"energy":8,"description_ar":"وجبة صغيرة تمنح دفعة من الطاقة."},
+    {"id":"water_bottle","name_ar":"قارورة ماء","category":"drink","nutrition":0,"hydration":35,"energy":0,"description_ar":"ماء للشرب أثناء الاستكشاف."},
+    {"id":"herbal_tea","name_ar":"شاي الأعشاب","category":"drink","nutrition":2,"hydration":18,"energy":5,"description_ar":"مشروب دافئ من متجر القرية."},
+    {"id":"field_meal","name_ar":"وجبة ميدانية","category":"food","nutrition":32,"hydration":5,"energy":12,"description_ar":"وجبة أكبر يمكن شراؤها من المتاجر."}
+  ]
+}
