@@ -8,7 +8,9 @@ const TEXT_COLOR := Color(0.94, 0.93, 0.86, 1.0)
 var _overlay: Control
 var _main_panel: PanelContainer
 var _settings_panel: PanelContainer
-var _settings := {
+var _menu_buttons: Array[Button] = []
+var _selected_menu_index := 0
+var _settings :=
 	"master_volume": 0.85, "music_volume": 0.65, "effects_volume": 0.85,
 	"dialogue_volume": 1.0, "look_sensitivity": 1.0, "graphics_quality": 2,
 	"target_fps": 60, "touch_scale": 1.0, "touch_opacity": 0.9, "show_subtitles": true, "language": "ar"
@@ -24,6 +26,12 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		toggle_pause()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_down"):
+		_move_menu_selection(1)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_up"):
+		_move_menu_selection(-1)
 		get_viewport().set_input_as_handled()
 
 func toggle_pause() -> void:
@@ -52,59 +60,61 @@ func _build_interface() -> void:
 	_overlay.visible = false
 	add_child(_overlay)
 
-	var shade := ColorRect.new()
-	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	shade.color = Color(0.015, 0.025, 0.025, 0.78)
-	_overlay.add_child(shade)
+	var black_backdrop := ColorRect.new()
+	black_backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	black_backdrop.color = Color(0.006, 0.008, 0.007, 1.0)
+	_overlay.add_child(black_backdrop)
 
-	var panel := _make_panel()
-	panel.name = "PauseMenu"
-	panel.set_anchors_preset(Control.PRESET_CENTER)
-	panel.position = Vector2(-430.0, -265.0)
-	panel.custom_minimum_size = Vector2(860.0, 530.0)
-	_overlay.add_child(panel)
-	_main_panel = panel
+	var header := TextureRect.new()
+	header.name = "CinematicCityHeader"
+	header.texture = load("res://assets/ui/pause_menu_header.svg")
+	header.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	header.offset_bottom = 235.0
+	header.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	header.stretch_mode = TextureRect.STRETCH_SCALE
+	_overlay.add_child(header)
 
-	var layout := HBoxContainer.new()
-	layout.add_theme_constant_override("separation", 20)
-	panel.add_child(layout)
-	var nav := VBoxContainer.new()
-	nav.custom_minimum_size.x = 245.0
-	nav.add_theme_constant_override("separation", 9)
-	layout.add_child(nav)
+	var header_fade := ColorRect.new()
+	header_fade.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	header_fade.offset_bottom = 255.0
+	header_fade.color = Color(0.0, 0.0, 0.0, 0.30)
+	_overlay.add_child(header_fade)
+
 	var title := Label.new()
-	title.text = "GTA GHIBLI"
-	title.add_theme_font_size_override("font_size", 29)
-	title.add_theme_color_override("font_color", ACCENT)
-	nav.add_child(title)
-	var subtitle := Label.new()
-	subtitle.text = "PAUSED  |  متوقف مؤقتاً"
-	subtitle.add_theme_font_size_override("font_size", 13)
-	subtitle.add_theme_color_override("font_color", TEXT_COLOR)
-	nav.add_child(subtitle)
-	nav.add_child(HSeparator.new())
-	_add_nav_button(nav, "متابعة اللعب  |  Resume", _close_menu)
-	_add_nav_button(nav, "الخريطة  |  Map", _show_info.bind("الخريطة"))
-	_add_nav_button(nav, "الإحصائيات  |  Stats", _show_info.bind("الإحصائيات"))
-	_add_nav_button(nav, "المهام  |  Brief", _show_info.bind("ملخص المهام"))
-	_add_nav_button(nav, "الإعدادات  |  Options", _show_settings)
-	_add_nav_button(nav, "إعادة التشغيل  |  Restart", _restart_game)
-	_add_nav_button(nav, "الخروج  |  Quit", _quit_game)
+	title.name = "PauseMenuTitle"
+	title.text = "Pause Menu"
+	title.position = Vector2(48.0, 30.0)
+	title.size = Vector2(540.0, 90.0)
+	title.add_theme_font_size_override("font_size",  sixty_four())
+	title.add_theme_color_override("font_color", Color(0.73, 0.48, 0.08, 1.0))
+	title.add_theme_color_override("font_shadow_color", Color(0.02, 0.01, 0.0, 0.95))
+	title.add_theme_constant_override("shadow_offset_x", 3)
+	title.add_theme_constant_override("shadow_offset_y", 4)
+	_overlay.add_child(title)
 
-	var content := VBoxContainer.new()
-	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	content.add_theme_constant_override("separation", 12)
-	layout.add_child(content)
-	var welcome := Label.new()
-	welcome.text = "استكشف عالمك بطريقتك"
-	welcome.add_theme_font_size_override("font_size", 25)
-	welcome.add_theme_color_override("font_color", TEXT_COLOR)
-	content.add_child(welcome)
-	var hint := Label.new()
-	hint.text = "خصص الرسومات والصوت والتحكم والكاميرا واللغة من قائمة الإعدادات."
-	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	hint.add_theme_color_override("font_color", Color(0.78, 0.81, 0.77, 1.0))
-	content.add_child(hint)
+	_main_panel = PanelContainer.new()
+	_main_panel.name = "PauseMenu"
+	_main_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var transparent_style := StyleBoxEmpty.new()
+	_main_panel.add_theme_stylebox_override("panel", transparent_style)
+	_overlay.add_child(_main_panel)
+
+	var menu := VBoxContainer.new()
+	menu.name = "ClassicPauseOptions"
+	menu.set_anchors_preset(Control.PRESET_CENTER)
+	menu.position = Vector2(-300.0, -35.0)
+	menu.custom_minimum_size = Vector2(600.0, 470.0)
+	menu.add_theme_constant_override("separation", 5)
+	_main_panel.add_child(menu)
+	_menu_buttons.clear()
+	_add_classic_menu_button(menu, "RESUME", 0, _close_menu)
+	_add_classic_menu_button(menu, "START NEW GAME", 1, _restart_game)
+	_add_classic_menu_button(menu, "MAP", 2, _show_info.bind("الخريطة"))
+	_add_classic_menu_button(menu, "STATS", 3, _show_info.bind("الإحصائيات"))
+	_add_classic_menu_button(menu, "BRIEF", 4, _show_info.bind("ملخص المهام"))
+	_add_classic_menu_button(menu, "OPTIONS", 5, _show_settings)
+	_add_classic_menu_button(menu, "QUIT GAME", 6, _quit_game)
+	_refresh_menu_selection()
 
 	_settings_panel = _make_panel()
 	_settings_panel.name = "SettingsMenu"
@@ -126,6 +136,51 @@ func _build_interface() -> void:
 	pause_button.custom_minimum_size = Vector2(64.0, 64.0)
 	pause_button.pressed.connect(toggle_pause)
 	add_child(pause_button)
+
+func sixty_four() -> int:
+	return 64
+
+func _add_classic_menu_button(parent: VBoxContainer, caption: String, index: int, action: Callable) -> void:
+	var button := Button.new()
+	button.name = "PauseOption" + str(index)
+	button.text = caption
+	button.custom_minimum_size = Vector2(600.0, 54.0)
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.focus_mode = Control.FOCUS_ALL
+	button.add_theme_font_size_override("font_size", 34)
+	button.add_theme_color_override("font_color", Color(0.48, 0.34, 0.09, 1.0))
+	button.add_theme_color_override("font_hover_color", Color(0.86, 0.65, 0.18, 1.0))
+	button.add_theme_color_override("font_pressed_color", Color(0.96, 0.76, 0.25, 1.0))
+	button.add_theme_color_override("font_focus_color", Color(0.86, 0.65, 0.18, 1.0))
+	button.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+	button.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
+	button.add_theme_stylebox_override("pressed", StyleBoxEmpty.new())
+	button.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	button.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	button.mouse_entered.connect(_select_menu_item.bind(index))
+	button.focus_entered.connect(_select_menu_item.bind(index))
+	button.pressed.connect(action)
+	parent.add_child(button)
+	_menu_buttons.append(button)
+
+func _select_menu_item(index: int) -> void:
+	_selected_menu_index = clampi(index, 0, _menu_buttons.size() - 1)
+	_refresh_menu_selection()
+
+func _refresh_menu_selection() -> void:
+	for i in range(_menu_buttons.size()):
+		var button := _menu_buttons[i]
+		button.text = ("✦  " if i == _selected_menu_index else "     ") + button.name.replace("PauseOption", "")
+		var captions := ["RESUME", "START NEW GAME", "MAP", "STATS", "BRIEF", "OPTIONS", "QUIT GAME"]
+		button.text = ("✦  " if i == _selected_menu_index else "     ") + captions[i]
+		button.add_theme_color_override("font_color", Color(0.86, 0.65, 0.18, 1.0) if i == _selected_menu_index else Color(0.43, 0.32, 0.10, 1.0))
+
+func _move_menu_selection(direction: int) -> void:
+	if not _main_panel.visible or _menu_buttons.is_empty():
+		return
+	_selected_menu_index = posmod(_selected_menu_index + direction, _menu_buttons.size())
+	_refresh_menu_selection()
+	_menu_buttons[_selected_menu_index].grab_focus()
 
 func _build_settings_page() -> void:
 	var page := VBoxContainer.new()
@@ -272,6 +327,7 @@ func _show_settings() -> void:
 func _show_main_menu() -> void:
 	_settings_panel.visible = false
 	_main_panel.visible = true
+	_refresh_menu_selection()
 
 func _show_info(section: String) -> void:
 	var dialog := AcceptDialog.new()
