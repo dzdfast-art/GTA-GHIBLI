@@ -32,6 +32,7 @@ var _status_label: Label
 var _timer_label: Label
 var _retry_button: Button
 var _visuals_created := false
+var _status_override := ""
 
 
 func _ready() -> void:
@@ -147,8 +148,7 @@ func _start_mission() -> void:
 
 func _set_phase(next_phase: Phase, status: String) -> void:
 	_phase = next_phase
-	if _status_label != null:
-		_status_label.text = status
+	_status_override = status
 	_refresh_hud()
 
 
@@ -412,3 +412,5 @@ func _refresh_hud() -> void:
 		_timer_label.text = "الوقت المتبقي: %d ثانية" % ceili(_escape_time_left)
 	elif _phase != Phase.FAILED:
 		_timer_label.text = ""
+	if not _status_override.is_empty() and _phase != Phase.FAILED:
+		_status_label.text = _status_override
