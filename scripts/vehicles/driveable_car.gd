@@ -4,6 +4,7 @@ extends CharacterBody3D
 @export var max_reverse_speed := 4.5
 @export var acceleration := 8.0
 @export var braking_force := 16.0
+@export var direction_change_rate := 26.0
 @export var steering_rate := 1.65
 @export var gravity := 18.0
 
@@ -30,7 +31,10 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_pressed("vehicle_brake"):
 		_speed = move_toward(_speed, 0.0, braking_force * delta)
 	else:
-		_speed = move_toward(_speed, target_speed, acceleration * delta)
+		var speed_response := acceleration
+		if absf(target_speed) > 0.1 and absf(_speed) > 0.1 and signf(target_speed) != signf(_speed):
+			speed_response = maxf(braking_force, direction_change_rate)
+		_speed = move_toward(_speed, target_speed, speed_response * delta)
 	if absf(_speed) > 0.15:
 		var steering_strength := clampf(absf(_speed) / 3.0, 0.25, 1.0)
 		rotation.y -= input_vector.x * steering_rate * steering_strength * delta
