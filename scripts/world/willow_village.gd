@@ -16,6 +16,7 @@ func _ready() -> void:
 	_build_well()
 	_build_signpost()
 	_build_interactive_objects()
+	_build_consumable_shop()
 	_build_flora_details()
 
 
@@ -289,3 +290,12 @@ func _material(color: Color) -> StandardMaterial3D:
 	material.albedo_color = color
 	material.roughness = 0.92
 	return material
+
+
+func _build_consumable_shop() -> void:
+	var shop_script = preload("res://scripts/world/consumable_shop.gd")
+	var shop := Node3D.new()
+	shop.name = "VillageGrocery"
+	shop.position = Vector3(-11.0, 0.0, -5.2)
+	shop.set_script(shop_script)
+	add_child(shop)
