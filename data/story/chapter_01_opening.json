@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "chapter_id": "chapter_01_a_signal_in_the_rain",
+  "chapter_title_ar": "الفصل الأول: إشارة في المطر",
+  "language": "ar",
+  "presentation": "in_engine_letterbox_subtitles",
+  "voice_status": "pending_arabic_voice_recording",
+  "opening": [
+    {
+      "shot_id": "wide_village_dawn",
+      "shot_title_ar": "قرية الصفصاف — قبل شروق الشمس",
+      "subtitle_ar": "كان الوادي هادئاً... هدوءاً لم يدم طويلاً.",
+      "duration_seconds": 4.5,
+      "emotion": "mysterious"
+    },
+    {
+      "shot_id": "radio_static",
+      "shot_title_ar": "صوت لاسلكي متقطع",
+      "subtitle_ar": "ميرا: ليون... هل تسمعني؟ عثرت على شيء قرب الطريق القديم. لا تقترب وحدك.",
+      "duration_seconds": 5.5,
+      "emotion": "fear"
+    },
+    {
+      "shot_id": "leo_arrival",
+      "shot_title_ar": "وصول ليو بينيت",
+      "subtitle_ar": "ليو: ظننت أن الماضي انتهى. يبدو أنه وجد طريقه إلينا من جديد.",
+      "duration_seconds": 5.0,
+      "emotion": "guarded"
+    },
+    {
+      "shot_id": "distant_headlights",
+      "shot_title_ar": "أضواء في نهاية الطريق",
+      "subtitle_ar": "ميرا: تلك السيارات لا تنتمي إلى هنا... إنهم يبحثون عن العائلة.",
+      "duration_seconds": 5.0,
+      "emotion": "urgent"
+    },
+    {
+      "shot_id": "chapter_title",
+      "shot_title_ar": "إشارة في المطر",
+      "subtitle_ar": "ابدأ رحلتك. اكتشف الحقيقة، واحمِ من تثق بهم.",
+      "duration_seconds": 4.0,
+      "emotion": "determined"
+    }
+  ],
+  "story_beats": [
+    "A mysterious signal pulls Leo Bennett back into a family secret.",
+    "Mira's discovery puts the village in danger and starts the first rescue operation.",
+    "Claire and Mia Bennett become central to the player's choices and consequences.",
+    "Nora Blake investigates the signal and may become an ally depending on player decisions."
+  ],
+  "notes": "Original story content. The current intro is an in-engine letterbox and subtitle sequence; it does not yet contain authored camera shots, character animation, or recorded Arabic voice assets."
+}
