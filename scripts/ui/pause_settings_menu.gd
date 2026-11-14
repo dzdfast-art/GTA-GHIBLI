@@ -75,28 +75,16 @@ func _build_interface() -> void:
 	header.name = "CinematicCityHeader"
 	header.texture = load("res://assets/ui/pause_menu_header.svg")
 	header.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	header.offset_bottom = 235.0
+	header.offset_bottom = 300.0
 	header.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	header.stretch_mode = TextureRect.STRETCH_SCALE
 	_overlay.add_child(header)
 
 	var header_fade := ColorRect.new()
 	header_fade.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	header_fade.offset_bottom = 255.0
+	header_fade.offset_bottom = 315.0
 	header_fade.color = Color(0.0, 0.0, 0.0, 0.30)
 	_overlay.add_child(header_fade)
-
-	var title := Label.new()
-	title.name = "PauseMenuTitle"
-	title.text = "𝔓𝔞𝔲𝔰𝔢 𝔐𝔢𝔫𝔲"
-	title.position = Vector2(48.0, 30.0)
-	title.size = Vector2(540.0, 90.0)
-	title.add_theme_font_size_override("font_size",  sixty_four())
-	title.add_theme_color_override("font_color", Color(0.73, 0.48, 0.08, 1.0))
-	title.add_theme_color_override("font_shadow_color", Color(0.02, 0.01, 0.0, 0.95))
-	title.add_theme_constant_override("shadow_offset_x", 3)
-	title.add_theme_constant_override("shadow_offset_y", 4)
-	_overlay.add_child(title)
 
 	_main_panel = PanelContainer.new()
 	_main_panel.name = "PauseMenu"
@@ -113,6 +101,7 @@ func _build_interface() -> void:
 	menu.add_theme_constant_override("separation", 5)
 	_main_panel.add_child(menu)
 	_menu_buttons.clear()
+	_menu_cursors.clear()
 	_add_classic_menu_button(menu, "RESUME", 0, _close_menu)
 	_add_classic_menu_button(menu, "START NEW GAME", 1, _restart_game)
 	_add_classic_menu_button(menu, "MAP", 2, _show_info.bind("الخريطة"))
