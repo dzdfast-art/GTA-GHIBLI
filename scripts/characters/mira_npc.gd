@@ -13,7 +13,8 @@ var _dialogue_label: Label
 var _emotion_label: Label
 var _hint_label: Label
 var _voice_player: AudioStreamPlayer
-var _greeting: Dictionary = {}\nvar _npc_brain: Node
+var _greeting: Dictionary = {}
+var _npc_brain: Node
 
 
 func _ready() -> void:
@@ -21,6 +22,7 @@ func _ready() -> void:
 	_build_character()
 	_build_interaction_area()
 	_build_dialogue_ui()
+	_attach_npc_brain()
 
 
 func _load_dialogue_data() -> void:
@@ -189,6 +191,8 @@ func _on_body_exited(body: Node3D) -> void:
 
 func interact() -> void:
 	if _player_nearby:
+		if _npc_brain != null:
+			_npc_brain.call("record_interaction", "talk")
 		_show_dialogue()
 
 
