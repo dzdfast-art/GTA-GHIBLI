@@ -1,0 +1,5 @@
+# High-detail terrain source meshes
+
+The `high_detail` folder contains original 112 x 112 vertex-grid OBJ source tiles, each covering 222 x 222 world units at 2-unit vertex spacing. They provide distinct source shapes for ridges, coast, marsh, valley, orchard, badlands, meadow, forest, canyon and urban green areas. The low-resolution 96 x 96 tiles remain available for lightweight prototyping.
+
+All files reference `../high_detail_terrain.mtl` via the OBJ material library declaration. Import the OBJ in Godot 4 and verify the material library is resolved. These high-detail meshes are source assets; they are not placed in playable scenes yet. Before Android deployment, create distance-based LOD meshes, collision proxies and terrain chunk streaming rather than rendering every source tile at full detail simultaneously.
