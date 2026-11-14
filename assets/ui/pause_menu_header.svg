@@ -1,36 +1,51 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="360" viewBox="0 0 1536 360">
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="420" viewBox="0 0 1536 420">
 <defs>
- <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#536b68"/><stop offset=".48" stop-color="#c49a4c"/><stop offset="1" stop-color="#151713"/></linearGradient>
- <linearGradient id="gold" x2="0" y2="1"><stop stop-color="#f5df91"/><stop offset=".55" stop-color="#c69a39"/><stop offset="1" stop-color="#75511d"/></linearGradient>
- <radialGradient id="sun"><stop stop-color="#ffe7a0" stop-opacity=".9"/><stop offset="1" stop-color="#e5a83a" stop-opacity="0"/></radialGradient>
- <filter id="glow"><feGaussianBlur stdDeviation="14"/></filter>
- <filter id="shadow"><feGaussianBlur stdDeviation="3"/></filter>
+ <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#435d60"/><stop offset=".42" stop-color="#e8a64a"/><stop offset="1" stop-color="#251b18"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffe58b"/><stop offset=".55" stop-color="#e7ae36"/><stop offset="1" stop-color="#9a641b"/></linearGradient>
+ <linearGradient id="city" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#27383b"/><stop offset="1" stop-color="#090d10"/></linearGradient>
+ <filter id="soft"><feGaussianBlur stdDeviation="18"/></filter>
+ <filter id="shadow"><feGaussianBlur stdDeviation="4"/></filter>
 </defs>
-<rect width="1536" height="360" fill="#030403"/>
-<rect x="560" width="976" height="360" fill="url(#sky)"/>
-<ellipse cx="1185" cy="180" rx="420" ry="155" fill="url(#sun)" filter="url(#glow)"/>
-<circle cx="1190" cy="188" r="43" fill="#f4d17b" opacity=".88"/>
-<path d="M560 260 680 208 770 235 865 165 950 220 1050 174 1140 225 1230 180 1340 232 1440 190 1536 220V360H560Z" fill="#24251d"/>
-<g fill="#10120f">
- <path d="M560 360V260h34v-58h32v58h23v-88h46v88h30v-45h38v45h28v-112h48v112h26v-68h40v68h24v-92h54v92h30v-55h44v55h24v-122h55v122h26v-77h42v77h25v-48h44v48h25v-98h50v98h26v-58h46v58h30v-82h50v82h38v-45h48v45h38v100H560Z"/>
+<rect width="1536" height="420" fill="#030403"/>
+<rect x="650" width="886" height="420" fill="url(#sky)"/>
+<circle cx="1170" cy="178" r="120" fill="#ffd77c" opacity=".35" filter="url(#soft)"/>
+<circle cx="1170" cy="178" r="38" fill="#ffe59a"/>
+<path d="M650 270 760 220 835 250 920 180 1010 245 1100 196 1190 244 1280 185 1370 245 1460 205 1536 235V420H650Z" fill="#46352b"/>
+<g fill="url(#city)">
+ <path d="M650 420V285h42v-95h35v95h22V245h48v175zM805 420V220h55v-35h20v35h35v200zM915 420V155h45v-60h18v60h36v265zM1025 420V235h52v-90h24v90h40v185zM1150 420V205h58v-65h20v65h42v215zM1280 420V260h45v-95h25v95h42v160zM1400 420V230h58v-55h22v55h56v190z"/>
 </g>
-<path d="M560 320Q800 278 1000 316T1300 300T1536 312V360H560Z" fill="#070807"/>
-<g fill="#090a08" opacity=".95">
- <path d="M600 0h14l-7 105-18 38 20-27 4 47-12 32 23-28 6 63h-10l-9-54-19 25 9-43-18 20 14-48-17 18 14-46-15 12 19-55Z"/>
- <path d="M560 20Q630 30 680 88Q620 54 560 55Z"/>
- <path d="M560 62Q635 55 700 116Q630 83 560 96Z"/>
+<g fill="#f8c86c" opacity=".75">
+ <path d="M680 310h8v12h-8zm24-35h8v12h-8zm42 54h8v12h-8zm79-77h8v12h-8zm25 38h8v12h-8zm80-125h8v12h-8zm20 48h8v12h-8zm40 70h8v12h-8zm62-45h8v12h-8zm34 66h8v12h-8zm58-82h8v12h-8zm31 47h8v12h-8zm55-65h8v12h-8zm34 85h8v12h-8zm54-36h8v12h-8zm42 55h8v12h-8z"/>
 </g>
-<g fill="#080907" opacity=".95">
- <path d="M710 350h310v-18h-310zM760 332l18-25 18 25zM840 332l18-25 18 25zM930 332l18-25 18 25z"/>
- <path d="M1080 350v-18h18v18zM1110 350v-28h32v28zM1160 350v-17h22v17z"/>
+<path d="M650 355Q870 315 1030 365T1330 340T1536 360V420H650Z" fill="#080b0c"/>
+<!-- palm silhouette -->
+<g fill="#050706">
+ <path d="M755 420Q770 270 742 70Q780 225 790 420Z"/>
+ <path d="M755 86Q650 5 610 35Q685 28 755 100Q680 82 630 108Q700 90 758 116Q690 125 665 160Q725 130 770 128Q735 175 735 205Q785 155 775 105Q835 45 900 70Q835 68 785 112Q860 100 910 132Q835 110 780 130Q850 155 875 190Q815 150 770 145Z"/>
 </g>
-<g transform="translate(835 55)">
- <path d="M0 0h610v250H0z" fill="#090a08" opacity=".24"/>
- <text x="305" y="105" text-anchor="middle" font-family="Georgia,serif" font-size="105" font-weight="900" letter-spacing="5" fill="#000" opacity=".75" filter="url(#shadow)">GTA GHIBLI</text>
- <text x="300" y="98" text-anchor="middle" font-family="Georgia,serif" font-size="105" font-weight="900" letter-spacing="5" fill="url(#gold)" stroke="#4a3514" stroke-width="3" paint-order="stroke">GTA GHIBLI</text>
- <path d="M36 122H564" stroke="#d3b15c" stroke-width="2" opacity=".8"/>
- <text x="300" y="154" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" font-weight="700" letter-spacing="3" fill="#f1dfaa">OPEN WORLD • ACTION • ADVENTURE</text>
- <text x="300" y="184" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="700" letter-spacing="2" fill="#e8c979">MISSIONS • VEHICLES • CITY LIFE • ANDROID GAME</text>
- <path d="M95 204H505" stroke="#a98537" stroke-width="1.5" opacity=".8"/>
+<!-- distant helicopter -->
+<g fill="#101211" stroke="#101211" stroke-width="5" stroke-linecap="round">
+ <path d="M1310 80q35-24 76-6l24 13-24 12h-68l-28 17-10-5 23-26z"/>
+ <path d="M1360 68l5-17 10 0 3 19M1325 58h104M1384 54l42-12"/>
+ <path d="M1410 88l55 10-2 5-58-5"/>
 </g>
+<!-- foreground character silhouette with G jacket -->
+<g transform="translate(1430 150)">
+ <path d="M-54 270Q-65 205-47 120Q-35 80 0 75Q38 80 48 120Q65 200 54 270Z" fill="#111514" stroke="#080909" stroke-width="8"/>
+ <path d="M-42 126Q-22 100 0 105Q23 100 42 126L58 250H-58Z" fill="#242521"/>
+ <path d="M-28 82Q-30 35 0 28Q31 35 28 82L18 112H-18Z" fill="#101211"/>
+ <path d="M-14 155h28v44h-28z" fill="none" stroke="#d5a64b" stroke-width="4"/>
+ <text x="0" y="188" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="900" fill="#e0bd71">G</text>
+ <path d="M-46 132l-30 92 14 8 39-72M46 132l30 92-14 8-39-72" fill="#171918" stroke="#070808" stroke-width="7"/>
+</g>
+<!-- branded title block -->
+<g transform="translate(48 48)">
+ <path d="M250 0l12 23 25 4-18 18 4 26-23-12-23 12 4-26-18-18 25-4z" fill="url(#gold)"/>
+ <text x="270" y="190" text-anchor="middle" font-family="Georgia,serif" font-size="126" font-weight="900" letter-spacing="1" fill="#000" opacity=".8" filter="url(#shadow)">GTA GHIBLI</text>
+ <text x="270" y="180" text-anchor="middle" font-family="Georgia,serif" font-size="126" font-weight="900" letter-spacing="1" fill="url(#gold)" stroke="#593b14" stroke-width="3" paint-order="stroke">GTA GHIBLI</text>
+ <path d="M0 205H590" stroke="#e8b944" stroke-width="4"/>
+ <text x="295" y="244" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="900" letter-spacing="2" fill="#ffd36a">OPEN WORLD • ACTION • ADVENTURE</text>
+ <path d="M35 262H555" stroke="#c38b2e" stroke-width="3"/>
+</g>
+<rect y="410" width="1536" height="10" fill="#030403"/>
 </svg>
