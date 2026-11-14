@@ -59,6 +59,9 @@ jobs:
       - name: Test interactive objects
         run: godot --headless --path . --script res://tests/interactable_objects_test.gd
 
+      - name: Test mobile joystick, player movement, and camera touch isolation
+        run: godot --headless --path . --script res://tests/mobile_controls_regression_test.gd
+
       - name: Test first mission objective flow
         run: godot --headless --path . --script res://tests/mission_manager_test.gd
 
