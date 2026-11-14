@@ -82,6 +82,7 @@ The repository intentionally remains public. Automated secret scanning is config
 - [Master requirements alignment](docs/MASTER_REQUIREMENTS_ALIGNMENT.md)
 - [Project blueprint](docs/PROJECT_BLUEPRINT.md)
 - [Core gameplay systems](docs/GAMEPLAY_SYSTEMS.md)
+- [GTA GHIBLI world and story encyclopedia](docs/GTA_GHIBLI_ENCYCLOPEDIA.md)
 - [Initial quality audit](docs/QUALITY_AUDIT.md)
 - [Android 4 GiB content budget](docs/ANDROID_4GB_BUDGET.md)
 
