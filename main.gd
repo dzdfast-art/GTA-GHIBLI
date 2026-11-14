@@ -16,6 +16,7 @@ func _ready() -> void:
 	_create_world()
 	_create_village()
 	_create_player()
+	_create_player_needs()
 	_create_starter_car()
 	_create_mobile_controls()
 	_create_mission_manager()
@@ -161,3 +162,13 @@ func _create_side_activity_director() -> void:
 	director.name = "SideActivityDirector"
 	add_child(director)
 	director.setup(player)
+
+
+func _create_player_needs() -> void:
+	var player := get_node_or_null("Player") as CharacterBody3D
+	if player == null:
+		return
+	var needs_script = load("res://scripts/systems/player_needs.gd")
+	var needs: Node = needs_script.new()
+	needs.name = "PlayerNeeds"
+	player.add_child(needs)
