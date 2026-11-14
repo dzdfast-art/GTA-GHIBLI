@@ -1,7 +1,6 @@
 extends SceneTree
 
-## Headless checks for NPC perception and contextual reactions.
-
+## Headless checks for NPC perception, relationships, schedules and group alerts.
 const BRAIN_SCRIPT = preload("res://scripts/systems/npc_brain.gd")
 
 
@@ -32,8 +31,19 @@ func _run_test() -> void:
 	player.global_position = Vector3(3.0, 0.0, 0.0)
 	brain.call("_find_player")
 	brain.call("_evaluate_reaction")
+	if brain.get("state_id") != "curious":
+		_fail("NPC reaction did not reflect a neutral relationship.")
+		return
+
+	brain.call("record_interaction", "talk")
+	brain.call("record_interaction", "help")
+	if brain.get("trust") <= 0.0 or brain.get("familiarity") <= 0.0:
+		_fail("Positive interactions did not improve trust and familiarity.")
+		return
+	brain.call("_find_player")
+	brain.call("_evaluate_reaction")
 	if brain.get("state_id") != "friendly":
-		_fail("NPC did not switch to a friendly reaction at conversational distance.")
+		_fail("NPC did not become friendly after positive interactions.")
 		return
 
 	player.global_position = Vector3(1.5, 0.0, 0.0)
@@ -59,7 +69,25 @@ func _run_test() -> void:
 		_fail("NPC did not return to idle after the player left.")
 		return
 
-	print("PASS: NPC notices, welcomes, keeps distance, reacts to rushing, and returns to idle.")
+	brain.call("record_player_action", "aggression")
+	if brain.get("trust") >= 0.0:
+		_fail("Aggression did not reduce relationship trust.")
+		return
+
+	var schedule_brain := Node.new()
+	schedule_brain.set_script(BRAIN_SCRIPT)
+	npc.add_child(schedule_brain)
+	schedule_brain.set("schedule_enabled", true)
+	schedule_brain.call("set_world_hour", 10)
+	if schedule_brain.get("state_id") != "working":
+		_fail("NPC did not enter its configured work schedule.")
+		return
+	schedule_brain.call("set_world_hour", 22)
+	if schedule_brain.get("state_id") != "resting":
+		_fail("NPC did not enter its configured rest schedule.")
+		return
+
+	print("PASS: NPC perception, trust, familiarity, aggression and daily schedule checks.")
 	quit(0)
 
 
