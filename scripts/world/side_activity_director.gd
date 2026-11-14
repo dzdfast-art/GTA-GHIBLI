@@ -224,6 +224,10 @@ func _update_active_activity() -> void:
 func _complete_activity(activity: Dictionary) -> void:
 	var reward := int(activity.get("reward", 0))
 	_total_rewards += reward
+	if _player != null and is_instance_valid(_player):
+		var wallet := _player.get_node_or_null("PlayerWallet")
+		if wallet != null and wallet.has_method("add_money"):
+			wallet.call("add_money", reward)
 	_completed_ids.append(_active_id)
 	var activity_id := _active_id
 	_active_id = ""
