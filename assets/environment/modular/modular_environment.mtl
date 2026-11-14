@@ -1,0 +1,17 @@
+# GTA GHIBLI modular environment palette
+newmtl plaster_sand
+Kd 0.72 0.58 0.39
+newmtl plaster_cream
+Kd 0.83 0.76 0.62
+newmtl timber_dark
+Kd 0.22 0.12 0.07
+newmtl roof_terracotta
+Kd 0.62 0.22 0.12
+newmtl metal_blue
+Kd 0.18 0.32 0.42
+newmtl stone_gray
+Kd 0.38 0.39 0.37
+newmtl glass_blue
+Kd 0.15 0.42 0.58
+newmtl wood_warm
+Kd 0.48 0.29 0.13
