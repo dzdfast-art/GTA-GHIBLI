@@ -12,18 +12,22 @@ func _initialize() -> void:
 
 
 func _run_test() -> void:
+	var world := Node3D.new()
+	world.name = "Mission002TestWorld"
+	root.add_child(world)
 	var player := CharacterBody3D.new()
 	player.set_script(PLAYER_SCRIPT)
 	var camera_pivot := Node3D.new()
 	camera_pivot.name = "CameraPivot"
 	player.add_child(camera_pivot)
-	root.add_child(player)
+	world.add_child(player)
 	var car := CharacterBody3D.new()
 	car.set_script(CAR_SCRIPT)
-	root.add_child(car)
+	world.add_child(car)
 	var runtime: CanvasLayer = RUNTIME_SCRIPT.new() as CanvasLayer
 	root.add_child(runtime)
 	runtime.setup(player, car)
+	runtime._world_root = world
 	runtime._start_mission()
 
 	if runtime._phase != 1:
