@@ -1,0 +1,29 @@
+newmtl bark
+Kd 0.28 0.16 0.08
+
+newmtl pine
+Kd 0.10 0.30 0.14
+
+newmtl leaf
+Kd 0.20 0.42 0.18
+
+newmtl stone
+Kd 0.38 0.39 0.36
+
+newmtl metal
+Kd 0.18 0.21 0.23
+
+newmtl lamp
+Kd 1.00 0.78 0.35
+
+newmtl wood
+Kd 0.43 0.25 0.12
+
+newmtl fabric
+Kd 0.72 0.40 0.20
+
+newmtl warning
+Kd 0.80 0.55 0.10
+
+newmtl sign
+Kd 0.18 0.32 0.40
