@@ -115,3 +115,6 @@ Do not describe a feature as working until it has been run and tested. For mobil
 - **Optional world activities:** recover a lost delivery, help a farmer move three crates, bring a repair kit to a stranded driver, and reunite a lost dog with its owner.
 
 These are lightweight gameplay blockouts using primitive placeholder visuals. They are not finished production art, recorded Arabic voice acting, or proof of Android device testing. The Godot validation workflow contains headless regression tests for these systems; see [Godot validation](.github/workflows/godot-validation.yml) for current results.
+
+
+- **ذاكرة علاقات NPC:** الثقة والألفة يمكن حفظهما محلياً واستعادتهما بين الجلسات؛ الربط الشامل مع الحوارات والقرارات ما زال عملاً لاحقاً.
