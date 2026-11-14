@@ -102,6 +102,9 @@ jobs:
       - name: Test last train escort mission 004
         run: godot --headless --path . --script res://tests/mission_004_runtime_test.gd
 
+      - name: Test world clock and day-night phases
+        run: godot --headless --path . --script res://tests/world_clock_test.gd
+
       - name: Test optional world side activities
         run: godot --headless --path . --script res://tests/side_activity_director_test.gd
 
