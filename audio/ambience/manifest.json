@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "asset_pack": "gta_ghibli_original_world_ambience",
+  "status": "prototype_synthesized_audio",
+  "format": {
+    "container": "WAV PCM",
+    "sample_rate_hz": 22050,
+    "channels": 2,
+    "bit_depth": 16,
+    "segment_duration_seconds": 22.5,
+    "segments_per_theme": 2,
+    "pair_duration_seconds": 45.0
+  },
+  "themes": [
+    {
+      "id": "dawn",
+      "files": ["dawn_01.wav", "dawn_02.wav"],
+      "use_when": "game time from 04:30 to 08:30",
+      "sound_design": "soft breeze, layered original bird-like calls and light leaf rustle"
+    },
+    {
+      "id": "forest_day",
+      "files": ["forest_day_01.wav", "forest_day_02.wav"],
+      "use_when": "clear daytime in inland biomes",
+      "sound_design": "wind through foliage, subtle rustling and scattered bird calls"
+    },
+    {
+      "id": "night",
+      "files": ["night_01.wav", "night_02.wav"],
+      "use_when": "game time from 20:00 to 05:00",
+      "sound_design": "pulsing night insects, distant owl-like calls and low air movement"
+    },
+    {
+      "id": "coast",
+      "files": ["coast_01.wav", "coast_02.wav"],
+      "use_when": "coast or river biome",
+      "sound_design": "rolling surf, foam-like noise and distant gull-like calls"
+    },
+    {
+      "id": "rain",
+      "files": ["rain_01.wav", "rain_02.wav"],
+      "use_when": "rain weather state",
+      "sound_design": "continuous rainfall texture, droplets and subdued breeze"
+    },
+    {
+      "id": "storm",
+      "files": ["storm_01.wav", "storm_02.wav"],
+      "use_when": "storm weather state",
+      "sound_design": "stronger gusts, dense rainfall and low rolling thunder-like rumbles"
+    }
+  ],
+  "technical_notes_ar": [
+    "الأصوات أصول أصلية مولّدة تركيبياً للمشروع وليست تسجيلات ميدانية حقيقية.",
+    "كل مقطع مدته 22.5 ثانية ويُشغّل المقطعان بالتتابع لتكوين دورة 45 ثانية لكل بيئة.",
+    "تم خفض مستوى المقاطع داخل اللعبة حتى تبقى طبقات الصوت الإجرائية واضحة.",
+    "هذه النسخة أساس صوتي أولي؛ الحوار العربي المسجل بأداء تمثيلي يظل مرحلة مستقلة."
+  ]
+}
