@@ -1,0 +1,13 @@
+# Terrain palette for original GTA GHIBLI terrain tiles
+newmtl terrain_grass
+Kd 0.24 0.42 0.19
+newmtl terrain_dry_grass
+Kd 0.62 0.52 0.27
+newmtl terrain_sand
+Kd 0.78 0.67 0.45
+newmtl terrain_rock
+Kd 0.34 0.35 0.33
+newmtl terrain_fertile
+Kd 0.28 0.37 0.16
+newmtl terrain_wet
+Kd 0.18 0.30 0.24
