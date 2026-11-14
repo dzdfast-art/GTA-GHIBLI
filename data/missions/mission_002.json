@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "mission_id": "the_old_road_rescue",
+  "title": "الطريق القديم: عملية الإنقاذ",
+  "chapter": 1,
+  "mission_type": "main_story_rescue_chase",
+  "status": "designed_not_yet_playable",
+  "description": "بعد ظهور السيارات الغامضة، ينطلق ليو لإنقاذ شاهد اختفى قرب الطريق الجبلي.",
+  "start_region": "willow_village",
+  "mission_giver": "mira_caretaker",
+  "cinematic_beats": [
+    "Close-up on Mira's trembling hands holding a broken radio.",
+    "Cut to Leo starting the car as headlights appear through the rain.",
+    "A short silent beat before the rescue timer begins."
+  ],
+  "objectives": [
+    {"id":"take_vehicle","type":"enter_vehicle","description":"استقل السيارة وانطلق نحو الطريق القديم"},
+    {"id":"reach_checkpoint","type":"reach_location","description":"صل إلى نقطة الطريق قبل انتهاء الوقت","time_limit_seconds":150},
+    {"id":"avoid_blockade","type":"driving_challenge","description":"تجاوز الحاجز دون تدمير السيارة"},
+    {"id":"rescue_witness","type":"rescue_npc","description":"اعثر على الشاهد وأخرجه من منطقة الخطر"},
+    {"id":"escape_pursuit","type":"escape_pursuit","description":"أفلت من المطاردين وعد بالشاهد إلى القرية"}
+  ],
+  "player_choices": [
+    {"id":"save_vehicle_or_take_shortcut","description":"اختر الطريق الآمن أو الاختصار الخطر؛ يؤثر الضرر في صعوبة الهروب."}
+  ],
+  "failure_conditions": ["timer_expired","rescued_npc_health_depleted","vehicle_disabled"],
+  "rewards": {"currency":180,"unlocks":["chapter_01_mountain_route","vehicle_pursuit_events"]},
+  "design_notes": "Mission design only. Requires pursuit AI, rescue actor, timer, vehicle damage and route checkpoints before runtime integration."
+}
