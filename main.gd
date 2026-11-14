@@ -11,6 +11,7 @@ const MISSION_004_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_004_r
 const SIDE_ACTIVITY_DIRECTOR_SCRIPT = preload("res://scripts/world/side_activity_director.gd")
 const CINEMATIC_DIRECTOR_SCRIPT = preload("res://scripts/missions/cinematic_director.gd")
 const AMBIENCE_SCRIPT = preload("res://scripts/audio/nature_ambience.gd")
+const PLAYER_NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
 
 func _ready() -> void:
 	_create_world()
@@ -168,7 +169,6 @@ func _create_player_needs() -> void:
 	var player := get_node_or_null("Player") as CharacterBody3D
 	if player == null:
 		return
-	var needs_script = load("res://scripts/systems/player_needs.gd")
-	var needs: Node = needs_script.new()
+	var needs: Node = PLAYER_NEEDS_SCRIPT.new()
 	needs.name = "PlayerNeeds"
 	player.add_child(needs)
