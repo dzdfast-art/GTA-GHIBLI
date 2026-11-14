@@ -13,7 +13,7 @@ var _dialogue_label: Label
 var _emotion_label: Label
 var _hint_label: Label
 var _voice_player: AudioStreamPlayer
-var _greeting: Dictionary = {}
+var _greeting: Dictionary = {}\nvar _npc_brain: Node
 
 
 func _ready() -> void:
@@ -141,6 +141,34 @@ func _build_dialogue_ui() -> void:
 	_dialogue_label.add_theme_font_size_override("font_size", 20)
 	content.add_child(_dialogue_label)
 
+
+
+
+func _attach_npc_brain() -> void:
+	var brain_script = preload("res://scripts/systems/npc_brain.gd")
+	_npc_brain = Node.new()
+	_npc_brain.name = "NPCBrain"
+	_npc_brain.set_script(brain_script)
+	add_child(_npc_brain)
+	_npc_brain.state_changed.connect(_on_brain_state_changed)
+
+
+func _on_brain_state_changed(state_id: String, emotion_ar: String) -> void:
+	if _emotion_label != null:
+		_emotion_label.text = "ميرا — " + emotion_ar
+	if not _player_nearby or _hint_label == null:
+		return
+	match state_id:
+		"friendly":
+			_hint_label.text = "ميرا تبتسم لك — اضغط زر التفاعل للتحدث"
+		"cautious":
+			_hint_label.text = "ميرا تتراجع بحذر — اقترب بهدوء"
+		"alarmed":
+			_hint_label.text = "ميرا خائفة من اقترابك السريع"
+		"curious":
+			_hint_label.text = "ميرا تلاحظ وجودك"
+		_:
+			_hint_label.text = "اقترب من ميرا واضغط زر التفاعل"
 
 
 func _on_body_entered(body: Node3D) -> void:
