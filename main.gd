@@ -6,6 +6,7 @@ const STARTER_CAR_SCENE: PackedScene = preload("res://scenes/vehicles/starter_ca
 const MOBILE_CONTROLS_SCRIPT = preload("res://scripts/ui/mobile_controls.gd")
 const MISSION_MANAGER_SCRIPT = preload("res://scripts/missions/mission_manager.gd")
 const MISSION_002_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_002_runtime.gd")
+const MISSION_003_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_003_runtime.gd")
 const CINEMATIC_DIRECTOR_SCRIPT = preload("res://scripts/missions/cinematic_director.gd")
 const AMBIENCE_SCRIPT = preload("res://scripts/audio/nature_ambience.gd")
 
@@ -17,6 +18,7 @@ func _ready() -> void:
 	_create_mobile_controls()
 	_create_mission_manager()
 	_create_mission_002_runtime()
+	_create_mission_003_runtime()
 	_create_story_cinematic()
 	_create_nature_ambience()
 
@@ -134,3 +136,10 @@ func _create_story_cinematic() -> void:
 	var cinematic: CanvasLayer = CINEMATIC_DIRECTOR_SCRIPT.new() as CanvasLayer
 	cinematic.name = "StoryCinematic"
 	add_child(cinematic)
+
+func _create_mission_003_runtime() -> void:
+	var player := get_node_or_null("Player") as CharacterBody3D
+	var mission_runtime: CanvasLayer = MISSION_003_RUNTIME_SCRIPT.new() as CanvasLayer
+	mission_runtime.name = "Mission003Runtime"
+	add_child(mission_runtime)
+	mission_runtime.setup(player)
