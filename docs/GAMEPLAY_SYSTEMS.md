@@ -139,6 +139,12 @@ Reuse of a core mechanic is acceptable when context, stakes, route, constraints 
 
 **Current prototype:** the first tutorial mission tracks reaching the village square, talking to Mira and visiting the garden. Its flags persist locally. The displayed currency reward is not yet connected to a real wallet or inventory.
 
+### Cinematic storytelling and mission content
+
+**Opening cinematic presentation added:** `scripts/missions/cinematic_director.gd` displays an Arabic chapter card, cinematic letterbox bars, timed story subtitles and touch/keyboard advance over the live game view. The opening introduces Leo Bennett, Mira and a mysterious radio signal. It is a presentation-layer prototype, not yet a fully animated camera cutscene; recorded Arabic voices are still pending.
+
+**Three original main-story mission designs added:** `data/missions/mission_002.json` (timed rescue and vehicle pursuit), `mission_003.json` (harbor stealth investigation with a trust choice), and `mission_004.json` (timed family escort and branching escape). These are design records only, not yet playable. The runtime mission manager still implements only the introductory village tutorial. The next implementation milestone is to turn the rescue/pursuit design into the first complete action mission with checkpoints, timer, pursuit actors, failure/retry and save progression.
+
 ## 9. World, buildings and services
 
 The master specification requires four connected regions—Harbor City, Sapphire Coast, Pine Highlands and Amber Valley—and the named location Marsa Al-Noor. The existing Green Valley/Wllow Village content is a prototype slice, not a replacement for those canonical locations.
