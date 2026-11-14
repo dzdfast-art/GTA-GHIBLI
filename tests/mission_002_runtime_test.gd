@@ -70,6 +70,7 @@ func _run_test() -> void:
 		return
 
 	runtime._pursuer.global_position = Vector3(-2.8, 0.0, -49.0)
+	runtime._backup_pursuer.global_position = Vector3(3.4, 0.0, -55.0)
 	car.global_position = runtime.HOME_POSITION
 	runtime._process(0.0)
 	if runtime._phase != 6:
