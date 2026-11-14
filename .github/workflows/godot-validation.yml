@@ -31,6 +31,7 @@ jobs:
           python -m json.tool data/missions/mission_004.json > /dev/null
           python -m json.tool data/world/side_activities.json > /dev/null
           python -m json.tool data/items/consumables.json > /dev/null
+          python -m json.tool data/world/wildlife_catalog.json > /dev/null
 
       - name: Audit Android privacy permissions
         run: python tools/privacy_audit.py
@@ -67,6 +68,8 @@ jobs:
             res://scripts/world/side_activity_director.gd \
             res://scripts/world/world_clock.gd \
             res://scripts/world/open_world_regions.gd \
+            res://scripts/world/wildlife_actor.gd \
+            res://scripts/world/wildlife_director.gd \
             res://scripts/missions/cinematic_director.gd
           do
             echo "Checking $script"
@@ -111,6 +114,9 @@ jobs:
 
       - name: Test last train escort mission 004
         run: godot --headless --path . --script res://tests/mission_004_runtime_test.gd
+
+      - name: Test wildlife habitat population and feeding
+        run: godot --headless --path . --script res://tests/wildlife_director_test.gd
 
       - name: Test four open-world districts
         run: godot --headless --path . --script res://tests/open_world_regions_test.gd
