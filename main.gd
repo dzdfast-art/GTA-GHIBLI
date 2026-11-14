@@ -8,6 +8,7 @@ const MISSION_MANAGER_SCRIPT = preload("res://scripts/missions/mission_manager.g
 const MISSION_002_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_002_runtime.gd")
 const MISSION_003_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_003_runtime.gd")
 const MISSION_004_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_004_runtime.gd")
+const SIDE_ACTIVITY_DIRECTOR_SCRIPT = preload("res://scripts/world/side_activity_director.gd")
 const CINEMATIC_DIRECTOR_SCRIPT = preload("res://scripts/missions/cinematic_director.gd")
 const AMBIENCE_SCRIPT = preload("res://scripts/audio/nature_ambience.gd")
 
@@ -23,6 +24,7 @@ func _ready() -> void:
 	_create_mission_004_runtime()
 	_create_story_cinematic()
 	_create_nature_ambience()
+	_create_side_activity_director()
 
 func _create_world() -> void:
 	var world_environment := WorldEnvironment.new()
@@ -152,3 +154,10 @@ func _create_mission_004_runtime() -> void:
 	mission_runtime.name = "Mission004Runtime"
 	add_child(mission_runtime)
 	mission_runtime.setup(player)
+
+func _create_side_activity_director() -> void:
+	var player := get_node_or_null("Player") as CharacterBody3D
+	var director: CanvasLayer = SIDE_ACTIVITY_DIRECTOR_SCRIPT.new() as CanvasLayer
+	director.name = "SideActivityDirector"
+	add_child(director)
+	director.setup(player)
