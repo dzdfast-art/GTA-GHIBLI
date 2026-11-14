@@ -10,7 +10,7 @@ var _main_panel: PanelContainer
 var _settings_panel: PanelContainer
 var _menu_buttons: Array[Button] = []
 var _selected_menu_index := 0
-var _settings :=
+var _settings := {
 	"master_volume": 0.85, "music_volume": 0.65, "effects_volume": 0.85,
 	"dialogue_volume": 1.0, "look_sensitivity": 1.0, "graphics_quality": 2,
 	"target_fps": 60, "touch_scale": 1.0, "touch_opacity": 0.9, "show_subtitles": true, "language": "ar"
