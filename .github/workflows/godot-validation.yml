@@ -58,7 +58,7 @@ jobs:
             res://scripts/systems/player_wallet.gd \
             res://scripts/world/consumable_shop.gd \
             res://scripts/camera/third_person_camera.gd \
-            res://scripts/ui/mobile_controls.gd \\
+            res://scripts/ui/mobile_controls.gd \
             res://scripts/ui/pause_settings_menu.gd \
             res://scripts/ui/virtual_joystick.gd \
             res://scripts/world/willow_village.gd \
