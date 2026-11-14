@@ -1,18 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1536" height="360" viewBox="0 0 1536 360">
 <defs>
- <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#66766c"/><stop offset=".48" stop-color="#a69b67"/><stop offset="1" stop-color="#211f19"/></linearGradient>
- <linearGradient id="haze" x2="0" y2="1"><stop stop-color="#e4c66b" stop-opacity=".55"/><stop offset="1" stop-color="#d3a64a" stop-opacity="0"/></linearGradient>
- <filter id="soft"><feGaussianBlur stdDeviation="18"/></filter>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#536b68"/><stop offset=".48" stop-color="#c49a4c"/><stop offset="1" stop-color="#151713"/></linearGradient>
+ <linearGradient id="gold" x2="0" y2="1"><stop stop-color="#f5df91"/><stop offset=".55" stop-color="#c69a39"/><stop offset="1" stop-color="#75511d"/></linearGradient>
+ <radialGradient id="sun"><stop stop-color="#ffe7a0" stop-opacity=".9"/><stop offset="1" stop-color="#e5a83a" stop-opacity="0"/></radialGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="14"/></filter>
+ <filter id="shadow"><feGaussianBlur stdDeviation="3"/></filter>
 </defs>
-<rect width="1536" height="360" fill="url(#sky)"/>
-<ellipse cx="1130" cy="205" rx="470" ry="120" fill="url(#haze)" filter="url(#soft)"/>
-<path d="M0 235 140 180 240 210 350 128 470 205 590 160 720 232 850 155 980 214 1090 145 1220 210 1360 160 1536 220V360H0Z" fill="#24251f"/>
-<path d="M0 275 170 220 310 260 470 192 620 260 790 200 940 258 1110 190 1270 245 1410 202 1536 232V360H0Z" fill="#10120f"/>
-<g fill="#11130f" opacity=".95">
- <path d="M70 360V230h55v-30h38v30h42v-70h54v70h32v-45h56v45h28v-88h64v88h32v-55h42v55h38v-30h62v30h30v-66h55v66h35v-40h55v40h34v-85h67v85h30v-50h49v50h35v-32h57v32h28v-75h58v75h38v-42h57v42h40v-58h56v58h48v-38h64v38h60v100H70Z"/>
+<rect width="1536" height="360" fill="#030403"/>
+<rect x="560" width="976" height="360" fill="url(#sky)"/>
+<ellipse cx="1185" cy="180" rx="420" ry="155" fill="url(#sun)" filter="url(#glow)"/>
+<circle cx="1190" cy="188" r="43" fill="#f4d17b" opacity=".88"/>
+<path d="M560 260 680 208 770 235 865 165 950 220 1050 174 1140 225 1230 180 1340 232 1440 190 1536 220V360H560Z" fill="#24251d"/>
+<g fill="#10120f">
+ <path d="M560 360V260h34v-58h32v58h23v-88h46v88h30v-45h38v45h28v-112h48v112h26v-68h40v68h24v-92h54v92h30v-55h44v55h24v-122h55v122h26v-77h42v77h25v-48h44v48h25v-98h50v98h26v-58h46v58h30v-82h50v82h38v-45h48v45h38v100H560Z"/>
 </g>
-<path d="M0 310Q270 265 480 306T900 292T1250 285T1536 300V360H0Z" fill="#050605"/>
-<path d="M760 0 980 0 1220 235 1536 280 1536 360 1040 360 890 185Z" fill="#171914" opacity=".96"/>
-<text x="1010" y="155" transform="rotate(8 1250 155)" font-family="serif" font-size="112" font-weight="900" letter-spacing="8" fill="#d5bd70" stroke="#5e512c" stroke-width="3" paint-order="stroke">GHIBLI</text>
-<g fill="#c3a24c" opacity=".55"><circle cx="1020" cy="190" r="3"/><circle cx="1100" cy="214" r="2"/><circle cx="1230" cy="180" r="2"/><circle cx="1320" cy="225" r="3"/><circle cx="900" cy="230" r="2"/></g>
+<path d="M560 320Q800 278 1000 316T1300 300T1536 312V360H560Z" fill="#070807"/>
+<g fill="#090a08" opacity=".95">
+ <path d="M600 0h14l-7 105-18 38 20-27 4 47-12 32 23-28 6 63h-10l-9-54-19 25 9-43-18 20 14-48-17 18 14-46-15 12 19-55Z"/>
+ <path d="M560 20Q630 30 680 88Q620 54 560 55Z"/>
+ <path d="M560 62Q635 55 700 116Q630 83 560 96Z"/>
+</g>
+<g fill="#080907" opacity=".95">
+ <path d="M710 350h310v-18h-310zM760 332l18-25 18 25zM840 332l18-25 18 25zM930 332l18-25 18 25z"/>
+ <path d="M1080 350v-18h18v18zM1110 350v-28h32v28zM1160 350v-17h22v17z"/>
+</g>
+<g transform="translate(835 55)">
+ <path d="M0 0h610v250H0z" fill="#090a08" opacity=".24"/>
+ <text x="305" y="105" text-anchor="middle" font-family="Georgia,serif" font-size="105" font-weight="900" letter-spacing="5" fill="#000" opacity=".75" filter="url(#shadow)">GTA GHIBLI</text>
+ <text x="300" y="98" text-anchor="middle" font-family="Georgia,serif" font-size="105" font-weight="900" letter-spacing="5" fill="url(#gold)" stroke="#4a3514" stroke-width="3" paint-order="stroke">GTA GHIBLI</text>
+ <path d="M36 122H564" stroke="#d3b15c" stroke-width="2" opacity=".8"/>
+ <text x="300" y="154" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" font-weight="700" letter-spacing="3" fill="#f1dfaa">OPEN WORLD • ACTION • ADVENTURE</text>
+ <text x="300" y="184" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="700" letter-spacing="2" fill="#e8c979">MISSIONS • VEHICLES • CITY LIFE • ANDROID GAME</text>
+ <path d="M95 204H505" stroke="#a98537" stroke-width="1.5" opacity=".8"/>
+</g>
 </svg>
