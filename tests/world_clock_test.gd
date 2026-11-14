@@ -1,6 +1,7 @@
 extends SceneTree
 
 const CLOCK_SCRIPT = preload("res://scripts/world/world_clock.gd")
+const NPC_BRAIN_SCRIPT = preload("res://scripts/systems/npc_brain.gd")
 
 func _initialize() -> void:
 	call_deferred("_run_test")
@@ -8,6 +9,13 @@ func _initialize() -> void:
 func _run_test() -> void:
 	var world := Node3D.new()
 	root.add_child(world)
+	var npc := Node3D.new()
+	npc.name = "ClockScheduleNPC"
+	var brain := Node.new()
+	brain.set_script(NPC_BRAIN_SCRIPT)
+	brain.set("schedule_enabled", true)
+	npc.add_child(brain)
+	world.add_child(npc)
 	var sun := DirectionalLight3D.new()
 	sun.name = "Sun"
 	world.add_child(sun)
@@ -22,6 +30,10 @@ func _run_test() -> void:
 	if str(clock.call("get_phase")) != "dawn":
 		_fail("Dawn phase was not identified.")
 		return
+	clock.call("set_time", 10, 0)
+	if str(brain.get("state_id")) != "working":
+		_fail("World clock did not notify an NPC to start its work schedule.")
+		return
 	clock.call("set_time", 12, 0)
 	if str(clock.call("get_phase")) != "day":
 		_fail("Day phase was not identified.")
@@ -33,6 +45,9 @@ func _run_test() -> void:
 	clock.call("set_time", 23, 0)
 	if str(clock.call("get_phase")) != "night":
 		_fail("Night phase was not identified.")
+		return
+	if str(brain.get("state_id")) != "resting":
+		_fail("World clock did not notify an NPC to rest at night.")
 		return
 	if float(sun.light_energy) <= 0.0:
 		_fail("Sunlight was not updated.")
