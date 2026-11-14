@@ -15,7 +15,7 @@ The opening sequence is stored in `data/story/chapter_01_opening.json` and prese
 | Shadows over the Harbor | Stealth + investigation | Infiltration, evidence photography, patrol avoidance, branching trust |
 | The Last Train | Escort + timed action | Protect Mia, stop alarm, choose escape route, survive pursuit |
 
-These mission records are authored designs, not playable missions yet. The current runtime mission manager still implements only the introductory village tutorial. Each new mission must be connected to runtime objectives, actors, checkpoints, failure/retry, rewards and save progression before being called playable.
+These mission records are authored designs, not playable missions yet. Mission 002 and mission 003 now have lightweight runtime blockouts. Other mission concepts must be connected to runtime objectives, actors, checkpoints, failure/retry, rewards and save progression before being called playable.
 
 ## Cinematic mission craft
 - Establish stakes with a short visual beat before control is handed to the player.
@@ -38,3 +38,10 @@ These mission records are authored designs, not playable missions yet. The curre
 Mission 002 now has a lightweight playable blockout runtime in `scripts/missions/mission_002_runtime.gd`. It unlocks after the first village mission is completed and includes vehicle entry, a checkpoint, a physical road blockade with a narrow central passage, an on-foot witness rescue, two scripted pursuing vehicles, a 90-second escape phase, failure/retry, and a local completion save. The headless regression test is `tests/mission_002_runtime_test.gd`.
 
 This is not a finished cinematic mission: the witness is a placeholder actor and both pursuers use simple scripted movement at different speeds. The chase now includes a basic vehicle-health indicator and damage when either pursuer gets dangerously close, but it does not yet include physical deformation, repair stations, advanced AI, voiced Arabic dialogue, animated camera shots, final art/audio, or Android device playtesting. Missions 003 and 004 remain design-only.
+
+
+## Mission 003 runtime status — 2026-11-14
+
+Mission 003 now has a playable stealth/investigation blockout in `scripts/missions/mission_003_runtime.gd`. It unlocks after mission 002 is saved as complete. The player meets Nora at a marked contact point, enters the harbor blockout, collects three evidence markers, avoids three simple moving guard placeholders, and returns to the contact point. Three separate guard detection events fail the mission; retry resets evidence and alerts. The headless regression test checks the full objective sequence.
+
+This remains a prototype: guard awareness is proximity-based rather than true line-of-sight AI; there are no disguises, takedowns, sound propagation, voiced dialogue, final harbor art, or Android device playtesting.
