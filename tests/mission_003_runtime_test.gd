@@ -41,6 +41,16 @@ func _run_test() -> void:
 		_fail("The harbor blockout did not create three evidence markers and three guards.")
 		return
 
+	var test_guard: Node3D = runtime._guards[0]
+	player.global_position = test_guard.global_position + Vector3(0.0, 0.0, -2.0)
+	if not runtime._guard_can_see_player(test_guard, 2.0):
+		_fail("A player directly in front of a guard was not detected by its field of view.")
+		return
+	player.global_position = test_guard.global_position + Vector3(0.0, 0.0, 2.0)
+	if runtime._guard_can_see_player(test_guard, 2.0):
+		_fail("A player behind a guard was incorrectly detected.")
+		return
+
 	for marker in runtime._evidence_markers:
 		player.global_position = marker.global_position
 		runtime._process(0.0)
