@@ -55,7 +55,7 @@ jobs:
             res://scripts/world/willow_village.gd \
             res://scripts/characters/mira_npc.gd \
             res://scripts/missions/mission_manager.gd \
-            res://scripts/missions/mission_002_runtime.gd \\
+            res://scripts/missions/mission_002_runtime.gd \
             res://scripts/missions/cinematic_director.gd
           do
             echo "Checking $script"
