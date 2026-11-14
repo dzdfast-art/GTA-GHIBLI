@@ -15,18 +15,19 @@ Implemented in the prototype:
 - Initial graphics pass: filmic tonemapping, sky-based ambient lighting, distance fog, subtle glow, directional shadows, layered tree canopies and small wildflower/stone details.
 - Procedural Willow Village greybox with a square, placeholder houses, paths, garden, trees, well and sign.
 - Mira NPC prototype with proximity detection and Arabic dialogue text/emotion metadata.
-- First tutorial mission tracking: reach the square → talk to Mira → visit the garden.
-- Local save/restore for the first mission's three progress flags.
+- First tutorial mission tracking: reach the square → talk to Mira → visit the garden, with local save/restore for its three progress flags.
+- First drivable road-car prototype: enter/exit, forward/reverse throttle, steering, braking, collision toggling and a contextual mobile BRAKE/EXIT HUD. Its vehicle art is still procedural placeholder geometry.
 
 Not yet verified or not yet implemented:
-- Final character models, rigs and animations.
+- Final character and vehicle models, rigs, animations and production-quality art.
 - Real integrated Arabic voice acting (Mira's audio is still pending).
+- Advanced vehicle physics: suspension, tire grip, damage, repair, fuel, vehicle audio, passenger seats and traffic AI.
+- Distinct vehicle classes and handling for motorcycles, bicycles, boats, trucks and aircraft.
 - A complete reusable physics/object interaction system.
-- Drivable vehicles and category-specific vehicle controls.
 - Full main story, broad cast, varied side missions and living-world systems.
 - Canonical final regions and world map/GPS.
 - Complete inventory/currency and game-wide save system.
-- Android export, installation, physical-device performance and touch testing.
+- Physical Android installation, touch feel, camera behavior and target-device performance testing.
 
 The first mission's currency reward is currently displayed as prototype information; it is not connected to a real wallet or inventory.
 
@@ -48,15 +49,16 @@ The project must include systemic interactions, physics, people, nature, food, v
 ## Current controls
 
 - Keyboard: arrow keys / Godot UI direction actions.
-- Touch: hold the directional buttons on the lower-left side.
+- Touch: hold the directional joystick on the lower-left side.
 - Camera: drag on the right side of the screen; on desktop, hold the right mouse button and move.
-- Interaction: approach Mira and use TALK (or press E on desktop).
+- Interaction: approach an interactable and use the contextual USE/TALK action (or press E on desktop).
+- Starter car: enter with USE; joystick up/down accelerates/reverses, left/right steers, BRAKE slows down, and EXIT returns to on-foot control.
 
 ## Automated validation
 
-GitHub Actions run [43513899542](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/43513899542) completed successfully. All eight validation steps passed: JSON validation, Godot 4.7 resource import, gameplay-script parsing, first-mission objective/save test and a 180-frame headless main-scene smoke test.
+GitHub Actions run [43513899542](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/43513899542) completed successfully for the earlier mission milestone. The newer vehicle milestone added a dedicated enter/drive/exit test. A subsequent commit expands coverage to forward/reverse movement, steering, braking, and restoration of player collision and visibility; its CI result must be checked before treating those cases as passed.
 
-This is headless CI validation only. It does not prove visual quality, real touchscreen behavior, audio playback, vehicle gameplay, Android export or performance on a physical phone.
+Headless CI does not prove visual quality, real touchscreen behavior, audio playback or performance on a physical phone.
 
 ## Android test build
 
