@@ -25,6 +25,7 @@ jobs:
           python -m json.tool data/dialogue/mira_intro_ar.json > /dev/null
           python -m json.tool data/missions/mission_001.json > /dev/null
           python -m json.tool data/story/chapter_01_opening.json > /dev/null
+          python -m json.tool data/story/world_encyclopedia.json > /dev/null
           python -m json.tool data/missions/mission_002.json > /dev/null
           python -m json.tool data/missions/mission_003.json > /dev/null
           python -m json.tool data/missions/mission_004.json > /dev/null
