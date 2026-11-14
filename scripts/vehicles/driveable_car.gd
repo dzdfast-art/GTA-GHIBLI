@@ -4,7 +4,7 @@ extends CharacterBody3D
 @export var max_reverse_speed := 4.5
 @export var acceleration := 8.0
 @export var braking_force := 16.0
-@export var direction_change_rate := 26.0
+@export var direction_change_rate := 36.0
 @export var steering_rate := 1.65
 @export var gravity := 18.0
 
