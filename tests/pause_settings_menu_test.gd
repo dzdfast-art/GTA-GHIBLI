@@ -21,6 +21,15 @@ func _run_test() -> void:
 	if menu.get_node_or_null("PauseAndSettingsOverlay/SettingsMenu") == null:
 		_fail("Settings page was not created.")
 		return
+	var current_settings: Dictionary = menu.get("_settings")
+	if str(current_settings.get("bike_steering", "")) != "analog":
+		_fail("Bike steering should default to Analog.")
+		return
+	menu.call("_on_bike_steering_selected", 2)
+	current_settings = menu.get("_settings")
+	if str(current_settings.get("bike_steering", "")) != "flick":
+		_fail("Bike steering selection did not update the saved setting.")
+		return
 	menu.call("toggle_pause")
 	if not get_root().get_tree().paused:
 		_fail("Opening pause did not pause the game.")
