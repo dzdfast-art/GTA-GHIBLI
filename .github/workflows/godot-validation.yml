@@ -75,6 +75,7 @@ jobs:
             res://scripts/world/side_activity_director.gd \
             res://scripts/world/world_clock.gd \
             res://scripts/world/open_world_regions.gd \
+            res://scripts/world/terrain_expansion_runtime.gd \
             res://scripts/world/wildlife_actor.gd \
             res://scripts/world/wildlife_director.gd \
             res://scripts/world/world_weather.gd \
