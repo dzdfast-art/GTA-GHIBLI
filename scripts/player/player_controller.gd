@@ -9,6 +9,21 @@ var is_driving := false
 
 @onready var camera_pivot: Node3D = $CameraPivot
 
+
+func _ready() -> void:
+	if not InputMap.has_action("sprint"):
+		InputMap.add_action("sprint")
+	var has_shift_binding := false
+	for event in InputMap.action_get_events("sprint"):
+		if event is InputEventKey and event.physical_keycode == KEY_SHIFT:
+			has_shift_binding = true
+			break
+	if not has_shift_binding:
+		var shift_event := InputEventKey.new()
+		shift_event.physical_keycode = KEY_SHIFT
+		InputMap.action_add_event("sprint", shift_event)
+
+
 func _physics_process(delta: float) -> void:
 	if is_driving:
 		velocity = Vector3.ZERO
@@ -24,6 +39,8 @@ func _physics_process(delta: float) -> void:
 	if move_direction.length_squared() > 1.0:
 		move_direction = move_direction.normalized()
 	var effective_move_speed := move_speed
+	if Input.is_action_pressed("sprint") and input_vector.length_squared() > 0.05:
+		effective_move_speed *= 1.45
 	var needs := get_node_or_null("PlayerNeeds")
 	if needs != null and needs.has_method("get_movement_multiplier"):
 		effective_move_speed *= clampf(float(needs.call("get_movement_multiplier")), 0.4, 1.0)

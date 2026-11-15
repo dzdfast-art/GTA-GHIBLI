@@ -3,10 +3,44 @@ extends Node3D
 ## Procedural blockout for four explorable districts linked to Willow Village.
 ## Geometry is original, light-weight and assembled at runtime for mobile testing.
 const NPC_BRAIN_SCRIPT = preload("res://scripts/systems/npc_brain.gd")
+const TERRAIN_SOURCES := {
+	"harbor_city": [
+		preload("res://assets/environment/terrain/high_detail/harbor_flats_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/river_delta_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/wetland_reeds_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/urban_canal_greenway_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/urban_park_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/basalt_coast_112.obj")
+	],
+	"pine_highlands": [
+		preload("res://assets/environment/terrain/high_detail/pine_forest_floor_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/pine_plateau_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/pine_ravine_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/granite_ridge_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/mountain_pass_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/rocky_badlands_112.obj")
+	],
+	"amber_valley": [
+		preload("res://assets/environment/terrain/high_detail/meadow_basin_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/farm_fields_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/orchard_hills_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/orchard_slope_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/desert_wash_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/red_canyon_112.obj")
+	],
+	"sapphire_coast": [
+		preload("res://assets/environment/terrain/high_detail/coastal_grass_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/coastal_cliffs_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/sapphire_headland_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/lake_shore_112.obj"),
+		preload("res://assets/environment/terrain/high_detail/willow_marsh_112.obj")
+	]
+}
 
 var _region_ids: Array[String] = []
 var _population_count := 0
 var _building_count := 0
+var _terrain_tile_count := 0
 
 func _ready() -> void:
 	_build_region("harbor_city", "مدينة الميناء", Vector3(-82.0, 0.0, -54.0),
@@ -31,6 +65,9 @@ func get_population_count() -> int:
 func get_building_count() -> int:
 	return _building_count
 
+func get_terrain_tile_count() -> int:
+	return _terrain_tile_count
+
 func _build_region(region_id: String, region_name: String, center: Vector3,
 		ground_color: Color, wall_color: Color, roof_color: Color, npc_names: Array) -> void:
 	_region_ids.append(region_id)
@@ -38,6 +75,7 @@ func _build_region(region_id: String, region_name: String, center: Vector3,
 	district.name = region_id.to_pascal_case()
 	district.position = center
 	add_child(district)
+	_add_terrain_backdrop(district, region_id)
 
 	var pad := MeshInstance3D.new()
 	pad.name = "DistrictGround"
@@ -61,6 +99,39 @@ func _build_region(region_id: String, region_name: String, center: Vector3,
 	_build_district_buildings(district, wall_color, roof_color)
 	_build_district_details(district, region_id, ground_color)
 	_build_civilians(district, region_id, npc_names)
+
+
+func _add_terrain_backdrop(district: Node3D, region_id: String) -> void:
+	var terrain_sources: Array = TERRAIN_SOURCES.get(region_id, [])
+	for tile_index in range(terrain_sources.size()):
+		var terrain_source: Resource = terrain_sources[tile_index]
+		var terrain_root: Node3D
+		if terrain_source is PackedScene:
+			var loaded_scene := (terrain_source as PackedScene).instantiate()
+			if loaded_scene is Node3D:
+				terrain_root = loaded_scene as Node3D
+			else:
+				terrain_root = Node3D.new()
+				terrain_root.add_child(loaded_scene)
+		elif terrain_source is Mesh:
+			var mesh_instance := MeshInstance3D.new()
+			mesh_instance.mesh = terrain_source as Mesh
+			terrain_root = mesh_instance
+		else:
+			push_error("Unsupported terrain resource for district: " + region_id)
+			continue
+
+		var column := tile_index % 3
+		var row := int(tile_index / 3)
+		terrain_root.name = "TerrainChunk_%02d" % (tile_index + 1)
+		terrain_root.position = Vector3(-59.94 + float(column) * 39.96,
+			0.45, -39.96 + float(row) * 39.96)
+		terrain_root.scale = Vector3(0.18, 0.10, 0.18)
+		terrain_root.visibility_range_end = 220.0
+		terrain_root.add_to_group("world_terrain_chunks")
+		district.add_child(terrain_root)
+		_terrain_tile_count += 1
+
 
 func _build_road(center: Vector3) -> void:
 	var flat_center := Vector2(center.x, center.z)

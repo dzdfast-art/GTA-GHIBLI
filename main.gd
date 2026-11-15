@@ -3,6 +3,7 @@ extends Node3D
 const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
 const VILLAGE_SCENE: PackedScene = preload("res://scenes/world/willow_village.tscn")
 const STARTER_CAR_SCENE: PackedScene = preload("res://scenes/vehicles/starter_car.tscn")
+const STARTER_BICYCLE_SCENE: PackedScene = preload("res://scenes/vehicles/starter_bicycle.tscn")
 const MOBILE_CONTROLS_SCRIPT = preload("res://scripts/ui/mobile_controls.gd")
 const PAUSE_SETTINGS_MENU_SCRIPT = preload("res://scripts/ui/pause_settings_menu.gd")
 const MISSION_MANAGER_SCRIPT = preload("res://scripts/missions/mission_manager.gd")
@@ -14,6 +15,7 @@ const CINEMATIC_DIRECTOR_SCRIPT = preload("res://scripts/missions/cinematic_dire
 const AMBIENCE_SCRIPT = preload("res://scripts/audio/nature_ambience.gd")
 const WORLD_CLOCK_SCRIPT = preload("res://scripts/world/world_clock.gd")
 const OPEN_WORLD_REGIONS_SCRIPT = preload("res://scripts/world/open_world_regions.gd")
+const TERRAIN_EXPANSION_SCRIPT = preload("res://scripts/world/terrain_expansion_runtime.gd")
 const PLAYER_NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
 const CONSUMABLE_INVENTORY_SCRIPT = preload("res://scripts/systems/consumable_inventory.gd")
 const PLAYER_WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
@@ -29,6 +31,7 @@ func _ready() -> void:
 	_create_player()
 	_create_player_needs()
 	_create_starter_car()
+	_create_starter_bicycle()
 	_create_mobile_controls()
 	_create_pause_settings_menu()
 	_create_mission_manager()
@@ -88,7 +91,7 @@ func _create_world() -> void:
 	var ground_mesh := MeshInstance3D.new()
 	ground_mesh.name = "GroundVisual"
 	var box_mesh := BoxMesh.new()
-	box_mesh.size = Vector3(260.0, 1.0, 200.0)
+	box_mesh.size = Vector3(300.0, 1.0, 240.0)
 	ground_mesh.mesh = box_mesh
 	ground_mesh.position.y = -0.5
 	var grass_material := StandardMaterial3D.new()
@@ -99,7 +102,7 @@ func _create_world() -> void:
 	var ground_collision := CollisionShape3D.new()
 	ground_collision.name = "GroundCollision"
 	var ground_shape := BoxShape3D.new()
-	ground_shape.size = Vector3(260.0, 1.0, 200.0)
+	ground_shape.size = Vector3(300.0, 1.0, 240.0)
 	ground_collision.shape = ground_shape
 	ground_collision.position.y = -0.5
 	ground.add_child(ground_collision)
@@ -122,6 +125,14 @@ func _create_starter_car() -> void:
 	car.name = "StarterCar"
 	car.position = Vector3(2.4, 0.0, -18.0)
 	add_child(car)
+
+func _create_starter_bicycle() -> void:
+	var bicycle: CharacterBody3D = STARTER_BICYCLE_SCENE.instantiate() as CharacterBody3D
+	bicycle.name = "StarterBicycle"
+	bicycle.position = Vector3(-2.6, 0.0, -18.0)
+	bicycle.rotation.y = PI
+	add_child(bicycle)
+
 
 func _create_mobile_controls() -> void:
 	var mobile_controls: CanvasLayer = MOBILE_CONTROLS_SCRIPT.new() as CanvasLayer
@@ -202,6 +213,9 @@ func _create_open_world_regions() -> void:
 	var regions: Node3D = OPEN_WORLD_REGIONS_SCRIPT.new() as Node3D
 	regions.name = "OpenWorldRegions"
 	add_child(regions)
+	var terrain_expansion: Node = TERRAIN_EXPANSION_SCRIPT.new()
+	terrain_expansion.name = "TerrainExpansionRuntime"
+	add_child(terrain_expansion)
 
 
 func _create_wildlife() -> void:

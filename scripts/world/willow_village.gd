@@ -10,7 +10,9 @@ func _ready() -> void:
 	_build_mira()
 	_build_square()
 	_build_paths()
+	_build_cycle_route()
 	_build_houses()
+	_build_house_portal()
 	_build_garden()
 	_build_trees()
 	_build_well()
@@ -90,6 +92,78 @@ func _add_house(house_name: String, origin: Vector3,
 		Color(0.40, 0.68, 0.75))
 	_add_mesh(house, "RightWindow", window_mesh, Vector3(1.55, 1.9, 2.31),
 		Color(0.40, 0.68, 0.75))
+
+
+func _build_cycle_route() -> void:
+	_add_box(self, "WillowBicycleApproach", Vector3(0.0, 0.035, 43.0),
+		Vector3(5.2, 0.07, 24.0), Color(0.34, 0.36, 0.34), true)
+	_add_box(self, "WillowBridgeWater", Vector3(0.0, -0.10, 74.0),
+		Vector3(12.0, 0.04, 36.0), Color(0.10, 0.31, 0.36), false)
+	_add_box(self, "WillowRedBridgeDeck", Vector3(0.0, 0.035, 74.0),
+		Vector3(6.2, 0.12, 34.0), Color(0.34, 0.31, 0.27), true)
+
+	var red_steel := Color(0.66, 0.18, 0.13)
+	for side_x in [-2.75, 2.75]:
+		_add_box(self, "RedBridgeLowerChord", Vector3(side_x, 0.36, 74.0),
+			Vector3(0.22, 0.22, 34.0), red_steel, false)
+		_add_box(self, "RedBridgeUpperChord", Vector3(side_x, 2.65, 74.0),
+			Vector3(0.24, 0.24, 34.0), red_steel, false)
+		for segment in range(7):
+			var z := 58.0 + float(segment) * 5.0
+			_add_box(self, "RedBridgePost", Vector3(side_x, 1.50, z),
+				Vector3(0.22, 2.5, 0.24), red_steel, false)
+			if segment < 6:
+				var next_z := z + 5.0
+				if segment % 2 == 0:
+					_add_bridge_diagonal(side_x, z, 0.42, next_z, 2.65, red_steel)
+				else:
+					_add_bridge_diagonal(side_x, z, 2.65, next_z, 0.42, red_steel)
+	for z in [58.0, 74.0, 90.0]:
+		_add_box(self, "RedBridgeCrossBeam", Vector3(0.0, 2.65, z),
+			Vector3(5.6, 0.22, 0.22), red_steel, false)
+
+	var rail_material := Color(0.15, 0.17, 0.17)
+	for rail_x in [-0.82, 0.82]:
+		_add_box(self, "BridgeRail", Vector3(rail_x, 0.15, 74.0),
+			Vector3(0.12, 0.10, 33.0), rail_material, false)
+	for sleeper_index in range(21):
+		var sleeper_z := 58.0 + float(sleeper_index) * 1.6
+		_add_box(self, "BridgeSleeper", Vector3(0.0, 0.12, sleeper_z),
+			Vector3(2.35, 0.09, 0.16), Color(0.30, 0.22, 0.15), false)
+
+	var bridge_label := Label3D.new()
+	bridge_label.name = "RedWillowBridgeName"
+	bridge_label.text = "RED WILLOW CROSSING"
+	bridge_label.position = Vector3(0.0, 3.2, 74.0)
+	bridge_label.font_size = 26
+	bridge_label.modulate = Color(1.0, 0.88, 0.72)
+	add_child(bridge_label)
+
+
+func _add_bridge_diagonal(side_x: float, start_z: float, start_y: float,
+		end_z: float, end_y: float, color: Color) -> void:
+	var delta_y := end_y - start_y
+	var delta_z := end_z - start_z
+	var beam := MeshInstance3D.new()
+	beam.name = "RedBridgeDiagonal"
+	var mesh := BoxMesh.new()
+	mesh.size = Vector3(0.20, 0.20, Vector2(delta_y, delta_z).length())
+	beam.mesh = mesh
+	beam.position = Vector3(side_x, (start_y + end_y) * 0.5,
+		(start_z + end_z) * 0.5)
+	beam.rotation.x = atan2(-delta_y, delta_z)
+	beam.material_override = _material(color)
+	add_child(beam)
+
+
+func _build_house_portal() -> void:
+	var portal_script = preload("res://scripts/world/house_interior_portal.gd")
+	var portal := Node3D.new()
+	portal.name = "BakerHouseInteriorPortal"
+	portal.position = Vector3(-11.0, 0.0, -7.05)
+	portal.set_script(portal_script)
+	portal.set("room_title_ar", "منزل الصفصاف")
+	add_child(portal)
 
 
 func _build_garden() -> void:

@@ -111,6 +111,9 @@ jobs:
           print("Configured Android SDK and Java paths for Godot.")
           PY
 
+      - name: Audit high-detail OBJ material surface groups
+        run: python tools/audit_obj_material_groups.py
+
       - name: Audit repository privacy configuration
         run: python tools/privacy_audit.py
 

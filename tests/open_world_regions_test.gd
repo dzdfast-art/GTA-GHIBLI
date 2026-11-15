@@ -18,11 +18,22 @@ func _run_test() -> void:
 	if int(regions.call("get_population_count")) != 8:
 		_fail("The four districts did not create their civilian population.")
 		return
+	if int(regions.call("get_terrain_tile_count")) != 23:
+		_fail("The 23 high-detail terrain source meshes were not loaded.")
+		return
 	for region_id in ["harbor_city", "pine_highlands", "amber_valley", "sapphire_coast"]:
-		if regions.get_node_or_null(str(region_id).to_pascal_case()) == null:
+		var district := regions.get_node_or_null(str(region_id).to_pascal_case())
+		if district == null:
 			_fail("A named district node is missing: " + str(region_id))
 			return
-	print("PASS: Four world districts, 24 building shells and eight scheduled civilians.")
+		var terrain_count := 0
+		for child in district.get_children():
+			if child.is_in_group("world_terrain_chunks"):
+				terrain_count += 1
+		if terrain_count < 5:
+			_fail("A district is missing its high-detail terrain chunks: " + str(region_id))
+			return
+	print("PASS: Four world districts, 24 building shells, eight scheduled civilians, and 23 loaded terrain chunks.")
 	quit(0)
 
 func _fail(message: String) -> void:
