@@ -34,6 +34,9 @@ jobs:
           python -m json.tool data/world/wildlife_catalog.json > /dev/null
           python -m json.tool audio/ambience/manifest.json > /dev/null
 
+      - name: Audit high-detail OBJ material surface groups
+        run: python tools/audit_obj_material_groups.py
+
       - name: Audit Android privacy permissions
         run: python tools/privacy_audit.py
 

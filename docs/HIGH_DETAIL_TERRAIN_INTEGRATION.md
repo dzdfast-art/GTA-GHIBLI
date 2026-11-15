@@ -23,3 +23,10 @@ The world ground plane and collision footprint were expanded to 300 x 240 units 
 - Inspect MTL material import and terrain appearance in the Android build.
 - Profile frame rate and memory on the target Android device before increasing scene detail.
 - Headless CI does not replace visual review or a physical Android performance test.
+
+
+## Godot OBJ importer surface-limit correction
+
+The source meshes originally changed `usemtl` many times across neighbouring faces. Godot's OBJ importer treated these material changes as new mesh surfaces and emitted `MAX_MESH_SURFACES` errors during headless import. The face geometry and vertex data are unchanged; each OBJ now groups its faces into one contiguous block per material, keeping each mesh at one to four surfaces. The shared MTL library declares the crop material used by the farm tile.
+
+`tools/audit_obj_material_groups.py` checks all 23 files, face/vertex counts, shared material declarations and contiguous material blocks. Both Godot validation and Android export run this audit before importing resources.
