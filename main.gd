@@ -15,6 +15,7 @@ const CINEMATIC_DIRECTOR_SCRIPT = preload("res://scripts/missions/cinematic_dire
 const AMBIENCE_SCRIPT = preload("res://scripts/audio/nature_ambience.gd")
 const WORLD_CLOCK_SCRIPT = preload("res://scripts/world/world_clock.gd")
 const OPEN_WORLD_REGIONS_SCRIPT = preload("res://scripts/world/open_world_regions.gd")
+const TERRAIN_EXPANSION_SCRIPT = preload("res://scripts/world/terrain_expansion_runtime.gd")
 const PLAYER_NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
 const CONSUMABLE_INVENTORY_SCRIPT = preload("res://scripts/systems/consumable_inventory.gd")
 const PLAYER_WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
@@ -212,6 +213,9 @@ func _create_open_world_regions() -> void:
 	var regions: Node3D = OPEN_WORLD_REGIONS_SCRIPT.new() as Node3D
 	regions.name = "OpenWorldRegions"
 	add_child(regions)
+	var terrain_expansion: Node = TERRAIN_EXPANSION_SCRIPT.new()
+	terrain_expansion.name = "TerrainExpansionRuntime"
+	add_child(terrain_expansion)
 
 
 func _create_wildlife() -> void:
