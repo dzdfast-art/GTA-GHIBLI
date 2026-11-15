@@ -124,6 +124,9 @@ jobs:
       - name: Test original ambience audio assets
         run: godot --headless --path . --script res://tests/nature_ambience_assets_test.gd
 
+      - name: Test named audio buses and routing
+        run: godot --headless --path . --script res://tests/audio_bus_layout_test.gd
+
       - name: Test global weather transitions
         run: godot --headless --path . --script res://tests/world_weather_test.gd
 
