@@ -1,0 +1,20 @@
+{
+  "pack": "GTA GHIBLI Regional Terrain Expansion",
+  "version": 1,
+  "format": "Wavefront OBJ",
+  "grid": "Distinct procedural elevation fields; no duplicated source meshes",
+  "tile_spacing_m": 1.5,
+  "vertex_grid": "220x220 for large tiles; 120x120 for smaller tiles",
+  "assets": [
+    "cedar_highlands_east.obj",
+    "amber_valley_farm_basin.obj",
+    "sapphire_coast_rock_shelf.obj",
+    "pine_heights_ravine.obj",
+    "harbor_floodplain_west.obj",
+    "granite_ridge_summit.obj",
+    "desert_wash_plateau.obj",
+    "lake_shore_terraces.obj",
+    "red_canyon_rim_north.obj"
+  ],
+  "note": "Meshes are source assets. They still require placement, material tuning, collision setup, and Android performance validation before gameplay integration."
+}
