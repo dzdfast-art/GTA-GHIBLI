@@ -25,6 +25,45 @@ func _ready() -> void:
 	_build_hud()
 
 
+func _process(_delta: float) -> void:
+	if _context_button == null or _is_car_mode or _is_bicycle_mode:
+		return
+	var player := get_tree().get_first_node_in_group("player") as Node3D
+	if player == null:
+		return
+	var prompt := "USE"
+	var nearest_distance := 4.0
+	for bicycle in get_tree().get_nodes_in_group("bicycles"):
+		if not bicycle is Node3D:
+			continue
+		var distance := player.global_position.distance_to((bicycle as Node3D).global_position)
+		if distance < nearest_distance:
+			nearest_distance = distance
+			prompt = "RIDE"
+	for vehicle in get_tree().get_nodes_in_group("vehicles"):
+		if vehicle.is_in_group("bicycles") or not vehicle is Node3D:
+			continue
+		var distance := player.global_position.distance_to((vehicle as Node3D).global_position)
+		if distance < nearest_distance:
+			nearest_distance = distance
+			prompt = "ENTER"
+	for portal in get_tree().get_nodes_in_group("building_portals"):
+		if not portal is Node3D:
+			continue
+		var portal_node := portal as Node3D
+		var portal_position := portal_node.global_position
+		if bool(portal.get("_is_inside")):
+			portal_position += portal.get("room_offset") + Vector3(0.0, 0.9, 3.1)
+			if player.global_position.distance_to(portal_position) < nearest_distance:
+				nearest_distance = player.global_position.distance_to(portal_position)
+				prompt = "EXIT HOUSE"
+		elif player.global_position.distance_to(portal_position) < nearest_distance:
+			nearest_distance = player.global_position.distance_to(portal_position)
+			prompt = "ENTER HOUSE"
+	if _context_button.text != prompt:
+		_context_button.text = prompt
+
+
 func _register_actions() -> void:
 	var actions := ["vehicle_brake", "bike_pedal", "bike_brake",
 		"bike_steer_left", "bike_steer_right", "sprint"]
