@@ -22,7 +22,7 @@ Not yet verified or not yet implemented:
 - Final character and vehicle models, rigs, animations and production-quality art.
 - Real integrated Arabic voice acting (Mira's audio is still pending).
 - Advanced vehicle physics: suspension, tire grip, damage, repair, fuel, vehicle audio, passenger seats and traffic AI.
-- Distinct vehicle classes and handling for motorcycles, bicycles, boats, trucks and aircraft.
+- A first bicycle ride prototype is present on the video-reference development branch, with pedal, brake/reverse, and ANALOG / BUTTONS / FLICK steering states. Motorcycle, boat, truck and aircraft classes still need independent controllers, handling and tests.
 - A complete reusable physics/object interaction system.
 - Full main story, broad cast, varied side missions and living-world systems.
 - Canonical final regions and world map/GPS.
@@ -53,6 +53,7 @@ The project must include systemic interactions, physics, people, nature, food, v
 - Camera: drag on the right side of the screen; on desktop, hold the right mouse button and move.
 - Interaction: approach an interactable and use the contextual USE/TALK action (or press E on desktop).
 - Starter car: enter with USE; joystick up/down accelerates/reverses, left/right steers, BRAKE slows down, and EXIT returns to on-foot control.
+- Starter bicycle (video-reference branch): approach the bicycle and use RIDE; hold PEDAL to accelerate; hold BRAKE / REV to slow and then reverse; EXIT BIKE dismounts. Choose ANALOG, BUTTONS or FLICK in Options → Bike steering. RUN is available on foot.
 
 ## Automated validation
 
@@ -85,6 +86,7 @@ The repository intentionally remains public. Automated secret scanning is config
 - [GTA GHIBLI world and story encyclopedia](docs/GTA_GHIBLI_ENCYCLOPEDIA.md)
 - [Initial quality audit](docs/QUALITY_AUDIT.md)
 - [Android 4 GiB content budget](docs/ANDROID_4GB_BUDGET.md)
+- [Uploaded video reference integration](docs/VIDEO_REFERENCE_IMPLEMENTATION.md)
 
 ## Prototype scene and structured data
 
