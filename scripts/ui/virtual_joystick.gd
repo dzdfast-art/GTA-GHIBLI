@@ -19,6 +19,9 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	# Hidden steering layouts must not consume touches intended for Flick mode.
+	if not is_visible_in_tree():
+		return
 	if event is InputEventScreenTouch:
 		if event.pressed:
 			if _finger_index == -1 and get_global_rect().has_point(event.position):
@@ -60,6 +63,8 @@ func _update_from_viewport_position(viewport_position: Vector2) -> void:
 
 
 func _reset_stick() -> void:
+	_finger_index = -1
+	_mouse_active = false
 	_knob_vector = Vector2.ZERO
 	vector_changed.emit(Vector2.ZERO)
 	queue_redraw()
