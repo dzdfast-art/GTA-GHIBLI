@@ -1,4 +1,4 @@
-extends Node3D
+extends CharacterBody3D
 
 @export var move_speed: float = 5.0
 @export var acceleration: float = 18.0
