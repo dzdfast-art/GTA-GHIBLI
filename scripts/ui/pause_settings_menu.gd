@@ -15,7 +15,7 @@ var _selected_menu_index := 2
 var _settings := {
 	"master_volume": 0.85, "music_volume": 0.65, "effects_volume": 0.85,
 	"dialogue_volume": 1.0, "look_sensitivity": 1.0, "graphics_quality": 2,
-	"target_fps": 60, "touch_scale": 1.0, "touch_opacity": 0.9, "show_subtitles": true, "language": "ar"
+	"target_fps": 60, "touch_scale": 1.0, "touch_opacity": 0.9, "bike_steering": "analog", "show_subtitles": true, "language": "ar"
 }
 
 func _ready() -> void:
@@ -218,6 +218,23 @@ func _build_settings_page() -> void:
 	_add_slider(rows, "حجم أزرار اللمس  |  Touch size", "touch_scale", 0.75, 1.35, 0.05)
 	_add_slider(rows, "شفافية أزرار اللمس  |  Touch opacity", "touch_opacity", 0.35, 1.0, 0.05)
 
+	var bike_steering_row := HBoxContainer.new()
+	rows.add_child(bike_steering_row)
+	_add_row_label(bike_steering_row, "توجيه الدراجة  |  Bike steering")
+	var bike_steering := OptionButton.new()
+	bike_steering.add_item("ANALOG  |  عصا", 0)
+	bike_steering.add_item("BUTTONS  |  أزرار", 1)
+	bike_steering.add_item("FLICK  |  سحب", 2)
+	var steering_modes := ["analog", "buttons", "flick"]
+	var selected_mode := steering_modes.find(str(_settings.bike_steering))
+	bike_steering.select(maxi(selected_mode, 0))
+	bike_steering.item_selected.connect(_on_bike_steering_selected)
+	bike_steering_row.add_child(bike_steering)
+	var bike_hint := Label.new()
+	bike_hint.text = "يُطبَّق فوراً على الدراجة ويحفظ على هذا الجهاز."
+	bike_hint.add_theme_color_override("font_color", Color(0.76, 0.82, 0.72, 1.0))
+	rows.add_child(bike_hint)
+
 	var quality_row := HBoxContainer.new()
 	rows.add_child(quality_row)
 	_add_row_label(quality_row, "جودة الرسومات  |  Graphics")
@@ -364,6 +381,12 @@ func _on_fps_selected(index: int, selector: OptionButton) -> void:
 	_settings.target_fps = int(selector.get_item_id(index))
 	_apply_video_and_camera_settings()
 
+func _on_bike_steering_selected(index: int) -> void:
+	var steering_modes := ["analog", "buttons", "flick"]
+	_settings.bike_steering = steering_modes[clampi(index, 0, steering_modes.size() - 1)]
+	_apply_video_and_camera_settings()
+
+
 func _on_subtitles_toggled(enabled: bool) -> void:
 	_settings.show_subtitles = enabled
 
@@ -378,6 +401,9 @@ func _apply_video_and_camera_settings() -> void:
 		camera.set("look_sensitivity", 0.006 * float(_settings.look_sensitivity))
 	for controls in get_tree().get_nodes_in_group("mobile_controls"):
 		controls.call("set_controls_preferences", float(_settings.touch_scale), float(_settings.touch_opacity))
+		controls.call("set_bike_steering_mode", str(_settings.bike_steering))
+	for bicycle in get_tree().get_nodes_in_group("bicycles"):
+		bicycle.call("set_steering_method", str(_settings.bike_steering))
 
 func _apply_audio_settings() -> void:
 	_set_bus_volume("Master", float(_settings.master_volume))
@@ -410,6 +436,8 @@ func _load_settings() -> void:
 		return
 	for key in _settings:
 		_settings[key] = config.get_value("game", key, _settings[key])
+	if not ["analog", "buttons", "flick"].has(str(_settings.bike_steering)):
+		_settings.bike_steering = "analog"
 
 func _restart_game() -> void:
 	get_tree().paused = false
