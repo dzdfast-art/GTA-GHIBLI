@@ -114,36 +114,62 @@ func _build_dialogue_ui() -> void:
 	_hint_label.anchor_bottom = 0.67
 	_hint_label.visible = false
 	_hint_label.add_theme_font_size_override("font_size", 16)
+	_hint_label.add_theme_color_override("font_color", Color(1.0, 0.82, 0.34, 1.0))
+	_hint_label.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 1.0))
+	_hint_label.add_theme_constant_override("shadow_offset_x", 2)
+	_hint_label.add_theme_constant_override("shadow_offset_y", 2)
 	root.add_child(_hint_label)
 
+	# GTA-inspired subtitle panel: dark amber glass, golden frame and readable gold text.
 	_dialogue_panel = PanelContainer.new()
-	_dialogue_panel.anchor_left = 0.06
-	_dialogue_panel.anchor_top = 0.68
-	_dialogue_panel.anchor_right = 0.94
+	_dialogue_panel.name = "GoldenDialogueBox"
+	_dialogue_panel.anchor_left = 0.055
+	_dialogue_panel.anchor_top = 0.72
+	_dialogue_panel.anchor_right = 0.945
 	_dialogue_panel.anchor_bottom = 0.96
 	_dialogue_panel.visible = false
+	var dialogue_style := StyleBoxFlat.new()
+	dialogue_style.bg_color = Color(0.105, 0.073, 0.022, 0.94)
+	dialogue_style.border_color = Color(1.0, 0.72, 0.16, 1.0)
+	dialogue_style.set_border_width_all(3)
+	dialogue_style.set_corner_radius_all(7)
+	dialogue_style.shadow_color = Color(0.0, 0.0, 0.0, 0.72)
+	dialogue_style.shadow_size = 8
+	dialogue_style.content_margin_left = 22.0
+	dialogue_style.content_margin_right = 22.0
+	dialogue_style.content_margin_top = 12.0
+	dialogue_style.content_margin_bottom = 12.0
+	_dialogue_panel.add_theme_stylebox_override("panel", dialogue_style)
 	root.add_child(_dialogue_panel)
 
 	var content := VBoxContainer.new()
-	content.add_theme_constant_override("separation", 8)
+	content.add_theme_constant_override("separation", 5)
 	_dialogue_panel.add_child(content)
 
 	_emotion_label = Label.new()
+	_emotion_label.name = "SpeakerAndEmotion"
 	_emotion_label.text = "ميرا — سعيدة ومرحّبة"
 	_emotion_label.text_direction = Control.TEXT_DIRECTION_RTL
 	_emotion_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_emotion_label.add_theme_font_size_override("font_size", 16)
+	_emotion_label.add_theme_color_override("font_color", Color(1.0, 0.78, 0.25, 1.0))
+	_emotion_label.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 1.0))
+	_emotion_label.add_theme_constant_override("shadow_offset_x", 2)
+	_emotion_label.add_theme_constant_override("shadow_offset_y", 2)
 	content.add_child(_emotion_label)
 
 	_dialogue_label = Label.new()
+	_dialogue_label.name = "GoldenDialogueText"
 	_dialogue_label.text = "صباح الخير!"
 	_dialogue_label.text_direction = Control.TEXT_DIRECTION_RTL
 	_dialogue_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_dialogue_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_dialogue_label.add_theme_font_size_override("font_size", 20)
+	_dialogue_label.add_theme_font_size_override("font_size", 24)
+	_dialogue_label.add_theme_color_override("font_color", Color(1.0, 0.88, 0.48, 1.0))
+	_dialogue_label.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 1.0))
+	_dialogue_label.add_theme_constant_override("shadow_offset_x", 2)
+	_dialogue_label.add_theme_constant_override("shadow_offset_y", 2)
 	content.add_child(_dialogue_label)
-
-
 
 
 func _attach_npc_brain() -> void:

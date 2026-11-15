@@ -37,6 +37,9 @@ func _run_mobile_controls_test() -> void:
 		_fail("The on-screen joystick did not receive a usable layout size.")
 		return
 
+	var camera_pivot := player.get_node("CameraPivot") as Node3D
+	var camera_rotation_before_walk: Vector3 = camera_pivot.global_rotation
+
 	var joystick_center: Vector2 = joystick.get_global_transform_with_canvas() * (joystick.size * 0.5)
 	var touch := InputEventScreenTouch.new()
 	touch.index = 41
@@ -61,6 +64,13 @@ func _run_mobile_controls_test() -> void:
 		_fail("The player did not move while the virtual joystick was held.")
 		return
 
+	# Walking and body-facing changes must not rotate the camera by themselves.
+	var camera_rotation_after_walk: Vector3 = camera_pivot.global_rotation
+	if not is_equal_approx(wrapf(camera_rotation_after_walk.y - camera_rotation_before_walk.y, -PI, PI), 0.0) \
+		or not is_equal_approx(camera_rotation_after_walk.x, camera_rotation_before_walk.x):
+		_fail("The camera rotated while the player walked using the left joystick.")
+		return
+
 	var release := InputEventScreenTouch.new()
 	release.index = 41
 	release.pressed = false
@@ -71,7 +81,6 @@ func _run_mobile_controls_test() -> void:
 		return
 
 	# A left-side touch belongs to the joystick area and must not rotate the camera.
-	var camera_pivot := player.get_node("CameraPivot") as Node3D
 	var initial_camera_rotation: Vector3 = camera_pivot.rotation
 	camera_pivot.call("_unhandled_input", touch)
 	var left_drag := InputEventScreenDrag.new()
@@ -123,7 +132,7 @@ func _run_mobile_controls_test() -> void:
 		_fail("Rotating the player body changed the camera world yaw.")
 		return
 
-	print("PASS: joystick touch drives movement, release clears input, left touch is isolated, and right drag controls camera.")
+	print("PASS: joystick movement, camera stability while walking, touch isolation, and right-side camera look.")
 	quit(0)
 
 
