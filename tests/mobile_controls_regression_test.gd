@@ -66,7 +66,7 @@ func _run_mobile_controls_test() -> void:
 
 	# Walking and body-facing changes must not rotate the camera by themselves.
 	var camera_rotation_after_walk: Vector3 = camera_pivot.global_rotation
-	if not is_equal_approx(wrapf(camera_rotation_after_walk.y - camera_rotation_before_walk.y, -PI, PI), 0.0) \\
+	if not is_equal_approx(wrapf(camera_rotation_after_walk.y - camera_rotation_before_walk.y, -PI, PI), 0.0) \
 		or not is_equal_approx(camera_rotation_after_walk.x, camera_rotation_before_walk.x):
 		_fail("The camera rotated while the player walked using the left joystick.")
 		return
