@@ -48,6 +48,7 @@ func _ready() -> void:
 	_random.randomize()
 	_player = AudioStreamPlayer.new()
 	_player.name = "ProceduralNatureAudio"
+	_player.bus = "SFX"
 	_player.volume_db = -3.0
 	var generator := AudioStreamGenerator.new()
 	generator.mix_rate = SAMPLE_RATE
@@ -174,14 +175,13 @@ func set_weather(value: String) -> void:
 func set_master_gain(value: float) -> void:
 	master_gain = clampf(value, 0.0, 0.6)
 
-
 func _build_field_recording_player() -> void:
 	_field_recording_player = AudioStreamPlayer.new()
 	_field_recording_player.name = "OriginalFieldAmbience"
+	_field_recording_player.bus = "SFX"
 	_field_recording_player.volume_db = -12.0
 	_field_recording_player.finished.connect(_on_field_recording_finished)
 	add_child(_field_recording_player)
-
 
 func _desired_field_theme() -> String:
 	if weather == "storm":
@@ -197,7 +197,6 @@ func _desired_field_theme() -> String:
 		return "dawn"
 	return "forest_day"
 
-
 func _sync_field_recording(force: bool = false) -> void:
 	if _field_recording_player == null:
 		return
@@ -208,7 +207,6 @@ func _sync_field_recording(force: bool = false) -> void:
 	_field_recording_segment = 0
 	_field_recording_player.stop()
 	_play_field_recording_segment()
-
 
 func _play_field_recording_segment() -> void:
 	var tracks: Array = FIELD_RECORDING_PATHS.get(_field_recording_theme, [])
@@ -224,7 +222,6 @@ func _play_field_recording_segment() -> void:
 		return
 	_field_recording_player.stream = stream
 	_field_recording_player.play()
-
 
 func _on_field_recording_finished() -> void:
 	if _field_recording_player == null:
