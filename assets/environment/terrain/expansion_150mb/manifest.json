@@ -1,20 +1,30 @@
 {
   "pack": "GTA GHIBLI Regional Terrain Expansion",
-  "version": 1,
+  "version": 2,
   "format": "Wavefront OBJ",
-  "grid": "Distinct procedural elevation fields; no duplicated source meshes",
-  "tile_spacing_m": 1.5,
-  "vertex_grid": "220x220 for large tiles; 120x120 for smaller tiles",
-  "assets": [
-    "cedar_highlands_east.obj",
-    "amber_valley_farm_basin.obj",
-    "sapphire_coast_rock_shelf.obj",
-    "pine_heights_ravine.obj",
-    "harbor_floodplain_west.obj",
-    "granite_ridge_summit.obj",
-    "desert_wash_plateau.obj",
-    "lake_shore_terraces.obj",
-    "red_canyon_rim_north.obj"
+  "grid": "Distinct procedural elevation fields; each tile is a unique 200x200 terrain grid",
+  "tile_spacing_m": 0.9,
+  "coordinate_extent_m": 180,
+  "runtime_enabled": [
+    "harbor_rail_yards.obj",
+    "pine_cedar_ridge.obj",
+    "amber_orchard_slope.obj",
+    "sapphire_tidal_shelf.obj"
   ],
-  "note": "Meshes are source assets. They still require placement, material tuning, collision setup, and Android performance validation before gameplay integration."
+  "optional_streaming_tiles": [
+    "harbor_old_quarry.obj",
+    "harbor_outer_marsh.obj",
+    "pine_fog_valley.obj",
+    "amber_wheat_basin.obj",
+    "sapphire_wind_cliffs.obj",
+    "red_bridge_ravine.obj",
+    "willow_river_banks.obj",
+    "granite_pass_south.obj",
+    "lake_terrace_east.obj",
+    "basalt_coastal_spur.obj",
+    "farm_irrigation_fields.obj",
+    "old_town_hill.obj",
+    "northern_forest_bowl.obj"
+  ],
+  "note": "Four new tiles are attached at runtime, one per district. The remaining tiles are unique source assets reserved for distance-based region streaming. All OBJ source meshes still need collision baking, material tuning and Android profiling before being treated as fully gameplay-ready."
 }

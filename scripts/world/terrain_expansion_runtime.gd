@@ -1,23 +1,40 @@
 extends Node
 
-## Attaches two original terrain meshes to each district.
-## Visual chunks use distance visibility; collision baking and Android profiling remain separate tasks.
+## Attaches regional terrain source meshes to the four generated districts.
+## The original eight tiles remain; one additional district-specific tile is
+## enabled per district. Extra source tiles are catalogued for later streaming.
 const REGIONAL_TILES := {
 	"HarborCity": {
-		"meshes": [preload("res://assets/environment/terrain/expansion_150mb/harbor_floodplain_west.obj"), preload("res://assets/environment/terrain/expansion_150mb/harbor_rail_flats.obj")],
-		"positions": [Vector3(-29.0, 0.45, -42.0), Vector3(28.0, 0.45, 40.0)]
+		"meshes": [
+			preload("res://assets/environment/terrain/expansion_150mb/harbor_floodplain_west.obj"),
+			preload("res://assets/environment/terrain/expansion_150mb/harbor_rail_flats.obj"),
+			preload("res://assets/environment/terrain/expansion_150mb/harbor_rail_yards.obj")
+		],
+		"positions": [Vector3(-29.0, 0.45, -42.0), Vector3(28.0, 0.45, 40.0), Vector3(0.0, 0.45, 0.0)]
 	},
 	"PineHighlands": {
-		"meshes": [preload("res://assets/environment/terrain/expansion_150mb/cedar_highlands_east.obj"), preload("res://assets/environment/terrain/expansion_150mb/pine_needle_uplands.obj")],
-		"positions": [Vector3(-29.0, 0.45, -42.0), Vector3(28.0, 0.45, 40.0)]
+		"meshes": [
+			preload("res://assets/environment/terrain/expansion_150mb/cedar_highlands_east.obj"),
+			preload("res://assets/environment/terrain/expansion_150mb/pine_needle_uplands.obj"),
+			preload("res://assets/environment/terrain/expansion_150mb/pine_cedar_ridge.obj")
+		],
+		"positions": [Vector3(-29.0, 0.45, -42.0), Vector3(28.0, 0.45, 40.0), Vector3(0.0, 0.45, 0.0)]
 	},
 	"AmberValley": {
-		"meshes": [preload("res://assets/environment/terrain/expansion_150mb/amber_valley_farm_basin.obj"), preload("res://assets/environment/terrain/expansion_150mb/orchard_terraces_north.obj")],
-		"positions": [Vector3(-29.0, 0.45, -42.0), Vector3(28.0, 0.45, 40.0)]
+		"meshes": [
+			preload("res://assets/environment/terrain/expansion_150mb/amber_valley_farm_basin.obj"),
+			preload("res://assets/environment/terrain/expansion_150mb/orchard_terraces_north.obj"),
+			preload("res://assets/environment/terrain/expansion_150mb/amber_orchard_slope.obj")
+		],
+		"positions": [Vector3(-29.0, 0.45, -42.0), Vector3(28.0, 0.45, 40.0), Vector3(0.0, 0.45, 0.0)]
 	},
 	"SapphireCoast": {
-		"meshes": [preload("res://assets/environment/terrain/expansion_150mb/sapphire_coast_rock_shelf.obj"), preload("res://assets/environment/terrain/expansion_150mb/sapphire_tidal_flats.obj")],
-		"positions": [Vector3(-29.0, 0.45, -42.0), Vector3(28.0, 0.45, 40.0)]
+		"meshes": [
+			preload("res://assets/environment/terrain/expansion_150mb/sapphire_coast_rock_shelf.obj"),
+			preload("res://assets/environment/terrain/expansion_150mb/sapphire_tidal_flats.obj"),
+			preload("res://assets/environment/terrain/expansion_150mb/sapphire_tidal_shelf.obj")
+		],
+		"positions": [Vector3(-29.0, 0.45, -42.0), Vector3(28.0, 0.45, 40.0), Vector3(0.0, 0.45, 0.0)]
 	}
 }
 
@@ -36,6 +53,9 @@ func _ready() -> void:
 		var tile_data: Dictionary = REGIONAL_TILES[region_name]
 		var meshes: Array = tile_data["meshes"]
 		var positions: Array = tile_data["positions"]
+		if meshes.size() != positions.size():
+			push_error("Terrain expansion: mesh/position count mismatch for " + region_name)
+			continue
 		for tile_index in range(meshes.size()):
 			var tile := MeshInstance3D.new()
 			tile.name = "ExpansionTerrain_%s_%02d" % [region_name, tile_index + 1]
