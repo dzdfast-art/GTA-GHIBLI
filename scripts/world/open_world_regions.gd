@@ -3,10 +3,17 @@ extends Node3D
 ## Procedural blockout for four explorable districts linked to Willow Village.
 ## Geometry is original, light-weight and assembled at runtime for mobile testing.
 const NPC_BRAIN_SCRIPT = preload("res://scripts/systems/npc_brain.gd")
+const TERRAIN_SOURCES := {
+	"harbor_city": preload("res://assets/environment/terrain/high_detail/harbor_flats_112.obj"),
+	"pine_highlands": preload("res://assets/environment/terrain/high_detail/pine_forest_floor_112.obj"),
+	"amber_valley": preload("res://assets/environment/terrain/high_detail/meadow_basin_112.obj"),
+	"sapphire_coast": preload("res://assets/environment/terrain/high_detail/coastal_grass_112.obj")
+}
 
 var _region_ids: Array[String] = []
 var _population_count := 0
 var _building_count := 0
+var _terrain_tile_count := 0
 
 func _ready() -> void:
 	_build_region("harbor_city", "مدينة الميناء", Vector3(-82.0, 0.0, -54.0),
@@ -31,6 +38,9 @@ func get_population_count() -> int:
 func get_building_count() -> int:
 	return _building_count
 
+func get_terrain_tile_count() -> int:
+	return _terrain_tile_count
+
 func _build_region(region_id: String, region_name: String, center: Vector3,
 		ground_color: Color, wall_color: Color, roof_color: Color, npc_names: Array) -> void:
 	_region_ids.append(region_id)
@@ -38,6 +48,7 @@ func _build_region(region_id: String, region_name: String, center: Vector3,
 	district.name = region_id.to_pascal_case()
 	district.position = center
 	add_child(district)
+	_add_terrain_backdrop(district, region_id)
 
 	var pad := MeshInstance3D.new()
 	pad.name = "DistrictGround"
@@ -61,6 +72,36 @@ func _build_region(region_id: String, region_name: String, center: Vector3,
 	_build_district_buildings(district, wall_color, roof_color)
 	_build_district_details(district, region_id, ground_color)
 	_build_civilians(district, region_id, npc_names)
+
+
+func _add_terrain_backdrop(district: Node3D, region_id: String) -> void:
+	var terrain_source: Resource = TERRAIN_SOURCES.get(region_id)
+	if terrain_source == null:
+		push_warning("No terrain source configured for district: " + region_id)
+		return
+
+	var terrain_root: Node3D
+	if terrain_source is PackedScene:
+		var loaded_scene := (terrain_source as PackedScene).instantiate()
+		if loaded_scene is Node3D:
+			terrain_root = loaded_scene as Node3D
+		else:
+			terrain_root = Node3D.new()
+			terrain_root.add_child(loaded_scene)
+	elif terrain_source is Mesh:
+		var mesh_instance := MeshInstance3D.new()
+		mesh_instance.mesh = terrain_source as Mesh
+		terrain_root = mesh_instance
+	else:
+		push_error("Unsupported terrain resource for district: " + region_id)
+		return
+
+	terrain_root.name = "TerrainBackdrop"
+	terrain_root.position = Vector3(-33.3, 0.08, -33.3)
+	terrain_root.scale = Vector3(0.30, 0.08, 0.30)
+	terrain_root.add_to_group("world_terrain_chunks")
+	district.add_child(terrain_root)
+	_terrain_tile_count += 1
 
 func _build_road(center: Vector3) -> void:
 	var flat_center := Vector2(center.x, center.z)
