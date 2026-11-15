@@ -1,23 +1,23 @@
 extends Node
 
-## Adds one regional expansion mesh to each district.
-## Visual-only prototype: collision baking and Android profiling remain separate tasks.
+## Attaches two original terrain meshes to each district.
+## Visual chunks use distance visibility; collision baking and Android profiling remain separate tasks.
 const REGIONAL_TILES := {
 	"HarborCity": {
-		"mesh": preload("res://assets/environment/terrain/expansion_150mb/harbor_floodplain_west.obj"),
-		"position": Vector3(-29.0, 0.45, -42.0)
+		"meshes": [preload("res://assets/environment/terrain/expansion_150mb/harbor_floodplain_west.obj"), preload("res://assets/environment/terrain/expansion_150mb/harbor_rail_flats.obj")],
+		"positions": [Vector3(-29.0, 0.45, -42.0), Vector3(28.0, 0.45, 40.0)]
 	},
 	"PineHighlands": {
-		"mesh": preload("res://assets/environment/terrain/expansion_150mb/cedar_highlands_east.obj"),
-		"position": Vector3(-29.0, 0.45, -42.0)
+		"meshes": [preload("res://assets/environment/terrain/expansion_150mb/cedar_highlands_east.obj"), preload("res://assets/environment/terrain/expansion_150mb/pine_needle_uplands.obj")],
+		"positions": [Vector3(-29.0, 0.45, -42.0), Vector3(28.0, 0.45, 40.0)]
 	},
 	"AmberValley": {
-		"mesh": preload("res://assets/environment/terrain/expansion_150mb/amber_valley_farm_basin.obj"),
-		"position": Vector3(-29.0, 0.45, -42.0)
+		"meshes": [preload("res://assets/environment/terrain/expansion_150mb/amber_valley_farm_basin.obj"), preload("res://assets/environment/terrain/expansion_150mb/orchard_terraces_north.obj")],
+		"positions": [Vector3(-29.0, 0.45, -42.0), Vector3(28.0, 0.45, 40.0)]
 	},
 	"SapphireCoast": {
-		"mesh": preload("res://assets/environment/terrain/expansion_150mb/sapphire_coast_rock_shelf.obj"),
-		"position": Vector3(-29.0, 0.45, -42.0)
+		"meshes": [preload("res://assets/environment/terrain/expansion_150mb/sapphire_coast_rock_shelf.obj"), preload("res://assets/environment/terrain/expansion_150mb/sapphire_tidal_flats.obj")],
+		"positions": [Vector3(-29.0, 0.45, -42.0), Vector3(28.0, 0.45, 40.0)]
 	}
 }
 
@@ -34,15 +34,19 @@ func _ready() -> void:
 			push_warning("Terrain expansion: missing district " + region_name)
 			continue
 		var tile_data: Dictionary = REGIONAL_TILES[region_name]
-		var tile := MeshInstance3D.new()
-		tile.name = "ExpansionTerrain_" + region_name
-		tile.mesh = tile_data["mesh"] as Mesh
-		tile.position = tile_data["position"]
-		tile.scale = Vector3(0.18, 0.10, 0.18)
-		tile.visibility_range_end = 220.0
-		tile.add_to_group("world_terrain_chunks")
-		district.add_child(tile)
-		_attached_count += 1
+		var meshes: Array = tile_data["meshes"]
+		var positions: Array = tile_data["positions"]
+		for tile_index in range(meshes.size()):
+			var tile := MeshInstance3D.new()
+			tile.name = "ExpansionTerrain_%s_%02d" % [region_name, tile_index + 1]
+			tile.mesh = meshes[tile_index] as Mesh
+			tile.position = positions[tile_index]
+			tile.scale = Vector3(0.18, 0.10, 0.18)
+			tile.visibility_range_end = 220.0
+			tile.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+			tile.add_to_group("world_terrain_chunks")
+			district.add_child(tile)
+			_attached_count += 1
 
 func get_attached_count() -> int:
 	return _attached_count
