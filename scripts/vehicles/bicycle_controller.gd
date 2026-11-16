@@ -216,7 +216,7 @@ func _create_wheel(node_name: String, center: Vector3,
 	torus.rings = 20
 	torus.ring_segments = 8
 	tire.mesh = torus
-	tire.rotation.y = PI * 0.5
+	tire.rotation.z = PI * 0.5
 	tire.material_override = tire_material
 	wheel_root.add_child(tire)
 
