@@ -69,6 +69,7 @@ func _create_world() -> void:
 	environment.glow_intensity = 0.28
 	environment.glow_strength = 0.35
 	world_environment.environment = environment
+	world_environment.add_to_group("quality_managed_world_environment")
 	add_child(world_environment)
 	var sun := DirectionalLight3D.new()
 	sun.name = "Sun"
@@ -79,6 +80,7 @@ func _create_world() -> void:
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
 	sun.shadow_bias = 0.06
 	sun.shadow_normal_bias = 1.2
+	sun.add_to_group("quality_managed_sun")
 	add_child(sun)
 	var ground := StaticBody3D.new()
 	ground.name = "Ground"
