@@ -3,6 +3,7 @@ extends Node3D
 ## Procedural blockout for four explorable districts linked to Willow Village.
 ## Geometry is original, light-weight and assembled at runtime for mobile testing.
 const NPC_BRAIN_SCRIPT = preload("res://scripts/systems/npc_brain.gd")
+const SURFACE_TEXTURES = preload("res://scripts/world/surface_texture_library.gd")
 
 var _region_ids: Array[String] = []
 var _population_count := 0
@@ -45,7 +46,7 @@ func _build_region(region_id: String, region_name: String, center: Vector3,
 	pad_mesh.size = Vector3(42.0, 0.12, 34.0)
 	pad.mesh = pad_mesh
 	pad.position.y = 0.04
-	pad.material_override = _material(ground_color)
+	pad.material_override = SURFACE_TEXTURES.make_material(_ground_surface(region_id), _region_ids.size() - 1, ground_color)
 	district.add_child(pad)
 
 	var title := Label3D.new()
@@ -58,7 +59,7 @@ func _build_region(region_id: String, region_name: String, center: Vector3,
 	district.add_child(title)
 
 	_build_road(center)
-	_build_district_buildings(district, wall_color, roof_color)
+	_build_district_buildings(district, region_id, wall_color, roof_color)
 	_build_district_details(district, region_id, ground_color)
 	_build_civilians(district, region_id, npc_names)
 
@@ -73,10 +74,10 @@ func _build_road(center: Vector3) -> void:
 	road.mesh = road_mesh
 	road.position = midpoint
 	road.rotation.y = atan2(center.x, center.z)
-	road.material_override = _material(Color(0.20, 0.22, 0.22))
+	road.material_override = SURFACE_TEXTURES.make_material("asphalt", _region_ids.size() - 1, Color(0.86, 0.88, 0.88))
 	add_child(road)
 
-func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: Color) -> void:
+func _build_district_buildings(district: Node3D, region_id: String, wall_color: Color, roof_color: Color) -> void:
 	var offsets := [
 		Vector3(-12.0, 0.0, -7.0),
 		Vector3(0.0, 0.0, -7.0),
@@ -100,7 +101,7 @@ func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: 
 		visual.name = "Walls"
 		visual.mesh = body_mesh
 		visual.position.y = dimensions.y * 0.5
-		visual.material_override = _material(wall_color)
+		visual.material_override = SURFACE_TEXTURES.make_material(_wall_surface(region_id), _building_count % 4, wall_color)
 		building.add_child(visual)
 
 		var shape := BoxShape3D.new()
@@ -116,7 +117,7 @@ func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: 
 		roof.name = "Roof"
 		roof.mesh = roof_mesh
 		roof.position.y = dimensions.y + 0.2
-		roof.material_override = _material(roof_color)
+		roof.material_override = SURFACE_TEXTURES.make_material(_roof_surface(region_id), index, roof_color)
 		building.add_child(roof)
 
 		var door_mesh := BoxMesh.new()
@@ -241,6 +242,30 @@ func _add_box(parent: Node3D, node_name: String, at: Vector3, size: Vector3, tin
 	instance.position = at
 	instance.material_override = _material(tint)
 	parent.add_child(instance)
+
+func _ground_surface(region_id: String) -> String:
+	match region_id:
+		"harbor_city": return "concrete"
+		"pine_highlands": return "pine"
+		"amber_valley": return "sandstone"
+		"sapphire_coast": return "sand"
+	return "concrete"
+
+func _wall_surface(region_id: String) -> String:
+	match region_id:
+		"harbor_city": return "concrete"
+		"pine_highlands": return "wood"
+		"amber_valley": return "sandstone"
+		"sapphire_coast": return "sandstone"
+	return "concrete"
+
+func _roof_surface(region_id: String) -> String:
+	match region_id:
+		"harbor_city": return "concrete"
+		"pine_highlands": return "wood"
+		"amber_valley": return "sandstone"
+		"sapphire_coast": return "wood"
+	return "concrete"
 
 func _material(tint: Color) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()

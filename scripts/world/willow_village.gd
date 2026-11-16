@@ -11,7 +11,6 @@ func _ready() -> void:
 	_build_square()
 	_build_paths()
 	_build_houses()
-	_build_house_portal()
 	_build_garden()
 	_build_trees()
 	_build_well()
@@ -91,16 +90,6 @@ func _add_house(house_name: String, origin: Vector3,
 		Color(0.40, 0.68, 0.75))
 	_add_mesh(house, "RightWindow", window_mesh, Vector3(1.55, 1.9, 2.31),
 		Color(0.40, 0.68, 0.75))
-
-
-func _build_house_portal() -> void:
-	var portal_script = preload("res://scripts/world/house_interior_portal.gd")
-	var portal := Node3D.new()
-	portal.name = "CaretakerHousePortal"
-	portal.position = Vector3(-11.0, 0.0, 13.35)
-	portal.set_script(portal_script)
-	portal.set("room_title_ar", "منزل الحارسة")
-	add_child(portal)
 
 
 func _build_garden() -> void:

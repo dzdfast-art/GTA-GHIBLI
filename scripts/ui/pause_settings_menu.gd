@@ -18,7 +18,7 @@ var _selected_menu_index := 2
 var _settings := {
 	"master_volume": 0.85, "music_volume": 0.65, "effects_volume": 0.85,
 	"dialogue_volume": 1.0, "look_sensitivity": 1.0, "graphics_quality": 2,
-	"target_fps": 60, "touch_scale": 1.0, "touch_opacity": 0.9, "bike_steering_mode": "analog", "show_subtitles": true, "language": "ar"
+	"target_fps": 60, "touch_scale": 1.0, "touch_opacity": 0.9, "show_subtitles": true, "language": "ar"
 }
 
 func _ready() -> void:
@@ -242,19 +242,6 @@ func _build_settings_page() -> void:
 	_add_slider(rows, "حساسية الكاميرا  |  Camera", "look_sensitivity", 0.2, 2.5, 0.05)
 	_add_slider(rows, "حجم أزرار اللمس  |  Touch size", "touch_scale", 0.75, 1.35, 0.05)
 	_add_slider(rows, "شفافية أزرار اللمس  |  Touch opacity", "touch_opacity", 0.35, 1.0, 0.05)
-
-	var steering_row := HBoxContainer.new()
-	rows.add_child(steering_row)
-	_add_row_label(steering_row, "طريقة توجيه الدراجة  |  Bike steering")
-	var steering := OptionButton.new()
-	steering.add_item("عصا تناظرية  |  ANALOG", 0)
-	steering.add_item("أزرار  |  BUTTONS", 1)
-	steering.add_item("سحب  |  FLICK", 2)
-	var steering_modes := ["analog", "buttons", "flick"]
-	var steering_index := steering_modes.find(str(_settings["bike_steering_mode"]))
-	steering.select(clampi(steering_index, 0, 2))
-	steering.item_selected.connect(_on_bike_steering_selected)
-	steering_row.add_child(steering)
 
 	var quality_row := HBoxContainer.new()
 	rows.add_child(quality_row)
@@ -482,11 +469,6 @@ func _on_slider_changed(value: float, key: String, label: Label, caption: String
 	if key == "look_sensitivity" or key == "touch_scale" or key == "touch_opacity":
 		_apply_video_and_camera_settings()
 
-func _on_bike_steering_selected(index: int) -> void:
-	var steering_modes := ["analog", "buttons", "flick"]
-	_settings["bike_steering_mode"] = steering_modes[clampi(index, 0, steering_modes.size() - 1)]
-	_apply_video_and_camera_settings()
-
 func _on_quality_selected(index: int) -> void:
 	_settings.graphics_quality = index
 	_apply_video_and_camera_settings()
@@ -516,10 +498,7 @@ func _apply_video_and_camera_settings() -> void:
 	for camera in get_tree().get_nodes_in_group("third_person_cameras"):
 		camera.set("look_sensitivity", 0.006 * float(_settings.look_sensitivity))
 	for controls in get_tree().get_nodes_in_group("mobile_controls"):
-		if controls.has_method("set_controls_preferences"):
-			controls.call("set_controls_preferences", float(_settings.touch_scale), float(_settings.touch_opacity))
-		if controls.has_method("set_bike_steering_mode"):
-			controls.call("set_bike_steering_mode", str(_settings.bike_steering_mode))
+		controls.call("set_controls_preferences", float(_settings.touch_scale), float(_settings.touch_opacity))
 
 func _apply_audio_settings() -> void:
 	_set_bus_volume("Master", float(_settings.master_volume))
