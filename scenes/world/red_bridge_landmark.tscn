@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="ArrayMesh" path="res://assets/environment/landmarks/red_bridge.obj" id="1_mesh"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_deck"]
+size = Vector3(12, 1.2, 180)
+
+[node name="RedBridgeLandmark" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="BridgeMesh" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_mesh")
+
+[node name="DeckCollision" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_deck")
