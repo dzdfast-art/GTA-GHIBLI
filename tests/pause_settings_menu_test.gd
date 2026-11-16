@@ -6,6 +6,14 @@ func _initialize() -> void:
 	call_deferred("_run_test")
 
 func _run_test() -> void:
+	var world := WorldEnvironment.new()
+	world.environment = Environment.new()
+	world.add_to_group("quality_managed_world_environment")
+	root.add_child(world)
+	var sun := DirectionalLight3D.new()
+	sun.add_to_group("quality_managed_sun")
+	root.add_child(sun)
+
 	var menu: CanvasLayer = MENU_SCRIPT.new() as CanvasLayer
 	root.add_child(menu)
 	await process_frame
@@ -20,6 +28,15 @@ func _run_test() -> void:
 		return
 	if menu.get_node_or_null("PauseAndSettingsOverlay/SettingsMenu") == null:
 		_fail("Settings page was not created.")
+		return
+
+	menu.call("_on_quality_selected", 0)
+	if world.environment.glow_enabled or sun.shadow_enabled or sun.directional_shadow_max_distance != 32.0:
+		_fail("Low graphics preset did not disable glow/shadows and shorten shadow distance.")
+		return
+	menu.call("_on_quality_selected", 2)
+	if not world.environment.glow_enabled or not sun.shadow_enabled or sun.directional_shadow_max_distance != 55.0:
+		_fail("High graphics preset did not enable glow/shadows and restore shadow distance.")
 		return
 
 	var movement_event := InputEventAction.new()
