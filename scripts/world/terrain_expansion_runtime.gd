@@ -1,7 +1,7 @@
 extends Node
 
-## Streams thirty-two original terrain tiles into the four open-world districts.
-## Each district receives a main tile and two adjacent expansion tiles with static collision.
+## Streams forty-eight original terrain tiles into the four open-world districts.
+## Each district receives twelve adjacent terrain tiles with static collision.
 const TERRAIN_TILES := [
 	{"district": "HarborCity", "tile": "harbor_rail_yards", "resource": preload("res://assets/environment/terrain/expansion_150mb/harbor_rail_yards.obj"), "offset": Vector3.ZERO},
 	{"district": "HarborCity", "tile": "harbor_tidal_marsh", "resource": preload("res://assets/environment/terrain/expansion_300mb/harbor_tidal_marsh.obj"), "offset": Vector3(28.0, 0.0, 0.0)},
@@ -35,6 +35,22 @@ const TERRAIN_TILES := [
 	{"district": "SapphireCoast", "tile": "sapphire_headland_east", "resource": preload("res://assets/environment/terrain/expansion_150mb/sapphire_headland_east.obj"), "offset": Vector3(28.0, 0.0, 28.0)},
 	{"district": "SapphireCoast", "tile": "sapphire_tidal_flats", "resource": preload("res://assets/environment/terrain/expansion_150mb/sapphire_tidal_flats.obj"), "offset": Vector3(56.0, 0.0, 28.0)},
 	{"district": "SapphireCoast", "tile": "sapphire_wind_cliffs", "resource": preload("res://assets/environment/terrain/expansion_150mb/sapphire_wind_cliffs.obj"), "offset": Vector3(84.0, 0.0, 28.0)},
+	{"district": "HarborCity", "tile": "harbor_dredge_basin", "resource": preload("res://assets/environment/terrain/expansion_300mb/harbor_dredge_basin.obj"), "offset": Vector3(112.0, 0.0, 0.0)},
+	{"district": "HarborCity", "tile": "heron_marsh_backwater", "resource": preload("res://assets/environment/terrain/expansion_300mb/heron_marsh_backwater.obj"), "offset": Vector3(140.0, 0.0, 0.0)},
+	{"district": "HarborCity", "tile": "saltmarsh_lagoon_east", "resource": preload("res://assets/environment/terrain/expansion_300mb/saltmarsh_lagoon_east.obj"), "offset": Vector3(168.0, 0.0, 0.0)},
+	{"district": "HarborCity", "tile": "riverstone_delta_bars", "resource": preload("res://assets/environment/terrain/expansion_300mb/riverstone_delta_bars.obj"), "offset": Vector3(196.0, 0.0, 0.0)},
+	{"district": "PineHighlands", "tile": "pine_stone_pass", "resource": preload("res://assets/environment/terrain/expansion_300mb/pine_stone_pass.obj"), "offset": Vector3(112.0, 0.0, 0.0)},
+	{"district": "PineHighlands", "tile": "pine_stone_ridge", "resource": preload("res://assets/environment/terrain/expansion_300mb/pine_stone_ridge.obj"), "offset": Vector3(140.0, 0.0, 0.0)},
+	{"district": "PineHighlands", "tile": "cedar_cloud_summit", "resource": preload("res://assets/environment/terrain/expansion_300mb/cedar_cloud_summit.obj"), "offset": Vector3(168.0, 0.0, 0.0)},
+	{"district": "PineHighlands", "tile": "windward_pine_escarpment", "resource": preload("res://assets/environment/terrain/expansion_300mb/windward_pine_escarpment.obj"), "offset": Vector3(196.0, 0.0, 0.0)},
+	{"district": "AmberValley", "tile": "amber_dry_wash", "resource": preload("res://assets/environment/terrain/expansion_300mb/amber_dry_wash.obj"), "offset": Vector3(112.0, 0.0, 0.0)},
+	{"district": "AmberValley", "tile": "copper_badlands_ridge", "resource": preload("res://assets/environment/terrain/expansion_300mb/copper_badlands_ridge.obj"), "offset": Vector3(140.0, 0.0, 0.0)},
+	{"district": "AmberValley", "tile": "mesa_terrace_south", "resource": preload("res://assets/environment/terrain/expansion_300mb/mesa_terrace_south.obj"), "offset": Vector3(168.0, 0.0, 0.0)},
+	{"district": "AmberValley", "tile": "ochre_dry_wash", "resource": preload("res://assets/environment/terrain/expansion_300mb/ochre_dry_wash.obj"), "offset": Vector3(196.0, 0.0, 0.0)},
+	{"district": "SapphireCoast", "tile": "sapphire_salt_lagoon", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_salt_lagoon.obj"), "offset": Vector3(112.0, 0.0, 0.0)},
+	{"district": "SapphireCoast", "tile": "sapphire_tidal_bench", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_tidal_bench.obj"), "offset": Vector3(140.0, 0.0, 0.0)},
+	{"district": "SapphireCoast", "tile": "sapphire_tidepools_north", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_tidepools_north.obj"), "offset": Vector3(168.0, 0.0, 0.0)},
+	{"district": "SapphireCoast", "tile": "coral_shelf_headland", "resource": preload("res://assets/environment/terrain/expansion_300mb/coral_shelf_headland.obj"), "offset": Vector3(196.0, 0.0, 0.0)},
 ]
 
 var _attached_count := 0
