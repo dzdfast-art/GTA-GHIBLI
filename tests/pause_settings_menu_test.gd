@@ -59,6 +59,23 @@ func _run_test() -> void:
 	if not get_root().get_tree().paused:
 		_fail("Opening pause did not pause the game.")
 		return
+	menu.call("_show_map")
+	var map_page := menu.get_node_or_null("PauseAndSettingsOverlay/MapMenu") as Control
+	if map_page == null or not map_page.visible:
+		_fail("Selecting MAP did not open the world map page.")
+		return
+	var map_canvas := map_page.get_node_or_null("MapFrame/MapCanvas")
+	if map_canvas == null or not map_canvas.has_method("get_region_markers"):
+		_fail("The MAP page does not contain the interactive world map canvas.")
+		return
+	var map_markers: Array = map_canvas.call("get_region_markers")
+	if map_markers.size() != 5:
+		_fail("The world map must include Willow Village and all four open-world districts.")
+		return
+	menu.call("_show_main_menu")
+	if not (menu.get_node("PauseAndSettingsOverlay/PauseMenu") as Control).visible:
+		_fail("Returning from the map did not restore the pause menu.")
+		return
 	menu.call("_show_settings")
 	if not (menu.get_node("PauseAndSettingsOverlay/SettingsMenu") as Control).visible:
 		_fail("Settings page did not open.")
