@@ -65,7 +65,7 @@ func _physics_process(delta: float) -> void:
 
 	if absf(_speed) > 0.15:
 		var steering_strength := clampf(absf(_speed) / 2.0, 0.18, 1.0)
-		rotation.y -= steering_input * steering_rate * steering_strength * delta
+		rotation.y += steering_input * steering_rate * steering_strength * delta
 
 	var forward := -global_basis.z
 	velocity.x = forward.x * _speed
