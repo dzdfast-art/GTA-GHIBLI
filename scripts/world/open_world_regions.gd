@@ -74,7 +74,7 @@ func _build_road(center: Vector3) -> void:
 	road.mesh = road_mesh
 	road.position = midpoint
 	road.rotation.y = atan2(center.x, center.z)
-	road.material_override = _material(Color(0.20, 0.22, 0.22))
+	road.material_override = _material(Color(0.20, 0.22, 0.22), "res://assets/environment/materials/hd_district_asphalt.svg")
 	add_child(road)
 
 func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: Color) -> void:
@@ -101,7 +101,7 @@ func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: 
 		visual.name = "Walls"
 		visual.mesh = body_mesh
 		visual.position.y = dimensions.y * 0.5
-		visual.material_override = _material(wall_color)
+		visual.material_override = _material(wall_color, "res://assets/environment/materials/hd_village_plaster_wall.svg")
 		building.add_child(visual)
 
 		var shape := BoxShape3D.new()
@@ -117,7 +117,7 @@ func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: 
 		roof.name = "Roof"
 		roof.mesh = roof_mesh
 		roof.position.y = dimensions.y + 0.2
-		roof.material_override = _material(roof_color)
+		roof.material_override = _material(roof_color, "res://assets/environment/materials/hd_terracotta_roof.svg")
 		building.add_child(roof)
 
 		var door_mesh := BoxMesh.new()
@@ -240,19 +240,22 @@ func _add_box(parent: Node3D, node_name: String, at: Vector3, size: Vector3, tin
 	mesh.size = size
 	instance.mesh = mesh
 	instance.position = at
-	instance.material_override = _material(tint)
+	var texture_path := ""
+	if node_name == "LoadingDock" or node_name == "CoastalPier":
+		texture_path = "res://assets/environment/materials/hd_weathered_dock_timber.svg"
+	instance.material_override = _material(tint, texture_path)
 	parent.add_child(instance)
 
 func _district_ground_texture(region_id: String) -> String:
 	match region_id:
 		"harbor_city":
-			return "res://assets/environment/materials/harbor_paving_atlas.svg"
+			return "res://assets/environment/materials/hd_harbor_paving.svg"
 		"pine_highlands":
-			return "res://assets/environment/materials/pine_forest_floor_atlas.svg"
+			return "res://assets/environment/materials/hd_pine_forest_floor.svg"
 		"amber_valley":
-			return "res://assets/environment/materials/amber_orchard_soil_atlas.svg"
+			return "res://assets/environment/materials/hd_amber_orchard_soil.svg"
 		"sapphire_coast":
-			return "res://assets/environment/materials/sapphire_coast_sand_atlas.svg"
+			return "res://assets/environment/materials/hd_sapphire_coastal_sand.svg"
 	return ""
 
 func _material(tint: Color, texture_path: String = "") -> StandardMaterial3D:
