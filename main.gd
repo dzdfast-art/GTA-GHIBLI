@@ -3,6 +3,8 @@ extends Node3D
 const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
 const VILLAGE_SCENE: PackedScene = preload("res://scenes/world/willow_village.tscn")
 const STARTER_CAR_SCENE: PackedScene = preload("res://scenes/vehicles/starter_car.tscn")
+const STARTER_BICYCLE_SCENE: PackedScene = preload("res://scenes/vehicles/starter_bicycle.tscn")
+const RED_BRIDGE_SCENE: PackedScene = preload("res://scenes/world/red_bridge_landmark.tscn")
 const MOBILE_CONTROLS_SCRIPT = preload("res://scripts/ui/mobile_controls.gd")
 const PAUSE_SETTINGS_MENU_SCRIPT = preload("res://scripts/ui/pause_settings_menu.gd")
 const MISSION_MANAGER_SCRIPT = preload("res://scripts/missions/mission_manager.gd")
@@ -26,10 +28,12 @@ func _ready() -> void:
 	_create_world_clock()
 	_create_village()
 	_create_open_world_regions()
+	_create_red_bridge()
 	_create_wildlife()
 	_create_player()
 	_create_player_needs()
 	_create_starter_car()
+	_create_starter_bicycle()
 	_create_mobile_controls()
 	_create_pause_settings_menu()
 	_create_mission_manager()
@@ -126,6 +130,13 @@ func _create_starter_car() -> void:
 	car.position = Vector3(2.4, 0.0, -18.0)
 	add_child(car)
 
+func _create_starter_bicycle() -> void:
+	var bicycle: CharacterBody3D = STARTER_BICYCLE_SCENE.instantiate() as CharacterBody3D
+	bicycle.name = "StarterBicycle"
+	bicycle.position = Vector3(-2.6, 0.0, -18.0)
+	bicycle.rotation.y = PI
+	add_child(bicycle)
+
 func _create_mobile_controls() -> void:
 	var mobile_controls: CanvasLayer = MOBILE_CONTROLS_SCRIPT.new() as CanvasLayer
 	mobile_controls.name = "MobileControls"
@@ -208,6 +219,21 @@ func _create_open_world_regions() -> void:
 	var terrain_expansion: Node = TERRAIN_EXPANSION_SCRIPT.new()
 	terrain_expansion.name = "TerrainExpansionRuntime"
 	add_child(terrain_expansion)
+
+func _create_red_bridge() -> void:
+	var amber_valley := get_node_or_null("OpenWorldRegions/AmberValley") as Node3D
+	if amber_valley == null:
+		push_warning("Amber Valley is not ready; red bridge landmark was not spawned.")
+		return
+	var bridge := RED_BRIDGE_SCENE.instantiate() as StaticBody3D
+	if bridge == null:
+		push_warning("Red bridge scene could not be instantiated.")
+		return
+	bridge.name = "RedBridgeLandmark"
+	bridge.position = Vector3.ZERO
+	bridge.rotation.y = deg_to_rad(-58.0)
+	bridge.add_to_group("world_landmarks")
+	amber_valley.add_child(bridge)
 
 
 func _create_wildlife() -> void:
