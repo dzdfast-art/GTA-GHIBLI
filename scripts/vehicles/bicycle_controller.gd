@@ -166,9 +166,9 @@ func _find_player() -> CharacterBody3D:
 
 
 func _set_hud_bicycle_mode(active: bool) -> void:
-	var hud := get_tree().get_first_node_in_group("mobile_hud")
-	if hud != null and hud.has_method("set_bicycle_mode"):
-		hud.call("set_bicycle_mode", active)
+	for hud in get_tree().get_nodes_in_group("mobile_hud"):
+		if hud.has_method("set_bicycle_mode"):
+			hud.call("set_bicycle_mode", active)
 
 
 func _build_bicycle_visuals() -> void:
