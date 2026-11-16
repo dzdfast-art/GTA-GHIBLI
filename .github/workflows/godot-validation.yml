@@ -116,6 +116,33 @@ jobs:
       - name: Test bicycle mount, riding controls, and dismount
         run: godot --headless --path . --script res://tests/bicycle_controller_test.gd
 
+      - name: Test bicycle wall collision speed
+        run: godot --headless --path . --script res://tests/bicycle_wall_test.gd
+
+      - name: Test bicycle invalid driver cleanup
+        run: godot --headless --path . --script res://tests/bicycle_driver_freed_test.gd
+
+      - name: Test bicycle invalid exit cleanup
+        run: godot --headless --path . --script res://tests/bicycle_exit_invalid_driver_test.gd
+
+      - name: Test bicycle wheel orientation
+        run: godot --headless --path . --script res://tests/bicycle_wheel_orientation_test.gd
+
+      - name: Test proportional bicycle steering
+        run: godot --headless --path . --script res://tests/bicycle_proportional_steering_test.gd
+
+      - name: Test bicycle flick steering
+        run: godot --headless --path . --script res://tests/bicycle_flick_steering_test.gd
+
+      - name: Test on-foot input release when mounting bicycle
+        run: godot --headless --path . --script res://tests/bicycle_walk_release_test.gd
+
+      - name: Test bicycle steering direction
+        run: godot --headless --path . --script res://tests/bicycle_steer_direction_test.gd
+
+      - name: Test bicycle HUD and interaction distance path
+        run: godot --headless --path . --script res://tests/bicycle_hud_interactor_path_test.gd
+
       - name: Test house interior entry and exit
         run: godot --headless --path . --script res://tests/house_interior_portal_test.gd
 
