@@ -3,6 +3,7 @@ extends Node3D
 const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
 const VILLAGE_SCENE: PackedScene = preload("res://scenes/world/willow_village.tscn")
 const STARTER_CAR_SCENE: PackedScene = preload("res://scenes/vehicles/starter_car.tscn")
+const STARTER_BICYCLE_SCENE: PackedScene = preload("res://scenes/vehicles/starter_bicycle.tscn")
 const MOBILE_CONTROLS_SCRIPT = preload("res://scripts/ui/mobile_controls.gd")
 const PAUSE_SETTINGS_MENU_SCRIPT = preload("res://scripts/ui/pause_settings_menu.gd")
 const MISSION_MANAGER_SCRIPT = preload("res://scripts/missions/mission_manager.gd")
@@ -14,6 +15,8 @@ const CINEMATIC_DIRECTOR_SCRIPT = preload("res://scripts/missions/cinematic_dire
 const AMBIENCE_SCRIPT = preload("res://scripts/audio/nature_ambience.gd")
 const WORLD_CLOCK_SCRIPT = preload("res://scripts/world/world_clock.gd")
 const OPEN_WORLD_REGIONS_SCRIPT = preload("res://scripts/world/open_world_regions.gd")
+const HOUSE_PORTAL_SCRIPT = preload("res://scripts/world/house_interior_portal.gd")
+const RED_BRIDGE_SCENE: PackedScene = preload("res://scenes/world/red_bridge_landmark.tscn")
 const PLAYER_NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
 const CONSUMABLE_INVENTORY_SCRIPT = preload("res://scripts/systems/consumable_inventory.gd")
 const PLAYER_WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
@@ -24,11 +27,14 @@ func _ready() -> void:
 	_create_world()
 	_create_world_clock()
 	_create_village()
+	_create_house_interior_portal()
 	_create_open_world_regions()
+	_create_red_bridge_landmark()
 	_create_wildlife()
 	_create_player()
 	_create_player_needs()
 	_create_starter_car()
+	_create_starter_bicycle()
 	_create_mobile_controls()
 	_create_pause_settings_menu()
 	_create_mission_manager()
@@ -111,6 +117,19 @@ func _create_village() -> void:
 	village.name = "WillowVillage"
 	add_child(village)
 
+func _create_house_interior_portal() -> void:
+	var village := get_node_or_null("WillowVillage") as Node3D
+	if village == null:
+		push_warning("House portal: WillowVillage was not found.")
+		return
+	var portal := Node3D.new()
+	portal.name = "CaretakerHousePortal"
+	portal.set_script(HOUSE_PORTAL_SCRIPT)
+	portal.set("room_title_ar", "داخل منزل الحارسة")
+	portal.position = Vector3(-11.0, 0.0, 14.2)
+	village.add_child(portal)
+
+
 func _create_player() -> void:
 	var player: CharacterBody3D = PLAYER_SCENE.instantiate() as CharacterBody3D
 	player.name = "Player"
@@ -124,6 +143,14 @@ func _create_starter_car() -> void:
 	car.name = "StarterCar"
 	car.position = Vector3(2.4, 0.0, -18.0)
 	add_child(car)
+
+func _create_starter_bicycle() -> void:
+	var bicycle: CharacterBody3D = STARTER_BICYCLE_SCENE.instantiate() as CharacterBody3D
+	bicycle.name = "StarterBicycle"
+	bicycle.position = Vector3(-2.6, 0.0, -18.0)
+	bicycle.rotation.y = PI
+	add_child(bicycle)
+
 
 func _create_mobile_controls() -> void:
 	var mobile_controls: CanvasLayer = MOBILE_CONTROLS_SCRIPT.new() as CanvasLayer
@@ -204,6 +231,18 @@ func _create_open_world_regions() -> void:
 	var regions: Node3D = OPEN_WORLD_REGIONS_SCRIPT.new() as Node3D
 	regions.name = "OpenWorldRegions"
 	add_child(regions)
+
+
+func _create_red_bridge_landmark() -> void:
+	var amber_valley := get_node_or_null("OpenWorldRegions/AmberValley") as Node3D
+	if amber_valley == null:
+		push_warning("Red bridge: AmberValley district was not found.")
+		return
+	var bridge := RED_BRIDGE_SCENE.instantiate() as StaticBody3D
+	bridge.name = "RedBridgeLandmark"
+	bridge.position = Vector3(-30.0, 0.25, 0.0)
+	bridge.add_to_group("world_landmarks")
+	amber_valley.add_child(bridge)
 
 
 func _create_wildlife() -> void:
