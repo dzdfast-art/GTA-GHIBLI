@@ -94,7 +94,7 @@ func _build_hud() -> void:
 
 	_mode_label = Label.new()
 	_mode_label.text = "ON FOOT"
-	_mode_label.position = Vector2(22.0, 18.0)
+	_mode_label.position = Vector2(22.0, 178.0)
 	_mode_label.add_theme_font_size_override("font_size", 15)
 	_mode_label.add_theme_color_override("font_color", Color(1.0, 0.96, 0.82, 0.92))
 	root.add_child(_mode_label)

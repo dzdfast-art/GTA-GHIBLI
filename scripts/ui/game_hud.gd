@@ -73,10 +73,12 @@ func _build_interface() -> void:
 	first_row.alignment = BoxContainer.ALIGNMENT_END
 	status.add_child(first_row)
 
-	var fist := Label.new()
-	fist.text = "✊"
-	fist.add_theme_font_size_override("font_size", 25)
-	fist.add_theme_color_override("font_color", Color(0.98, 0.91, 0.70, 1.0))
+	var fist := TextureRect.new()
+	fist.name = "UnarmedFistIcon"
+	fist.texture = load("res://assets/ui/hud/fist.svg")
+	fist.custom_minimum_size = Vector2(30.0, 30.0)
+	fist.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	fist.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	first_row.add_child(fist)
 
 	_clock_label = Label.new()
