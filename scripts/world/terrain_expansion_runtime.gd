@@ -14,7 +14,7 @@ const TERRAIN_TILES := [
 	{"district": "AmberValley", "tile": "amber_orchard_steps", "resource": preload("res://assets/environment/terrain/expansion_300mb/amber_orchard_steps.obj"), "offset": Vector3(0.0, 0.0, 28.0)},
 	{"district": "SapphireCoast", "tile": "sapphire_tidal_shelf", "resource": preload("res://assets/environment/terrain/expansion_150mb/sapphire_tidal_shelf.obj"), "offset": Vector3.ZERO},
 	{"district": "SapphireCoast", "tile": "sapphire_sea_cliffs", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_sea_cliffs.obj"), "offset": Vector3(28.0, 0.0, 0.0)},
-	{"district": "SapphireCoast", "tile": "sapphire_coral_shelf", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_coral_shelf.obj"), "offset": Vector3(0.0, 0.0, 28.0)}},
+	{"district": "SapphireCoast", "tile": "sapphire_coral_shelf", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_coral_shelf.obj"), "offset": Vector3(0.0, 0.0, 28.0)},
 	{"district": "HarborCity", "tile": "harbor_floodplain_west", "resource": preload("res://assets/environment/terrain/expansion_150mb/harbor_floodplain_west.obj"), "offset": Vector3(56.0, 0.0, 0.0)},
 	{"district": "HarborCity", "tile": "harbor_old_quarry", "resource": preload("res://assets/environment/terrain/expansion_150mb/harbor_old_quarry.obj"), "offset": Vector3(84.0, 0.0, 0.0)},
 	{"district": "HarborCity", "tile": "harbor_outer_marsh", "resource": preload("res://assets/environment/terrain/expansion_150mb/harbor_outer_marsh.obj"), "offset": Vector3(28.0, 0.0, 28.0)},
