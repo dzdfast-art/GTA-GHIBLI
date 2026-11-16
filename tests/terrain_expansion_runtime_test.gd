@@ -35,6 +35,22 @@ const EXPECTED_TILES := [
 	["SapphireCoast", "sapphire_headland_east"],
 	["SapphireCoast", "sapphire_tidal_flats"],
 	["SapphireCoast", "sapphire_wind_cliffs"],
+	["HarborCity", "harbor_dredge_basin"],
+	["HarborCity", "heron_marsh_backwater"],
+	["HarborCity", "saltmarsh_lagoon_east"],
+	["HarborCity", "riverstone_delta_bars"],
+	["PineHighlands", "pine_stone_pass"],
+	["PineHighlands", "pine_stone_ridge"],
+	["PineHighlands", "cedar_cloud_summit"],
+	["PineHighlands", "windward_pine_escarpment"],
+	["AmberValley", "amber_dry_wash"],
+	["AmberValley", "copper_badlands_ridge"],
+	["AmberValley", "mesa_terrace_south"],
+	["AmberValley", "ochre_dry_wash"],
+	["SapphireCoast", "sapphire_salt_lagoon"],
+	["SapphireCoast", "sapphire_tidal_bench"],
+	["SapphireCoast", "sapphire_tidepools_north"],
+	["SapphireCoast", "coral_shelf_headland"],
 ]
 
 func _initialize() -> void:
@@ -53,10 +69,10 @@ func _run_test() -> void:
 	await process_frame
 
 	if int(expansion.call("get_attached_count")) != EXPECTED_TILES.size():
-		_fail("Expected all thirty-two regional terrain tiles to attach.")
+		_fail("Expected all forty-eight regional terrain tiles to attach.")
 		return
 	if int(expansion.call("get_collision_count")) != EXPECTED_TILES.size():
-		_fail("Expected static collision for all thirty-two regional terrain tiles.")
+		_fail("Expected static collision for all forty-eight regional terrain tiles.")
 		return
 
 	for tile_spec in EXPECTED_TILES:
@@ -79,7 +95,7 @@ func _run_test() -> void:
 			_fail("Terrain collision shape is missing or invalid for " + tile_name)
 			return
 
-	print("PASS: thirty-two regional terrain meshes and static collision bodies loaded.")
+	print("PASS: forty-eight regional terrain meshes and static collision bodies loaded.")
 	quit(0)
 
 func _fail(message: String) -> void:
