@@ -5,12 +5,16 @@ const TERRAIN_SCRIPT = preload("res://scripts/world/terrain_expansion_runtime.gd
 const EXPECTED_TILES := [
 	["HarborCity", "harbor_rail_yards"],
 	["HarborCity", "harbor_tidal_marsh"],
+	["HarborCity", "harbor_container_flats"],
 	["PineHighlands", "pine_cedar_ridge"],
 	["PineHighlands", "pine_misty_bowl"],
+	["PineHighlands", "pine_needle_ridge"],
 	["AmberValley", "amber_orchard_slope"],
 	["AmberValley", "amber_rolling_fields"],
+	["AmberValley", "amber_orchard_steps"],
 	["SapphireCoast", "sapphire_tidal_shelf"],
-	["SapphireCoast", "sapphire_sea_cliffs"]
+	["SapphireCoast", "sapphire_sea_cliffs"],
+	["SapphireCoast", "sapphire_coral_shelf"]
 ]
 
 func _initialize() -> void:
@@ -29,10 +33,10 @@ func _run_test() -> void:
 	await process_frame
 
 	if int(expansion.call("get_attached_count")) != EXPECTED_TILES.size():
-		_fail("Expected all eight regional terrain tiles to attach.")
+		_fail("Expected all twelve regional terrain tiles to attach.")
 		return
 	if int(expansion.call("get_collision_count")) != EXPECTED_TILES.size():
-		_fail("Expected static collision for all eight regional terrain tiles.")
+		_fail("Expected static collision for all twelve regional terrain tiles.")
 		return
 
 	for tile_spec in EXPECTED_TILES:
@@ -55,7 +59,7 @@ func _run_test() -> void:
 			_fail("Terrain collision shape is missing or invalid for " + tile_name)
 			return
 
-	print("PASS: eight regional terrain meshes and static collision bodies loaded.")
+	print("PASS: twelve regional terrain meshes and static collision bodies loaded.")
 	quit(0)
 
 func _fail(message: String) -> void:
