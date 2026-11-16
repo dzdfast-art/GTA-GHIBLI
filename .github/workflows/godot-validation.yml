@@ -73,6 +73,7 @@ jobs:
             res://scripts/world/side_activity_director.gd \
             res://scripts/world/world_clock.gd \
             res://scripts/world/open_world_regions.gd \
+            res://scripts/world/terrain_expansion_runtime.gd \
             res://scripts/world/wildlife_actor.gd \
             res://scripts/world/wildlife_director.gd \
             res://scripts/world/world_weather.gd \
@@ -138,6 +139,9 @@ jobs:
 
       - name: Test four open-world districts
         run: godot --headless --path . --script res://tests/open_world_regions_test.gd
+
+      - name: Test regional terrain expansion attachment
+        run: godot --headless --path . --script res://tests/terrain_expansion_runtime_test.gd
 
       - name: Test world clock and day-night phases
         run: godot --headless --path . --script res://tests/world_clock_test.gd
