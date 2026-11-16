@@ -1,0 +1,23 @@
+newmtl red_steel
+Ka 0.12 0.025 0.02
+Kd 0.72 0.08 0.055
+Ks 0.35 0.25 0.22
+Ns 70
+
+newmtl dark_steel
+Ka 0.05 0.05 0.06
+Kd 0.16 0.18 0.20
+Ks 0.25 0.25 0.25
+Ns 45
+
+newmtl concrete
+Ka 0.18 0.18 0.17
+Kd 0.48 0.48 0.44
+Ks 0.08 0.08 0.08
+Ns 12
+
+newmtl road_marking
+Ka 0.65 0.55 0.32
+Kd 0.95 0.78 0.35
+Ks 0.05 0.05 0.05
+Ns 5
