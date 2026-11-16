@@ -376,8 +376,16 @@ func _on_language_selected(index: int) -> void:
 
 func _apply_video_and_camera_settings() -> void:
 	Engine.max_fps = int(_settings.target_fps)
-	var quality := int(_settings.graphics_quality)
+	var quality := clampi(int(_settings.graphics_quality), 0, 2)
 	get_viewport().msaa_3d = Viewport.MSAA_DISABLED if quality == 0 else (Viewport.MSAA_2X if quality == 1 else Viewport.MSAA_4X)
+	# Apply real scene-wide quality changes, not just a label/setting value.
+	for world in get_tree().get_nodes_in_group("quality_managed_world_environment"):
+		if is_instance_valid(world) and world is WorldEnvironment and world.environment != null:
+			world.environment.glow_enabled = quality >= 1
+	for light in get_tree().get_nodes_in_group("quality_managed_sun"):
+		if is_instance_valid(light) and light is DirectionalLight3D:
+			light.shadow_enabled = quality >= 1
+			light.directional_shadow_max_distance = 32.0 if quality == 0 else (44.0 if quality == 1 else 55.0)
 	for camera in get_tree().get_nodes_in_group("third_person_cameras"):
 		camera.set("look_sensitivity", 0.006 * float(_settings.look_sensitivity))
 	for controls in get_tree().get_nodes_in_group("mobile_controls"):
