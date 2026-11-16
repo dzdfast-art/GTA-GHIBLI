@@ -135,6 +135,21 @@ jobs:
             exit 1
           fi
 
+      - name: Record exact raw APK size
+        shell: bash
+        run: |
+          set -euo pipefail
+          bytes=$(stat -c%s build/GTA-GHIBLI-debug.apk)
+          python3 - "$bytes" <<'PY' > build/apk-size.txt
+          import sys
+          size = int(sys.argv[1])
+          print(f"APK_BYTES={size}")
+          print(f"APK_MB_DECIMAL={size / 1_000_000:.2f}")
+          print(f"APK_MIB={size / 1_048_576:.2f}")
+          print(f"REMAINING_TO_300MB={max(0, 300_000_000 - size) / 1_000_000:.2f} MB")
+          PY
+          cat build/apk-size.txt
+
       - name: Upload installable debug APK
         uses: actions/upload-artifact@v4
         with:
@@ -143,5 +158,6 @@ jobs:
             build/GTA-GHIBLI-debug.apk
             build/apk-badging.txt
             build/apk-permissions.txt
+            build/apk-size.txt
           if-no-files-found: error
           retention-days: 14
