@@ -1,7 +1,7 @@
 extends Node
 
-## Adds one district-specific source terrain tile to each region.
-## Collision proxies, edge blending and LOD streaming remain follow-up work.
+## Adds district terrain visuals and static collision to the four world regions.
+## Terrain collision is generated from the imported mesh; LOD and edge blending remain follow-up work.
 const DISTRICT_TILES := {
 	"HarborCity": preload("res://assets/environment/terrain/expansion_150mb/harbor_rail_yards.obj"),
 	"PineHighlands": preload("res://assets/environment/terrain/expansion_150mb/pine_cedar_ridge.obj"),
@@ -10,6 +10,7 @@ const DISTRICT_TILES := {
 }
 
 var _attached_count := 0
+var _collision_count := 0
 
 func _ready() -> void:
 	var regions := get_parent().get_node_or_null("OpenWorldRegions")
@@ -25,6 +26,7 @@ func _ready() -> void:
 		if terrain_mesh == null:
 			push_error("Terrain expansion: could not load mesh for " + district_name)
 			continue
+
 		var tile := MeshInstance3D.new()
 		tile.name = "ExpansionTerrain_" + district_name
 		tile.mesh = terrain_mesh
@@ -35,6 +37,23 @@ func _ready() -> void:
 		tile.add_to_group("world_terrain_chunks")
 		district.add_child(tile)
 		_attached_count += 1
+
+		var collision_shape := terrain_mesh.create_trimesh_shape()
+		if collision_shape == null:
+			push_warning("Terrain expansion: collision generation failed for " + district_name)
+			continue
+		var collision_body := StaticBody3D.new()
+		collision_body.name = "ExpansionTerrainCollision_" + district_name
+		collision_body.position = tile.position
+		collision_body.scale = tile.scale
+		collision_body.collision_layer = 1
+		collision_body.collision_mask = 1
+		var collision := CollisionShape3D.new()
+		collision.name = "TerrainCollisionShape"
+		collision.shape = collision_shape
+		collision_body.add_child(collision)
+		district.add_child(collision_body)
+		_collision_count += 1
 
 func _extract_mesh(source: Resource) -> Mesh:
 	if source is Mesh:
@@ -55,3 +74,6 @@ func _extract_mesh(source: Resource) -> Mesh:
 
 func get_attached_count() -> int:
 	return _attached_count
+
+func get_collision_count() -> int:
+	return _collision_count
