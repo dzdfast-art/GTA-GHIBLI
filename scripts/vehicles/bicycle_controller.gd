@@ -9,6 +9,7 @@ extends CharacterBody3D
 @export var gravity := 18.0
 
 var driver: CharacterBody3D
+var _driver_session_active := false
 var steering_method := "analog"
 var _speed := 0.0
 var _saved_collision_layer := 1
@@ -40,7 +41,7 @@ func set_steering_method(method: String) -> void:
 
 func _physics_process(delta: float) -> void:
 	if driver == null or not is_instance_valid(driver):
-		if driver != null:
+		if _driver_session_active:
 			_cleanup_invalid_driver()
 		velocity.x = 0.0
 		velocity.z = 0.0
@@ -94,6 +95,7 @@ func _enter_bicycle(player: CharacterBody3D) -> void:
 	if driver != null:
 		return
 	driver = player
+	_driver_session_active = true
 	_saved_collision_layer = player.collision_layer
 	_saved_collision_mask = player.collision_mask
 	player.collision_layer = 0
@@ -124,6 +126,7 @@ func _exit_bicycle() -> void:
 	if player_visual != null:
 		player_visual.visible = true
 	driver = null
+	_driver_session_active = false
 	_speed = 0.0
 	velocity.x = 0.0
 	velocity.z = 0.0
@@ -132,7 +135,8 @@ func _exit_bicycle() -> void:
 
 
 func _cleanup_invalid_driver() -> void:
-	var had_driver := driver != null
+	var had_driver := _driver_session_active
+	_driver_session_active = false
 	driver = null
 	_speed = 0.0
 	velocity.x = 0.0
