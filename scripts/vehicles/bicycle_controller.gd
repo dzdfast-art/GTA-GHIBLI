@@ -40,6 +40,8 @@ func set_steering_method(method: String) -> void:
 
 func _physics_process(delta: float) -> void:
 	if driver == null or not is_instance_valid(driver):
+		if driver != null:
+			_cleanup_invalid_driver()
 		velocity.x = 0.0
 		velocity.z = 0.0
 		if is_on_floor():
@@ -72,6 +74,11 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y -= gravity * delta
 	move_and_slide()
+	var actual_forward_speed := get_real_velocity().dot(forward)
+	if absf(_speed) > 0.15 and signf(actual_forward_speed) == signf(_speed) and absf(actual_forward_speed) < absf(_speed):
+		_speed = actual_forward_speed
+	elif absf(_speed) > 0.5 and is_zero_approx(actual_forward_speed):
+		_speed = 0.0
 	_sync_driver_pose()
 	_animate_bicycle(delta, steering_input)
 
@@ -106,7 +113,7 @@ func _enter_bicycle(player: CharacterBody3D) -> void:
 
 func _exit_bicycle() -> void:
 	if driver == null or not is_instance_valid(driver):
-		driver = null
+		_cleanup_invalid_driver()
 		return
 	var player := driver
 	player.global_position = global_position + global_basis.x * 1.25 + Vector3.UP * 0.12
@@ -122,7 +129,24 @@ func _exit_bicycle() -> void:
 	_speed = 0.0
 	velocity.x = 0.0
 	velocity.z = 0.0
+	_reset_visual_pose()
 	_set_hud_bicycle_mode(false)
+
+
+func _cleanup_invalid_driver() -> void:
+	var had_driver := driver != null
+	driver = null
+	_speed = 0.0
+	velocity.x = 0.0
+	velocity.z = 0.0
+	_reset_visual_pose()
+	if had_driver:
+		_set_hud_bicycle_mode(false)
+
+
+func _reset_visual_pose() -> void:
+	if _visual_root != null:
+		_visual_root.rotation.z = 0.0
 
 
 func _sync_driver_pose() -> void:
