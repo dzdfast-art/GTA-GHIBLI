@@ -45,7 +45,8 @@ func _build_region(region_id: String, region_name: String, center: Vector3,
 	pad_mesh.size = Vector3(42.0, 0.12, 34.0)
 	pad.mesh = pad_mesh
 	pad.position.y = 0.04
-	pad.material_override = _material(ground_color)
+	var ground_texture_path := _district_ground_texture(region_id)
+	pad.material_override = _material(Color.WHITE, ground_texture_path)
 	district.add_child(pad)
 
 	var title := Label3D.new()
@@ -242,8 +243,25 @@ func _add_box(parent: Node3D, node_name: String, at: Vector3, size: Vector3, tin
 	instance.material_override = _material(tint)
 	parent.add_child(instance)
 
-func _material(tint: Color) -> StandardMaterial3D:
+func _district_ground_texture(region_id: String) -> String:
+	match region_id:
+		"harbor_city":
+			return "res://assets/environment/materials/harbor_paving_atlas.svg"
+		"pine_highlands":
+			return "res://assets/environment/materials/pine_forest_floor_atlas.svg"
+		"amber_valley":
+			return "res://assets/environment/materials/amber_orchard_soil_atlas.svg"
+		"sapphire_coast":
+			return "res://assets/environment/materials/sapphire_coast_sand_atlas.svg"
+	return ""
+
+func _material(tint: Color, texture_path: String = "") -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = tint
 	material.roughness = 0.88
+	if not texture_path.is_empty():
+		var texture := load(texture_path) as Texture2D
+		if texture != null:
+			material.albedo_texture = texture
+			material.uv1_scale = Vector3(3.0, 3.0, 3.0)
 	return material
