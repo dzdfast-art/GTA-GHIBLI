@@ -282,7 +282,8 @@ func _input(event: InputEvent) -> void:
 
 func _release_bicycle_actions() -> void:
 	for action in [&"bike_pedal", &"bike_brake", &"bike_steer_left", &"bike_steer_right"]:
-		_set_action(action, false)
+		_active_actions.erase(action)
+		Input.action_release(action)
 
 
 func _release_on_foot_actions() -> void:
