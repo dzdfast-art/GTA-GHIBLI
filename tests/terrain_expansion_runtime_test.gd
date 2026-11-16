@@ -14,7 +14,27 @@ const EXPECTED_TILES := [
 	["AmberValley", "amber_orchard_steps"],
 	["SapphireCoast", "sapphire_tidal_shelf"],
 	["SapphireCoast", "sapphire_sea_cliffs"],
-	["SapphireCoast", "sapphire_coral_shelf"]
+	["SapphireCoast", "sapphire_coral_shelf"],
+	["HarborCity", "harbor_floodplain_west"],
+	["HarborCity", "harbor_old_quarry"],
+	["HarborCity", "harbor_outer_marsh"],
+	["HarborCity", "harbor_rail_flats"],
+	["HarborCity", "urban_canal_banks"],
+	["PineHighlands", "highland_switchbacks"],
+	["PineHighlands", "northern_forest_bowl"],
+	["PineHighlands", "pine_fog_valley"],
+	["PineHighlands", "pine_forest_bowl"],
+	["PineHighlands", "pine_needle_uplands"],
+	["AmberValley", "amber_river_meanders"],
+	["AmberValley", "amber_valley_terraces"],
+	["AmberValley", "amber_wheat_basin"],
+	["AmberValley", "farm_irrigation_fields"],
+	["AmberValley", "farmstead_lowlands"],
+	["SapphireCoast", "basalt_coast_shelves"],
+	["SapphireCoast", "coastal_bluff_west"],
+	["SapphireCoast", "sapphire_headland_east"],
+	["SapphireCoast", "sapphire_tidal_flats"],
+	["SapphireCoast", "sapphire_wind_cliffs"],
 ]
 
 func _initialize() -> void:
@@ -33,10 +53,10 @@ func _run_test() -> void:
 	await process_frame
 
 	if int(expansion.call("get_attached_count")) != EXPECTED_TILES.size():
-		_fail("Expected all twelve regional terrain tiles to attach.")
+		_fail("Expected all thirty-two regional terrain tiles to attach.")
 		return
 	if int(expansion.call("get_collision_count")) != EXPECTED_TILES.size():
-		_fail("Expected static collision for all twelve regional terrain tiles.")
+		_fail("Expected static collision for all thirty-two regional terrain tiles.")
 		return
 
 	for tile_spec in EXPECTED_TILES:
@@ -59,7 +79,7 @@ func _run_test() -> void:
 			_fail("Terrain collision shape is missing or invalid for " + tile_name)
 			return
 
-	print("PASS: twelve regional terrain meshes and static collision bodies loaded.")
+	print("PASS: thirty-two regional terrain meshes and static collision bodies loaded.")
 	quit(0)
 
 func _fail(message: String) -> void:
