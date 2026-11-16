@@ -97,6 +97,7 @@ func _build_dialogue_ui() -> void:
 
 	_voice_player = AudioStreamPlayer.new()
 	_voice_player.name = "ArabicDialogueVoice"
+	_voice_player.bus = "Dialogue"
 	add_child(_voice_player)
 
 	var root := Control.new()
