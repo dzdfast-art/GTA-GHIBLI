@@ -21,7 +21,24 @@ func _run_test() -> void:
 	if menu.get_node_or_null("PauseAndSettingsOverlay/SettingsMenu") == null:
 		_fail("Settings page was not created.")
 		return
+
+	var movement_event := InputEventAction.new()
+	movement_event.action = &"ui_up"
+	movement_event.pressed = true
+	menu.call("_unhandled_input", movement_event)
+	if bool(menu.call("_can_capture_menu_navigation")):
+		_fail("Hidden pause menu incorrectly captures player movement navigation.")
+		return
+
 	menu.call("toggle_pause")
+	if not bool(menu.call("_can_capture_menu_navigation")):
+		_fail("Visible main pause menu does not accept navigation.")
+		return
+	var previous_selection := int(menu.get("_selected_menu_index"))
+	menu.call("_unhandled_input", movement_event)
+	if int(menu.get("_selected_menu_index")) != posmod(previous_selection - 1, 7):
+		_fail("Visible pause menu did not move its selection for ui_up.")
+		return
 	if not get_root().get_tree().paused:
 		_fail("Opening pause did not pause the game.")
 		return
