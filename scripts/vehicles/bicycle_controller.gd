@@ -75,10 +75,8 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= gravity * delta
 	move_and_slide()
 	var actual_forward_speed := get_real_velocity().dot(forward)
-	if absf(_speed) > 0.15 and signf(actual_forward_speed) == signf(_speed) and absf(actual_forward_speed) < absf(_speed):
-		_speed = actual_forward_speed
-	elif absf(_speed) > 0.5 and is_zero_approx(actual_forward_speed):
-		_speed = 0.0
+	if absf(_speed) > 0.15 and absf(actual_forward_speed) + 0.25 < absf(_speed):
+		_speed = actual_forward_speed if signf(actual_forward_speed) == signf(_speed) else 0.0
 	_sync_driver_pose()
 	_animate_bicycle(delta, steering_input)
 
