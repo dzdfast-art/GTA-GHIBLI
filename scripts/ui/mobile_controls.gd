@@ -35,34 +35,16 @@ func _process(_delta: float) -> void:
 	if player == null:
 		return
 	var prompt := "USE"
-	var nearest_distance := 4.0
-	for bicycle in get_tree().get_nodes_in_group("bicycles"):
-		if not bicycle is Node3D:
-			continue
-		var distance := player.global_position.distance_to((bicycle as Node3D).global_position)
-		if distance < nearest_distance:
-			nearest_distance = distance
-			prompt = "RIDE"
-	for vehicle in get_tree().get_nodes_in_group("vehicles"):
-		if vehicle.is_in_group("bicycles") or not vehicle is Node3D:
-			continue
-		var distance := player.global_position.distance_to((vehicle as Node3D).global_position)
-		if distance < nearest_distance:
-			nearest_distance = distance
-			prompt = "ENTER"
-	for portal in get_tree().get_nodes_in_group("building_portals"):
-		if not portal is Node3D:
-			continue
-		var portal_node := portal as Node3D
-		var portal_position := portal_node.global_position
-		if bool(portal.get("_is_inside")):
-			portal_position += portal.get("room_offset") + Vector3(0.0, 0.9, 3.1)
-			if player.global_position.distance_to(portal_position) < nearest_distance:
-				nearest_distance = player.global_position.distance_to(portal_position)
-				prompt = "EXIT HOUSE"
-		elif player.global_position.distance_to(portal_position) < nearest_distance:
-			nearest_distance = player.global_position.distance_to(portal_position)
-			prompt = "ENTER HOUSE"
+	var interactor := player.get_node_or_null("PlayerInteractor")
+	if interactor != null and interactor.has_method("get_nearest_interactable"):
+		var target := interactor.call("get_nearest_interactable") as Node
+		if target != null:
+			if target.is_in_group("bicycles"):
+				prompt = "RIDE"
+			elif target.is_in_group("vehicles"):
+				prompt = "ENTER"
+			elif target.is_in_group("building_portals"):
+				prompt = "EXIT HOUSE" if bool(target.get("_is_inside")) else "ENTER HOUSE"
 	if _context_button.text != prompt:
 		_context_button.text = prompt
 
