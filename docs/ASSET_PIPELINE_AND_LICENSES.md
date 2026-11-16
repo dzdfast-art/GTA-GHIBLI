@@ -28,7 +28,7 @@ This document records candidate sources researched for the human character, anim
 
 ## Current status (2026-11-17)
 - Research and license-page verification: done for the listed Quaternius and Poly Haven sources.
-- Binary asset downloads: not yet completed.
+- Binary asset downloads: the free `Universal Animation Library 2[Standard].zip` (17 MB) was successfully downloaded through the browser session. The browser download is not yet transferred into the repository or imported into Godot.
 - Godot import/retarget validation of these candidate assets: not yet run.
 - Player/Mira model replacement and rider animation: not yet implemented.
 - This register is documentation, not evidence that the game now contains these assets.
