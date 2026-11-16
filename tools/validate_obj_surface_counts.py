@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Fail CI when an OBJ object exceeds Godot's mesh-surface limit.
+"""Fail CI when an imported OBJ would exceed Godot's mesh-surface limit.
 
-Godot creates a surface for each contiguous material run in an OBJ object.
-Repeatedly alternating usemtl directives can silently exceed the engine limit
-and flood the import log with RenderingServer MAX_MESH_SURFACES errors.
+Godot creates surfaces for material runs within OBJ objects. The limit applies
+to the resulting mesh, so count surfaces across the entire file, not separately
+inside each object.
 """
 from pathlib import Path
 
@@ -20,29 +20,24 @@ for obj_path in sorted(ASSET_ROOT.rglob("*.obj")):
     last_face_material = object()
     surface_count = 0
 
-    def check_object() -> None:
-        if surface_count > MAX_MESH_SURFACES:
-            failures.append(
-                f"{obj_path.relative_to(ROOT)} :: {object_name}: "
-                f"{surface_count} material surfaces (limit {MAX_MESH_SURFACES})"
-            )
-
     with obj_path.open("r", encoding="utf-8", errors="replace") as source:
         for raw_line in source:
             line = raw_line.strip()
             if line.startswith("o "):
-                check_object()
                 object_name = line[2:].strip() or "<unnamed>"
-                current_material = None
                 last_face_material = object()
-                surface_count = 0
             elif line.startswith("usemtl "):
                 current_material = line[7:].strip()
             elif line.startswith("f "):
                 if current_material != last_face_material:
                     surface_count += 1
                     last_face_material = current_material
-    check_object()
+
+    if surface_count > MAX_MESH_SURFACES:
+        failures.append(
+            f"{obj_path.relative_to(ROOT)}: {surface_count} material surfaces "
+            f"across OBJ objects (limit {MAX_MESH_SURFACES}; last object {object_name})"
+        )
 
 if failures:
     print("OBJ mesh-surface budget violations:")
@@ -50,4 +45,4 @@ if failures:
         print(f" - {failure}")
     raise SystemExit(1)
 
-print(f"PASS: checked {checked} OBJ files; no object exceeds {MAX_MESH_SURFACES} material surfaces.")
+print(f"PASS: checked {checked} OBJ files; no imported mesh exceeds {MAX_MESH_SURFACES} surfaces.")
