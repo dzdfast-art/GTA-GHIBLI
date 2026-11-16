@@ -29,12 +29,16 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		toggle_pause()
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("ui_down"):
+	elif event.is_action_pressed("ui_down") and _can_capture_menu_navigation():
 		_move_menu_selection(1)
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("ui_up"):
+	elif event.is_action_pressed("ui_up") and _can_capture_menu_navigation():
 		_move_menu_selection(-1)
 		get_viewport().set_input_as_handled()
+
+func _can_capture_menu_navigation() -> bool:
+	# Do not swallow the player's forward/backward movement while the pause UI is hidden.
+	return _overlay != null and _overlay.visible and _main_panel != null and _main_panel.visible and not _menu_buttons.is_empty()
 
 func toggle_pause() -> void:
 	if _overlay == null:
