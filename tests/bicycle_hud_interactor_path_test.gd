@@ -38,7 +38,7 @@ func _run() -> void:
 			await physics_frame
 		await process_frame
 		await process_frame
-		var shows_ride: bool = button.text == "RIDE"
+		var shows_ride: bool = button.tooltip_text == "اركب الدراجة"
 		await _tap_interact(button)
 		for _frame in range(2):
 			await physics_frame

@@ -219,6 +219,11 @@ func set_bike_steering_mode(mode: String) -> void:
 func _refresh_controls() -> void:
 	if _mode_label == null:
 		return
+	var context_icon_path := "res://assets/ui/hud/exit.svg" if _is_car_mode or _is_bicycle_mode else "res://assets/ui/hud/interact.svg"
+	var context_icon = load(context_icon_path)
+	if context_icon is Texture2D:
+		_context_button.icon = context_icon
+		_context_button.text = ""
 	if _is_bicycle_mode:
 		_mode_label.text = "دراجة"
 		_context_button.tooltip_text = "النزول من الدراجة"
