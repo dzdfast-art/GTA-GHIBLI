@@ -22,6 +22,11 @@ func _run() -> void:
 	if not InputMap.has_action("interact"):
 		WORLD.fail(self, "InputMap has no interact action.")
 		return
+	var detector := player.get_node("PlayerInteractor/InteractionDetector") as Area3D
+	var expected_detector_position := player.global_position + Vector3.UP * 0.9
+	if detector.global_position.distance_to(expected_detector_position) > 0.01:
+		WORLD.fail(self, "interaction detector did not inherit the player's world transform.")
+		return
 	var button := controls.get_node("HUD/ContextAction") as Button
 	var distances := [1.5, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 5.0]
 	var report: Array[String] = []
