@@ -2,14 +2,38 @@ newmtl warehouse
 Kd 0.46 0.52 0.55
 Ka 0.10 0.12 0.13
 Ns 10
-newmtl roof_red
-Kd 0.42 0.16 0.12
-Ka 0.10 0.04 0.03
-Ns 12
+newmtl plaster_warm
+Kd 0.78 0.66 0.51
+Ka 0.18 0.16 0.12
+Ns 8
+newmtl plaster_cool
+Kd 0.55 0.66 0.68
+Ka 0.12 0.15 0.16
+Ns 8
 newmtl timber
 Kd 0.34 0.20 0.11
 Ka 0.10 0.07 0.04
 Ns 5
+newmtl brick
+Kd 0.48 0.25 0.17
+Ka 0.12 0.06 0.04
+Ns 6
+newmtl stone
+Kd 0.48 0.49 0.45
+Ka 0.12 0.12 0.11
+Ns 4
+newmtl roof_red
+Kd 0.42 0.16 0.12
+Ka 0.10 0.04 0.03
+Ns 12
+newmtl roof_blue
+Kd 0.20 0.32 0.39
+Ka 0.04 0.07 0.09
+Ns 14
+newmtl roof_green
+Kd 0.22 0.34 0.23
+Ka 0.05 0.08 0.05
+Ns 10
 newmtl trim
 Kd 0.13 0.10 0.08
 Ka 0.03 0.02 0.02
