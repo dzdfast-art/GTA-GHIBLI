@@ -1,16 +1,20 @@
 extends Node
 
-## Streams eight original terrain tiles into the four open-world districts.
-## Each district receives a main tile and an adjacent expansion tile with static collision.
+## Streams twelve original terrain tiles into the four open-world districts.
+## Each district receives a main tile and two adjacent expansion tiles with static collision.
 const TERRAIN_TILES := [
 	{"district": "HarborCity", "tile": "harbor_rail_yards", "resource": preload("res://assets/environment/terrain/expansion_150mb/harbor_rail_yards.obj"), "offset": Vector3.ZERO},
 	{"district": "HarborCity", "tile": "harbor_tidal_marsh", "resource": preload("res://assets/environment/terrain/expansion_300mb/harbor_tidal_marsh.obj"), "offset": Vector3(28.0, 0.0, 0.0)},
+	{"district": "HarborCity", "tile": "harbor_container_flats", "resource": preload("res://assets/environment/terrain/expansion_300mb/harbor_container_flats.obj"), "offset": Vector3(0.0, 0.0, 28.0)},
 	{"district": "PineHighlands", "tile": "pine_cedar_ridge", "resource": preload("res://assets/environment/terrain/expansion_150mb/pine_cedar_ridge.obj"), "offset": Vector3.ZERO},
 	{"district": "PineHighlands", "tile": "pine_misty_bowl", "resource": preload("res://assets/environment/terrain/expansion_300mb/pine_misty_bowl.obj"), "offset": Vector3(28.0, 0.0, 0.0)},
+	{"district": "PineHighlands", "tile": "pine_needle_ridge", "resource": preload("res://assets/environment/terrain/expansion_300mb/pine_needle_ridge.obj"), "offset": Vector3(0.0, 0.0, 28.0)},
 	{"district": "AmberValley", "tile": "amber_orchard_slope", "resource": preload("res://assets/environment/terrain/expansion_150mb/amber_orchard_slope.obj"), "offset": Vector3.ZERO},
 	{"district": "AmberValley", "tile": "amber_rolling_fields", "resource": preload("res://assets/environment/terrain/expansion_300mb/amber_rolling_fields.obj"), "offset": Vector3(28.0, 0.0, 0.0)},
+	{"district": "AmberValley", "tile": "amber_orchard_steps", "resource": preload("res://assets/environment/terrain/expansion_300mb/amber_orchard_steps.obj"), "offset": Vector3(0.0, 0.0, 28.0)},
 	{"district": "SapphireCoast", "tile": "sapphire_tidal_shelf", "resource": preload("res://assets/environment/terrain/expansion_150mb/sapphire_tidal_shelf.obj"), "offset": Vector3.ZERO},
-	{"district": "SapphireCoast", "tile": "sapphire_sea_cliffs", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_sea_cliffs.obj"), "offset": Vector3(28.0, 0.0, 0.0)}
+	{"district": "SapphireCoast", "tile": "sapphire_sea_cliffs", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_sea_cliffs.obj"), "offset": Vector3(28.0, 0.0, 0.0)},
+	{"district": "SapphireCoast", "tile": "sapphire_coral_shelf", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_coral_shelf.obj"), "offset": Vector3(0.0, 0.0, 28.0)}
 ]
 
 var _attached_count := 0
