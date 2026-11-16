@@ -274,7 +274,7 @@ func _input(event: InputEvent) -> void:
 			_set_action_strength(&"bike_steer_left", 0.0)
 			_set_action_strength(&"bike_steer_right", 0.0)
 	elif event is InputEventScreenDrag and event.index == _flick_touch_index:
-		var offset_x := event.position.x - _flick_start_x
+		var offset_x: float = event.position.x - _flick_start_x
 		var strength := clampf((absf(offset_x) - FLICK_DEADZONE_PX) / (FLICK_FULL_PX - FLICK_DEADZONE_PX), 0.0, 1.0)
 		_set_action_strength(&"bike_steer_left", strength if offset_x < 0.0 else 0.0)
 		_set_action_strength(&"bike_steer_right", strength if offset_x > 0.0 else 0.0)
