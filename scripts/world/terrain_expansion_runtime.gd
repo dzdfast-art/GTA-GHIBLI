@@ -1,6 +1,6 @@
 extends Node
 
-## Streams forty-eight original terrain tiles into the four open-world districts.
+## Streams seventy-two original terrain tiles into the four open-world districts.
 ## Each district receives twelve adjacent terrain tiles with static collision.
 const TERRAIN_TILES := [
 	{"district": "HarborCity", "tile": "harbor_rail_yards", "resource": preload("res://assets/environment/terrain/expansion_150mb/harbor_rail_yards.obj"), "offset": Vector3.ZERO},
@@ -51,6 +51,30 @@ const TERRAIN_TILES := [
 	{"district": "SapphireCoast", "tile": "sapphire_tidal_bench", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_tidal_bench.obj"), "offset": Vector3(140.0, 0.0, 0.0)},
 	{"district": "SapphireCoast", "tile": "sapphire_tidepools_north", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_tidepools_north.obj"), "offset": Vector3(168.0, 0.0, 0.0)},
 	{"district": "SapphireCoast", "tile": "coral_shelf_headland", "resource": preload("res://assets/environment/terrain/expansion_300mb/coral_shelf_headland.obj"), "offset": Vector3(196.0, 0.0, 0.0)},
+	{"district": "HarborCity", "tile": "marsh_channel_west", "resource": preload("res://assets/environment/terrain/expansion_150mb/marsh_channel_west.obj"), "offset": Vector3(112.0, 0.0, 28.0)},
+	{"district": "HarborCity", "tile": "willow_marsh_islands", "resource": preload("res://assets/environment/terrain/expansion_150mb/willow_marsh_islands.obj"), "offset": Vector3(140.0, 0.0, 28.0)},
+	{"district": "HarborCity", "tile": "river_delta_east", "resource": preload("res://assets/environment/terrain/expansion_150mb/river_delta_east.obj"), "offset": Vector3(168.0, 0.0, 28.0)},
+	{"district": "HarborCity", "tile": "wetland_reed_plain", "resource": preload("res://assets/environment/terrain/expansion_150mb/wetland_reed_plain.obj"), "offset": Vector3(196.0, 0.0, 28.0)},
+	{"district": "HarborCity", "tile": "lake_mirror_basin", "resource": preload("res://assets/environment/terrain/expansion_150mb/lake_mirror_basin.obj"), "offset": Vector3(224.0, 0.0, 28.0)},
+	{"district": "HarborCity", "tile": "willow_village_outer_hills", "resource": preload("res://assets/environment/terrain/expansion_150mb/willow_village_outer_hills.obj"), "offset": Vector3(252.0, 0.0, 28.0)},
+	{"district": "PineHighlands", "tile": "cedar_plateau_west", "resource": preload("res://assets/environment/terrain/expansion_150mb/cedar_plateau_west.obj"), "offset": Vector3(112.0, 0.0, 28.0)},
+	{"district": "PineHighlands", "tile": "granite_crown_east", "resource": preload("res://assets/environment/terrain/expansion_150mb/granite_crown_east.obj"), "offset": Vector3(140.0, 0.0, 28.0)},
+	{"district": "PineHighlands", "tile": "granite_foothill_east", "resource": preload("res://assets/environment/terrain/expansion_150mb/granite_foothill_east.obj"), "offset": Vector3(168.0, 0.0, 28.0)},
+	{"district": "PineHighlands", "tile": "granite_ravine_west", "resource": preload("res://assets/environment/terrain/expansion_150mb/granite_ravine_west.obj"), "offset": Vector3(196.0, 0.0, 28.0)},
+	{"district": "PineHighlands", "tile": "granite_ridge_summit", "resource": preload("res://assets/environment/terrain/expansion_150mb/granite_ridge_summit.obj"), "offset": Vector3(224.0, 0.0, 28.0)},
+	{"district": "PineHighlands", "tile": "mountain_pass_upper", "resource": preload("res://assets/environment/terrain/expansion_150mb/mountain_pass_upper.obj"), "offset": Vector3(252.0, 0.0, 28.0)},
+	{"district": "AmberValley", "tile": "desert_mesa_fields", "resource": preload("res://assets/environment/terrain/expansion_150mb/desert_mesa_fields.obj"), "offset": Vector3(112.0, 0.0, 28.0)},
+	{"district": "AmberValley", "tile": "desert_wash_plateau", "resource": preload("res://assets/environment/terrain/expansion_150mb/desert_wash_plateau.obj"), "offset": Vector3(140.0, 0.0, 28.0)},
+	{"district": "AmberValley", "tile": "orchard_copse_hills", "resource": preload("res://assets/environment/terrain/expansion_150mb/orchard_copse_hills.obj"), "offset": Vector3(168.0, 0.0, 28.0)},
+	{"district": "AmberValley", "tile": "orchard_ridge_south", "resource": preload("res://assets/environment/terrain/expansion_150mb/orchard_ridge_south.obj"), "offset": Vector3(196.0, 0.0, 28.0)},
+	{"district": "AmberValley", "tile": "orchard_terraces_north", "resource": preload("res://assets/environment/terrain/expansion_150mb/orchard_terraces_north.obj"), "offset": Vector3(224.0, 0.0, 28.0)},
+	{"district": "AmberValley", "tile": "red_canyon_rim_north", "resource": preload("res://assets/environment/terrain/expansion_150mb/red_canyon_rim_north.obj"), "offset": Vector3(252.0, 0.0, 28.0)},
+	{"district": "SapphireCoast", "tile": "basalt_coastal_spur", "resource": preload("res://assets/environment/terrain/expansion_150mb/basalt_coastal_spur.obj"), "offset": Vector3(112.0, 0.0, 28.0)},
+	{"district": "SapphireCoast", "tile": "sapphire_coast_rock_shelf", "resource": preload("res://assets/environment/terrain/expansion_150mb/sapphire_coast_rock_shelf.obj"), "offset": Vector3(140.0, 0.0, 28.0)},
+	{"district": "SapphireCoast", "tile": "sapphire_wind_headland", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_wind_headland.obj"), "offset": Vector3(168.0, 0.0, 28.0)},
+	{"district": "SapphireCoast", "tile": "seagrass_coastal_plain", "resource": preload("res://assets/environment/terrain/expansion_300mb/seagrass_coastal_plain.obj"), "offset": Vector3(196.0, 0.0, 28.0)},
+	{"district": "SapphireCoast", "tile": "whitecliff_staircase", "resource": preload("res://assets/environment/terrain/expansion_300mb/whitecliff_staircase.obj"), "offset": Vector3(224.0, 0.0, 28.0)},
+	{"district": "SapphireCoast", "tile": "red_bridge_ravine_east", "resource": preload("res://assets/environment/terrain/expansion_300mb/red_bridge_ravine_east.obj"), "offset": Vector3(252.0, 0.0, 28.0)},
 ]
 
 var _attached_count := 0
@@ -82,7 +106,7 @@ func _attach_tile(district: Node3D, tile_name: String, source: Resource, offset:
 	tile.mesh = terrain_mesh
 	tile.position = offset + Vector3(0.0, 0.08, 0.0)
 	tile.scale = Vector3(0.18, 0.10, 0.18)
-	tile.visibility_range_end = 220.0
+	tile.visibility_range_end = 420.0
 	tile.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 	tile.add_to_group("world_terrain_chunks")
 	district.add_child(tile)
