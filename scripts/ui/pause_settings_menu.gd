@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 const SETTINGS_PATH := "user://gta_ghibli_settings.cfg"
+const WORLD_MAP_VIEW_SCRIPT = preload("res://scripts/ui/world_map_view.gd")
 const PANEL_COLOR := Color(0.055, 0.075, 0.075, 0.97)
 const ACCENT := Color(0.83, 0.72, 0.43, 1.0)
 const TEXT_COLOR := Color(0.94, 0.93, 0.86, 1.0)
@@ -8,6 +9,8 @@ const TEXT_COLOR := Color(0.94, 0.93, 0.86, 1.0)
 var _overlay: Control
 var _main_panel: PanelContainer
 var _settings_panel: PanelContainer
+var _map_panel: Control
+var _map_view: Control
 var _pause_touch_button: Button
 var _menu_buttons: Array[Button] = []
 var _menu_cursors: Array[Label] = []
@@ -52,6 +55,8 @@ func _open_menu() -> void:
 	_overlay.visible = true
 	_main_panel.visible = true
 	_settings_panel.visible = false
+	if _map_panel != null:
+		_map_panel.visible = false
 	if _pause_touch_button != null:
 		_pause_touch_button.visible = false
 	get_tree().paused = true
@@ -90,6 +95,14 @@ func _build_interface() -> void:
 	header_fade.color = Color(0.0, 0.0, 0.0, 0.30)
 	_overlay.add_child(header_fade)
 
+	var pause_title := Label.new()
+	pause_title.name = "PauseMenuTitle"
+	pause_title.text = "Pause Menu"
+	pause_title.position = Vector2(38.0, 24.0)
+	pause_title.add_theme_font_size_override("font_size", 48)
+	pause_title.add_theme_color_override("font_color", Color(0.86, 0.65, 0.18, 1.0))
+	_overlay.add_child(pause_title)
+
 	_main_panel = PanelContainer.new()
 	_main_panel.name = "PauseMenu"
 	_main_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -108,7 +121,7 @@ func _build_interface() -> void:
 	_menu_cursors.clear()
 	_add_classic_menu_button(menu, "RESUME", 0, _close_menu)
 	_add_classic_menu_button(menu, "START NEW GAME", 1, _restart_game)
-	_add_classic_menu_button(menu, "MAP", 2, _show_info.bind("الخريطة"))
+	_add_classic_menu_button(menu, "MAP", 2, _show_map)
 	_add_classic_menu_button(menu, "STATS", 3, _show_info.bind("الإحصائيات"))
 	_add_classic_menu_button(menu, "BRIEF", 4, _show_info.bind("ملخص المهام"))
 	_add_classic_menu_button(menu, "OPTIONS", 5, _show_settings)
@@ -123,6 +136,14 @@ func _build_interface() -> void:
 	_settings_panel.visible = false
 	_overlay.add_child(_settings_panel)
 	_build_settings_page()
+
+	_map_panel = Control.new()
+	_map_panel.name = "MapMenu"
+	_map_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_map_panel.visible = false
+	_map_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	_overlay.add_child(_map_panel)
+	_build_map_page()
 
 	var pause_button := _make_button("Ⅱ", 22)
 	_pause_touch_button = pause_button
@@ -336,12 +357,100 @@ func _make_panel() -> PanelContainer:
 	panel.add_theme_constant_override("margin_bottom", 22)
 	return panel
 
+func _build_map_page() -> void:
+	var backdrop := ColorRect.new()
+	backdrop.name = "MapBackdrop"
+	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	backdrop.color = Color(0.012, 0.018, 0.016, 1.0)
+	_map_panel.add_child(backdrop)
+
+	var heading := Label.new()
+	heading.name = "MapHeading"
+	heading.text = "GTA GHIBLI  |  WORLD MAP"
+	heading.position = Vector2(28.0, 20.0)
+	heading.add_theme_font_size_override("font_size", 28)
+	heading.add_theme_color_override("font_color", ACCENT)
+	_map_panel.add_child(heading)
+
+	var subtitle := Label.new()
+	subtitle.text = "خريطة العالم المفتوح  •  اسحب لتحريك الخريطة"
+	subtitle.position = Vector2(30.0, 55.0)
+	subtitle.add_theme_font_size_override("font_size", 15)
+	subtitle.add_theme_color_override("font_color", TEXT_COLOR)
+	_map_panel.add_child(subtitle)
+
+	var frame := PanelContainer.new()
+	frame.name = "MapFrame"
+	frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	frame.offset_left = 22.0
+	frame.offset_top = 88.0
+	frame.offset_right = -22.0
+	frame.offset_bottom = -88.0
+	frame.add_theme_stylebox_override("panel", _make_panel().get_theme_stylebox("panel"))
+	_map_panel.add_child(frame)
+
+	_map_view = WORLD_MAP_VIEW_SCRIPT.new() as Control
+	_map_view.name = "MapCanvas"
+	_map_view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_map_view.offset_left = 8.0
+	_map_view.offset_top = 8.0
+	_map_view.offset_right = -8.0
+	_map_view.offset_bottom = -8.0
+	frame.add_child(_map_view)
+
+	var footer := HBoxContainer.new()
+	footer.name = "MapControls"
+	footer.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+	footer.offset_left = 22.0
+	footer.offset_top = -72.0
+	footer.offset_right = -22.0
+	footer.offset_bottom = -14.0
+	footer.add_theme_constant_override("separation", 10)
+	_map_panel.add_child(footer)
+
+	var back := _make_button("رجوع  |  BACK", 16)
+	back.custom_minimum_size = Vector2(170.0, 48.0)
+	back.pressed.connect(_show_main_menu)
+	footer.add_child(back)
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	footer.add_child(spacer)
+	var center := _make_button("موقعي  |  CENTER", 15)
+	center.custom_minimum_size = Vector2(170.0, 48.0)
+	center.pressed.connect(_center_map_on_player)
+	footer.add_child(center)
+	var zoom_out := _make_button("−", 22)
+	zoom_out.custom_minimum_size = Vector2(54.0, 48.0)
+	zoom_out.pressed.connect(_change_map_zoom.bind(-0.2))
+	footer.add_child(zoom_out)
+	var zoom_in := _make_button("+", 22)
+	zoom_in.custom_minimum_size = Vector2(54.0, 48.0)
+	zoom_in.pressed.connect(_change_map_zoom.bind(0.2))
+	footer.add_child(zoom_in)
+
+func _show_map() -> void:
+	_main_panel.visible = false
+	_settings_panel.visible = false
+	_map_panel.visible = true
+	if _map_view != null:
+		_map_view.queue_redraw()
+
+func _center_map_on_player() -> void:
+	if _map_view != null and _map_view.has_method("center_on_player"):
+		_map_view.call("center_on_player")
+
+func _change_map_zoom(amount: float) -> void:
+	if _map_view != null and _map_view.has_method("zoom_by"):
+		_map_view.call("zoom_by", amount)
+
 func _show_settings() -> void:
 	_main_panel.visible = false
+	_map_panel.visible = false
 	_settings_panel.visible = true
 
 func _show_main_menu() -> void:
 	_settings_panel.visible = false
+	_map_panel.visible = false
 	_main_panel.visible = true
 	_refresh_menu_selection()
 
