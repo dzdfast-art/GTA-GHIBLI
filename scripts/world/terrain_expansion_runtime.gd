@@ -83,14 +83,14 @@ const TERRAIN_TILES := [
 	{"district": "AmberValley", "tile": "amber_wheat_terraces", "resource": preload("res://assets/environment/terrain/expansion_90mb/amber_wheat_terraces.obj"), "offset": Vector3(308.0, 0.0, 0.0)},
 	{"district": "SapphireCoast", "tile": "sapphire_tidepool_cliffs", "resource": preload("res://assets/environment/terrain/expansion_90mb/sapphire_tidepool_cliffs.obj"), "offset": Vector3(280.0, 0.0, 0.0)},
 	{"district": "SapphireCoast", "tile": "sapphire_coral_ridge", "resource": preload("res://assets/environment/terrain/expansion_90mb/sapphire_coral_ridge.obj"), "offset": Vector3(308.0, 0.0, 0.0)},
-	{"district": "HarborCity", "tile": "harbor_estuary_banks", "resource": preload("res://assets/environment/terrain/expansion_300mb/harbor_estuary_banks.obj"), "offset": Vector3(280.0, 0.0, 0.0)},
-	{"district": "HarborCity", "tile": "harbor_mangrove_flats", "resource": preload("res://assets/environment/terrain/expansion_300mb/harbor_mangrove_flats.obj"), "offset": Vector3(308.0, 0.0, 0.0)},
-	{"district": "PineHighlands", "tile": "pine_snowline_ridge", "resource": preload("res://assets/environment/terrain/expansion_300mb/pine_snowline_ridge.obj"), "offset": Vector3(280.0, 0.0, 0.0)},
-	{"district": "PineHighlands", "tile": "pine_mist_basin", "resource": preload("res://assets/environment/terrain/expansion_300mb/pine_mist_basin.obj"), "offset": Vector3(308.0, 0.0, 0.0)},
-	{"district": "AmberValley", "tile": "amber_red_canyon", "resource": preload("res://assets/environment/terrain/expansion_300mb/amber_red_canyon.obj"), "offset": Vector3(280.0, 0.0, 0.0)},
-	{"district": "AmberValley", "tile": "amber_wheat_terraces", "resource": preload("res://assets/environment/terrain/expansion_300mb/amber_wheat_terraces.obj"), "offset": Vector3(308.0, 0.0, 0.0)},
-	{"district": "SapphireCoast", "tile": "sapphire_tidepool_cliffs", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_tidepool_cliffs.obj"), "offset": Vector3(280.0, 0.0, 0.0)},
-	{"district": "SapphireCoast", "tile": "sapphire_coral_ridge", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_coral_ridge.obj"), "offset": Vector3(308.0, 0.0, 0.0)},
+	{"district": "HarborCity", "tile": "harbor_estuary_sandbars", "resource": preload("res://assets/environment/terrain/expansion_300mb/harbor_estuary_sandbars.obj"), "offset": Vector3(336.0, 0.0, 0.0)},
+	{"district": "HarborCity", "tile": "harbor_mangrove_runnels", "resource": preload("res://assets/environment/terrain/expansion_300mb/harbor_mangrove_runnels.obj"), "offset": Vector3(364.0, 0.0, 0.0)},
+	{"district": "PineHighlands", "tile": "pine_snowline_spurs", "resource": preload("res://assets/environment/terrain/expansion_300mb/pine_snowline_spurs.obj"), "offset": Vector3(336.0, 0.0, 0.0)},
+	{"district": "PineHighlands", "tile": "pine_mist_lakes", "resource": preload("res://assets/environment/terrain/expansion_300mb/pine_mist_lakes.obj"), "offset": Vector3(364.0, 0.0, 0.0)},
+	{"district": "AmberValley", "tile": "amber_canyon_ravines", "resource": preload("res://assets/environment/terrain/expansion_300mb/amber_canyon_ravines.obj"), "offset": Vector3(336.0, 0.0, 0.0)},
+	{"district": "AmberValley", "tile": "amber_wheat_terraces_west", "resource": preload("res://assets/environment/terrain/expansion_300mb/amber_wheat_terraces_west.obj"), "offset": Vector3(364.0, 0.0, 0.0)},
+	{"district": "SapphireCoast", "tile": "sapphire_tidepool_bays", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_tidepool_bays.obj"), "offset": Vector3(336.0, 0.0, 0.0)},
+	{"district": "SapphireCoast", "tile": "sapphire_coral_spurs", "resource": preload("res://assets/environment/terrain/expansion_300mb/sapphire_coral_spurs.obj"), "offset": Vector3(364.0, 0.0, 0.0)},
 ]
 
 var _attached_count := 0
