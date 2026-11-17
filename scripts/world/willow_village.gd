@@ -19,6 +19,7 @@ func _ready() -> void:
 	_build_interactive_objects()
 	_build_consumable_shop()
 	_build_flora_details()
+	_build_market_lane()
 
 
 func _build_mira() -> void:
@@ -236,6 +237,37 @@ func _build_flora_details() -> void:
 			Color(0.55, 0.55, 0.48))
 
 
+
+func _build_market_lane() -> void:
+	# A new walkable market spur extends the village with distinct ground surfaces.
+	var surfaces := [
+		{"name":"CoastalSandCourt","pos":Vector3(38.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.72, 0.58, 0.38)},
+		{"name":"AsphaltArrivalRoad","pos":Vector3(38.0, 0.025, -4.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.18, 0.22, 0.26)},
+		{"name":"PineGroveFloor","pos":Vector3(38.0, 0.025, 10.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.22, 0.34, 0.19)},
+		{"name":"HarborStoneWalk","pos":Vector3(54.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.43, 0.48, 0.46)},
+		{"name":"OrchardEarthPlot","pos":Vector3(54.0, 0.025, -4.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.40, 0.27, 0.16)},
+		{"name":"DockTimberDeck","pos":Vector3(54.0, 0.025, 10.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.29, 0.19, 0.13)},
+		{"name":"MarketBrickSquare","pos":Vector3(70.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.62, 0.30, 0.22)},
+		{"name":"CanvasMarketYard","pos":Vector3(70.0, 0.025, -4.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.58, 0.49, 0.32)}
+	]
+	for surface in surfaces:
+		_add_box(self, surface.name, surface.pos, surface.size, surface.color, false)
+
+	# Market stalls, crates, and shade frames make the new surfaces part of the world.
+	for stall_index in range(3):
+		var x := 65.0 + float(stall_index) * 5.0
+		var z := -3.0
+		_add_box(self, "MarketStallCounter_%02d" % stall_index,
+			Vector3(x, 0.65, z), Vector3(3.2, 1.1, 1.1),
+			Color(0.29, 0.19, 0.13), true)
+		_add_box(self, "MarketStallCanopy_%02d" % stall_index,
+			Vector3(x, 2.25, z), Vector3(3.8, 0.16, 3.0),
+			Color(0.58, 0.49, 0.32), false)
+		for crate_index in range(2):
+			_add_box(self, "MarketCrate_%02d_%d" % [stall_index, crate_index],
+				Vector3(x - 1.0 + float(crate_index) * 2.0, 0.28, z + 1.1),
+				Vector3(0.72, 0.56, 0.72), Color(0.40, 0.27, 0.16), true)
+
 func _build_signpost() -> void:
 	var post := CylinderMesh.new()
 	post.top_radius = 0.10
@@ -310,6 +342,22 @@ func _material(color: Color) -> StandardMaterial3D:
 
 
 func _surface_texture_for_color(color: Color) -> String:
+	if color.is_equal_approx(Color(0.72, 0.58, 0.38)):
+		return "res://assets/environment/materials/coastal_sand_4k.svg"
+	if color.is_equal_approx(Color(0.18, 0.22, 0.26)):
+		return "res://assets/environment/materials/district_asphalt_4k.svg"
+	if color.is_equal_approx(Color(0.22, 0.34, 0.19)):
+		return "res://assets/environment/materials/pine_forest_floor_4k.svg"
+	if color.is_equal_approx(Color(0.43, 0.48, 0.46)):
+		return "res://assets/environment/materials/harbor_paving_4k.svg"
+	if color.is_equal_approx(Color(0.40, 0.27, 0.16)):
+		return "res://assets/environment/materials/orchard_soil_4k.svg"
+	if color.is_equal_approx(Color(0.29, 0.19, 0.13)):
+		return "res://assets/environment/materials/dock_timber_4k.svg"
+	if color.is_equal_approx(Color(0.62, 0.30, 0.22)):
+		return "res://assets/environment/materials/market_brick_4k.svg"
+	if color.is_equal_approx(Color(0.58, 0.49, 0.32)):
+		return "res://assets/environment/materials/weathered_canvas_4k.svg"
 	if color.r > 0.78 and color.g > 0.65:
 		return "res://assets/environment/materials/village_plaster_4k.svg"
 	if color.r > 0.48 and color.g < 0.42 and color.b < 0.35:
