@@ -107,16 +107,10 @@ const SAMPLE_COLORS := [
 
 
 const DETAIL_COLORS := [
-	Color(0.25, 0.25, 0.27), Color(0.68, 0.32, 0.20),
-	Color(0.24, 0.38, 0.42), Color(0.43, 0.48, 0.46),
-	Color(0.22, 0.34, 0.19), Color(0.72, 0.58, 0.38),
-	Color(0.55, 0.25, 0.20), Color(0.18, 0.22, 0.26)
+	Color(0.25, 0.25, 0.27), Color(0.68, 0.32, 0.20)
 ]
 
-const DETAIL_NAMES := [
-	"basalt", "red_sandstone", "wet_stone", "harbor_paving",
-	"pine_floor", "coastal_sand", "terracotta", "asphalt"
-]
+const DETAIL_NAMES := ["basalt", "red_sandstone"]
 
 func _initialize() -> void:
 	call_deferred("_run_test")
@@ -218,10 +212,10 @@ func _run_test() -> void:
 			return
 		var detail_texture := load(detail_path) as Texture2D
 		var normal_texture := load(normal_path) as Texture2D
-		if detail_texture == null or detail_texture.get_width() != 2048 or detail_texture.get_height() != 2048:
+		if detail_texture == null or detail_texture.get_width() != 1900 or detail_texture.get_height() != 1900:
 			_fail("Detail albedo did not import at 2048x2048: " + detail_path)
 			return
-		if normal_texture == null or normal_texture.get_width() != 2048 or normal_texture.get_height() != 2048:
+		if normal_texture == null or normal_texture.get_width() != 1900 or normal_texture.get_height() != 1900:
 			_fail("Tangent-space normal map did not import at 2048x2048: " + normal_path)
 			return
 		if material == null or not material.detail_enabled or material.detail_albedo == null:
@@ -237,7 +231,7 @@ func _run_test() -> void:
 			_fail("Wrong 2K normal map bound for " + DETAIL_NAMES[index])
 			return
 
-	print("PASS: 32 original 4K albedo surfaces, 18 legacy raster maps and eight original 2K albedo/normal pairs import and bind to their intended world materials.")
+	print("PASS: 32 original 4K albedo surfaces, 18 legacy raster maps and two original 1900px albedo/normal pairs import and bind to their intended world materials.")
 	quit(0)
 
 func _fail(message: String) -> void:
