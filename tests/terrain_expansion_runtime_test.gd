@@ -2,80 +2,7 @@ extends SceneTree
 
 const REGIONS_SCRIPT = preload("res://scripts/world/open_world_regions.gd")
 const TERRAIN_SCRIPT = preload("res://scripts/world/terrain_expansion_runtime.gd")
-const EXPECTED_TILES := [
-	["HarborCity", "harbor_rail_yards"],
-	["HarborCity", "harbor_tidal_marsh"],
-	["HarborCity", "harbor_container_flats"],
-	["PineHighlands", "pine_cedar_ridge"],
-	["PineHighlands", "pine_misty_bowl"],
-	["PineHighlands", "pine_needle_ridge"],
-	["AmberValley", "amber_orchard_slope"],
-	["AmberValley", "amber_rolling_fields"],
-	["AmberValley", "amber_orchard_steps"],
-	["SapphireCoast", "sapphire_tidal_shelf"],
-	["SapphireCoast", "sapphire_sea_cliffs"],
-	["SapphireCoast", "sapphire_coral_shelf"],
-	["HarborCity", "harbor_floodplain_west"],
-	["HarborCity", "harbor_old_quarry"],
-	["HarborCity", "harbor_outer_marsh"],
-	["HarborCity", "harbor_rail_flats"],
-	["HarborCity", "urban_canal_banks"],
-	["PineHighlands", "highland_switchbacks"],
-	["PineHighlands", "northern_forest_bowl"],
-	["PineHighlands", "pine_fog_valley"],
-	["PineHighlands", "pine_forest_bowl"],
-	["PineHighlands", "pine_needle_uplands"],
-	["AmberValley", "amber_river_meanders"],
-	["AmberValley", "amber_valley_terraces"],
-	["AmberValley", "amber_wheat_basin"],
-	["AmberValley", "farm_irrigation_fields"],
-	["AmberValley", "farmstead_lowlands"],
-	["SapphireCoast", "basalt_coast_shelves"],
-	["SapphireCoast", "coastal_bluff_west"],
-	["SapphireCoast", "sapphire_headland_east"],
-	["SapphireCoast", "sapphire_tidal_flats"],
-	["SapphireCoast", "sapphire_wind_cliffs"],
-	["HarborCity", "harbor_dredge_basin"],
-	["HarborCity", "heron_marsh_backwater"],
-	["HarborCity", "saltmarsh_lagoon_east"],
-	["HarborCity", "riverstone_delta_bars"],
-	["PineHighlands", "pine_stone_pass"],
-	["PineHighlands", "pine_stone_ridge"],
-	["PineHighlands", "cedar_cloud_summit"],
-	["PineHighlands", "windward_pine_escarpment"],
-	["AmberValley", "amber_dry_wash"],
-	["AmberValley", "copper_badlands_ridge"],
-	["AmberValley", "mesa_terrace_south"],
-	["AmberValley", "ochre_dry_wash"],
-	["SapphireCoast", "sapphire_salt_lagoon"],
-	["SapphireCoast", "sapphire_tidal_bench"],
-	["SapphireCoast", "sapphire_tidepools_north"],
-	["SapphireCoast", "coral_shelf_headland"],
-	["HarborCity", "marsh_channel_west"],
-	["HarborCity", "willow_marsh_islands"],
-	["HarborCity", "river_delta_east"],
-	["HarborCity", "wetland_reed_plain"],
-	["HarborCity", "lake_mirror_basin"],
-	["HarborCity", "willow_village_outer_hills"],
-	["PineHighlands", "cedar_plateau_west"],
-	["PineHighlands", "granite_crown_east"],
-	["PineHighlands", "granite_foothill_east"],
-	["PineHighlands", "granite_ravine_west"],
-	["PineHighlands", "granite_ridge_summit"],
-	["PineHighlands", "mountain_pass_upper"],
-	["AmberValley", "desert_mesa_fields"],
-	["AmberValley", "desert_wash_plateau"],
-	["AmberValley", "orchard_copse_hills"],
-	["AmberValley", "orchard_ridge_south"],
-	["AmberValley", "orchard_terraces_north"],
-	["AmberValley", "red_canyon_rim_north"],
-	["SapphireCoast", "basalt_coastal_spur"],
-	["SapphireCoast", "sapphire_coast_rock_shelf"],
-	["SapphireCoast", "sapphire_wind_headland"],
-	["SapphireCoast", "seagrass_coastal_plain"],
-	["SapphireCoast", "whitecliff_staircase"],
-	["SapphireCoast", "red_bridge_ravine_east"],
-]
+const MAX_ACTIVE_TILES := 6
 
 func _initialize() -> void:
 	call_deferred("_run_test")
@@ -83,43 +10,79 @@ func _initialize() -> void:
 func _run_test() -> void:
 	var world := Node3D.new()
 	root.add_child(world)
+
 	var regions := REGIONS_SCRIPT.new() as Node3D
 	regions.name = "OpenWorldRegions"
 	world.add_child(regions)
+
 	var expansion := Node.new()
-	expansion.set_script(TERRAIN_SCRIPT)
 	expansion.name = "TerrainExpansionRuntime"
+	expansion.set_script(TERRAIN_SCRIPT)
 	world.add_child(expansion)
 	await process_frame
 
-	if int(expansion.call("get_attached_count")) != EXPECTED_TILES.size():
-		_fail("Expected all seventy-two regional terrain tiles to attach.")
+	if int(expansion.call("get_catalog_count")) != 72:
+		_fail("The terrain catalogue must retain all seventy-two unique district tiles.")
 		return
-	if int(expansion.call("get_collision_count")) != EXPECTED_TILES.size():
-		_fail("Expected static collision for all forty-eight regional terrain tiles.")
+	var missing: Array = expansion.call("get_missing_resource_paths")
+	if not missing.is_empty():
+		_fail("A terrain resource path is missing: " + str(missing[0]))
+		return
+	if int(expansion.call("get_attached_count")) != 0:
+		_fail("Terrain must remain unloaded until a player approaches a district.")
 		return
 
-	for tile_spec in EXPECTED_TILES:
-		var district_name: String = tile_spec[0]
-		var tile_name: String = tile_spec[1]
-		var district := regions.get_node_or_null(district_name)
-		if district == null:
-			_fail("Missing district " + district_name)
-			return
-		var tile := district.get_node_or_null("ExpansionTerrain_" + tile_name) as MeshInstance3D
-		if tile == null or tile.mesh == null:
-			_fail("Terrain mesh is empty for " + tile_name)
-			return
-		var body := district.get_node_or_null("ExpansionTerrainCollision_" + tile_name) as StaticBody3D
-		if body == null:
-			_fail("Terrain collision body is missing for " + tile_name)
-			return
-		var collision := body.get_node_or_null("TerrainCollisionShape") as CollisionShape3D
-		if collision == null or not (collision.shape is ConcavePolygonShape3D):
-			_fail("Terrain collision shape is missing or invalid for " + tile_name)
-			return
+	var harbor := regions.get_node("HarborCity") as Node3D
+	var player := Node3D.new()
+	player.name = "Player"
+	player.add_to_group("player")
+	world.add_child(player)
+	player.global_position = harbor.global_position
+	expansion.call("refresh_for_player", player)
+	await process_frame
 
-	print("PASS: seventy-two regional terrain meshes and static collision bodies loaded.")
+	var active_names: Array = expansion.call("get_active_tile_names")
+	var active_count := int(expansion.call("get_attached_count"))
+	if active_count <= 0 or active_count > MAX_ACTIVE_TILES:
+		_fail("Nearby terrain must load while respecting the six-tile mobile budget.")
+		return
+	if int(expansion.call("get_collision_count")) != active_count:
+		_fail("Every active terrain tile must have exactly one collision body.")
+		return
+	if not active_names.has("harbor_rail_yards"):
+		_fail("The closest Harbor City tile did not load first.")
+		return
+
+	var harbor_visual := harbor.get_node_or_null("ExpansionTerrain_harbor_rail_yards") as MeshInstance3D
+	var harbor_collision := harbor.get_node_or_null("ExpansionTerrainCollision_harbor_rail_yards") as StaticBody3D
+	if harbor_visual == null or harbor_visual.mesh == null:
+		_fail("The nearby Harbor City terrain visual is missing.")
+		return
+	if harbor_collision == null:
+		_fail("The nearby Harbor City terrain collision body is missing.")
+		return
+	var collision_shape := harbor_collision.get_node_or_null("TerrainCollisionShape") as CollisionShape3D
+	if collision_shape == null or not (collision_shape.shape is ConcavePolygonShape3D):
+		_fail("The streamed terrain collision shape is invalid.")
+		return
+
+	player.global_position = Vector3(10000.0, 0.0, 10000.0)
+	expansion.call("refresh_for_player", player)
+	await process_frame
+	if int(expansion.call("get_attached_count")) != 0 or int(expansion.call("get_collision_count")) != 0:
+		_fail("Distant terrain visuals and collision bodies were not unloaded.")
+		return
+
+	var coast := regions.get_node("SapphireCoast") as Node3D
+	player.global_position = coast.global_position
+	expansion.call("refresh_for_player", player)
+	await process_frame
+	var coast_names: Array = expansion.call("get_active_tile_names")
+	if not coast_names.has("sapphire_tidal_shelf"):
+		_fail("Terrain did not stream back in when the player entered Sapphire Coast.")
+		return
+
+	print("PASS: 72 terrain resources are catalogued; nearby tiles stream in with collision, distant tiles unload, and another district reloads.")
 	quit(0)
 
 func _fail(message: String) -> void:
