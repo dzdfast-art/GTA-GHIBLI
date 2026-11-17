@@ -66,7 +66,7 @@ func set_vehicle_state(active: bool, vehicle_kind: StringName = &"vehicle") -> v
 		_play_first_available([&"bicycle_idle", &"bike_idle", &"ride_idle", &"cycling_idle"])
 	else:
 		_state = &"car"
-		_play_first_available([&"Driving_Loop", &"vehicle_idle", &"car_idle", &"drive_idle"])
+		_play_first_available([&"Driving", &"Driving_Loop", &"vehicle_idle", &"car_idle", &"drive_idle"])
 
 
 func get_active_animation() -> StringName:
@@ -84,13 +84,13 @@ func has_humanoid_skeleton() -> bool:
 func _clips_for_state(state: StringName) -> Array[StringName]:
 	match state:
 		&"idle":
-			return [&"Idle_Loop", &"idle", &"idle_loop", &"breathing_idle"]
+			return [&"Idle", &"Idle_Loop", &"idle_loop", &"breathing_idle"]
 		&"walk":
-			return [&"Walk_Loop", &"walk", &"walking", &"walk_forward"]
+			return [&"Walk", &"Walk_Loop", &"walking", &"walk_forward"]
 		&"run":
-			return [&"Sprint_Loop", &"Jog_Fwd_Loop", &"run", &"running", &"sprint", &"run_forward"]
+			return [&"Sprint", &"Sprint_Loop", &"Jog_Fwd", &"Jog_Fwd_Loop", &"running", &"run_forward"]
 		&"fall":
-			return [&"Jump_Loop", &"fall", &"jump_fall", &"falling"]
+			return [&"Jump", &"Jump_Loop", &"Jump_Start", &"jump_fall", &"falling"]
 	return []
 
 
@@ -212,7 +212,7 @@ func play_named_action(action: StringName) -> bool:
 		"consume", "eat":
 			candidates = [&"Consume"]
 		"chop":
-			candidates = [&"TreeChopping_Loop", &"Sword_Attack"]
+			candidates = [&"TreeChopping", &"TreeChopping_Loop", &"Sword_Attack"]
 		"harvest":
 			candidates = [&"Farm_Harvest", &"Interact"]
 		"plant":
