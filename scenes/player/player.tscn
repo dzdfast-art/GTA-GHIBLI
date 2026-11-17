@@ -39,5 +39,5 @@ collision_mask = 1
 current = true
 fov = 70.0
 
-[node name="PlayerInteractor" type="Node" parent="."]
+[node name="PlayerInteractor" type="Node3D" parent="."]
 script = ExtResource("3_interactor")

@@ -1,0 +1,9 @@
+# GTA GHIBLI terrain expansion material
+# Neutral natural terrain material for OBJ meshes in this folder.
+newmtl terrain_default
+Ka 0.20 0.20 0.20
+Kd 0.38 0.42 0.31
+Ks 0.04 0.04 0.04
+Ns 18.0
+d 1.0
+illum 2
