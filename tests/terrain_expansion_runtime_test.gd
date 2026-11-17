@@ -101,10 +101,10 @@ func _run_test() -> void:
 	await process_frame
 
 	if int(expansion.call("get_attached_count")) != EXPECTED_TILES.size():
-		_fail("Expected all eighty regional terrain tiles to attach.")
+		_fail("Expected all eighty-eight regional terrain tiles to attach.")
 		return
 	if int(expansion.call("get_collision_count")) != EXPECTED_TILES.size():
-		_fail("Expected static collision for all eighty regional terrain tiles.")
+		_fail("Expected static collision for all eighty-eight regional terrain tiles.")
 		return
 
 	for tile_spec in EXPECTED_TILES:
@@ -127,7 +127,7 @@ func _run_test() -> void:
 			_fail("Terrain collision shape is missing or invalid for " + tile_name)
 			return
 
-	print("PASS: eighty regional terrain meshes and static collision bodies loaded.")
+	print("PASS: eighty-eight regional terrain meshes and static collision bodies loaded.")
 	quit(0)
 
 func _fail(message: String) -> void:
