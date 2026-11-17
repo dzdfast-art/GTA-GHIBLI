@@ -29,3 +29,7 @@ The existing 72 OBJ assets are reused; this feature adds no duplicate terrain fi
 - إعداد تصدير Android يستخدم `all_resources`، لذلك تبقى ملفات التضاريس ذات المسارات الديناميكية ضمن الحزمة.
 
 لم نكرر أي ملف تضاريس. يتحقق CI من وجود المسارات والتحميل والتفريغ وإنشاء التصادم والانتقال بين المناطق. لا يغني اختبار Godot headless عن قياس الذاكرة ومعدل الإطارات وتجربة التنقل باللمس على هاتف Android حقيقي.
+
+
+### OBJ material reference compatibility
+The phase-2 OBJ sources refer to `terrain_300mb.mtl`. A repository symlink points that name to the existing `expansion_terrain.mtl`; this avoids copying or duplicating material definitions and prevents Godot's importer from reporting a missing MTL file.
