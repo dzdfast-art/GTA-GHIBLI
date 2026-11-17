@@ -240,6 +240,7 @@ func _build_flora_details() -> void:
 
 func _build_market_lane() -> void:
 	# A new walkable market spur extends the village with distinct ground surfaces.
+	# All eight 4K materials are bound to real floor and stall meshes.
 	var surfaces := [
 		{"name":"CoastalSandCourt","pos":Vector3(38.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.72, 0.58, 0.38)},
 		{"name":"AsphaltArrivalRoad","pos":Vector3(38.0, 0.025, -4.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.18, 0.22, 0.26)},
