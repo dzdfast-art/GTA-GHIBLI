@@ -27,7 +27,7 @@ func _run() -> void:
 	if Input.is_action_pressed("bike_steer_right"):
 		WORLD.fail(self, "steering stayed pressed after driver was freed.")
 		return
-	if (controls.get_node("HUD/ContextAction") as Button).text == "EXIT BIKE":
+	if (controls.get_node("HUD/ContextAction") as Button).tooltip_text == "النزول من الدراجة":
 		WORLD.fail(self, "HUD stayed in bicycle mode after driver was freed.")
 		return
 	if absf(float(bicycle.get("_speed"))) > 0.0001 or absf(visuals.rotation.z) > 0.001:
