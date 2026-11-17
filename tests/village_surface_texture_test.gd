@@ -105,6 +105,19 @@ const SAMPLE_COLORS := [
 	Color(0.25, 0.25, 0.27)
 ]
 
+
+const DETAIL_COLORS := [
+	Color(0.25, 0.25, 0.27), Color(0.68, 0.32, 0.20),
+	Color(0.24, 0.38, 0.42), Color(0.43, 0.48, 0.46),
+	Color(0.22, 0.34, 0.19), Color(0.72, 0.58, 0.38),
+	Color(0.55, 0.25, 0.20), Color(0.18, 0.22, 0.26)
+]
+
+const DETAIL_NAMES := [
+	"basalt", "red_sandstone", "wet_stone", "harbor_paving",
+	"pine_floor", "coastal_sand", "terracotta", "asphalt"
+]
+
 func _initialize() -> void:
 	call_deferred("_run_test")
 
@@ -196,7 +209,35 @@ func _run_test() -> void:
 			_fail("Missing new walkable material plot: " + plot_name)
 			return
 
-	print("PASS: all 32 original 4K SVG surfaces, 14 original 512px response maps and four new 960px response maps import and bind to their matching village materials.")
+	for index in range(DETAIL_NAMES.size()):
+		var material := village.call("_material", DETAIL_COLORS[index]) as StandardMaterial3D
+		var detail_path := "res://assets/environment/materials/hd/detail_2k/%s_detail_albedo_2k.bmp" % DETAIL_NAMES[index]
+		var normal_path := "res://assets/environment/materials/hd/detail_2k/%s_normal_2k.bmp" % DETAIL_NAMES[index]
+		if not ResourceLoader.exists(detail_path) or not ResourceLoader.exists(normal_path):
+			_fail("Missing generated 2K material pair: " + DETAIL_NAMES[index])
+			return
+		var detail_texture := load(detail_path) as Texture2D
+		var normal_texture := load(normal_path) as Texture2D
+		if detail_texture == null or detail_texture.get_width() != 2048 or detail_texture.get_height() != 2048:
+			_fail("Detail albedo did not import at 2048x2048: " + detail_path)
+			return
+		if normal_texture == null or normal_texture.get_width() != 2048 or normal_texture.get_height() != 2048:
+			_fail("Tangent-space normal map did not import at 2048x2048: " + normal_path)
+			return
+		if material == null or not material.detail_enabled or material.detail_albedo == null:
+			_fail("2K detail albedo was not enabled for " + DETAIL_NAMES[index])
+			return
+		if material.detail_albedo.resource_path != detail_path:
+			_fail("Wrong 2K detail albedo bound for " + DETAIL_NAMES[index])
+			return
+		if not material.normal_enabled or material.normal_texture == null:
+			_fail("2K normal map was not enabled for " + DETAIL_NAMES[index])
+			return
+		if material.normal_texture.resource_path != normal_path:
+			_fail("Wrong 2K normal map bound for " + DETAIL_NAMES[index])
+			return
+
+	print("PASS: 32 original 4K albedo surfaces, 18 legacy raster maps and eight original 2K albedo/normal pairs import and bind to their intended world materials.")
 	quit(0)
 
 func _fail(message: String) -> void:
