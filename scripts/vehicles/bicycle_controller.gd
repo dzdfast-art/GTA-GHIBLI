@@ -101,11 +101,12 @@ func _enter_bicycle(player: CharacterBody3D) -> void:
 	player.collision_layer = 0
 	player.collision_mask = 0
 	player.set("is_driving", true)
+	player.set("driven_vehicle_kind", &"bicycle")
 	player.velocity = Vector3.ZERO
 	var player_visual := player.get_node_or_null("Visual") as Node3D
 	if player_visual != null:
-		player_visual.visible = false
-	player.global_position = global_position + Vector3.UP * 0.78
+		player_visual.visible = true
+	player.global_position = global_position + Vector3.UP * 0.47
 	player.rotation.y = rotation.y
 	_speed = 0.0
 	_set_hud_bicycle_mode(true)
@@ -116,12 +117,13 @@ func _exit_bicycle() -> void:
 		_cleanup_invalid_driver()
 		return
 	var player := driver
-	player.global_position = global_position + global_basis.x * 1.25 + Vector3.UP * 0.12
+	player.global_position = global_position + global_basis.x * 1.25 + Vector3.UP * 0.05
 	player.rotation.y = rotation.y
 	player.velocity = Vector3.ZERO
 	player.collision_layer = _saved_collision_layer
 	player.collision_mask = _saved_collision_mask
 	player.set("is_driving", false)
+	player.set("driven_vehicle_kind", &"vehicle")
 	var player_visual := player.get_node_or_null("Visual") as Node3D
 	if player_visual != null:
 		player_visual.visible = true
@@ -154,7 +156,7 @@ func _reset_visual_pose() -> void:
 func _sync_driver_pose() -> void:
 	if driver == null or not is_instance_valid(driver):
 		return
-	driver.global_position = global_position + Vector3.UP * 0.78
+	driver.global_position = global_position + Vector3.UP * 0.47
 	driver.rotation.y = rotation.y
 
 
