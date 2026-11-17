@@ -68,8 +68,8 @@ func _enter_vehicle(player: CharacterBody3D) -> void:
 	player.set("driven_vehicle_kind", &"car")
 	var player_visual := player.get_node_or_null("Visual") as Node3D
 	if player_visual != null:
-		player_visual.visible = false
-	player.global_position = global_position + Vector3.UP
+		player_visual.visible = true
+	player.global_position = global_position + Vector3(0.0, 0.22, 0.12)
 	player.rotation.y = rotation.y
 	_speed = 0.0
 	_set_hud_vehicle_mode(true)
@@ -79,7 +79,7 @@ func _exit_vehicle() -> void:
 		driver = null
 		return
 	var player := driver
-	player.global_position = global_position + global_basis.x * 1.8 + Vector3.UP * 0.12
+	player.global_position = global_position + global_basis.x * 1.8 + Vector3.UP * 0.05
 	player.rotation.y = rotation.y
 	player.collision_layer = _saved_collision_layer
 	player.collision_mask = _saved_collision_mask
@@ -97,7 +97,7 @@ func _exit_vehicle() -> void:
 func _sync_driver_pose() -> void:
 	if driver == null or not is_instance_valid(driver):
 		return
-	driver.global_position = global_position + Vector3.UP
+	driver.global_position = global_position + Vector3(0.0, 0.22, 0.12)
 	driver.rotation.y = rotation.y
 
 func _find_player() -> CharacterBody3D:
