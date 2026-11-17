@@ -21,26 +21,54 @@
     {
       "id": "quaternius_universal_animation_library_2",
       "source": "https://quaternius.com/packs/universalanimationlibrary2.html",
+      "license": "CC0-1.0",
+      "formats": [
+        "FBX",
+        "GLB",
+        "Blend"
+      ],
+      "reported_animation_count": "130+",
       "status": "research_only",
-      "reason": "Animation pack is a candidate; no source archive or imported clips are committed yet."
+      "reason": "Official pack page confirms 130+ humanoid animations, GLB format and CC0. Archive not yet imported; compatibility/retargeting must be tested."
     },
     {
       "id": "quaternius_modular_streets",
       "source": "https://quaternius.com/packs/modularstreets.html",
+      "license": "CC0-1.0",
+      "formats": [
+        "FBX",
+        "OBJ",
+        "Blend"
+      ],
+      "reported_model_count": 25,
       "status": "research_only",
-      "reason": "Street pack is a candidate; no source archive or imported scene is committed yet."
+      "reason": "Official pack page confirms 25 modular street models and CC0. Archive not yet imported into the game."
     },
     {
       "id": "quaternius_cars",
       "source": "https://quaternius.com/packs/cars.html",
+      "license": "CC0-1.0",
+      "formats": [
+        "FBX",
+        "OBJ",
+        "Blend"
+      ],
+      "reported_model_count": 8,
       "status": "research_only",
-      "reason": "Vehicle pack is a candidate; no source archive or imported vehicle scenes are committed yet."
+      "reason": "Official pack page confirms eight car models and CC0. Archive not yet imported or adapted to the vehicle controller."
     },
     {
       "id": "quaternius_downtown_city_megakit",
       "source": "https://quaternius.com/packs/downtowncitymegakit.html",
+      "license": "CC0-1.0",
+      "formats": [
+        "FBX",
+        "Blend",
+        "glTF"
+      ],
+      "reported_model_count": 315,
       "status": "research_only",
-      "reason": "City pack is a candidate; confirm exact free-tier contents and license before import."
+      "reason": "Official pack page confirms 315 modular environment pieces and CC0; page describes a Godot 4.5 source version. Free-tier contents must be checked before selecting the actual download."
     }
   ]
 }
