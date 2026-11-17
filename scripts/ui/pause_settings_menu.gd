@@ -59,6 +59,7 @@ func _open_menu() -> void:
 		_map_panel.visible = false
 	if _pause_touch_button != null:
 		_pause_touch_button.visible = false
+	get_tree().call_group("gameplay_hud", "set_gameplay_visible", false)
 	get_tree().paused = true
 
 func _close_menu() -> void:
@@ -66,6 +67,7 @@ func _close_menu() -> void:
 	if _pause_touch_button != null:
 		_pause_touch_button.visible = true
 	get_tree().paused = false
+	get_tree().call_group("gameplay_hud", "set_gameplay_visible", true)
 
 func _build_interface() -> void:
 	_overlay = Control.new()

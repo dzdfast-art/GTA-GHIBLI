@@ -62,6 +62,9 @@ jobs:
             res://scripts/systems/player_needs.gd \
             res://scripts/systems/consumable_inventory.gd \
             res://scripts/systems/player_wallet.gd \
+            res://scripts/systems/player_health.gd \
+            res://scripts/ui/game_hud.gd \
+            res://scripts/ui/minimap_radar.gd \
             res://scripts/world/consumable_shop.gd \
             res://scripts/camera/third_person_camera.gd \
             res://scripts/ui/mobile_controls.gd \
@@ -88,6 +91,12 @@ jobs:
 
       - name: Test pause menu and saved settings
         run: godot --headless --path . --script res://tests/pause_settings_menu_test.gd
+
+      - name: Test player health, damage, healing and restore
+        run: godot --headless --path . --script res://tests/player_health_test.gd
+
+      - name: Test shared gameplay HUD and hidden legacy mission panels
+        run: godot --headless --path . --script res://tests/game_hud_singleton_test.gd
 
       - name: Test player wallet and currency
         run: godot --headless --path . --script res://tests/player_wallet_test.gd

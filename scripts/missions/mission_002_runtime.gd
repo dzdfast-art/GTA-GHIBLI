@@ -40,6 +40,7 @@ var _status_override := ""
 
 
 func _ready() -> void:
+	add_to_group("mission_hud_sources")
 	_load_mission_data()
 	_world_root = get_tree().current_scene as Node3D
 	_build_hud()
@@ -388,6 +389,39 @@ func _add_box(parent: Node3D, node_name: String, position: Vector3, size: Vector
 		parent.add_child(obstacle)
 
 
+func get_hud_snapshot() -> Dictionary:
+	var target := Vector3.ZERO
+	var has_target := true
+	match _phase:
+		Phase.ENTER_VEHICLE:
+			target = _vehicle.global_position if _vehicle != null else CHECKPOINT
+		Phase.REACH_CHECKPOINT:
+			target = CHECKPOINT
+		Phase.PASS_BLOCKADE:
+			target = Vector3(0.0, 0.0, BLOCKADE_LINE_Z)
+		Phase.RESCUE_WITNESS:
+			target = WITNESS_POSITION
+		Phase.ESCAPE_PURSUIT:
+			target = HOME_POSITION
+		_:
+			has_target = false
+	var active := _phase != Phase.LOCKED and _phase != Phase.COMPLETE
+	return {
+		"active": active,
+		"priority": 2,
+		"title": "الطريق القديم: عملية الإنقاذ",
+		"objective": _objective_label.text if _objective_label != null else "",
+		"status": _status_override,
+		"target_position": target,
+		"has_target": has_target and active,
+		"can_retry": _phase == Phase.FAILED
+	}
+
+
+func retry_from_hud() -> void:
+	_on_retry_pressed()
+
+
 func _build_hud() -> void:
 	_panel = PanelContainer.new()
 	_panel.name = "Mission002Panel"
@@ -395,6 +429,7 @@ func _build_hud() -> void:
 	_panel.anchor_top = 0.37
 	_panel.anchor_right = 0.58
 	_panel.anchor_bottom = 0.57
+	_panel.visible = false
 	add_child(_panel)
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override("separation", 4)

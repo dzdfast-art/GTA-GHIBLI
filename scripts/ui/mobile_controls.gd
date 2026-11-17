@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 const JOYSTICK_SCRIPT = preload("res://scripts/ui/virtual_joystick.gd")
+const GAME_HUD_SCRIPT = preload("res://scripts/ui/game_hud.gd")
 const JOYSTICK_SIZE := Vector2(176.0, 176.0)
 
 var _active_actions: Array[StringName] = []
@@ -16,6 +17,7 @@ var _is_car_mode := false
 var _is_bicycle_mode := false
 var _bike_steering_mode := "analog"
 var _flick_touch_index := -1
+var _game_hud: Control
 var _flick_start_x := 0.0
 const FLICK_DEADZONE_PX := 12.0
 const FLICK_FULL_PX := 110.0
@@ -34,19 +36,28 @@ func _process(_delta: float) -> void:
 	var player := get_tree().get_first_node_in_group("player") as Node3D
 	if player == null:
 		return
-	var prompt := "USE"
+	var prompt := "تفاعل"
 	var interactor := player.get_node_or_null("PlayerInteractor")
 	if interactor != null and interactor.has_method("get_nearest_interactable"):
 		var target := interactor.call("get_nearest_interactable") as Node
 		if target != null:
 			if target.is_in_group("bicycles"):
-				prompt = "RIDE"
+				prompt = "اركب الدراجة"
 			elif target.is_in_group("vehicles"):
-				prompt = "ENTER"
+				prompt = "اركب المركبة"
 			elif target.is_in_group("building_portals"):
-				prompt = "EXIT HOUSE" if bool(target.get("_is_inside")) else "ENTER HOUSE"
-	if _context_button.text != prompt:
-		_context_button.text = prompt
+				prompt = "اخرج من المنزل" if bool(target.get("_is_inside")) else "ادخل المنزل"
+	_context_button.tooltip_text = prompt
+
+
+func bind_player(player: Node3D) -> void:
+	if _game_hud != null and _game_hud.has_method("bind_player"):
+		_game_hud.call("bind_player", player)
+
+
+func set_gameplay_visible(value: bool) -> void:
+	if _game_hud != null and _game_hud.has_method("set_gameplay_visible"):
+		_game_hud.call("set_gameplay_visible", value)
 
 
 func _register_actions() -> void:
@@ -77,10 +88,13 @@ func _build_hud() -> void:
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
+	_game_hud = GAME_HUD_SCRIPT.new() as Control
+	_game_hud.name = "GameplayHUD"
+	root.add_child(_game_hud)
 
 	_mode_label = Label.new()
 	_mode_label.text = "ON FOOT"
-	_mode_label.position = Vector2(22.0, 18.0)
+	_mode_label.position = Vector2(22.0, 178.0)
 	_mode_label.add_theme_font_size_override("font_size", 15)
 	_mode_label.add_theme_color_override("font_color", Color(1.0, 0.96, 0.82, 0.92))
 	root.add_child(_mode_label)
@@ -98,7 +112,7 @@ func _build_hud() -> void:
 	_joystick.vector_changed.connect(_on_joystick_vector_changed)
 	root.add_child(_joystick)
 
-	_context_button = _make_action_button("USE", Vector2(104.0, 104.0))
+	_context_button = _make_action_button("res://assets/ui/hud/interact.svg", Vector2(104.0, 104.0))
 	_context_button.name = "ContextAction"
 	_set_bottom_right(_context_button, -132.0, -132.0, -24.0, -24.0)
 	_context_button.button_down.connect(_press_action.bind(&"interact"))
@@ -106,7 +120,7 @@ func _build_hud() -> void:
 	_context_button.tree_exiting.connect(_release_action.bind(&"interact"))
 	root.add_child(_context_button)
 
-	_brake_button = _make_action_button("BRAKE", Vector2(88.0, 88.0))
+	_brake_button = _make_action_button("res://assets/ui/hud/brake.svg", Vector2(88.0, 88.0))
 	_brake_button.name = "VehicleBrake"
 	_set_bottom_right(_brake_button, -236.0, -120.0, -144.0, -28.0)
 	_brake_button.visible = false
@@ -115,7 +129,7 @@ func _build_hud() -> void:
 	_brake_button.tree_exiting.connect(_on_brake_up)
 	root.add_child(_brake_button)
 
-	_pedal_button = _make_action_button("PEDAL", Vector2(88.0, 88.0))
+	_pedal_button = _make_action_button("res://assets/ui/hud/pedal.svg", Vector2(88.0, 88.0))
 	_pedal_button.name = "BikePedal"
 	_set_bottom_right(_pedal_button, -236.0, -218.0, -144.0, -126.0)
 	_pedal_button.visible = false
@@ -124,7 +138,7 @@ func _build_hud() -> void:
 	_pedal_button.tree_exiting.connect(_release_action.bind(&"bike_pedal"))
 	root.add_child(_pedal_button)
 
-	_sprint_button = _make_action_button("RUN", Vector2(82.0, 82.0))
+	_sprint_button = _make_action_button("res://assets/ui/hud/sprint.svg", Vector2(82.0, 82.0))
 	_sprint_button.name = "Sprint"
 	_set_bottom_right(_sprint_button, -236.0, -218.0, -150.0, -132.0)
 	_sprint_button.button_down.connect(_press_action.bind(&"sprint"))
@@ -205,10 +219,15 @@ func set_bike_steering_mode(mode: String) -> void:
 func _refresh_controls() -> void:
 	if _mode_label == null:
 		return
+	var context_icon_path := "res://assets/ui/hud/exit.svg" if _is_car_mode or _is_bicycle_mode else "res://assets/ui/hud/interact.svg"
+	var context_icon = load(context_icon_path)
+	if context_icon is Texture2D:
+		_context_button.icon = context_icon
+		_context_button.text = ""
 	if _is_bicycle_mode:
-		_mode_label.text = "CYCLING"
-		_context_button.text = "EXIT BIKE"
-		_brake_button.text = "BRAKE / REV"
+		_mode_label.text = "دراجة"
+		_context_button.tooltip_text = "النزول من الدراجة"
+		_brake_button.tooltip_text = "فرامل / رجوع"
 		_joystick.visible = _bike_steering_mode == "analog"
 		_steer_left_button.visible = _bike_steering_mode == "buttons"
 		_steer_right_button.visible = _bike_steering_mode == "buttons"
@@ -216,9 +235,9 @@ func _refresh_controls() -> void:
 		_brake_button.visible = true
 		_sprint_button.visible = false
 	elif _is_car_mode:
-		_mode_label.text = "DRIVING"
-		_context_button.text = "EXIT"
-		_brake_button.text = "BRAKE"
+		_mode_label.text = "قيادة"
+		_context_button.tooltip_text = "النزول من المركبة"
+		_brake_button.tooltip_text = "فرامل"
 		_joystick.visible = true
 		_steer_left_button.visible = false
 		_steer_right_button.visible = false
@@ -226,9 +245,9 @@ func _refresh_controls() -> void:
 		_brake_button.visible = true
 		_sprint_button.visible = false
 	else:
-		_mode_label.text = "ON FOOT"
-		_context_button.text = "USE"
-		_brake_button.text = "BRAKE"
+		_mode_label.text = "مشياً"
+		_context_button.tooltip_text = "التفاعل"
+		_brake_button.tooltip_text = "فرامل"
 		_joystick.visible = true
 		_steer_left_button.visible = false
 		_steer_right_button.visible = false
@@ -321,7 +340,14 @@ func _release_action(action: StringName) -> void:
 
 func _make_action_button(caption: String, button_size: Vector2) -> Button:
 	var button := Button.new()
-	button.text = caption
+	if caption.begins_with("res://"):
+		var icon_texture = load(caption)
+		if icon_texture is Texture2D:
+			button.icon = icon_texture
+			button.icon_max_width = 42
+			button.text = ""
+	else:
+		button.text = caption
 	button.custom_minimum_size = button_size
 	button.focus_mode = Control.FOCUS_NONE
 	button.add_theme_font_size_override("font_size", 17)
