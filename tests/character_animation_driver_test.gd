@@ -52,6 +52,26 @@ func _run() -> void:
 		quit(1)
 		return
 
+	if animation_driver.get("_animation_player") == null:
+		push_error("The imported free animation packs did not provide an AnimationPlayer.")
+		quit(1)
+		return
+	var available_animations: PackedStringArray = animation_driver.call("get_available_animation_names")
+	if int(animation_driver.call("get_merged_animation_count")) < 80:
+		push_error("Expected the two free Standard packs to merge at least 80 complementary animation clips.")
+		quit(1)
+		return
+	for required_clip in ["Idle_Loop", "Walk_Loop", "Jog_Fwd_Loop", "Sprint_Loop", "Driving_Loop", "TreeChopping_Loop", "Farm_Harvest", "Consume"]:
+		var clip_found := false
+		for clip_name in available_animations:
+			if clip_name.to_lower().ends_with(required_clip.to_lower()):
+				clip_found = true
+				break
+		if not clip_found:
+			push_error("Required free Standard animation is missing: " + required_clip + ". Found: " + str(available_animations))
+			quit(1)
+			return
+
 	var leg_index := skeleton.find_bone("thigh_l")
 	var arm_index := skeleton.find_bone("upperarm_l")
 	var rest_leg: Quaternion = skeleton.get_bone_pose_rotation(leg_index)
@@ -59,12 +79,20 @@ func _run() -> void:
 
 	animation_driver.set("_time", 0.75)
 	animation_driver.call("update_locomotion", 0.0, false, true)
+	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("idle_loop"):
+		push_error("The imported UAL1 idle clip was not activated.")
+		quit(1)
+		return
 	if str(animation_driver.call("get_locomotion_state")) != "idle":
 		push_error("Idle locomotion state was not selected.")
 		quit(1)
 		return
 
 	animation_driver.call("update_locomotion", 2.5, false, true)
+	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("walk_loop"):
+		push_error("The imported UAL1 walk clip was not activated.")
+		quit(1)
+		return
 	if str(animation_driver.call("get_locomotion_state")) != "walk":
 		push_error("Walk locomotion state was not selected.")
 		quit(1)
@@ -79,11 +107,19 @@ func _run() -> void:
 		return
 
 	animation_driver.call("update_locomotion", 7.0, true, true)
+	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("sprint_loop"):
+		push_error("The imported UAL1 sprint clip was not activated.")
+		quit(1)
+		return
 	if str(animation_driver.call("get_locomotion_state")) != "run":
 		push_error("Run locomotion state was not selected.")
 		quit(1)
 		return
 	animation_driver.call("update_locomotion", 0.0, false, false)
+	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("jump_loop"):
+		push_error("The imported UAL1 jump/fall clip was not activated.")
+		quit(1)
+		return
 	if str(animation_driver.call("get_locomotion_state")) != "fall":
 		push_error("Fall locomotion state was not selected.")
 		quit(1)
@@ -103,12 +139,33 @@ func _run() -> void:
 		quit(1)
 		return
 
+	if not bool(animation_driver.call("play_named_action", &"chop")):
+		push_error("The UAL2 dedicated tree-chopping animation could not be started.")
+		quit(1)
+		return
+	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("treechopping_loop"):
+		push_error("The UAL2 tree-chopping clip did not become the active animation.")
+		quit(1)
+		return
+	if not bool(animation_driver.call("play_named_action", &"harvest")):
+		push_error("The UAL2 farming-harvest action could not be started.")
+		quit(1)
+		return
+
 	animation_driver.call("set_vehicle_state", true, &"car")
+	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("driving_loop"):
+		push_error("The imported UAL1 driving clip was not activated.")
+		quit(1)
+		return
 	if str(animation_driver.call("get_locomotion_state")) != "car":
 		push_error("Car pose state was not selected.")
 		quit(1)
 		return
 	animation_driver.call("set_vehicle_state", false)
+	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("idle_loop"):
+		push_error("Leaving a vehicle did not restore the imported idle clip.")
+		quit(1)
+		return
 	if str(animation_driver.call("get_locomotion_state")) != "idle":
 		push_error("Leaving a vehicle did not restore the idle animation state.")
 		quit(1)
