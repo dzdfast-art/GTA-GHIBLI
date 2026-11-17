@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "policy": {
+    "require_license_file": true,
+    "require_nonempty_asset": true,
+    "reject_unverified_assets": true
+  },
+  "assets": [
+    {
+      "id": "player_quaternius_superhero_male",
+      "path": "assets/characters/quaternius_superhero_male.glb",
+      "format": "glb",
+      "license": "CC0-1.0",
+      "license_file": "assets/characters/QUATERNIUS-LICENSE.txt",
+      "status": "integrated",
+      "purpose": "First rigged humanoid player visual; procedural poses are supplied by CharacterAnimationDriver.",
+      "source": "https://quaternius.com/packs/universalbasecharacters.html"
+    },
+    {
+      "id": "quaternius_ual1_standard_animations",
+      "path": "assets/animations/ual1_standard.glb",
+      "format": "glb",
+      "license": "CC0-1.0",
+      "license_file": "assets/animations/UAL1-CC0-LICENSE.txt",
+      "status": "integrated",
+      "archive_bytes": 15904933,
+      "archive_sha256": "cc73fc4e495b82958207316596317a3f40b9fa38065bde1027937452da537724",
+      "purpose": "43 standard humanoid animation clips including idle, walk, jog, sprint and driving.",
+      "source": "https://quaternius.itch.io/universal-animation-library"
+    },
+    {
+      "id": "quaternius_ual2_standard_animations",
+      "path": "assets/animations/ual2_standard.glb",
+      "format": "glb",
+      "license": "CC0-1.0",
+      "license_file": "assets/animations/UAL2-CC0-LICENSE.txt",
+      "status": "integrated",
+      "archive_bytes": 18735003,
+      "archive_sha256": "4008ea208a604773a2b2177d965f0f5d3195498b5bf838c3f5785d68e95f2a68",
+      "purpose": "43 complementary standard humanoid animation clips including harvesting, chopping, combat, movement and emotes.",
+      "source": "https://quaternius.itch.io/universal-animation-library-2"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "quaternius_universal_animation_library_standard",
+      "source": "https://quaternius.itch.io/universal-animation-library",
+      "license": "CC0-1.0",
+      "formats": [
+        "GLB",
+        "FBX"
+      ],
+      "reported_animation_count": 43,
+      "status": "integrated",
+      "reason": "Free Standard archive imported as the base locomotion/action library; exact archive size and SHA-256 are pinned in tools/fetch_quaternius_animation_packs.py."
+    },
+    {
+      "id": "quaternius_universal_animation_library_2",
+      "source": "https://quaternius.com/packs/universalanimationlibrary2.html",
+      "license": "CC0-1.0",
+      "formats": [
+        "FBX",
+        "GLB",
+        "Blend"
+      ],
+      "reported_animation_count": 43,
+      "status": "integrated",
+      "reason": "The free Standard archive contributes 43 complementary clips. The separate full 130+ Source/Pro collection is not included in this free download."
+    },
+    {
+      "id": "quaternius_modular_streets",
+      "source": "https://quaternius.com/packs/modularstreets.html",
+      "license": "CC0-1.0",
+      "formats": [
+        "FBX",
+        "OBJ",
+        "Blend"
+      ],
+      "reported_model_count": 25,
+      "status": "research_only",
+      "reason": "Official pack page confirms 25 modular street models and CC0. Archive not yet imported into the game."
+    },
+    {
+      "id": "quaternius_cars",
+      "source": "https://quaternius.com/packs/cars.html",
+      "license": "CC0-1.0",
+      "formats": [
+        "FBX",
+        "OBJ",
+        "Blend"
+      ],
+      "reported_model_count": 8,
+      "status": "research_only",
+      "reason": "Official pack page confirms eight car models and CC0. Archive not yet imported or adapted to the vehicle controller."
+    },
+    {
+      "id": "quaternius_downtown_city_megakit",
+      "source": "https://quaternius.com/packs/downtowncitymegakit.html",
+      "license": "CC0-1.0",
+      "formats": [
+        "FBX",
+        "Blend",
+        "glTF"
+      ],
+      "reported_model_count": 315,
+      "status": "research_only",
+      "reason": "Official pack page confirms 315 modular environment pieces and CC0; page describes a Godot 4.5 source version. Free-tier contents must be checked before selecting the actual download."
+    }
+  ]
+}

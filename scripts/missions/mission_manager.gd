@@ -16,9 +16,11 @@ var _objectives: Array = []
 var _objective_label: Label
 var _status_label: Label
 var _mission_title_label: Label
+var _panel: PanelContainer
 
 
 func _ready() -> void:
+	add_to_group("mission_hud_sources")
 	_load_mission_data()
 	_load_progress()
 	_build_hud()
@@ -135,17 +137,18 @@ func _on_mira_dialogue_spoken() -> void:
 
 
 func _build_hud() -> void:
-	var panel := PanelContainer.new()
-	panel.name = "MissionPanel"
-	panel.anchor_left = 0.02
-	panel.anchor_top = 0.13
-	panel.anchor_right = 0.55
-	panel.anchor_bottom = 0.34
-	add_child(panel)
+	_panel = PanelContainer.new()
+	_panel.name = "MissionPanel"
+	_panel.anchor_left = 0.02
+	_panel.anchor_top = 0.13
+	_panel.anchor_right = 0.55
+	_panel.anchor_bottom = 0.34
+	_panel.visible = false
+	add_child(_panel)
 
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override("separation", 5)
-	panel.add_child(content)
+	_panel.add_child(content)
 
 	_mission_title_label = Label.new()
 	_mission_title_label.text = str(_mission_data.get("title", "المهمة الأولى: صباح جديد"))
@@ -166,6 +169,27 @@ func _build_hud() -> void:
 	_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_status_label.add_theme_font_size_override("font_size", 13)
 	content.add_child(_status_label)
+
+
+func get_hud_snapshot() -> Dictionary:
+	var completed := _square_reached and _mira_spoken_to and _garden_visited
+	var target := Vector3.ZERO
+	var has_target := not completed
+	if not _square_reached:
+		target = Vector3.ZERO
+	elif not _mira_spoken_to:
+		target = Vector3(0.0, 0.0, -4.0)
+	elif not _garden_visited:
+		target = Vector3(0.0, 0.0, 27.0)
+	return {
+		"active": not completed,
+		"priority": 1,
+		"title": str(_mission_data.get("title", "صباح جديد في قرية الصفصاف")),
+		"objective": _objective_label.text if _objective_label != null else "",
+		"status": _status_label.text if _status_label != null else "",
+		"target_position": target,
+		"has_target": has_target
+	}
 
 
 func _refresh_hud() -> void:

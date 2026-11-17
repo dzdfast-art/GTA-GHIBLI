@@ -9,6 +9,7 @@ extends CharacterBody3D
 @export var gravity := 18.0
 
 var driver: CharacterBody3D
+var _driver_session_active := false
 var steering_method := "analog"
 var _speed := 0.0
 var _saved_collision_layer := 1
@@ -40,6 +41,8 @@ func set_steering_method(method: String) -> void:
 
 func _physics_process(delta: float) -> void:
 	if driver == null or not is_instance_valid(driver):
+		if _driver_session_active:
+			_cleanup_invalid_driver()
 		velocity.x = 0.0
 		velocity.z = 0.0
 		if is_on_floor():
@@ -62,7 +65,7 @@ func _physics_process(delta: float) -> void:
 
 	if absf(_speed) > 0.15:
 		var steering_strength := clampf(absf(_speed) / 2.0, 0.18, 1.0)
-		rotation.y -= steering_input * steering_rate * steering_strength * delta
+		rotation.y += steering_input * steering_rate * steering_strength * delta
 
 	var forward := -global_basis.z
 	velocity.x = forward.x * _speed
@@ -72,6 +75,9 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y -= gravity * delta
 	move_and_slide()
+	var actual_forward_speed := get_real_velocity().dot(forward)
+	if absf(_speed) > 0.15 and absf(actual_forward_speed) + 0.25 < absf(_speed):
+		_speed = actual_forward_speed if signf(actual_forward_speed) == signf(_speed) else 0.0
 	_sync_driver_pose()
 	_animate_bicycle(delta, steering_input)
 
@@ -89,16 +95,18 @@ func _enter_bicycle(player: CharacterBody3D) -> void:
 	if driver != null:
 		return
 	driver = player
+	_driver_session_active = true
 	_saved_collision_layer = player.collision_layer
 	_saved_collision_mask = player.collision_mask
 	player.collision_layer = 0
 	player.collision_mask = 0
 	player.set("is_driving", true)
+	player.set("driven_vehicle_kind", &"bicycle")
 	player.velocity = Vector3.ZERO
 	var player_visual := player.get_node_or_null("Visual") as Node3D
 	if player_visual != null:
-		player_visual.visible = false
-	player.global_position = global_position + Vector3.UP * 0.78
+		player_visual.visible = true
+	player.global_position = global_position + Vector3.UP * 0.47
 	player.rotation.y = rotation.y
 	_speed = 0.0
 	_set_hud_bicycle_mode(true)
@@ -106,29 +114,49 @@ func _enter_bicycle(player: CharacterBody3D) -> void:
 
 func _exit_bicycle() -> void:
 	if driver == null or not is_instance_valid(driver):
-		driver = null
+		_cleanup_invalid_driver()
 		return
 	var player := driver
-	player.global_position = global_position + global_basis.x * 1.25 + Vector3.UP * 0.12
+	player.global_position = global_position + global_basis.x * 1.25 + Vector3.UP * 0.05
 	player.rotation.y = rotation.y
 	player.velocity = Vector3.ZERO
 	player.collision_layer = _saved_collision_layer
 	player.collision_mask = _saved_collision_mask
 	player.set("is_driving", false)
+	player.set("driven_vehicle_kind", &"vehicle")
 	var player_visual := player.get_node_or_null("Visual") as Node3D
 	if player_visual != null:
 		player_visual.visible = true
 	driver = null
+	_driver_session_active = false
 	_speed = 0.0
 	velocity.x = 0.0
 	velocity.z = 0.0
+	_reset_visual_pose()
 	_set_hud_bicycle_mode(false)
+
+
+func _cleanup_invalid_driver() -> void:
+	var had_driver := _driver_session_active
+	_driver_session_active = false
+	driver = null
+	_speed = 0.0
+	velocity.x = 0.0
+	velocity.z = 0.0
+	_reset_visual_pose()
+	if had_driver:
+		_set_hud_bicycle_mode(false)
+
+
+func _reset_visual_pose() -> void:
+	if _visual_root != null:
+		_visual_root.rotation.z = 0.0
 
 
 func _sync_driver_pose() -> void:
 	if driver == null or not is_instance_valid(driver):
 		return
-	driver.global_position = global_position + Vector3.UP * 0.78
+	driver.global_position = global_position + Vector3.UP * 0.47
 	driver.rotation.y = rotation.y
 
 
@@ -140,9 +168,9 @@ func _find_player() -> CharacterBody3D:
 
 
 func _set_hud_bicycle_mode(active: bool) -> void:
-	var hud := get_tree().get_first_node_in_group("mobile_hud")
-	if hud != null and hud.has_method("set_bicycle_mode"):
-		hud.call("set_bicycle_mode", active)
+	for hud in get_tree().get_nodes_in_group("mobile_hud"):
+		if hud.has_method("set_bicycle_mode"):
+			hud.call("set_bicycle_mode", active)
 
 
 func _build_bicycle_visuals() -> void:
@@ -190,7 +218,7 @@ func _create_wheel(node_name: String, center: Vector3,
 	torus.rings = 20
 	torus.ring_segments = 8
 	tire.mesh = torus
-	tire.rotation.y = PI * 0.5
+	tire.rotation.z = PI * 0.5
 	tire.material_override = tire_material
 	wheel_root.add_child(tire)
 

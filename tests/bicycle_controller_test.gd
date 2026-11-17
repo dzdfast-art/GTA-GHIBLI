@@ -45,20 +45,66 @@ func _run_test() -> void:
 	if player.collision_layer != 0 or player.collision_mask != 0:
 		_fail("Player collision was not disabled while riding.")
 		return
+	if not bool(player.get_node("Visual").visible):
+		_fail("The humanoid rider was hidden while mounted on the bicycle.")
+		return
 	if not (controls.get_node("HUD/BikePedal") as Control).visible:
 		_fail("The bicycle pedal control was not shown.")
 		return
-	if controls.get_node("HUD/ContextAction").text != "EXIT BIKE":
-		_fail("The contextual exit-bike action was not shown.")
+
+	# The current mobile HUD uses an exit icon plus an Arabic tooltip, not legacy button text.
+	var contextual_exit := controls.get_node("HUD/ContextAction") as Button
+	if contextual_exit == null or contextual_exit.icon == null or not contextual_exit.text.is_empty() \
+			or contextual_exit.tooltip_text != "النزول من الدراجة":
+		_fail("The contextual exit-bike icon and Arabic hint were not shown.")
+		return
+	contextual_exit.emit_signal("button_down")
+	if not Input.is_action_pressed("interact"):
+		_fail("The contextual exit-bike button did not press the interact action.")
+		return
+	# Let the real player interactor consume the press before releasing it.
+	await process_frame
+	await process_frame
+	if bicycle.get("driver") != null or bool(player.get("is_driving")):
+		_fail("The contextual exit-bike button did not dismount the player.")
+		return
+	contextual_exit.emit_signal("button_up")
+	if Input.is_action_pressed("interact"):
+		_fail("Releasing the contextual exit-bike button left interact pressed.")
+		return
+	var on_foot_hints := ["التفاعل", "تفاعل", "اركب الدراجة"]
+	if contextual_exit.icon == null \
+			or contextual_exit.icon.resource_path != "res://assets/ui/hud/interact.svg" \
+			or not on_foot_hints.has(contextual_exit.tooltip_text):
+		_fail("The on-foot contextual interaction icon and context-sensitive hint were not restored.")
 		return
 
-	var start_z: float = bicycle.global_position.z
+	# Remount after validating the real exit action, then test riding physics separately.
+	bicycle.call("interact")
+	await process_frame
+	await physics_frame
+	if bicycle.get("driver") != player or not bool(player.get("is_driving")):
+		_fail("The player could not remount after using the contextual exit action.")
+		return
+
+	var start_position: Vector3 = bicycle.global_position
+	var forward_before: Vector3 = -bicycle.global_basis.z.normalized()
 	Input.action_press("bike_pedal")
+	var pedal_action_seen := Input.is_action_pressed("bike_pedal")
+	var max_observed_speed := 0.0
 	for _frame in range(36):
 		await physics_frame
+		max_observed_speed = maxf(max_observed_speed, absf(float(bicycle.get("_speed"))))
 	Input.action_release("bike_pedal")
-	if bicycle.global_position.z <= start_z + 0.25:
-		_fail("Pedaling did not move the bicycle forward.")
+	var end_position: Vector3 = bicycle.global_position
+	var travelled_forward := (end_position - start_position).dot(forward_before)
+	print("BIKE_DIAGNOSTIC pedal_action=%s start=%s end=%s forward=%s travelled=%f speed=%f max_speed=%f velocity=%s real_velocity=%s grounded=%s driver_valid=%s" % [
+		str(pedal_action_seen), str(start_position), str(end_position), str(forward_before),
+		travelled_forward, float(bicycle.get("_speed")), max_observed_speed,
+		str(bicycle.velocity), str(bicycle.get_real_velocity()), str(bicycle.is_on_floor()),
+		str(is_instance_valid(bicycle.get("driver")))])
+	if not pedal_action_seen or max_observed_speed < 0.2 or travelled_forward <= 0.25:
+		_fail("Pedaling did not move the bicycle forward along its facing direction.")
 		return
 
 	var start_rotation: float = bicycle.rotation.y
@@ -113,8 +159,7 @@ func _run_test() -> void:
 	if not (controls.get_node("HUD/Sprint") as Control).visible:
 		_fail("The on-foot RUN control was not restored after dismounting.")
 		return
-
-	print("PASS: bicycle mount, pedal, steering, brake/reverse, steering layouts, and dismount.")
+	print("PASS: bicycle mount, contextual exit action, pedal, steering, brake/reverse, steering layouts, and dismount.")
 	quit(0)
 
 

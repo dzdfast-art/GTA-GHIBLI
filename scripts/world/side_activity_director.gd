@@ -69,6 +69,7 @@ var _status_override := ""
 
 
 func _ready() -> void:
+	add_to_group("side_activity_hud_sources")
 	_world_root = get_tree().current_scene as Node3D
 	_load_progress()
 	_build_hud()
@@ -264,6 +265,47 @@ func _make_marker(node_name: String, at: Vector3, tint: Color) -> Node3D:
 	return marker
 
 
+func get_hud_snapshot() -> Dictionary:
+	if _player == null or not is_instance_valid(_player):
+		return {"active": false}
+	if _active_id.is_empty():
+		var candidate := _nearest_available_activity()
+		if candidate.is_empty():
+			return {"active": false}
+		var activity := _activity_by_id(candidate)
+		var start_position := _position(activity.get("start", [0, 0, 0]))
+		if _player.global_position.distance_to(start_position) > START_RADIUS:
+			return {"active": false}
+		return {
+			"active": true,
+			"priority": 0,
+			"title": str(activity.get("title", "نشاط جانبي")),
+			"objective": "اقتربت من نشاط جانبي. اضغط + لقبوله.",
+			"target_position": start_position,
+			"has_target": true,
+			"can_accept": true
+		}
+	var activity := _activity_by_id(_active_id)
+	var target := _position(activity.get("return", [0, 0, 0]))
+	if _targets_found < _target_nodes.size():
+		for node in _target_nodes:
+			if is_instance_valid(node) and node.visible:
+				target = node.global_position
+				break
+	return {
+		"active": true,
+		"priority": 1,
+		"title": str(activity.get("title", "نشاط جانبي")),
+		"objective": _status_override if not _status_override.is_empty() else str(activity.get("target_text", "")),
+		"target_position": target,
+		"has_target": true
+	}
+
+
+func accept_from_hud() -> void:
+	_on_accept_pressed()
+
+
 func _build_hud() -> void:
 	_panel = PanelContainer.new()
 	_panel.name = "SideActivityPanel"
@@ -271,6 +313,7 @@ func _build_hud() -> void:
 	_panel.anchor_top = 0.72
 	_panel.anchor_right = 0.98
 	_panel.anchor_bottom = 0.98
+	_panel.visible = false
 	add_child(_panel)
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override("separation", 3)

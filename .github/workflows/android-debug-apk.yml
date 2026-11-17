@@ -111,6 +111,12 @@ jobs:
           print("Configured Android SDK and Java paths for Godot.")
           PY
 
+      - name: Fetch verified free Quaternius Standard animation packs
+        run: python tools/fetch_quaternius_animation_packs.py
+
+      - name: Validate licensed asset manifest and GLB integrity
+        run: python tools/validate_asset_manifest.py
+
       - name: Audit repository privacy configuration
         run: python tools/privacy_audit.py
 
