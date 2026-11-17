@@ -37,6 +37,9 @@ jobs:
       - name: Validate OBJ mesh surface budgets
         run: python tools/validate_obj_surface_counts.py
 
+      - name: Fetch verified free Quaternius Standard animation packs
+        run: python tools/fetch_quaternius_animation_packs.py
+
       - name: Validate licensed asset manifest and GLB integrity
         run: python tools/validate_asset_manifest.py
 
