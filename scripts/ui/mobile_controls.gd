@@ -217,7 +217,7 @@ func set_bike_steering_mode(mode: String) -> void:
 
 
 func _refresh_controls() -> void:
-	if _mode_label == null:
+	if _mode_label == null or _context_button == null or _joystick == null:
 		return
 	var context_icon_path := "res://assets/ui/hud/exit.svg" if _is_car_mode or _is_bicycle_mode else "res://assets/ui/hud/interact.svg"
 	var context_icon = load(context_icon_path)
@@ -344,7 +344,7 @@ func _make_action_button(caption: String, button_size: Vector2) -> Button:
 		var icon_texture = load(caption)
 		if icon_texture is Texture2D:
 			button.icon = icon_texture
-			button.icon_max_width = 42
+			button.add_theme_constant_override("icon_max_width", 42)
 			button.text = ""
 	else:
 		button.text = caption
