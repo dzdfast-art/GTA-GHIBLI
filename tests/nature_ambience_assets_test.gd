@@ -14,6 +14,20 @@ func _run_test() -> void:
 	if str(ambience.get("_field_recording_theme")) != "dawn":
 		_fail("The dawn ambience track was not selected at the opening game hour.")
 		return
+	var field_paths: Dictionary = ambience.get("FIELD_RECORDING_PATHS")
+	for theme in field_paths:
+		var paths: Array = field_paths[theme]
+		if paths.size() != 3:
+			_fail("Expected three original ambience variations for theme: " + str(theme))
+			return
+		for path in paths:
+			if not ResourceLoader.exists(path):
+				_fail("Missing ambience variation: " + str(path))
+				return
+			var ambience_stream := load(path) as AudioStreamWAV
+			if ambience_stream == null or not ambience_stream.stereo or ambience_stream.mix_rate != 22050 or ambience_stream.get_length() < 20.0:
+				_fail("Invalid ambience WAV variation: " + str(path))
+				return
 	var player := ambience.get("_field_recording_player") as AudioStreamPlayer
 	if player == null or not (player.stream is AudioStreamWAV):
 		_fail("The dawn PCM audio asset did not load into the audio player.")
@@ -38,7 +52,7 @@ func _run_test() -> void:
 	if str(ambience.get("_field_recording_theme")) != "coast":
 		_fail("Clearing the weather did not restore coastal ambience.")
 		return
-	print("PASS: Original stereo ambience WAVs load and switch by time, biome and weather.")
+	print("PASS: All 18 stereo ambience WAV variations load; themes switch by time, biome and weather.")
 	quit(0)
 
 func _fail(message: String) -> void:
