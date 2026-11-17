@@ -96,7 +96,7 @@ func _run_test() -> void:
 		_fail("Expected all seventy-two regional terrain tiles to attach.")
 		return
 	if int(expansion.call("get_collision_count")) != EXPECTED_TILES.size():
-		_fail("Expected static collision for all forty-eight regional terrain tiles.")
+		_fail("Expected static collision for all seventy-two regional terrain tiles.")
 		return
 
 	for tile_spec in EXPECTED_TILES:
