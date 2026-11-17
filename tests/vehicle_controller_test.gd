@@ -38,6 +38,9 @@ func _run_test() -> void:
 	if player.collision_layer != 0 or player.collision_mask != 0:
 		_fail("Player collision was not disabled while driving.")
 		return
+	if not bool(player.get_node("Visual").visible):
+		_fail("The humanoid driver was hidden while seated in the car.")
+		return
 
 	# Forward acceleration.
 	var start_z := car.global_position.z
