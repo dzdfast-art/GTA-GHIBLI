@@ -189,7 +189,9 @@ func _merge_animation_libraries(players: Array[AnimationPlayer], model_root: Nod
 		primary.root_node = primary.get_path_to(model_root)
 	primary.active = true
 	primary.clear_caches()
-	print("CharacterAnimationDriver: merged %d imported animation clips." % _merged_animation_count)
+	# Count the complete merged library, including clips already in the first pack.
+	_merged_animation_count = primary.get_animation_list().size()
+	print("CharacterAnimationDriver: merged %d imported animation clips from %d Standard packs." % [_merged_animation_count, players.size()])
 
 
 func get_available_animation_names() -> PackedStringArray:
