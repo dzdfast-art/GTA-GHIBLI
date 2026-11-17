@@ -101,6 +101,7 @@ func _enter_bicycle(player: CharacterBody3D) -> void:
 	player.collision_layer = 0
 	player.collision_mask = 0
 	player.set("is_driving", true)
+	player.set("driven_vehicle_kind", &"bicycle")
 	player.velocity = Vector3.ZERO
 	var player_visual := player.get_node_or_null("Visual") as Node3D
 	if player_visual != null:
@@ -122,6 +123,7 @@ func _exit_bicycle() -> void:
 	player.collision_layer = _saved_collision_layer
 	player.collision_mask = _saved_collision_mask
 	player.set("is_driving", false)
+	player.set("driven_vehicle_kind", &"vehicle")
 	var player_visual := player.get_node_or_null("Visual") as Node3D
 	if player_visual != null:
 		player_visual.visible = true
