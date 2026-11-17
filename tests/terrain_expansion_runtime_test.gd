@@ -75,14 +75,14 @@ const EXPECTED_TILES := [
 	["SapphireCoast", "seagrass_coastal_plain"],
 	["SapphireCoast", "whitecliff_staircase"],
 	["SapphireCoast", "red_bridge_ravine_east"],
-	["HarborCity", "harbor_estuary_banks"],
-	["HarborCity", "harbor_mangrove_flats"],
-	["PineHighlands", "pine_snowline_ridge"],
-	["PineHighlands", "pine_mist_basin"],
-	["AmberValley", "amber_red_canyon"],
-	["AmberValley", "amber_wheat_terraces"],
-	["SapphireCoast", "sapphire_tidepool_cliffs"],
-	["SapphireCoast", "sapphire_coral_ridge"],
+	["HarborCity", "harbor_estuary_sandbars"],
+	["HarborCity", "harbor_mangrove_runnels"],
+	["PineHighlands", "pine_snowline_spurs"],
+	["PineHighlands", "pine_mist_lakes"],
+	["AmberValley", "amber_canyon_ravines"],
+	["AmberValley", "amber_wheat_terraces_west"],
+	["SapphireCoast", "sapphire_tidepool_bays"],
+	["SapphireCoast", "sapphire_coral_spurs"],
 ]
 
 func _initialize() -> void:
