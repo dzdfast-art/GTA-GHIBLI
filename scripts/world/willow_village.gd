@@ -343,6 +343,14 @@ func _material(color: Color) -> StandardMaterial3D:
 
 
 func _surface_texture_for_color(color: Color) -> String:
+	if color.is_equal_approx(Color(0.68, 0.53, 0.34)):
+		return "res://assets/environment/materials/coastal_dune_4k.svg"
+	if color.is_equal_approx(Color(0.38, 0.43, 0.44)):
+		return "res://assets/environment/materials/river_pebble_4k.svg"
+	if color.is_equal_approx(Color(0.28, 0.48, 0.51)):
+		return "res://assets/environment/materials/market_ceramic_4k.svg"
+	if color.is_equal_approx(Color(0.25, 0.25, 0.27)):
+		return "res://assets/environment/materials/volcanic_rock_4k.svg"
 	if color.is_equal_approx(Color(0.72, 0.58, 0.38)):
 		return "res://assets/environment/materials/coastal_sand_4k.svg"
 	if color.is_equal_approx(Color(0.18, 0.22, 0.26)):
