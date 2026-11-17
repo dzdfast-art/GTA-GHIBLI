@@ -75,7 +75,7 @@ def request_bytes(
 def csrf_token(page: bytes, url: str) -> str:
     html = page.decode("utf-8", errors="replace")
     match = re.search(
-        r'<meta\s+name=["\']csrf_token["\']\\s+(?:value|content)=["\']([^"\']+)',
+        r'<meta\s+name=["\']csrf_token["\']\s+(?:value|content)=["\']([^"\']+)',
         html,
         flags=re.IGNORECASE,
     )
