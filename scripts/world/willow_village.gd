@@ -285,7 +285,11 @@ func _build_outer_district_surfaces() -> void:
 		{"name":"RiverMudBank","pos":Vector3(118.0, 0.025, 10.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.27, 0.20, 0.14)},
 		{"name":"RoadMarkingPracticePad","pos":Vector3(134.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.85, 0.80, 0.45)},
 		{"name":"SlateRoofDisplayCourt","pos":Vector3(134.0, 0.025, -4.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.26, 0.30, 0.38)},
-		{"name":"WetStoneCrossing","pos":Vector3(134.0, 0.025, 10.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.24, 0.38, 0.42)}
+		{"name":"WetStoneCrossing","pos":Vector3(134.0, 0.025, 10.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.24, 0.38, 0.42)},
+		{"name":"BasaltRidgeWalk","pos":Vector3(150.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.25, 0.25, 0.27)},
+		{"name":"RiverPebbleFord","pos":Vector3(150.0, 0.025, -4.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.38, 0.43, 0.44)},
+		{"name":"RoadAggregateLoop","pos":Vector3(150.0, 0.025, 10.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.19, 0.20, 0.21)},
+		{"name":"TerracottaKilnCourt","pos":Vector3(166.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.57, 0.27, 0.17)}
 	]
 	for surface in surfaces:
 		_add_box(self, surface.name, surface.pos, surface.size, surface.color, true)
@@ -419,6 +423,10 @@ func _surface_texture_for_color(color: Color) -> String:
 		return "res://assets/environment/materials/market_ceramic_4k.svg"
 	if color.is_equal_approx(Color(0.25, 0.25, 0.27)):
 		return "res://assets/environment/materials/volcanic_rock_4k.svg"
+	if color.is_equal_approx(Color(0.19, 0.20, 0.21)):
+		return "res://assets/environment/materials/district_asphalt_4k.svg"
+	if color.is_equal_approx(Color(0.57, 0.27, 0.17)):
+		return "res://assets/environment/materials/red_sandstone_4k.svg"
 	if color.is_equal_approx(Color(0.72, 0.58, 0.38)):
 		return "res://assets/environment/materials/coastal_sand_4k.svg"
 	if color.is_equal_approx(Color(0.18, 0.22, 0.26)):
@@ -482,6 +490,14 @@ func _surface_response_texture_for_color(color: Color) -> String:
 		return "res://assets/environment/materials/hd/wet_stone_512.bmp"
 	if color.is_equal_approx(Color(0.32, 0.40, 0.55)):
 		return "res://assets/environment/materials/hd/painted_metal_512.bmp"
+	if color.is_equal_approx(Color(0.25, 0.25, 0.27)):
+		return "res://assets/environment/materials/hd/basalt_fracture_roughness_1k.bmp"
+	if color.is_equal_approx(Color(0.38, 0.43, 0.44)):
+		return "res://assets/environment/materials/hd/river_pebble_roughness_1k.bmp"
+	if color.is_equal_approx(Color(0.19, 0.20, 0.21)):
+		return "res://assets/environment/materials/hd/road_aggregate_roughness_1k.bmp"
+	if color.is_equal_approx(Color(0.57, 0.27, 0.17)):
+		return "res://assets/environment/materials/hd/terracotta_weathering_roughness_1k.bmp"
 	if color.is_equal_approx(Color(0.43, 0.48, 0.46)):
 		return "res://assets/environment/materials/hd/harbor_paving_512.bmp"
 	return ""
