@@ -1,13 +1,14 @@
 # Willow Village — Original 4K Surface Library
 
 ## English
-Eight original, tileable 4096×4096 SVG surface textures are used by the procedural Willow Village material selector: plaster, terracotta roof, cobblestone, weathered timber, foliage, garden soil, weathered stone, and painted metal. The selector binds each texture to the matching village mesh material; no texture is an unused size-only asset.
+The project includes 32 original, tileable 4096×4096 SVG surface materials for the village, market lane, and outer district plots. The procedural village binds the materials to matching mesh colors; twelve additional walkable district plots extend the environment with alley brick, dry grass, granite curb, industrial concrete, mosaic tile, olive grove, plaza marble, red sandstone, river mud, road markings, roof slate, and wet stone. The regression test checks all 32 source textures for 4K import dimensions and verifies that each material sample resolves to its expected texture.
 
-Run the import and binding check with:
+Run the checks with:
 `godot --headless --editor --path . --quit`
 `godot --headless --path . --script res://tests/village_surface_texture_test.gd`
 
 ## العربية
-أُضيفت ثماني خامات أصلية قابلة للتكرار بدقة 4096×4096: الجص، القرميد، حجارة الممرات، الخشب المعتّق، أوراق الأشجار، تربة الحديقة، الحجر المعتّق، والمعدن المطلي. يختار نظام مواد قرية Willow الخامة المناسبة ويطبقها على مجسمات المنازل والأسطح والممرات والأشجار والعناصر الموجودة؛ ليست ملفات غير مستخدمة لزيادة الحجم.
+يضم المشروع 32 خامة سطح أصلية قابلة للتكرار بدقة 4096×4096 بصيغة SVG للقرية والسوق والمناطق الخارجية. يربط نظام المواد الخامات بالألوان المطابقة لمجسمات العالم. وأُضيفت 12 مساحة أرضية قابلة للمشي بخامات الطوب الجانبي والعشب الجاف والجرانيت والخرسانة الصناعية والفسيفساء وبستان الزيتون ورخام الساحة والحجر الرملي الأحمر وطين النهر وعلامات الطريق وأردواز الأسقف والحجر المبلل.
 
-يختبر الفحص استيراد الخامات بدقة 4K وربطها بمواد القرية.
+يفحص اختبار الانحدار استيراد الخامات الـ32 بدقة 4K، ويتحقق من أن كل عينة مادة تستخدم الخامة الصحيحة.
+
