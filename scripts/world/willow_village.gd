@@ -300,7 +300,33 @@ func _material(color: Color) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = 0.92
+	var texture_path := _surface_texture_for_color(color)
+	if not texture_path.is_empty():
+		var texture := load(texture_path) as Texture2D
+		if texture != null:
+			material.albedo_texture = texture
+			material.uv1_scale = Vector3(2.0, 2.0, 2.0)
 	return material
+
+
+func _surface_texture_for_color(color: Color) -> String:
+	if color.r > 0.78 and color.g > 0.65:
+		return "res://assets/environment/materials/village_plaster_4k.svg"
+	if color.r > 0.48 and color.g < 0.42 and color.b < 0.35:
+		if color.r < 0.38 and color.g < 0.25:
+			return "res://assets/environment/materials/weathered_timber_4k.svg"
+		return "res://assets/environment/materials/terracotta_roof_4k.svg"
+	if color.g > color.r * 1.22:
+		return "res://assets/environment/materials/willow_foliage_4k.svg"
+	if color.r < 0.36 and color.g < 0.29 and color.b < 0.20:
+		return "res://assets/environment/materials/garden_soil_4k.svg"
+	if color.b > color.r * 1.20:
+		return "res://assets/environment/materials/painted_metal_4k.svg"
+	if color.r > 0.58 and color.g > 0.48 and color.b < 0.52:
+		return "res://assets/environment/materials/cobblestone_path_4k.svg"
+	if color.r < 0.50 and color.g < 0.40:
+		return "res://assets/environment/materials/weathered_timber_4k.svg"
+	return "res://assets/environment/materials/weathered_stone_4k.svg"
 
 
 func _build_consumable_shop() -> void:
