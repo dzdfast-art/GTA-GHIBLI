@@ -154,7 +154,49 @@ func _run_test() -> void:
 			_fail("Wrong high-detail texture at sample %d." % index)
 			return
 
-	print("PASS: all 32 original 4K SVG surfaces and 14 high-detail raster surfaces import and bind to their matching village materials.")
+
+	var extra_paths := [
+		"res://assets/environment/materials/hd/basalt_fracture_roughness_1k.bmp",
+		"res://assets/environment/materials/hd/river_pebble_roughness_1k.bmp",
+		"res://assets/environment/materials/hd/road_aggregate_roughness_1k.bmp",
+		"res://assets/environment/materials/hd/terracotta_weathering_roughness_1k.bmp"
+	]
+	var extra_colors := [
+		Color(0.25, 0.25, 0.27), Color(0.38, 0.43, 0.44),
+		Color(0.19, 0.20, 0.21), Color(0.57, 0.27, 0.17)
+	]
+	var extra_albedo := [
+		"res://assets/environment/materials/volcanic_rock_4k.svg",
+		"res://assets/environment/materials/river_pebble_4k.svg",
+		"res://assets/environment/materials/district_asphalt_4k.svg",
+		"res://assets/environment/materials/red_sandstone_4k.svg"
+	]
+	for index in range(extra_paths.size()):
+		var path: String = extra_paths[index]
+		if not ResourceLoader.exists(path):
+			_fail("Missing 1K roughness surface: " + path)
+			return
+		var texture := load(path) as Texture2D
+		if texture == null or texture.get_width() != 960 or texture.get_height() != 960:
+			_fail("1K roughness surface did not import at 960x960: " + path)
+			return
+		var material := village.call("_material", extra_colors[index]) as StandardMaterial3D
+		if material == null or material.roughness_texture == null:
+			_fail("No 1K roughness texture bound for sample %d." % index)
+			return
+		if material.roughness_texture.resource_path != path:
+			_fail("Wrong 1K roughness texture bound at sample %d." % index)
+			return
+		if material.albedo_texture == null or material.albedo_texture.resource_path != extra_albedo[index]:
+			_fail("The 4K albedo surface was not preserved for sample %d." % index)
+			return
+	var added_plots := ["BasaltRidgeWalk", "RiverPebbleFord", "RoadAggregateLoop", "TerracottaKilnCourt"]
+	for plot_name in added_plots:
+		if village.get_node_or_null(plot_name) == null:
+			_fail("Missing new walkable material plot: " + plot_name)
+			return
+
+	print("PASS: all 32 original 4K SVG surfaces, 14 original 512px response maps and four new 960px response maps import and bind to their matching village materials.")
 	quit(0)
 
 func _fail(message: String) -> void:
