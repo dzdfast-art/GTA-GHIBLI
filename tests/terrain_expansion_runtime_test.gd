@@ -82,6 +82,14 @@ func _run_test() -> void:
 		_fail("Terrain did not stream back in when the player entered Sapphire Coast.")
 		return
 
+	# Leave the test world with no streamed meshes or collision resources retained.
+	player.global_position = Vector3(10000.0, 0.0, 10000.0)
+	expansion.call("refresh_for_player", player)
+	await process_frame
+	if int(expansion.call("get_attached_count")) != 0:
+		_fail("The final district tiles were not released before test shutdown.")
+		return
+
 	print("PASS: 72 terrain resources are catalogued; nearby tiles stream in with collision, distant tiles unload, and another district reloads.")
 	quit(0)
 
