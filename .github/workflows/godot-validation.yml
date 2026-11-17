@@ -140,6 +140,9 @@ jobs:
       - name: Test original ambience audio assets
         run: godot --headless --path . --script res://tests/nature_ambience_assets_test.gd
 
+      - name: Test original 4K village surface textures
+        run: godot --headless --path . --script res://tests/village_surface_texture_test.gd
+
       - name: Test named audio buses and routing
         run: godot --headless --path . --script res://tests/audio_bus_layout_test.gd
 
