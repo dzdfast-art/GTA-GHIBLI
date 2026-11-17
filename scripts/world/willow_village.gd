@@ -364,6 +364,35 @@ func _material(color: Color) -> StandardMaterial3D:
 
 
 func _surface_texture_for_color(color: Color) -> String:
+	# High-detail 512px raster surfaces supplement the 4K SVG material library.
+	if color.is_equal_approx(Color(0.18, 0.22, 0.26)):
+		return "res://assets/environment/materials/hd/asphalt_road_512.bmp"
+	if color.is_equal_approx(Color(0.66, 0.57, 0.43)):
+		return "res://assets/environment/materials/hd/cobblestone_village_512.bmp"
+	if color.is_equal_approx(Color(0.55, 0.25, 0.20)):
+		return "res://assets/environment/materials/hd/terracotta_roof_512.bmp"
+	if color.is_equal_approx(Color(0.22, 0.34, 0.19)):
+		return "res://assets/environment/materials/hd/pine_forest_floor_512.bmp"
+	if color.is_equal_approx(Color(0.34, 0.23, 0.15)):
+		return "res://assets/environment/materials/hd/weathered_timber_512.bmp"
+	if color.is_equal_approx(Color(0.44, 0.46, 0.48)):
+		return "res://assets/environment/materials/hd/granite_curb_512.bmp"
+	if color.is_equal_approx(Color(0.16, 0.55, 0.58)):
+		return "res://assets/environment/materials/hd/mosaic_market_tile_512.bmp"
+	if color.is_equal_approx(Color(0.36, 0.48, 0.18)):
+		return "res://assets/environment/materials/hd/olive_grove_floor_512.bmp"
+	if color.is_equal_approx(Color(0.78, 0.78, 0.72)):
+		return "res://assets/environment/materials/hd/plaza_marble_512.bmp"
+	if color.is_equal_approx(Color(0.68, 0.32, 0.20)):
+		return "res://assets/environment/materials/hd/red_sandstone_512.bmp"
+	if color.is_equal_approx(Color(0.27, 0.20, 0.14)):
+		return "res://assets/environment/materials/hd/river_mud_512.bmp"
+	if color.is_equal_approx(Color(0.24, 0.38, 0.42)):
+		return "res://assets/environment/materials/hd/wet_stone_512.bmp"
+	if color.is_equal_approx(Color(0.32, 0.40, 0.55)):
+		return "res://assets/environment/materials/hd/painted_metal_512.bmp"
+	if color.is_equal_approx(Color(0.43, 0.48, 0.46)):
+		return "res://assets/environment/materials/hd/harbor_paving_512.bmp"
 	# Exact keys keep every added district material deterministic.
 	if color.is_equal_approx(Color(0.88, 0.75, 0.58)):
 		return "res://assets/environment/materials/village_plaster_4k.svg"
