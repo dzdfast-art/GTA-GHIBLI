@@ -20,7 +20,6 @@ func _ready() -> void:
 	_build_consumable_shop()
 	_build_flora_details()
 	_build_market_lane()
-	_build_expanded_district()
 
 
 func _build_mira() -> void:
@@ -270,33 +269,6 @@ func _build_market_lane() -> void:
 				Vector3(x - 1.0 + float(crate_index) * 2.0, 0.28, z + 1.1),
 				Vector3(0.72, 0.56, 0.72), Color(0.40, 0.27, 0.16), true)
 
-func _build_expanded_district() -> void:
-	# Twelve connected walkable ground plots extend the village into a mixed-use district.
-	var surfaces := [
-		{"name":"RedSandstonePromenade","pos":Vector3(88.0,0.025,-18.0),"color":Color(0.60,0.38,0.28)},
-		{"name":"RiverbankSiltWalk","pos":Vector3(104.0,0.025,-18.0),"color":Color(0.40,0.32,0.23)},
-		{"name":"GraniteCurbSquare","pos":Vector3(120.0,0.025,-18.0),"color":Color(0.45,0.48,0.49)},
-		{"name":"IndustrialConcreteYard","pos":Vector3(136.0,0.025,-18.0),"color":Color(0.39,0.41,0.43)},
-		{"name":"OldBrickAlley","pos":Vector3(88.0,0.025,-4.0),"color":Color(0.52,0.29,0.23)},
-		{"name":"MosaicCourtyard","pos":Vector3(104.0,0.025,-4.0),"color":Color(0.33,0.48,0.47)},
-		{"name":"MarkedRoadJunction","pos":Vector3(120.0,0.025,-4.0),"color":Color(0.20,0.23,0.26)},
-		{"name":"RainStonePassage","pos":Vector3(136.0,0.025,-4.0),"color":Color(0.27,0.33,0.35)},
-		{"name":"DryMeadowEdge","pos":Vector3(88.0,0.025,10.0),"color":Color(0.47,0.44,0.27)},
-		{"name":"OliveGroveTrail","pos":Vector3(104.0,0.025,10.0),"color":Color(0.30,0.35,0.21)},
-		{"name":"MarbleCivicPlaza","pos":Vector3(120.0,0.025,10.0),"color":Color(0.60,0.55,0.47)},
-		{"name":"SlateRoofWorkshop","pos":Vector3(136.0,0.025,10.0),"color":Color(0.27,0.32,0.38)}
-	]
-	for surface in surfaces:
-		_add_box(self, surface.name, surface.pos, Vector3(14.0,0.08,12.0), surface.color, false)
-
-	# Small street furniture makes the new district readable and gives the player landmarks.
-	for index in range(4):
-		var x := 90.0 + float(index) * 15.0
-		_add_box(self, "DistrictLampPost_%02d" % index, Vector3(x,2.0,17.0),
-			Vector3(0.16,4.0,0.16), Color(0.25,0.24,0.21), false)
-		_add_box(self, "DistrictLampHead_%02d" % index, Vector3(x,4.05,17.0),
-			Vector3(0.75,0.22,0.35), Color(0.88,0.76,0.52), false)
-
 func _build_signpost() -> void:
 	var post := CylinderMesh.new()
 	post.top_radius = 0.10
@@ -371,30 +343,6 @@ func _material(color: Color) -> StandardMaterial3D:
 
 
 func _surface_texture_for_color(color: Color) -> String:
-	if color.is_equal_approx(Color(0.60, 0.38, 0.28)):
-		return "res://assets/environment/materials/red_sandstone_4k.svg"
-	if color.is_equal_approx(Color(0.40, 0.32, 0.23)):
-		return "res://assets/environment/materials/river_mud_4k.svg"
-	if color.is_equal_approx(Color(0.45, 0.48, 0.49)):
-		return "res://assets/environment/materials/granite_curb_4k.svg"
-	if color.is_equal_approx(Color(0.39, 0.41, 0.43)):
-		return "res://assets/environment/materials/industrial_concrete_4k.svg"
-	if color.is_equal_approx(Color(0.52, 0.29, 0.23)):
-		return "res://assets/environment/materials/alley_brick_4k.svg"
-	if color.is_equal_approx(Color(0.33, 0.48, 0.47)):
-		return "res://assets/environment/materials/mosaic_tile_4k.svg"
-	if color.is_equal_approx(Color(0.20, 0.23, 0.26)):
-		return "res://assets/environment/materials/road_markings_4k.svg"
-	if color.is_equal_approx(Color(0.27, 0.33, 0.35)):
-		return "res://assets/environment/materials/wet_stone_4k.svg"
-	if color.is_equal_approx(Color(0.47, 0.44, 0.27)):
-		return "res://assets/environment/materials/dry_grass_4k.svg"
-	if color.is_equal_approx(Color(0.30, 0.35, 0.21)):
-		return "res://assets/environment/materials/olive_grove_4k.svg"
-	if color.is_equal_approx(Color(0.60, 0.55, 0.47)):
-		return "res://assets/environment/materials/plaza_marble_4k.svg"
-	if color.is_equal_approx(Color(0.27, 0.32, 0.38)):
-		return "res://assets/environment/materials/roof_slate_4k.svg"
 	if color.is_equal_approx(Color(0.72, 0.58, 0.38)):
 		return "res://assets/environment/materials/coastal_sand_4k.svg"
 	if color.is_equal_approx(Color(0.18, 0.22, 0.26)):
