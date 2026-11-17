@@ -79,6 +79,7 @@ jobs:
             res://scripts/world/terrain_expansion_runtime.gd \
             res://scripts/world/wildlife_actor.gd \
             res://scripts/world/wildlife_director.gd \
+            res://scripts/world/fishing_boat_idle.gd \
             res://scripts/world/world_weather.gd \
             res://scripts/missions/cinematic_director.gd
           do
@@ -151,6 +152,9 @@ jobs:
 
       - name: Test four open-world districts
         run: godot --headless --path . --script res://tests/open_world_regions_test.gd
+
+      - name: Test Sapphire Coast fishing boat import, placement, motion and collision
+        run: godot --headless --path . --script res://tests/sapphire_fishing_boat_test.gd
 
       - name: Test regional terrain expansion attachment
         run: godot --headless --path . --script res://tests/terrain_expansion_runtime_test.gd

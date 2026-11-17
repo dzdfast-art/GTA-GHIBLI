@@ -3,6 +3,7 @@ extends Node3D
 ## Procedural blockout for four explorable districts linked to Willow Village.
 ## Geometry is original, light-weight and assembled at runtime for mobile testing.
 const NPC_BRAIN_SCRIPT = preload("res://scripts/systems/npc_brain.gd")
+const SAPPHIRE_FISHING_BOAT_SCENE: PackedScene = preload("res://scenes/world/sapphire_fishing_boat.tscn")
 
 var _region_ids: Array[String] = []
 var _population_count := 0
@@ -166,6 +167,12 @@ func _build_district_details(district: Node3D, region_id: String, ground_color: 
 			for index in range(5):
 				_add_box(district, "FishCrate_%02d" % index, Vector3(-12.0 + float(index) * 5.0, 0.5, 4.0),
 					Vector3(1.4, 1.0, 1.2), Color(0.58, 0.43, 0.28))
+
+			var fishing_boat := SAPPHIRE_FISHING_BOAT_SCENE.instantiate() as Node3D
+			fishing_boat.name = "SapphireFishingBoat"
+			fishing_boat.position = Vector3(0.0, 0.48, 14.0)
+			fishing_boat.rotation.y = deg_to_rad(12.0)
+			district.add_child(fishing_boat)
 		_:
 			pass
 

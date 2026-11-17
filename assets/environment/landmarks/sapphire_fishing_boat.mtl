@@ -1,0 +1,33 @@
+# GTA GHIBLI original Sapphire Coast fishing boat materials
+newmtl hull_blue
+Kd 0.10 0.25 0.34
+Ka 0.04 0.06 0.08
+Ns 28
+newmtl hull_cream
+Kd 0.82 0.75 0.60
+Ka 0.10 0.09 0.07
+Ns 18
+newmtl deck_wood
+Kd 0.43 0.28 0.16
+Ka 0.08 0.05 0.03
+Ns 10
+newmtl wood_dark
+Kd 0.22 0.13 0.08
+Ka 0.04 0.02 0.01
+Ns 8
+newmtl metal
+Kd 0.30 0.36 0.38
+Ka 0.05 0.06 0.06
+Ns 42
+newmtl glass_blue
+Kd 0.10 0.34 0.46
+Ka 0.02 0.05 0.07
+Ns 64
+newmtl net_rope
+Kd 0.76 0.65 0.43
+Ka 0.08 0.06 0.03
+Ns 4
+newmtl buoy_orange
+Kd 0.92 0.30 0.08
+Ka 0.10 0.03 0.01
+Ns 16
