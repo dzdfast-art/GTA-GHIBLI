@@ -370,6 +370,20 @@ func _material(color: Color) -> StandardMaterial3D:
 		if response_texture != null:
 			material.roughness_texture = response_texture
 			material.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
+	var detail_path := _surface_detail_texture_for_color(color)
+	if not detail_path.is_empty():
+		var detail_texture := load(detail_path) as Texture2D
+		if detail_texture != null:
+			material.detail_enabled = true
+			material.detail_albedo = detail_texture
+			material.detail_uv1_scale = Vector3(5.0, 5.0, 1.0)
+	var normal_path := _surface_normal_texture_for_color(color)
+	if not normal_path.is_empty():
+		var normal_texture := load(normal_path) as Texture2D
+		if normal_texture != null:
+			material.normal_enabled = true
+			material.normal_texture = normal_texture
+			material.normal_scale = 0.55
 	return material
 
 
@@ -460,6 +474,46 @@ func _surface_texture_for_color(color: Color) -> String:
 	if color.r < 0.50 and color.g < 0.40:
 		return "res://assets/environment/materials/weathered_timber_4k.svg"
 	return "res://assets/environment/materials/weathered_stone_4k.svg"
+
+
+func _surface_detail_texture_for_color(color: Color) -> String:
+	if color.is_equal_approx(Color(0.25, 0.25, 0.27)):
+		return "res://assets/environment/materials/hd/detail_2k/basalt_detail_albedo_2k.bmp"
+	if color.is_equal_approx(Color(0.68, 0.32, 0.20)):
+		return "res://assets/environment/materials/hd/detail_2k/red_sandstone_detail_albedo_2k.bmp"
+	if color.is_equal_approx(Color(0.24, 0.38, 0.42)):
+		return "res://assets/environment/materials/hd/detail_2k/wet_stone_detail_albedo_2k.bmp"
+	if color.is_equal_approx(Color(0.43, 0.48, 0.46)):
+		return "res://assets/environment/materials/hd/detail_2k/harbor_paving_detail_albedo_2k.bmp"
+	if color.is_equal_approx(Color(0.22, 0.34, 0.19)):
+		return "res://assets/environment/materials/hd/detail_2k/pine_floor_detail_albedo_2k.bmp"
+	if color.is_equal_approx(Color(0.72, 0.58, 0.38)):
+		return "res://assets/environment/materials/hd/detail_2k/coastal_sand_detail_albedo_2k.bmp"
+	if color.is_equal_approx(Color(0.55, 0.25, 0.20)):
+		return "res://assets/environment/materials/hd/detail_2k/terracotta_detail_albedo_2k.bmp"
+	if color.is_equal_approx(Color(0.18, 0.22, 0.26)):
+		return "res://assets/environment/materials/hd/detail_2k/asphalt_detail_albedo_2k.bmp"
+	return ""
+
+
+func _surface_normal_texture_for_color(color: Color) -> String:
+	if color.is_equal_approx(Color(0.25, 0.25, 0.27)):
+		return "res://assets/environment/materials/hd/detail_2k/basalt_normal_2k.bmp"
+	if color.is_equal_approx(Color(0.68, 0.32, 0.20)):
+		return "res://assets/environment/materials/hd/detail_2k/red_sandstone_normal_2k.bmp"
+	if color.is_equal_approx(Color(0.24, 0.38, 0.42)):
+		return "res://assets/environment/materials/hd/detail_2k/wet_stone_normal_2k.bmp"
+	if color.is_equal_approx(Color(0.43, 0.48, 0.46)):
+		return "res://assets/environment/materials/hd/detail_2k/harbor_paving_normal_2k.bmp"
+	if color.is_equal_approx(Color(0.22, 0.34, 0.19)):
+		return "res://assets/environment/materials/hd/detail_2k/pine_floor_normal_2k.bmp"
+	if color.is_equal_approx(Color(0.72, 0.58, 0.38)):
+		return "res://assets/environment/materials/hd/detail_2k/coastal_sand_normal_2k.bmp"
+	if color.is_equal_approx(Color(0.55, 0.25, 0.20)):
+		return "res://assets/environment/materials/hd/detail_2k/terracotta_normal_2k.bmp"
+	if color.is_equal_approx(Color(0.18, 0.22, 0.26)):
+		return "res://assets/environment/materials/hd/detail_2k/asphalt_normal_2k.bmp"
+	return ""
 
 
 func _surface_response_texture_for_color(color: Color) -> String:
