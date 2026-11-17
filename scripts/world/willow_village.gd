@@ -19,6 +19,8 @@ func _ready() -> void:
 	_build_interactive_objects()
 	_build_consumable_shop()
 	_build_flora_details()
+	_build_market_lane()
+	_build_outer_district_surfaces()
 
 
 func _build_mira() -> void:
@@ -236,6 +238,62 @@ func _build_flora_details() -> void:
 			Color(0.55, 0.55, 0.48))
 
 
+
+func _build_market_lane() -> void:
+	# A new walkable market spur extends the village with distinct ground surfaces.
+	# The market lane binds eight original 4K materials to walkable floor and stall meshes.
+	var surfaces := [
+		{"name":"CoastalSandCourt","pos":Vector3(38.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.72, 0.58, 0.38)},
+		{"name":"AsphaltArrivalRoad","pos":Vector3(38.0, 0.025, -4.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.18, 0.22, 0.26)},
+		{"name":"PineGroveFloor","pos":Vector3(38.0, 0.025, 10.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.22, 0.34, 0.19)},
+		{"name":"HarborStoneWalk","pos":Vector3(54.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.43, 0.48, 0.46)},
+		{"name":"OrchardEarthPlot","pos":Vector3(54.0, 0.025, -4.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.40, 0.27, 0.16)},
+		{"name":"DockTimberDeck","pos":Vector3(54.0, 0.025, 10.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.29, 0.19, 0.13)},
+		{"name":"MarketBrickSquare","pos":Vector3(70.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.62, 0.30, 0.22)},
+		{"name":"CanvasMarketYard","pos":Vector3(70.0, 0.025, -4.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.58, 0.49, 0.32)}
+	]
+	for surface in surfaces:
+		_add_box(self, surface.name, surface.pos, surface.size, surface.color, false)
+
+	# Market stalls, crates, and shade frames make the new surfaces part of the world.
+	for stall_index in range(3):
+		var x := 65.0 + float(stall_index) * 5.0
+		var z := -3.0
+		_add_box(self, "MarketStallCounter_%02d" % stall_index,
+			Vector3(x, 0.65, z), Vector3(3.2, 1.1, 1.1),
+			Color(0.29, 0.19, 0.13), true)
+		_add_box(self, "MarketStallCanopy_%02d" % stall_index,
+			Vector3(x, 2.25, z), Vector3(3.8, 0.16, 3.0),
+			Color(0.58, 0.49, 0.32), false)
+		for crate_index in range(2):
+			_add_box(self, "MarketCrate_%02d_%d" % [stall_index, crate_index],
+				Vector3(x - 1.0 + float(crate_index) * 2.0, 0.28, z + 1.1),
+				Vector3(0.72, 0.56, 0.72), Color(0.40, 0.27, 0.16), true)
+
+
+func _build_outer_district_surfaces() -> void:
+	# Twelve additional walkable plots bind the remaining original 4K surfaces.
+	var surfaces := [
+		{"name":"AlleyBrickLane","pos":Vector3(86.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.46, 0.19, 0.16)},
+		{"name":"DryGrassMeadow","pos":Vector3(86.0, 0.025, -4.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.48, 0.44, 0.22)},
+		{"name":"GraniteCurbSquare","pos":Vector3(86.0, 0.025, 10.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.44, 0.46, 0.48)},
+		{"name":"IndustrialConcreteYard","pos":Vector3(102.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.30, 0.32, 0.34)},
+		{"name":"MosaicTileSquare","pos":Vector3(102.0, 0.025, -4.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.16, 0.55, 0.58)},
+		{"name":"OliveGroveFloor","pos":Vector3(102.0, 0.025, 10.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.36, 0.48, 0.18)},
+		{"name":"PlazaMarbleCourt","pos":Vector3(118.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.78, 0.78, 0.72)},
+		{"name":"RedSandstoneTrail","pos":Vector3(118.0, 0.025, -4.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.68, 0.32, 0.20)},
+		{"name":"RiverMudBank","pos":Vector3(118.0, 0.025, 10.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.27, 0.20, 0.14)},
+		{"name":"RoadMarkingPracticePad","pos":Vector3(134.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.85, 0.80, 0.45)},
+		{"name":"SlateRoofDisplayCourt","pos":Vector3(134.0, 0.025, -4.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.26, 0.30, 0.38)},
+		{"name":"WetStoneCrossing","pos":Vector3(134.0, 0.025, 10.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.24, 0.38, 0.42)},
+		{"name":"BasaltRidgeWalk","pos":Vector3(150.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.25, 0.25, 0.27)},
+		{"name":"RiverPebbleFord","pos":Vector3(150.0, 0.025, -4.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.38, 0.43, 0.44)},
+		{"name":"RoadAggregateLoop","pos":Vector3(150.0, 0.025, 10.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.19, 0.20, 0.21)},
+		{"name":"TerracottaKilnCourt","pos":Vector3(166.0, 0.025, -18.0),"size":Vector3(14.0, 0.08, 12.0),"color":Color(0.57, 0.27, 0.17)}
+	]
+	for surface in surfaces:
+		_add_box(self, surface.name, surface.pos, surface.size, surface.color, true)
+
 func _build_signpost() -> void:
 	var post := CylinderMesh.new()
 	post.top_radius = 0.10
@@ -300,7 +358,149 @@ func _material(color: Color) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = 0.92
+	var texture_path := _surface_texture_for_color(color)
+	if not texture_path.is_empty():
+		var texture := load(texture_path) as Texture2D
+		if texture != null:
+			material.albedo_texture = texture
+			material.uv1_scale = Vector3(2.0, 2.0, 2.0)
+	var response_path := _surface_response_texture_for_color(color)
+	if not response_path.is_empty():
+		var response_texture := load(response_path) as Texture2D
+		if response_texture != null:
+			material.roughness_texture = response_texture
+			material.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
 	return material
+
+
+func _surface_texture_for_color(color: Color) -> String:
+	# Exact keys keep every added district material deterministic.
+	if color.is_equal_approx(Color(0.88, 0.75, 0.58)):
+		return "res://assets/environment/materials/village_plaster_4k.svg"
+	if color.is_equal_approx(Color(0.55, 0.25, 0.20)):
+		return "res://assets/environment/materials/terracotta_roof_4k.svg"
+	if color.is_equal_approx(Color(0.66, 0.57, 0.43)):
+		return "res://assets/environment/materials/cobblestone_path_4k.svg"
+	if color.is_equal_approx(Color(0.34, 0.23, 0.15)):
+		return "res://assets/environment/materials/weathered_timber_4k.svg"
+	if color.is_equal_approx(Color(0.30, 0.52, 0.29)):
+		return "res://assets/environment/materials/willow_foliage_4k.svg"
+	if color.is_equal_approx(Color(0.30, 0.22, 0.13)):
+		return "res://assets/environment/materials/garden_soil_4k.svg"
+	if color.is_equal_approx(Color(0.53, 0.52, 0.47)):
+		return "res://assets/environment/materials/weathered_stone_4k.svg"
+	if color.is_equal_approx(Color(0.32, 0.40, 0.55)):
+		return "res://assets/environment/materials/painted_metal_4k.svg"
+	if color.is_equal_approx(Color(0.46, 0.19, 0.16)):
+		return "res://assets/environment/materials/alley_brick_4k.svg"
+	if color.is_equal_approx(Color(0.48, 0.44, 0.22)):
+		return "res://assets/environment/materials/dry_grass_4k.svg"
+	if color.is_equal_approx(Color(0.44, 0.46, 0.48)):
+		return "res://assets/environment/materials/granite_curb_4k.svg"
+	if color.is_equal_approx(Color(0.30, 0.32, 0.34)):
+		return "res://assets/environment/materials/industrial_concrete_4k.svg"
+	if color.is_equal_approx(Color(0.16, 0.55, 0.58)):
+		return "res://assets/environment/materials/mosaic_tile_4k.svg"
+	if color.is_equal_approx(Color(0.36, 0.48, 0.18)):
+		return "res://assets/environment/materials/olive_grove_4k.svg"
+	if color.is_equal_approx(Color(0.78, 0.78, 0.72)):
+		return "res://assets/environment/materials/plaza_marble_4k.svg"
+	if color.is_equal_approx(Color(0.68, 0.32, 0.20)):
+		return "res://assets/environment/materials/red_sandstone_4k.svg"
+	if color.is_equal_approx(Color(0.27, 0.20, 0.14)):
+		return "res://assets/environment/materials/river_mud_4k.svg"
+	if color.is_equal_approx(Color(0.85, 0.80, 0.45)):
+		return "res://assets/environment/materials/road_markings_4k.svg"
+	if color.is_equal_approx(Color(0.26, 0.30, 0.38)):
+		return "res://assets/environment/materials/roof_slate_4k.svg"
+	if color.is_equal_approx(Color(0.24, 0.38, 0.42)):
+		return "res://assets/environment/materials/wet_stone_4k.svg"
+	if color.is_equal_approx(Color(0.68, 0.53, 0.34)):
+		return "res://assets/environment/materials/coastal_dune_4k.svg"
+	if color.is_equal_approx(Color(0.38, 0.43, 0.44)):
+		return "res://assets/environment/materials/river_pebble_4k.svg"
+	if color.is_equal_approx(Color(0.28, 0.48, 0.51)):
+		return "res://assets/environment/materials/market_ceramic_4k.svg"
+	if color.is_equal_approx(Color(0.25, 0.25, 0.27)):
+		return "res://assets/environment/materials/volcanic_rock_4k.svg"
+	if color.is_equal_approx(Color(0.19, 0.20, 0.21)):
+		return "res://assets/environment/materials/district_asphalt_4k.svg"
+	if color.is_equal_approx(Color(0.57, 0.27, 0.17)):
+		return "res://assets/environment/materials/red_sandstone_4k.svg"
+	if color.is_equal_approx(Color(0.72, 0.58, 0.38)):
+		return "res://assets/environment/materials/coastal_sand_4k.svg"
+	if color.is_equal_approx(Color(0.18, 0.22, 0.26)):
+		return "res://assets/environment/materials/district_asphalt_4k.svg"
+	if color.is_equal_approx(Color(0.22, 0.34, 0.19)):
+		return "res://assets/environment/materials/pine_forest_floor_4k.svg"
+	if color.is_equal_approx(Color(0.43, 0.48, 0.46)):
+		return "res://assets/environment/materials/harbor_paving_4k.svg"
+	if color.is_equal_approx(Color(0.40, 0.27, 0.16)):
+		return "res://assets/environment/materials/orchard_soil_4k.svg"
+	if color.is_equal_approx(Color(0.29, 0.19, 0.13)):
+		return "res://assets/environment/materials/dock_timber_4k.svg"
+	if color.is_equal_approx(Color(0.62, 0.30, 0.22)):
+		return "res://assets/environment/materials/market_brick_4k.svg"
+	if color.is_equal_approx(Color(0.58, 0.49, 0.32)):
+		return "res://assets/environment/materials/weathered_canvas_4k.svg"
+	if color.r > 0.78 and color.g > 0.65:
+		return "res://assets/environment/materials/village_plaster_4k.svg"
+	if color.r > 0.48 and color.g < 0.42 and color.b < 0.35:
+		if color.r < 0.38 and color.g < 0.25:
+			return "res://assets/environment/materials/weathered_timber_4k.svg"
+		return "res://assets/environment/materials/terracotta_roof_4k.svg"
+	if color.g > color.r * 1.22:
+		return "res://assets/environment/materials/willow_foliage_4k.svg"
+	if color.r < 0.36 and color.g < 0.29 and color.b < 0.20:
+		return "res://assets/environment/materials/garden_soil_4k.svg"
+	if color.b > color.r * 1.20:
+		return "res://assets/environment/materials/painted_metal_4k.svg"
+	if color.r > 0.58 and color.g > 0.48 and color.b < 0.52:
+		return "res://assets/environment/materials/cobblestone_path_4k.svg"
+	if color.r < 0.50 and color.g < 0.40:
+		return "res://assets/environment/materials/weathered_timber_4k.svg"
+	return "res://assets/environment/materials/weathered_stone_4k.svg"
+
+
+func _surface_response_texture_for_color(color: Color) -> String:
+	# High-detail raster maps modulate roughness while preserving the 4K SVG albedo.
+	if color.is_equal_approx(Color(0.18, 0.22, 0.26)):
+		return "res://assets/environment/materials/hd/asphalt_road_512.bmp"
+	if color.is_equal_approx(Color(0.66, 0.57, 0.43)):
+		return "res://assets/environment/materials/hd/cobblestone_village_512.bmp"
+	if color.is_equal_approx(Color(0.55, 0.25, 0.20)):
+		return "res://assets/environment/materials/hd/terracotta_roof_512.bmp"
+	if color.is_equal_approx(Color(0.22, 0.34, 0.19)):
+		return "res://assets/environment/materials/hd/pine_forest_floor_512.bmp"
+	if color.is_equal_approx(Color(0.34, 0.23, 0.15)):
+		return "res://assets/environment/materials/hd/weathered_timber_512.bmp"
+	if color.is_equal_approx(Color(0.44, 0.46, 0.48)):
+		return "res://assets/environment/materials/hd/granite_curb_512.bmp"
+	if color.is_equal_approx(Color(0.16, 0.55, 0.58)):
+		return "res://assets/environment/materials/hd/mosaic_market_tile_512.bmp"
+	if color.is_equal_approx(Color(0.36, 0.48, 0.18)):
+		return "res://assets/environment/materials/hd/olive_grove_floor_512.bmp"
+	if color.is_equal_approx(Color(0.78, 0.78, 0.72)):
+		return "res://assets/environment/materials/hd/plaza_marble_512.bmp"
+	if color.is_equal_approx(Color(0.68, 0.32, 0.20)):
+		return "res://assets/environment/materials/hd/red_sandstone_512.bmp"
+	if color.is_equal_approx(Color(0.27, 0.20, 0.14)):
+		return "res://assets/environment/materials/hd/river_mud_512.bmp"
+	if color.is_equal_approx(Color(0.24, 0.38, 0.42)):
+		return "res://assets/environment/materials/hd/wet_stone_512.bmp"
+	if color.is_equal_approx(Color(0.32, 0.40, 0.55)):
+		return "res://assets/environment/materials/hd/painted_metal_512.bmp"
+	if color.is_equal_approx(Color(0.25, 0.25, 0.27)):
+		return "res://assets/environment/materials/hd/basalt_fracture_roughness_1k.bmp"
+	if color.is_equal_approx(Color(0.38, 0.43, 0.44)):
+		return "res://assets/environment/materials/hd/river_pebble_roughness_1k.bmp"
+	if color.is_equal_approx(Color(0.19, 0.20, 0.21)):
+		return "res://assets/environment/materials/hd/road_aggregate_roughness_1k.bmp"
+	if color.is_equal_approx(Color(0.57, 0.27, 0.17)):
+		return "res://assets/environment/materials/hd/terracotta_weathering_roughness_1k.bmp"
+	if color.is_equal_approx(Color(0.43, 0.48, 0.46)):
+		return "res://assets/environment/materials/hd/harbor_paving_512.bmp"
+	return ""
 
 
 func _build_consumable_shop() -> void:

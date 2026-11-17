@@ -16,12 +16,12 @@ var _field_recording_player: AudioStreamPlayer
 var _field_recording_theme := ""
 var _field_recording_segment := 0
 const FIELD_RECORDING_PATHS := {
-	"dawn": ["res://audio/ambience/dawn_01.wav", "res://audio/ambience/dawn_02.wav"],
-	"forest_day": ["res://audio/ambience/forest_day_01.wav", "res://audio/ambience/forest_day_02.wav"],
-	"night": ["res://audio/ambience/night_01.wav", "res://audio/ambience/night_02.wav"],
-	"coast": ["res://audio/ambience/coast_01.wav", "res://audio/ambience/coast_02.wav"],
-	"rain": ["res://audio/ambience/rain_01.wav", "res://audio/ambience/rain_02.wav"],
-	"storm": ["res://audio/ambience/storm_01.wav", "res://audio/ambience/storm_02.wav"]
+	"dawn": ["res://audio/ambience/dawn_01.wav", "res://audio/ambience/dawn_02.wav", "res://audio/ambience/dawn_03.wav"],
+	"forest_day": ["res://audio/ambience/forest_day_01.wav", "res://audio/ambience/forest_day_02.wav", "res://audio/ambience/forest_day_03.wav"],
+	"night": ["res://audio/ambience/night_01.wav", "res://audio/ambience/night_02.wav", "res://audio/ambience/night_03.wav"],
+	"coast": ["res://audio/ambience/coast_01.wav", "res://audio/ambience/coast_02.wav", "res://audio/ambience/coast_03.wav"],
+	"rain": ["res://audio/ambience/rain_01.wav", "res://audio/ambience/rain_02.wav", "res://audio/ambience/rain_03.wav"],
+	"storm": ["res://audio/ambience/storm_01.wav", "res://audio/ambience/storm_02.wav", "res://audio/ambience/storm_03.wav"]
 }
 var _sample_clock := 0.0
 var _wind_state := 0.0
