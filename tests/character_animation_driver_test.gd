@@ -61,7 +61,7 @@ func _run() -> void:
 		push_error("Expected the two free Standard packs to merge at least 80 complementary animation clips.")
 		quit(1)
 		return
-	for required_clip in ["Idle_Loop", "Walk_Loop", "Jog_Fwd_Loop", "Sprint_Loop", "Driving_Loop", "TreeChopping_Loop", "Farm_Harvest", "Consume"]:
+	for required_clip in ["Idle", "Walk", "Jog_Fwd", "Sprint", "Driving", "TreeChopping", "Farm_Harvest", "Consume"]:
 		var clip_found := false
 		for clip_name in available_animations:
 			if clip_name.to_lower().ends_with(required_clip.to_lower()):
@@ -79,7 +79,7 @@ func _run() -> void:
 
 	animation_driver.set("_time", 0.75)
 	animation_driver.call("update_locomotion", 0.0, false, true)
-	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("idle_loop"):
+	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("idle"):
 		push_error("The imported UAL1 idle clip was not activated.")
 		quit(1)
 		return
@@ -89,7 +89,7 @@ func _run() -> void:
 		return
 
 	animation_driver.call("update_locomotion", 2.5, false, true)
-	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("walk_loop"):
+	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("walk"):
 		push_error("The imported UAL1 walk clip was not activated.")
 		quit(1)
 		return
@@ -107,7 +107,7 @@ func _run() -> void:
 		return
 
 	animation_driver.call("update_locomotion", 7.0, true, true)
-	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("sprint_loop"):
+	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("sprint"):
 		push_error("The imported UAL1 sprint clip was not activated.")
 		quit(1)
 		return
@@ -116,7 +116,7 @@ func _run() -> void:
 		quit(1)
 		return
 	animation_driver.call("update_locomotion", 0.0, false, false)
-	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("jump_loop"):
+	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("jump"):
 		push_error("The imported UAL1 jump/fall clip was not activated.")
 		quit(1)
 		return
@@ -143,7 +143,7 @@ func _run() -> void:
 		push_error("The UAL2 dedicated tree-chopping animation could not be started.")
 		quit(1)
 		return
-	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("treechopping_loop"):
+	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("treechopping"):
 		push_error("The UAL2 tree-chopping clip did not become the active animation.")
 		quit(1)
 		return
@@ -153,7 +153,7 @@ func _run() -> void:
 		return
 
 	animation_driver.call("set_vehicle_state", true, &"car")
-	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("driving_loop"):
+	if not str(animation_driver.call("get_active_animation")).to_lower().ends_with("driving"):
 		push_error("The imported UAL1 driving clip was not activated.")
 		quit(1)
 		return
