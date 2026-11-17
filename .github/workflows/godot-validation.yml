@@ -37,6 +37,9 @@ jobs:
       - name: Validate OBJ mesh surface budgets
         run: python tools/validate_obj_surface_counts.py
 
+      - name: Validate licensed asset manifest and GLB integrity
+        run: python tools/validate_asset_manifest.py
+
       - name: Audit Android privacy permissions
         run: python tools/privacy_audit.py
 
