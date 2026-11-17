@@ -37,6 +37,9 @@ jobs:
       - name: Validate OBJ mesh surface budgets
         run: python tools/validate_obj_surface_counts.py
 
+      - name: Validate licensed asset manifest and GLB integrity
+        run: python tools/validate_asset_manifest.py
+
       - name: Audit Android privacy permissions
         run: python tools/privacy_audit.py
 
@@ -51,6 +54,7 @@ jobs:
             res://main.gd \
             res://scripts/audio/nature_ambience.gd \
             res://scripts/player/player_controller.gd \
+            res://scripts/characters/character_animation_driver.gd \
             res://scripts/vehicles/driveable_car.gd \
             res://scripts/vehicles/bicycle_controller.gd \
             res://scripts/world/house_interior_portal.gd \
@@ -91,6 +95,9 @@ jobs:
 
       - name: Test pause menu and saved settings
         run: godot --headless --path . --script res://tests/pause_settings_menu_test.gd
+
+      - name: Test player animation adapter and sprint state
+        run: godot --headless --path . --script res://tests/character_animation_driver_test.gd
 
       - name: Test player health, damage, healing and restore
         run: godot --headless --path . --script res://tests/player_health_test.gd
