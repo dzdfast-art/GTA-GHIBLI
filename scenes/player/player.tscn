@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/camera/third_person_camera.gd" id="2_camera"]
 [ext_resource type="Script" path="res://scripts/systems/player_interactor.gd" id="3_interactor"]
+[ext_resource type="Script" path="res://scripts/characters/character_animation_driver.gd" id="4_animation_driver"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_Player"]
 radius = 0.38
@@ -41,3 +42,6 @@ fov = 70.0
 
 [node name="PlayerInteractor" type="Node3D" parent="."]
 script = ExtResource("3_interactor")
+
+[node name="CharacterAnimationDriver" type="Node" parent="."]
+script = ExtResource("4_animation_driver")
