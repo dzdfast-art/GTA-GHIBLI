@@ -9,16 +9,10 @@ import numpy as np
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1] / "assets/environment/materials/hd/detail_2k"
-SIZE = 2048
+SIZE = 1900
 MATERIALS = {
     "basalt": ((48, 51, 55), (112, 116, 120), 17),
     "red_sandstone": ((118, 48, 31), (205, 112, 67), 29),
-    "wet_stone": ((55, 75, 82), (150, 170, 174), 41),
-    "harbor_paving": ((83, 91, 88), (172, 177, 164), 53),
-    "pine_floor": ((43, 64, 34), (126, 112, 66), 67),
-    "coastal_sand": ((142, 111, 68), (222, 194, 139), 79),
-    "terracotta": ((105, 39, 29), (196, 91, 58), 97),
-    "asphalt": ((34, 39, 44), (104, 111, 116), 109),
 }
 
 def smooth_field(rng, side):
@@ -72,9 +66,9 @@ def main():
     if len(files) != expected:
         raise SystemExit(f"Expected {expected} maps, found {len(files)}")
     total = sum(p.stat().st_size for p in files)
-    if any(p.stat().st_size < 12_500_000 for p in files):
+    if any(p.stat().st_size < 10_800_000 for p in files):
         raise SystemExit("A generated BMP is unexpectedly small or incomplete")
-    print(f"PASS: {len(files)} original 2048x2048 RGB maps; {total:,} bytes total")
+    print(f"PASS: {len(files)} original 1900x1900 RGB maps; {total:,} bytes total")
 
 if __name__ == "__main__":
     main()
