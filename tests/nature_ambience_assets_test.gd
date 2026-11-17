@@ -39,6 +39,19 @@ func _run_test() -> void:
 		_fail("Clearing the weather did not restore coastal ambience.")
 		return
 	print("PASS: Original stereo ambience WAVs load and switch by time, biome and weather.")
+
+	# Stop playback and release the test-owned players before the SceneTree exits.
+	var procedural_player := ambience.get_node_or_null("ProceduralNatureAudio") as AudioStreamPlayer
+	var recording_player := ambience.get_node_or_null("OriginalFieldAmbience") as AudioStreamPlayer
+	if procedural_player != null:
+		procedural_player.stop()
+	if recording_player != null:
+		recording_player.stop()
+	stream = null
+	player = null
+	ambience.queue_free()
+	await process_frame
+	await process_frame
 	quit(0)
 
 func _fail(message: String) -> void:
