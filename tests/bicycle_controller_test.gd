@@ -59,9 +59,26 @@ func _run_test() -> void:
 	if not Input.is_action_pressed("interact"):
 		_fail("The contextual exit-bike button did not press the interact action.")
 		return
+	# Let the real player interactor consume the press before releasing it.
+	await process_frame
+	await process_frame
+	if bicycle.get("driver") != null or bool(player.get("is_driving")):
+		_fail("The contextual exit-bike button did not dismount the player.")
+		return
 	contextual_exit.emit_signal("button_up")
 	if Input.is_action_pressed("interact"):
 		_fail("Releasing the contextual exit-bike button left interact pressed.")
+		return
+	if contextual_exit.tooltip_text != "التفاعل" or contextual_exit.icon == null:
+		_fail("The on-foot contextual interaction icon and hint were not restored.")
+		return
+
+	# Remount after validating the real exit action, then test riding physics separately.
+	bicycle.call("interact")
+	await process_frame
+	await physics_frame
+	if bicycle.get("driver") != player or not bool(player.get("is_driving")):
+		_fail("The player could not remount after using the contextual exit action.")
 		return
 
 	var start_position: Vector3 = bicycle.global_position
@@ -136,10 +153,6 @@ func _run_test() -> void:
 	if not (controls.get_node("HUD/Sprint") as Control).visible:
 		_fail("The on-foot RUN control was not restored after dismounting.")
 		return
-	if contextual_exit.tooltip_text != "التفاعل" or contextual_exit.icon == null:
-		_fail("The on-foot contextual interaction icon and hint were not restored.")
-		return
-
 	print("PASS: bicycle mount, contextual exit action, pedal, steering, brake/reverse, steering layouts, and dismount.")
 	quit(0)
 
