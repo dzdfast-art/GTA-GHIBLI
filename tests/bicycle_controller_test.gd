@@ -69,8 +69,11 @@ func _run_test() -> void:
 	if Input.is_action_pressed("interact"):
 		_fail("Releasing the contextual exit-bike button left interact pressed.")
 		return
-	if contextual_exit.tooltip_text != "التفاعل" or contextual_exit.icon == null:
-		_fail("The on-foot contextual interaction icon and hint were not restored.")
+	var on_foot_hints := ["التفاعل", "تفاعل", "اركب الدراجة"]
+	if contextual_exit.icon == null \
+			or contextual_exit.icon.resource_path != "res://assets/ui/hud/interact.svg" \
+			or not on_foot_hints.has(contextual_exit.tooltip_text):
+		_fail("The on-foot contextual interaction icon and context-sensitive hint were not restored.")
 		return
 
 	# Remount after validating the real exit action, then test riding physics separately.
