@@ -48,8 +48,20 @@ func _run_test() -> void:
 	if not (controls.get_node("HUD/BikePedal") as Control).visible:
 		_fail("The bicycle pedal control was not shown.")
 		return
-	if controls.get_node("HUD/ContextAction").text != "EXIT BIKE":
-		_fail("The contextual exit-bike action was not shown.")
+
+	# The current mobile HUD uses an exit icon plus an Arabic tooltip, not legacy button text.
+	var contextual_exit := controls.get_node("HUD/ContextAction") as Button
+	if contextual_exit == null or contextual_exit.icon == null or not contextual_exit.text.is_empty() \
+			or contextual_exit.tooltip_text != "النزول من الدراجة":
+		_fail("The contextual exit-bike icon and Arabic hint were not shown.")
+		return
+	contextual_exit.emit_signal("button_down")
+	if not Input.is_action_pressed("interact"):
+		_fail("The contextual exit-bike button did not press the interact action.")
+		return
+	contextual_exit.emit_signal("button_up")
+	if Input.is_action_pressed("interact"):
+		_fail("Releasing the contextual exit-bike button left interact pressed.")
 		return
 
 	var start_z: float = bicycle.global_position.z
@@ -113,8 +125,11 @@ func _run_test() -> void:
 	if not (controls.get_node("HUD/Sprint") as Control).visible:
 		_fail("The on-foot RUN control was not restored after dismounting.")
 		return
+	if contextual_exit.tooltip_text != "التفاعل" or contextual_exit.icon == null:
+		_fail("The on-foot contextual interaction icon and hint were not restored.")
+		return
 
-	print("PASS: bicycle mount, pedal, steering, brake/reverse, steering layouts, and dismount.")
+	print("PASS: bicycle mount, contextual exit action, pedal, steering, brake/reverse, steering layouts, and dismount.")
 	quit(0)
 
 
