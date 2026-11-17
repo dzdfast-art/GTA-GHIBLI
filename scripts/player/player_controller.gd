@@ -7,6 +7,7 @@ extends CharacterBody3D
 @export var sprint_multiplier: float = 1.55
 
 var is_driving := false
+var driven_vehicle_kind: StringName = &"vehicle"
 
 @onready var camera_pivot: Node3D = $CameraPivot
 @onready var animation_driver: Node = get_node_or_null("CharacterAnimationDriver")
@@ -16,7 +17,7 @@ func _physics_process(delta: float) -> void:
 	if is_driving:
 		velocity = Vector3.ZERO
 		if animation_driver != null:
-			animation_driver.call("set_vehicle_state", true)
+			animation_driver.call("set_vehicle_state", true, driven_vehicle_kind)
 		return
 
 	var input_vector: Vector2 = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
