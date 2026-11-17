@@ -36,6 +36,40 @@ const TEXTURES := [
 	"res://assets/environment/materials/volcanic_rock_4k.svg"
 ]
 
+const HD_TEXTURES := [
+	"res://assets/environment/materials/hd/asphalt_road_512.bmp",
+	"res://assets/environment/materials/hd/cobblestone_village_512.bmp",
+	"res://assets/environment/materials/hd/terracotta_roof_512.bmp",
+	"res://assets/environment/materials/hd/pine_forest_floor_512.bmp",
+	"res://assets/environment/materials/hd/weathered_timber_512.bmp",
+	"res://assets/environment/materials/hd/granite_curb_512.bmp",
+	"res://assets/environment/materials/hd/mosaic_market_tile_512.bmp",
+	"res://assets/environment/materials/hd/olive_grove_floor_512.bmp",
+	"res://assets/environment/materials/hd/plaza_marble_512.bmp",
+	"res://assets/environment/materials/hd/red_sandstone_512.bmp",
+	"res://assets/environment/materials/hd/river_mud_512.bmp",
+	"res://assets/environment/materials/hd/wet_stone_512.bmp",
+	"res://assets/environment/materials/hd/painted_metal_512.bmp",
+	"res://assets/environment/materials/hd/harbor_paving_512.bmp"
+]
+
+const HD_COLORS := [
+	Color(0.18, 0.22, 0.26),
+	Color(0.66, 0.57, 0.43),
+	Color(0.55, 0.25, 0.20),
+	Color(0.22, 0.34, 0.19),
+	Color(0.34, 0.23, 0.15),
+	Color(0.44, 0.46, 0.48),
+	Color(0.16, 0.55, 0.58),
+	Color(0.36, 0.48, 0.18),
+	Color(0.78, 0.78, 0.72),
+	Color(0.68, 0.32, 0.20),
+	Color(0.27, 0.20, 0.14),
+	Color(0.24, 0.38, 0.42),
+	Color(0.32, 0.40, 0.55),
+	Color(0.43, 0.48, 0.46)
+]
+
 const SAMPLE_COLORS := [
 	Color(0.88, 0.75, 0.58),
 	Color(0.55, 0.25, 0.20),
@@ -103,7 +137,24 @@ func _run_test() -> void:
 			])
 			return
 
-	print("PASS: all 32 original 4K surface textures import and bind to their matching village and district materials.")
+	for index in range(HD_TEXTURES.size()):
+		var path: String = HD_TEXTURES[index]
+		if not ResourceLoader.exists(path):
+			_fail("Missing high-detail raster surface: " + path)
+			return
+		var hd_texture := load(path) as Texture2D
+		if hd_texture == null or hd_texture.get_width() != 512 or hd_texture.get_height() != 512:
+			_fail("High-detail surface did not import at 512x512: " + path)
+			return
+		var hd_material := village.call("_material", HD_COLORS[index]) as StandardMaterial3D
+		if hd_material == null or hd_material.albedo_texture == null:
+			_fail("No high-detail raster texture bound for sample %d." % index)
+			return
+		if hd_material.albedo_texture.resource_path != path:
+			_fail("Wrong high-detail texture at sample %d." % index)
+			return
+
+	print("PASS: all 32 original 4K SVG surfaces and 14 high-detail raster surfaces import and bind to their matching village materials.")
 	quit(0)
 
 func _fail(message: String) -> void:
