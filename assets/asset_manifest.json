@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "policy": {
+    "require_license_file": true,
+    "require_nonempty_asset": true,
+    "reject_unverified_assets": true
+  },
+  "assets": [
+    {
+      "id": "player_quaternius_superhero_male",
+      "path": "assets/characters/quaternius_superhero_male.glb",
+      "format": "glb",
+      "license": "CC0-1.0",
+      "license_file": "assets/characters/QUATERNIUS-LICENSE.txt",
+      "status": "integrated",
+      "purpose": "First rigged humanoid player visual; procedural poses are supplied by CharacterAnimationDriver.",
+      "source": "https://quaternius.com/packs/universalbasecharacters.html"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "quaternius_universal_animation_library_2",
+      "source": "https://quaternius.com/packs/universalanimationlibrary2.html",
+      "status": "research_only",
+      "reason": "Animation pack is a candidate; no source archive or imported clips are committed yet."
+    },
+    {
+      "id": "quaternius_modular_streets",
+      "source": "https://quaternius.com/packs/modularstreets.html",
+      "status": "research_only",
+      "reason": "Street pack is a candidate; no source archive or imported scene is committed yet."
+    },
+    {
+      "id": "quaternius_cars",
+      "source": "https://quaternius.com/packs/cars.html",
+      "status": "research_only",
+      "reason": "Vehicle pack is a candidate; no source archive or imported vehicle scenes are committed yet."
+    },
+    {
+      "id": "quaternius_downtown_city_megakit",
+      "source": "https://quaternius.com/packs/downtowncitymegakit.html",
+      "status": "research_only",
+      "reason": "City pack is a candidate; confirm exact free-tier contents and license before import."
+    }
+  ]
+}
