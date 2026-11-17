@@ -19,7 +19,7 @@ func _run() -> void:
 		await physics_frame
 	player.free()
 	bicycle.call("_exit_bicycle")
-	if (controls.get_node("HUD/ContextAction") as Button).text == "EXIT BIKE":
+	if (controls.get_node("HUD/ContextAction") as Button).tooltip_text == "النزول من الدراجة":
 		WORLD.fail(self, "early exit branch left HUD in bicycle mode.")
 		return
 	if absf(float(bicycle.get("_speed"))) > 0.0001:
