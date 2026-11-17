@@ -18,6 +18,7 @@ var _sprint_requested: bool = false
 var _time: float = 0.0
 var _bone_indices: Dictionary = {}
 var _base_bone_rotations: Dictionary = {}
+var _merged_animation_count := 0
 
 const REQUIRED_BONES: Array[StringName] = [
 	&"pelvis", &"spine_01", &"spine_02", &"spine_03", &"Head",
@@ -65,7 +66,7 @@ func set_vehicle_state(active: bool, vehicle_kind: StringName = &"vehicle") -> v
 		_play_first_available([&"bicycle_idle", &"bike_idle", &"ride_idle", &"cycling_idle"])
 	else:
 		_state = &"car"
-		_play_first_available([&"vehicle_idle", &"car_idle", &"drive_idle"])
+		_play_first_available([&"Driving_Loop", &"vehicle_idle", &"car_idle", &"drive_idle"])
 
 
 func get_active_animation() -> StringName:
@@ -83,19 +84,19 @@ func has_humanoid_skeleton() -> bool:
 func _clips_for_state(state: StringName) -> Array[StringName]:
 	match state:
 		&"idle":
-			return [&"idle", &"idle_loop", &"breathing_idle"]
+			return [&"Idle_Loop", &"idle", &"idle_loop", &"breathing_idle"]
 		&"walk":
-			return [&"walk", &"walking", &"walk_forward"]
+			return [&"Walk_Loop", &"walk", &"walking", &"walk_forward"]
 		&"run":
-			return [&"run", &"running", &"sprint", &"run_forward"]
+			return [&"Sprint_Loop", &"Jog_Fwd_Loop", &"run", &"running", &"sprint", &"run_forward"]
 		&"fall":
-			return [&"fall", &"jump_fall", &"falling"]
+			return [&"Jump_Loop", &"fall", &"jump_fall", &"falling"]
 	return []
 
 
-func _play_first_available(candidates: Array[StringName]) -> void:
+func _play_first_available(candidates: Array[StringName]) -> bool:
 	if _animation_player == null or not is_instance_valid(_animation_player):
-		return
+		return false
 	var available: PackedStringArray = _animation_player.get_animation_list()
 	for candidate in candidates:
 		var wanted := String(candidate).to_lower()
@@ -103,10 +104,14 @@ func _play_first_available(candidates: Array[StringName]) -> void:
 			var normalized := animation_name.to_lower()
 			if normalized == wanted or normalized.ends_with("|" + wanted) or normalized.ends_with("_" + wanted):
 				if _current_animation == StringName(animation_name) and _animation_player.current_animation == animation_name:
-					return
+					return true
 				_current_animation = StringName(animation_name)
 				_animation_player.play(_current_animation)
-				return
+				return true
+	# Preserve the procedural fallback whenever the imported packs lack this state.
+	_animation_player.stop()
+	_current_animation = &""
+	return false
 
 
 func _resolve_rig() -> void:
@@ -115,12 +120,111 @@ func _resolve_rig() -> void:
 		return
 	_skeleton = null
 	_animation_player = null
+	var model_root := player_root.get_node_or_null("Visual/CharacterModel") as Node3D
+	_skeleton = _find_skeleton_recursive(model_root if model_root != null else player_root)
 	if not animation_player_path.is_empty():
 		_animation_player = get_node_or_null(animation_player_path) as AnimationPlayer
-	_skeleton = _find_skeleton_recursive(player_root)
+
+	var animation_packs := player_root.get_node_or_null("AnimationPacks")
+	if _animation_player == null and animation_packs != null:
+		var pack_players: Array[AnimationPlayer] = []
+		_collect_animation_players(animation_packs, pack_players)
+		if not pack_players.is_empty():
+			_animation_player = pack_players[0]
+			_merge_animation_libraries(pack_players, model_root)
 	if _animation_player == null:
 		_animation_player = _find_animation_player_recursive(player_root)
 	_capture_base_pose()
+
+
+func _collect_animation_players(node: Node, results: Array[AnimationPlayer]) -> void:
+	if node is AnimationPlayer:
+		results.append(node as AnimationPlayer)
+	for child in node.get_children():
+		_collect_animation_players(child, results)
+
+
+func _merge_animation_libraries(players: Array[AnimationPlayer], model_root: Node3D) -> void:
+	if players.is_empty():
+		return
+	var primary := players[0]
+	if not primary.has_animation_library(&""):
+		var add_library_error := primary.add_animation_library(&"", AnimationLibrary.new())
+		if add_library_error != OK:
+			push_warning("Could not create the shared humanoid animation library.")
+			return
+	var target_library := primary.get_animation_library(&"")
+	if target_library == null:
+		push_warning("The shared humanoid animation library is unavailable.")
+		return
+
+	_merged_animation_count = 0
+	for source_player in players:
+		for library_name in source_player.get_animation_library_list():
+			var source_library := source_player.get_animation_library(library_name)
+			if source_library == null:
+				continue
+			for animation_name in source_library.get_animation_list():
+				var clip_name := StringName(animation_name)
+				if target_library.has_animation(clip_name):
+					continue
+				var source_clip := source_library.get_animation(animation_name)
+				if source_clip == null:
+					continue
+				var copied_clip := source_clip.duplicate(true) as Animation
+				if copied_clip == null:
+					continue
+				var add_error := target_library.add_animation(clip_name, copied_clip)
+				if add_error != OK:
+					var prefixed_name := StringName("UAL2_" + String(animation_name))
+					if target_library.has_animation(prefixed_name):
+						continue
+					add_error = target_library.add_animation(prefixed_name, copied_clip)
+				if add_error == OK:
+					_merged_animation_count += 1
+
+	# The source libraries contain tracks relative to their own GLB root. The two
+	# Standard packs use the same Quaternius humanoid hierarchy as the player model.
+	if model_root != null:
+		primary.root_node = primary.get_path_to(model_root)
+	primary.active = true
+	primary.clear_caches()
+	print("CharacterAnimationDriver: merged %d imported animation clips." % _merged_animation_count)
+
+
+func get_available_animation_names() -> PackedStringArray:
+	if _animation_player == null:
+		return PackedStringArray()
+	return _animation_player.get_animation_list()
+
+
+func get_merged_animation_count() -> int:
+	return _merged_animation_count
+
+
+func play_named_action(action: StringName) -> bool:
+	var candidates: Array[StringName] = []
+	match String(action).to_lower():
+		"interact":
+			candidates = [&"Interact"]
+		"consume", "eat":
+			candidates = [&"Consume"]
+		"chop":
+			candidates = [&"TreeChopping_Loop", &"Sword_Attack"]
+		"harvest":
+			candidates = [&"Farm_Harvest", &"Interact"]
+		"plant":
+			candidates = [&"Farm_PlantSeed", &"Interact"]
+		"water":
+			candidates = [&"Farm_Watering", &"Interact"]
+		"talk":
+			candidates = [&"Idle_Talking_Loop", &"Idle_Rail_Call", &"Interact"]
+		"yes":
+			candidates = [&"Yes"]
+		_:
+			return false
+	_state = &"action"
+	return _play_first_available(candidates)
 
 
 func _find_skeleton_recursive(node: Node) -> Skeleton3D:
