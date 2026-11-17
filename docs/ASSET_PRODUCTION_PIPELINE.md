@@ -6,7 +6,7 @@ This pipeline separates assets that are actually shipped from assets that are on
 
 | Asset | Status | License | In-game role |
 |---|---|---|---|
-| Quaternius Superhero Male GLB | Integrated in PR #14 branch | CC0 1.0 | First rigged player visual |
+| Quaternius Superhero Male GLB | Proposed integration in PR #20 (pending CI and review) | CC0 1.0 | First rigged player visual and procedural pose source |
 
 The original license is stored at `assets/characters/QUATERNIUS-LICENSE.txt`. The imported GLB contains a humanoid skeleton; the current movement and vehicle poses are procedural Godot bone poses, not authored animation clips.
 
