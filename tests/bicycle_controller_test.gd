@@ -64,13 +64,24 @@ func _run_test() -> void:
 		_fail("Releasing the contextual exit-bike button left interact pressed.")
 		return
 
-	var start_z: float = bicycle.global_position.z
+	var start_position: Vector3 = bicycle.global_position
+	var forward_before: Vector3 = -bicycle.global_basis.z.normalized()
 	Input.action_press("bike_pedal")
+	var pedal_action_seen := Input.is_action_pressed("bike_pedal")
+	var max_observed_speed := 0.0
 	for _frame in range(36):
 		await physics_frame
+		max_observed_speed = maxf(max_observed_speed, absf(float(bicycle.get("_speed"))))
 	Input.action_release("bike_pedal")
-	if bicycle.global_position.z <= start_z + 0.25:
-		_fail("Pedaling did not move the bicycle forward.")
+	var end_position: Vector3 = bicycle.global_position
+	var travelled_forward := (end_position - start_position).dot(forward_before)
+	print("BIKE_DIAGNOSTIC pedal_action=%s start=%s end=%s forward=%s travelled=%f speed=%f max_speed=%f velocity=%s real_velocity=%s grounded=%s driver_valid=%s" % [
+		str(pedal_action_seen), str(start_position), str(end_position), str(forward_before),
+		travelled_forward, float(bicycle.get("_speed")), max_observed_speed,
+		str(bicycle.velocity), str(bicycle.get_real_velocity()), str(bicycle.is_on_floor()),
+		str(is_instance_valid(bicycle.get("driver")))])
+	if not pedal_action_seen or max_observed_speed < 0.2 or travelled_forward <= 0.25:
+		_fail("Pedaling did not move the bicycle forward along its facing direction.")
 		return
 
 	var start_rotation: float = bicycle.rotation.y
