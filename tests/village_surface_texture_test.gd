@@ -107,10 +107,16 @@ const SAMPLE_COLORS := [
 
 
 const DETAIL_COLORS := [
-	Color(0.25, 0.25, 0.27), Color(0.68, 0.32, 0.20)
+	Color(0.25, 0.25, 0.27), Color(0.68, 0.32, 0.20),
+	Color(0.24, 0.38, 0.42), Color(0.43, 0.48, 0.46),
+	Color(0.22, 0.34, 0.19), Color(0.72, 0.58, 0.38),
+	Color(0.55, 0.25, 0.20), Color(0.18, 0.22, 0.26)
 ]
 
-const DETAIL_NAMES := ["basalt", "red_sandstone"]
+const DETAIL_NAMES := [
+	"basalt", "red_sandstone", "wet_stone", "harbor_paving",
+	"pine_floor", "coastal_sand", "terracotta", "asphalt"
+]
 
 func _initialize() -> void:
 	call_deferred("_run_test")
