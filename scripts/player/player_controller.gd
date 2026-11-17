@@ -30,7 +30,7 @@ func _physics_process(delta: float) -> void:
 	if move_direction.length_squared() > 1.0:
 		move_direction = move_direction.normalized()
 
-	var sprint_requested := Input.is_action_pressed(&"sprint") and input_vector.length_squared() > 0.01
+	var sprint_requested := InputMap.has_action(&"sprint") and Input.is_action_pressed(&"sprint") and input_vector.length_squared() > 0.01
 	var effective_move_speed := move_speed
 	if sprint_requested:
 		effective_move_speed *= sprint_multiplier
