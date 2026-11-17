@@ -147,10 +147,10 @@ func _run_test() -> void:
 			_fail("High-detail surface did not import at 512x512: " + path)
 			return
 		var hd_material := village.call("_material", HD_COLORS[index]) as StandardMaterial3D
-		if hd_material == null or hd_material.albedo_texture == null:
+		if hd_material == null or hd_material.roughness_texture == null:
 			_fail("No high-detail raster texture bound for sample %d." % index)
 			return
-		if hd_material.albedo_texture.resource_path != path:
+		if hd_material.roughness_texture.resource_path != path:
 			_fail("Wrong high-detail texture at sample %d." % index)
 			return
 
