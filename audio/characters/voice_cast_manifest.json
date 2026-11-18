@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "asset_pack": "gta_ghibli_arabic_character_and_wildlife_audio",
+  "status": "voice_cast_plan_plus_runtime_synthesized_wildlife_calls",
+  "character_dialogue": {
+    "status": "recording_required",
+    "audio_directory": "res://audio/characters/",
+    "filename_pattern": "{character_id}/{line_id}_{emotion}.ogg",
+    "language": "Arabic",
+    "required_emotions": [
+      "joy",
+      "sadness",
+      "fear",
+      "anger",
+      "surprise",
+      "tenderness",
+      "whisper",
+      "shout"
+    ],
+    "note_ar": "لا توجد حالياً تسجيلات ممثلين صوتيين للشخصيات. هذا الملف خطة أداء وتسمية فقط."
+  },
+  "wildlife_calls": {
+    "status": "runtime_procedural_tonal_calls",
+    "implementation": "res://scripts/audio/wildlife_voice.gd",
+    "species": [
+      {
+        "id": "deer",
+        "name_ar": "غزال",
+        "call_ar": "نداء غزال اصطناعي قصير"
+      },
+      {
+        "id": "rabbit",
+        "name_ar": "أرنب",
+        "call_ar": "صرير أرنب اصطناعي خافت"
+      },
+      {
+        "id": "gull",
+        "name_ar": "نورس",
+        "call_ar": "نداء نورس اصطناعي متقطع"
+      }
+    ],
+    "note_ar": "الأصوات الحيوانية تُولد برمجياً وقت التشغيل كطبقة صوت أولية، وليست تسجيلات حيوانات واقعية."
+  }
+}
