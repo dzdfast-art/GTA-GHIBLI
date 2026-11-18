@@ -70,6 +70,79 @@ GTA-GHIBLI/
 └── project.godot
 ```
 
+
+## Second reference: Android GTA SA `files` directory screenshot
+
+A second user-provided screenshot shows the Android app data path ending in:
+
+`.../com.rockstargames.gtasa/files`
+
+Visible directory and archive names:
+- Directories: `texdb`, `cutscene`, `gta3`, `gta_int`, `menu`, `mobile`, `player`, `playerhi`, `txd`.
+- Archive-like files: `cutscene.img`, `gta3.img`, `gta_int.img`, `player.img`.
+
+The screenshot confirms these names are visible in that installation, but it does **not** reveal the contents, internal record formats, or exact runtime loading rules of those directories and `.img` files. Treat the names as content-family clues only:
+- `player` / `playerhi`: likely player-related resource families, to be verified from lawful technical documentation rather than assumed.
+- `menu`: menu-related resource family.
+- `mobile`: mobile-specific resources/settings may be present; contents are not visible.
+- `cutscene`: cinematic-related resources may be present; contents are not visible.
+- `gta3` / `gta_int`: named archive groups; exact role is not established by the screenshot.
+- `texdb` / `txd`: texture-related names, but their exact binary layout is not established by the screenshot.
+
+### Godot adaptation (original content only)
+
+Use equivalent **organizational** categories without copying the game's protected assets or binary archives:
+
+```text
+assets/
+  characters/player/
+  characters/npcs/
+  vehicles/cars/
+  vehicles/bicycles/
+  world/exterior/
+  world/interiors/
+  world/roads/
+  ui/menus/
+  ui/hud/
+  textures/characters/
+  textures/world/
+  animations/humanoid/
+  audio/voices/ar/
+  audio/ambience/
+  audio/vehicles/
+  cinematics/original/
+data/
+  missions/
+  characters/
+  vehicles/
+  world/
+  localization/ar/
+scenes/
+  player/
+  npcs/
+  vehicles/
+  world/
+  interiors/
+  ui/
+  cinematics/
+```
+
+Prefer Godot-friendly `.glb/.gltf` for runtime meshes and animation, compressed textures with mobile-appropriate dimensions, and streamed/compressed audio. Keep source files and license/source metadata. Do not create empty placeholder directories or add archives merely to imitate the screenshot.
+
+### Difference between reference and current GTA GHIBLI branch
+
+The branch tree at `b6a40749463bd2a00931a5db27f8d040565d6206` contained no `.glb`, `.gltf`, `.fbx`, or `.blend` model files, no animation-named assets, and no `.img` archives. It therefore does not yet contain an equivalent human character/animation asset library or the visible archive groups from this Android screenshot. The screenshot is a reference, not an asset source or evidence that GTA GHIBLI matches the original game.
+
+### Next lawful implementation order
+
+1. Import an original CC0 humanoid GLB and verify its skeleton in Godot.
+2. Import and retarget selected CC0 humanoid clips; implement idle/walk/run/turn/jump and vehicle mount/dismount states.
+3. Keep the physics player root and attach the visible character rig as a visual child.
+4. Add a bicycle rider pose and car seating/steering poses, tested at runtime.
+5. Build one road block and adjoining building/interior modules from licensed original assets.
+6. Connect map/radar points to a shared original road graph and objective data.
+7. Expand to districts only after the vertical slice imports, parses, renders and runs within Android memory/frame-time budgets.
+
 ## Arabic voice and emotion pipeline
 
 - Store each original Arabic voice line as an individual compressed audio asset, grouped by character and scene.

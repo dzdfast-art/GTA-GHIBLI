@@ -38,6 +38,8 @@ jobs:
 
       - name: Validate OBJ mesh surface budgets
         run: python tools/validate_obj_surface_counts.py
+      - name: Validate licensed asset manifest and GLB integrity
+        run: python tools/validate_asset_manifest.py
 
       - name: Audit Android privacy permissions
         run: python tools/privacy_audit.py
@@ -53,6 +55,7 @@ jobs:
             res://main.gd \
             res://scripts/audio/nature_ambience.gd \
             res://scripts/player/player_controller.gd \
+            res://scripts/characters/character_animation_driver.gd \
             res://scripts/vehicles/driveable_car.gd \
             res://scripts/vehicles/bicycle_controller.gd \
             res://scripts/world/house_interior_portal.gd \
@@ -64,6 +67,9 @@ jobs:
             res://scripts/systems/player_needs.gd \
             res://scripts/systems/consumable_inventory.gd \
             res://scripts/systems/player_wallet.gd \
+            res://scripts/systems/player_health.gd \
+            res://scripts/ui/game_hud.gd \
+            res://scripts/ui/minimap_radar.gd \
             res://scripts/world/consumable_shop.gd \
             res://scripts/camera/third_person_camera.gd \
             res://scripts/ui/mobile_controls.gd \
@@ -71,7 +77,6 @@ jobs:
             res://scripts/ui/virtual_joystick.gd \
             res://scripts/world/willow_village.gd \
             res://scripts/characters/mira_npc.gd \
-            res://scripts/characters/world_npc_actor.gd \
             res://scripts/characters/world_npc_actor.gd \
             res://scripts/characters/story_character_director.gd \
             res://scripts/missions/mission_manager.gd \
@@ -94,6 +99,14 @@ jobs:
 
       - name: Test pause menu and saved settings
         run: godot --headless --path . --script res://tests/pause_settings_menu_test.gd
+      - name: Test player animation adapter and sprint state
+        run: godot --headless --path . --script res://tests/character_animation_driver_test.gd
+
+      - name: Test player health, damage, healing and restore
+        run: godot --headless --path . --script res://tests/player_health_test.gd
+
+      - name: Test shared gameplay HUD and hidden legacy mission panels
+        run: godot --headless --path . --script res://tests/game_hud_singleton_test.gd
 
       - name: Test player wallet and currency
         run: godot --headless --path . --script res://tests/player_wallet_test.gd
@@ -124,6 +137,32 @@ jobs:
 
       - name: Test bicycle mount, riding controls, and dismount
         run: godot --headless --path . --script res://tests/bicycle_controller_test.gd
+      - name: Test bicycle wall collision speed
+        run: godot --headless --path . --script res://tests/bicycle_wall_test.gd
+
+      - name: Test bicycle invalid driver cleanup
+        run: godot --headless --path . --script res://tests/bicycle_driver_freed_test.gd
+
+      - name: Test bicycle invalid exit cleanup
+        run: godot --headless --path . --script res://tests/bicycle_exit_invalid_driver_test.gd
+
+      - name: Test bicycle wheel orientation
+        run: godot --headless --path . --script res://tests/bicycle_wheel_orientation_test.gd
+
+      - name: Test proportional bicycle steering
+        run: godot --headless --path . --script res://tests/bicycle_proportional_steering_test.gd
+
+      - name: Test bicycle flick steering
+        run: godot --headless --path . --script res://tests/bicycle_flick_steering_test.gd
+
+      - name: Test on-foot input release when mounting bicycle
+        run: godot --headless --path . --script res://tests/bicycle_walk_release_test.gd
+
+      - name: Test bicycle steering direction
+        run: godot --headless --path . --script res://tests/bicycle_steer_direction_test.gd
+
+      - name: Test bicycle HUD and interaction distance path
+        run: godot --headless --path . --script res://tests/bicycle_hud_interactor_path_test.gd
 
       - name: Test house interior entry and exit
         run: godot --headless --path . --script res://tests/house_interior_portal_test.gd

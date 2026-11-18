@@ -74,6 +74,10 @@ func _interact_with_nearest() -> void:
 		try_interact(target)
 
 
+func get_nearest_interactable() -> Node:
+	return _get_nearest_target()
+
+
 func _get_nearest_target() -> Node:
 	var actor := get_parent() as Node3D
 	if actor == null:
