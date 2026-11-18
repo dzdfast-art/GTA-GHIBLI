@@ -131,8 +131,10 @@ func _run_test() -> void:
 	if steering_wheel_pivot.basis.is_equal_approx(steering_wheel_neutral_basis):
 		_fail("Steering input did not rotate the visible steering wheel.")
 		return
+	Input.action_press("ui_up")
 	for _frame in range(24):
 		await physics_frame
+	Input.action_release("ui_up")
 	if not steering_wheel_pivot.basis.is_equal_approx(steering_wheel_neutral_basis):
 		_fail("The visible steering wheel did not return to center after steering input was released.")
 		return
