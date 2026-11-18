@@ -192,6 +192,7 @@ func _show_dialogue()->void:
 	_play_greeting_voice()
 
 func _play_greeting_voice()->void:
+	_apply_greeting_voice_mix()
 	if _voice_player==null or _greeting.is_empty():return
 	var path:=str(_greeting.get("audio_path",""))
 	if not path.is_empty() and ResourceLoader.exists(path):
@@ -206,6 +207,17 @@ func _play_greeting_voice()->void:
 	if not url.is_empty():
 		var error:=_voice_request.request(url)
 		if error!=OK:push_warning("Could not start Mira voice download.")
+
+func _apply_greeting_voice_mix()->void:
+	# A small tonal adjustment is only a mix aid; the final emotional delivery must be recorded in the voice take.
+	var emotion_id:=str(_greeting.get("emotion_id","joy"))
+	match emotion_id:
+		"sadness": _voice_player.pitch_scale=0.985; _voice_player.volume_db=-1.5
+		"fear": _voice_player.pitch_scale=1.015; _voice_player.volume_db=-1.0
+		"anger": _voice_player.pitch_scale=1.0; _voice_player.volume_db=0.5
+		"surprise": _voice_player.pitch_scale=1.045; _voice_player.volume_db=0.0
+		"tenderness": _voice_player.pitch_scale=0.97; _voice_player.volume_db=-1.0
+		_: _voice_player.pitch_scale=1.025; _voice_player.volume_db=-0.5
 
 func _on_voice_downloaded(result:int,response_code:int,_headers:PackedStringArray,body:PackedByteArray)->void:
 	if result!=HTTPRequest.RESULT_SUCCESS or response_code!=200 or body.is_empty():

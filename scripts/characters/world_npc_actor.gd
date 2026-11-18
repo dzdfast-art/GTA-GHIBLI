@@ -76,6 +76,7 @@ func _load_lines() -> void:
 	if lines is Array: _lines = lines
 
 func _play_line_audio(line: Dictionary) -> void:
+	_apply_voice_mix(line)
 	var local_path := str(line.get("audio_path",""))
 	if not local_path.is_empty() and ResourceLoader.exists(local_path):
 		_voice.stream = load(local_path)
@@ -94,6 +95,12 @@ func _play_line_audio(line: Dictionary) -> void:
 	var error := _voice_request.request(url)
 	if error != OK:
 		push_warning("Arabic voice download could not start for " + character_id)
+
+func _apply_voice_mix(line: Dictionary) -> void:
+	# Subtle playback shaping supports the performance; it does not replace expressive acting.
+	var profile: Dictionary = line.get("mix_profile", {})
+	_voice.pitch_scale = clampf(float(profile.get("pitch_scale", 1.0)), 0.94, 1.06)
+	_voice.volume_db = clampf(float(profile.get("volume_db", 0.0)), -3.0, 1.5)
 
 func _cache_path(line_id: String) -> String:
 	return "user://voice_cache/%s_%s.mp3" % [character_id,line_id]
