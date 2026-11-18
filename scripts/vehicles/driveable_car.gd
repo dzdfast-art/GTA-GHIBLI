@@ -137,6 +137,7 @@ func _build_vehicle_visuals() -> void:
 	_add_box("RearTrunk", Vector3(1.82, 0.22, 0.78), Vector3(0.0, 1.28, 1.56), Color(0.18, 0.39, 0.30))
 	_add_box("Cabin", Vector3(1.53, 0.84, 2.10), Vector3(0.0, 1.62, 0.08), Color(0.16, 0.34, 0.28))
 	_add_box("Roof", Vector3(1.42, 0.16, 1.34), Vector3(0.0, 2.12, 0.12), Color(0.20, 0.43, 0.32))
+	_build_vehicle_interior()
 	_add_box_rotated("FrontWindshield", Vector3(1.40, 0.62, 0.055), Vector3(0.0, 1.70, -0.82), Vector3(deg_to_rad(-24.0), 0.0, 0.0), Color(0.10, 0.20, 0.24))
 	_add_box_rotated("RearWindshield", Vector3(1.34, 0.54, 0.055), Vector3(0.0, 1.69, 1.05), Vector3(deg_to_rad(24.0), 0.0, 0.0), Color(0.10, 0.20, 0.24))
 	for side in [-1.0, 1.0]:
@@ -298,6 +299,66 @@ func _update_wheel_visuals(steering_input: float, delta: float) -> void:
 	for wheel in _rear_wheels:
 		if is_instance_valid(wheel):
 			wheel.rotation = Vector3(_wheel_roll_angle, 0.0, 0.0)
+
+func _build_vehicle_interior() -> void:
+	# Dark, low-cost interior pieces remain visible through the tinted glazing.
+	var seat_color := Color(0.075, 0.095, 0.085)
+	var seat_trim := Color(0.13, 0.16, 0.14)
+	var dashboard_color := Color(0.055, 0.075, 0.072)
+	var metal_trim := Color(0.34, 0.39, 0.36)
+	_add_box("Dashboard", Vector3(1.42, 0.26, 0.34), Vector3(0.0, 1.38, -0.76), dashboard_color)
+	_add_box("DashboardTop", Vector3(1.48, 0.07, 0.38), Vector3(0.0, 1.55, -0.77), Color(0.09, 0.12, 0.11))
+	_add_box("InstrumentCluster", Vector3(0.43, 0.16, 0.10), Vector3(-0.47, 1.51, -0.57), Color(0.025, 0.045, 0.043))
+	_add_box("InstrumentDisplay", Vector3(0.28, 0.075, 0.035), Vector3(-0.47, 1.52, -0.514), Color(0.12, 0.33, 0.31))
+	_add_box("GloveBox", Vector3(0.54, 0.16, 0.08), Vector3(0.43, 1.29, -0.57), seat_trim)
+	_add_box("CenterConsole", Vector3(0.30, 0.18, 0.82), Vector3(0.0, 1.12, -0.02), dashboard_color)
+	_add_box("CenterConsoleTrim", Vector3(0.22, 0.035, 0.42), Vector3(0.0, 1.235, -0.10), metal_trim)
+	_add_box("GearSelector", Vector3(0.08, 0.17, 0.08), Vector3(0.0, 1.34, 0.04), Color(0.20, 0.23, 0.21))
+	_add_box("FrontSeatBaseLeft", Vector3(0.54, 0.17, 0.58), Vector3(-0.43, 1.00, -0.12), seat_color)
+	_add_box("FrontSeatBackLeft", Vector3(0.54, 0.72, 0.18), Vector3(-0.43, 1.40, 0.12), seat_color)
+	_add_box("FrontSeatHeadrestLeft", Vector3(0.34, 0.24, 0.16), Vector3(-0.43, 1.88, 0.18), seat_trim)
+	_add_box("FrontSeatBaseRight", Vector3(0.54, 0.17, 0.58), Vector3(0.43, 1.00, -0.12), seat_color)
+	_add_box("FrontSeatBackRight", Vector3(0.54, 0.72, 0.18), Vector3(0.43, 1.40, 0.12), seat_color)
+	_add_box("FrontSeatHeadrestRight", Vector3(0.34, 0.24, 0.16), Vector3(0.43, 1.88, 0.18), seat_trim)
+	_add_box("RearSeatBase", Vector3(1.24, 0.17, 0.48), Vector3(0.0, 1.00, 0.76), seat_color)
+	_add_box("RearSeatBack", Vector3(1.24, 0.64, 0.17), Vector3(0.0, 1.36, 0.98), seat_color)
+	_add_box("InteriorDoorLeft", Vector3(0.10, 0.40, 0.94), Vector3(-0.75, 1.08, 0.12), seat_trim)
+	_add_box("InteriorDoorRight", Vector3(0.10, 0.40, 0.94), Vector3(0.75, 1.08, 0.12), seat_trim)
+	_add_box("InteriorArmrestLeft", Vector3(0.12, 0.08, 0.52), Vector3(-0.70, 1.24, 0.10), metal_trim)
+	_add_box("InteriorArmrestRight", Vector3(0.12, 0.08, 0.52), Vector3(0.70, 1.24, 0.10), metal_trim)
+	var steering_column := MeshInstance3D.new()
+	steering_column.name = "SteeringColumn"
+	var column_mesh := CylinderMesh.new()
+	column_mesh.top_radius = 0.045
+	column_mesh.bottom_radius = 0.055
+	column_mesh.height = 0.40
+	steering_column.mesh = column_mesh
+	steering_column.position = Vector3(-0.48, 1.43, -0.42)
+	steering_column.rotation.x = PI * 0.5
+	var column_material := StandardMaterial3D.new()
+	column_material.albedo_color = Color(0.10, 0.12, 0.11)
+	column_material.metallic = 0.28
+	steering_column.material_override = column_material
+	add_child(steering_column)
+	var steering_wheel := MeshInstance3D.new()
+	steering_wheel.name = "SteeringWheel"
+	var wheel_mesh := TorusMesh.new()
+	wheel_mesh.inner_radius = 0.245
+	wheel_mesh.outer_radius = 0.285
+	wheel_mesh.rings = 28
+	wheel_mesh.ring_segments = 8
+	steering_wheel.mesh = wheel_mesh
+	steering_wheel.position = Vector3(-0.48, 1.57, -0.53)
+	steering_wheel.rotation.x = PI * 0.5
+	var wheel_material := StandardMaterial3D.new()
+	wheel_material.albedo_color = Color(0.045, 0.055, 0.05)
+	wheel_material.roughness = 0.46
+	wheel_material.metallic = 0.14
+	steering_wheel.material_override = wheel_material
+	add_child(steering_wheel)
+	_add_box("SteeringWheelHub", Vector3(0.12, 0.12, 0.08), Vector3(-0.48, 1.57, -0.55), metal_trim)
+	_add_box("FrontWiperLeft", Vector3(0.68, 0.035, 0.035), Vector3(-0.36, 1.36, -0.92), Color(0.035, 0.045, 0.042))
+	_add_box("FrontWiperRight", Vector3(0.68, 0.035, 0.035), Vector3(0.36, 1.36, -0.92), Color(0.035, 0.045, 0.042))
 
 func _make_emissive_material(base_color: Color, glow_color: Color, idle_energy: float) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
