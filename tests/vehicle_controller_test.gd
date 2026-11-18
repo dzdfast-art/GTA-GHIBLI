@@ -26,7 +26,7 @@ func _run_test() -> void:
 	car.position = Vector3(2.4, 0.0, 0.0)
 	root.add_child(car)
 
-	for required_visual in ["Roof", "FrontGrille", "FrontWindshield", "RearWindshield", "FrontWheelLeft", "RearWheelRight"]:
+	for required_visual in ["Roof", "FrontGrille", "FrontWindshield", "RearWindshield", "FrontWheelLeft", "RearWheelRight", "HeadlightBeamLeft", "HeadlightBeamRight", "BrakeLightLeft", "ReverseLightRight", "FrontIndicatorLeft", "RearIndicatorRight"]:
 		if car.get_node_or_null(required_visual) == null:
 			_fail("The detailed sedan visual is missing: " + required_visual)
 			return
@@ -46,6 +46,19 @@ func _run_test() -> void:
 	if not bool(player.get_node("Visual").visible):
 		_fail("The humanoid driver was hidden while seated in the car.")
 		return
+
+	# Verify the automatic headlight system can illuminate both beams.
+	car.call("_set_headlights_enabled", true)
+	var left_beam := car.get_node("HeadlightBeamLeft") as SpotLight3D
+	var right_beam := car.get_node("HeadlightBeamRight") as SpotLight3D
+	if not left_beam.visible or not right_beam.visible:
+		_fail("Automatic headlight activation did not show both beams.")
+		return
+	var headlamp_material := (car.get_node("HeadlampLeft") as MeshInstance3D).material_override as StandardMaterial3D
+	if headlamp_material == null or headlamp_material.emission_energy_multiplier < 1.5:
+		_fail("Headlamp lenses did not illuminate with the beams.")
+		return
+	car.call("_set_headlights_enabled", false)
 
 	# Forward acceleration also animates the visible wheels.
 	var front_wheel := car.get_node("FrontWheelRight") as Node3D
@@ -67,6 +80,10 @@ func _run_test() -> void:
 	Input.action_press("ui_down")
 	for _frame in range(30):
 		await physics_frame
+	var reverse_light_material := (car.get_node("ReverseLightLeft") as MeshInstance3D).material_override as StandardMaterial3D
+	if reverse_light_material == null or reverse_light_material.emission_energy_multiplier < 1.0:
+		_fail("Reverse lights did not illuminate while reversing.")
+		return
 	Input.action_release("ui_down")
 	if car.global_position.z <= reverse_start_z + 0.25:
 		_fail("Reverse input did not move the vehicle backward.")
@@ -86,6 +103,12 @@ func _run_test() -> void:
 	if absf(front_wheel.rotation.y) < deg_to_rad(5.0):
 		_fail("Steering input did not angle the visible front wheels.")
 		return
+	car.set("_turn_signal_clock", 0.0)
+	car.call("_update_vehicle_lighting", Vector2(1.0, 0.0), 0.1)
+	var indicator_material := (car.get_node("FrontIndicatorRight") as MeshInstance3D).material_override as StandardMaterial3D
+	if indicator_material == null or indicator_material.emission_energy_multiplier < 1.5:
+		_fail("Right turn indicator did not flash while steering right.")
+		return
 
 	# Braking should reduce speed instead of continuing to accelerate.
 	var speed_before_braking: float = absf(float(car.get("_speed")))
@@ -93,6 +116,10 @@ func _run_test() -> void:
 	Input.action_press("vehicle_brake")
 	for _frame in range(12):
 		await physics_frame
+	var brake_light_material := (car.get_node("BrakeLightLeft") as MeshInstance3D).material_override as StandardMaterial3D
+	if brake_light_material == null or brake_light_material.emission_energy_multiplier < 2.0:
+		_fail("Brake lights did not brighten while braking.")
+		return
 	Input.action_release("ui_up")
 	Input.action_release("vehicle_brake")
 	var speed_after_braking: float = absf(float(car.get("_speed")))
