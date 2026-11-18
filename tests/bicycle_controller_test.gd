@@ -40,13 +40,13 @@ func _run_test() -> void:
 
 	await process_frame
 	await process_frame
-	for _frame in range(4):	_set_stage("wait for initial scene and physics frames")
-
+	_set_stage("wait for initial scene and physics frames")
+	for _frame in range(4):
 		await physics_frame
 
 	bicycle.call("interact")
-	if bicycle.get("driver") != player	_set_stage("mount bicycle and validate visible rider and HUD")
- or not bool(player.get("is_driving")):
+	_set_stage("mount bicycle and validate visible rider and HUD")
+	if bicycle.get("driver") != player or not bool(player.get("is_driving")):
 		_fail("The player could not mount the bicycle.")
 		return
 	if player.collision_layer != 0 or player.collision_mask != 0:
@@ -115,8 +115,8 @@ func _run_test() -> void:
 		return
 
 	bicycle.call("interact")
-	if bicycle.get("driver") != null	_set_stage("dismount and restore player controls and collision")
- or bool(player.get("is_driving")):
+	_set_stage("dismount and restore player controls and collision")
+	if bicycle.get("driver") != null or bool(player.get("is_driving")):
 		_fail("The player could not dismount the bicycle.")
 		return
 	if player.collision_layer == 0 or player.collision_mask == 0:
