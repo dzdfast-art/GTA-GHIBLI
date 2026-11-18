@@ -32,11 +32,15 @@ func _run_test() -> void:
 	car.position = Vector3(2.4, 0.0, 0.0)
 	root.add_child(car)
 
-	for required_visual in ["Roof", "FrontGrille", "FrontWindshield", "RearWindshield", "FrontWheelLeft", "RearWheelRight", "HeadlightBeamLeft", "HeadlightBeamRight", "BrakeLightLeft", "ReverseLightRight", "FrontIndicatorLeft", "RearIndicatorRight"]:
+	for required_visual in ["Roof", "FrontGrille", "FrontWindshield", "RearWindshield", "FrontWheelLeft", "RearWheelRight", "HeadlightBeamLeft", "HeadlightBeamRight", "BrakeLightLeft", "ReverseLightRight", "FrontIndicatorLeft", "RearIndicatorRight", "Dashboard", "FrontSeatBackLeft", "FrontSeatBackRight", "RearSeatBack", "CenterConsole", "SteeringColumn", "SteeringWheel", "SteeringWheelHub"]:
 		if car.get_node_or_null(required_visual) == null:
 			_fail("The detailed sedan visual is missing: " + required_visual)
 			return
 
+	var steering_wheel_mesh := (car.get_node("SteeringWheel") as MeshInstance3D).mesh
+	if steering_wheel_mesh == null or not steering_wheel_mesh is TorusMesh:
+		_fail("The sedan interior is missing a rendered steering-wheel ring.")
+		return
 	for _frame in range(3):
 		await physics_frame
 
