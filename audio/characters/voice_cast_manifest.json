@@ -2,124 +2,86 @@
   "schema_version": 2,
   "language": "ar",
   "language_name": "العربية",
-  "status": "voice_cast_and_recording_paths_defined_recordings_pending",
-  "character_dialogue": {
-    "status": "recording_required",
-    "audio_directory": "res://audio/characters/",
-    "filename_pattern": "{character_id}/{line_id}.ogg",
-    "preferred_format": "OGG Vorbis mono 22050 Hz",
-    "language": "Arabic",
-    "emotions": [
-      "joy",
-      "sadness",
-      "fear",
-      "anger",
-      "surprise",
-      "tenderness",
-      "whisper",
-      "shout"
-    ],
-    "note_ar": "هذه ملفات تعريف ومسارات فقط؛ لا توجد تسجيلات ممثلين صوتيين مرفقة بعد."
+  "status": "generated_26_arabic_dialogue_clips_remote_cached_on_first_play",
+  "voice_provider": "HeyGen Voice",
+  "voices": {
+    "female": "Lamia - Clear & Professional",
+    "male": "Bilal - Smart & Engaging",
+    "deep_male": "Fouad - Deep & Evocative",
+    "alternate_female": "Razan - Vibrant & Punchy"
   },
-  "character_profiles": {
-    "leo_bennett": {
-      "name_ar": "ليو بينيت",
-      "voice": "شاب، صوت رجالي واضح ودافئ، حازم عند الخطر"
-    },
+  "characters": {
     "mira_caretaker": {
       "name_ar": "ميرا",
-      "voice": "نسائي دافئ وحنون، ترحيب هادئ"
-    },
-    "nora_blake": {
-      "name_ar": "نورا بليك",
-      "voice": "نسائي واثق وسريع، نبرة صحفية دقيقة"
-    },
-    "mia_bennett": {
-      "name_ar": "ميا بينيت",
-      "voice": "نسائي شاب، مرح ومتغير عاطفياً"
-    },
-    "claire_bennett": {
-      "name_ar": "كلير بينيت",
-      "voice": "نسائي ناضج، حنان وحزن مكبوت"
-    },
-    "the_broker": {
-      "name_ar": "الوسيط",
-      "voice": "رجالي منخفض وبارد ومهدد"
-    },
-    "thomas_bennett": {
-      "name_ar": "توماس بينيت",
-      "voice": "رجالي ناضج ومتعب ومشحون بالندم"
+      "voice": "Lamia",
+      "line_count": 1
     },
     "nader_harbor": {
       "name_ar": "نادر",
-      "voice": "رجالي متوسط العمر، ودود ومرح"
+      "voice": "Bilal",
+      "line_count": 2
     },
     "salma_harbor": {
       "name_ar": "سلمى",
-      "voice": "نسائي واضح وفضولي"
+      "voice": "Razan",
+      "line_count": 2
     },
     "rami_pines": {
       "name_ar": "رامي",
-      "voice": "رجالي هادئ ومطمئن"
+      "voice": "Bilal",
+      "line_count": 2
     },
     "hala_pines": {
       "name_ar": "هالة",
-      "voice": "نسائي حازم ومتعاطف"
+      "voice": "Lamia",
+      "line_count": 2
     },
     "fares_valley": {
       "name_ar": "فارس",
-      "voice": "رجالي خشن قليلاً وصريح"
+      "voice": "Fouad",
+      "line_count": 2
     },
     "layla_valley": {
       "name_ar": "ليلى",
-      "voice": "نسائي واثق ومتزن"
+      "voice": "Razan",
+      "line_count": 2
     },
     "yasser_coast": {
       "name_ar": "ياسر",
-      "voice": "رجالي بحري ودود"
+      "voice": "Bilal",
+      "line_count": 2
     },
     "maryam_coast": {
       "name_ar": "مريم",
-      "voice": "نسائي قوي وواضح"
+      "voice": "Lamia",
+      "line_count": 2
+    },
+    "nora_blake": {
+      "name_ar": "نورا بليك",
+      "voice": "Razan",
+      "line_count": 2
+    },
+    "mia_bennett": {
+      "name_ar": "ميا بينيت",
+      "voice": "Razan",
+      "line_count": 2
+    },
+    "claire_bennett": {
+      "name_ar": "كلير بينيت",
+      "voice": "Lamia",
+      "line_count": 2
+    },
+    "the_broker": {
+      "name_ar": "الوسيط",
+      "voice": "Fouad",
+      "line_count": 2
+    },
+    "thomas_bennett": {
+      "name_ar": "توماس بينيت",
+      "voice": "Bilal",
+      "line_count": 1
     }
   },
-  "wildlife_calls": {
-    "status": "procedural_fallback_recordings_pending",
-    "implementation": "res://scripts/audio/wildlife_voice.gd",
-    "species": [
-      {
-        "id": "deer",
-        "audio_path": "res://audio/wildlife/deer_call.ogg"
-      },
-      {
-        "id": "rabbit",
-        "audio_path": "res://audio/wildlife/rabbit_call.ogg"
-      },
-      {
-        "id": "gull",
-        "audio_path": "res://audio/wildlife/gull_call.ogg"
-      },
-      {
-        "id": "dog",
-        "audio_path": "res://audio/wildlife/dog_call.ogg"
-      },
-      {
-        "id": "cat",
-        "audio_path": "res://audio/wildlife/cat_call.ogg"
-      },
-      {
-        "id": "chicken",
-        "audio_path": "res://audio/wildlife/chicken_call.ogg"
-      },
-      {
-        "id": "cow",
-        "audio_path": "res://audio/wildlife/cow_call.ogg"
-      },
-      {
-        "id": "horse",
-        "audio_path": "res://audio/wildlife/horse_call.ogg"
-      }
-    ],
-    "note_ar": "الأصوات الحالية نغمات اصطناعية مؤقتة. تستبدل تلقائياً بملفات OGG الحقيقية عند إضافتها."
-  }
+  "cache_policy": "download once into user://voice_cache/ and play from local cache on subsequent launches",
+  "note_ar": "تم توليد 26 مقطعاً صوتياً عربياً. يتم تنزيل المقاطع عند أول سماع وتخزينها على الجهاز. يلزم الإنترنت لأول تشغيل لكل مقطع؛ بعد التخزين تعمل الأصوات دون إنترنت."
 }

@@ -23,14 +23,40 @@
     ],
     "performance_direction_ar": "ابدئي بتحية مشرقة ومبتسمة، ثم اجعلي عبارة لقد اشتقنا إلى وجوه جديدة هنا أكثر حناناً، واختمي السؤال بأمل ولطف دون مبالغة.",
     "audio_path": "res://assets/audio/dialogue/ar/mira_greeting_001.ogg",
-    "audio_status": "pending_generation"
+    "audio_status": "generated_remote_cache_on_first_play",
+    "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/033e70e372284077883e538608b65b69/id=a7837ad72aa2436e96eaa03fd6122601.mp3"
   },
   "emotion_library": [
-    {"id": "joy", "name_ar": "فرح", "direction_ar": "نبرة مشرقة وخفيفة مع ابتسامة مسموعة"},
-    {"id": "sadness", "name_ar": "حزن", "direction_ar": "نبرة هادئة ومنخفضة مع وقفات طبيعية"},
-    {"id": "fear", "name_ar": "خوف", "direction_ar": "صوت متردد قليلاً ونَفَس أسرع دون صراخ"},
-    {"id": "anger", "name_ar": "غضب", "direction_ar": "نبرة حازمة ومشدودة دون صراخ مصطنع"},
-    {"id": "surprise", "name_ar": "دهشة", "direction_ar": "بداية قصيرة مرتفعة ثم استقرار طبيعي"},
-    {"id": "tenderness", "name_ar": "حنان", "direction_ar": "صوت لين وقريب وهادئ"}
-  ]
+    {
+      "id": "joy",
+      "name_ar": "فرح",
+      "direction_ar": "نبرة مشرقة وخفيفة مع ابتسامة مسموعة"
+    },
+    {
+      "id": "sadness",
+      "name_ar": "حزن",
+      "direction_ar": "نبرة هادئة ومنخفضة مع وقفات طبيعية"
+    },
+    {
+      "id": "fear",
+      "name_ar": "خوف",
+      "direction_ar": "صوت متردد قليلاً ونَفَس أسرع دون صراخ"
+    },
+    {
+      "id": "anger",
+      "name_ar": "غضب",
+      "direction_ar": "نبرة حازمة ومشدودة دون صراخ مصطنع"
+    },
+    {
+      "id": "surprise",
+      "name_ar": "دهشة",
+      "direction_ar": "بداية قصيرة مرتفعة ثم استقرار طبيعي"
+    },
+    {
+      "id": "tenderness",
+      "name_ar": "حنان",
+      "direction_ar": "صوت لين وقريب وهادئ"
+    }
+  ],
+  "note_ar": "تم توليد صوت ميرا العربي؛ يحفظه التطبيق محلياً بعد تنزيله أول مرة."
 }

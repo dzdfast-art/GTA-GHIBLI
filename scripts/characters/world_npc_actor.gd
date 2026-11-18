@@ -11,6 +11,8 @@ var _line_index := 0
 var _near := false
 var _brain: Node
 var _voice: AudioStreamPlayer
+var _voice_request: HTTPRequest
+var _pending_cache_path := ""
 var _panel: PanelContainer
 var _name_label: Label
 var _text_label: Label
@@ -61,10 +63,7 @@ func interact() -> void:
 	_text_label.text = str(line.get("text_ar",""))
 	_panel.visible = true
 	_hint.text = "اضغط زر التفاعل لسماع جملة أخرى"
-	var path := str(line.get("audio_path",""))
-	if ResourceLoader.exists(path):
-		_voice.stream = load(path)
-		_voice.play()
+	_play_line_audio(line)
 
 func _load_lines() -> void:
 	var f := FileAccess.open("res://data/characters/world_dialogue_ar.json",FileAccess.READ)
@@ -75,6 +74,51 @@ func _load_lines() -> void:
 	character_name_ar = str(data.get("name_ar",character_name_ar))
 	var lines = data.get("lines",[])
 	if lines is Array: _lines = lines
+
+func _play_line_audio(line: Dictionary) -> void:
+	var local_path := str(line.get("audio_path",""))
+	if not local_path.is_empty() and ResourceLoader.exists(local_path):
+		_voice.stream = load(local_path)
+		_voice.play()
+		return
+	var cache_path := _cache_path(str(line.get("line_id","")))
+	if FileAccess.file_exists(cache_path):
+		_play_cached(cache_path)
+		return
+	var url := str(line.get("audio_url",""))
+	if url.is_empty():
+		return
+	if _voice_request.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
+		_voice_request.cancel_request()
+	_pending_cache_path = cache_path
+	var error := _voice_request.request(url)
+	if error != OK:
+		push_warning("Arabic voice download could not start for " + character_id)
+
+func _cache_path(line_id: String) -> String:
+	return "user://voice_cache/%s_%s.mp3" % [character_id,line_id]
+
+func _play_cached(path: String) -> void:
+	var file := FileAccess.open(path,FileAccess.READ)
+	if file == null:
+		return
+	var mp3 := AudioStreamMP3.new()
+	mp3.data = file.get_buffer(file.get_length())
+	_voice.stream = mp3
+	_voice.play()
+
+func _on_voice_downloaded(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
+	if result != HTTPRequest.RESULT_SUCCESS or response_code != 200 or body.is_empty():
+		push_warning("Arabic voice download failed for " + character_id)
+		return
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://voice_cache"))
+	var file := FileAccess.open(_pending_cache_path,FileAccess.WRITE)
+	if file == null:
+		push_warning("Could not cache Arabic voice for " + character_id)
+		return
+	file.store_buffer(body)
+	file.close()
+	_play_cached(_pending_cache_path)
 
 func _build_model() -> void:
 	_mesh("Torso",_capsule(0.34,1.12),Vector3(0,1.02,0),outfit_color)
@@ -116,6 +160,11 @@ func _build_ui() -> void:
 	_voice = AudioStreamPlayer.new()
 	_voice.bus = "Dialogue"
 	add_child(_voice)
+	_voice_request = HTTPRequest.new()
+	_voice_request.timeout = 25.0
+	_voice_request.body_size_limit = 2097152
+	_voice_request.request_completed.connect(_on_voice_downloaded)
+	add_child(_voice_request)
 	var root := Control.new()
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE

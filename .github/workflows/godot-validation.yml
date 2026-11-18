@@ -72,6 +72,7 @@ jobs:
             res://scripts/world/willow_village.gd \
             res://scripts/characters/mira_npc.gd \
             res://scripts/characters/world_npc_actor.gd \
+            res://scripts/characters/world_npc_actor.gd \
             res://scripts/characters/story_character_director.gd \
             res://scripts/missions/mission_manager.gd \
             res://scripts/missions/mission_002_runtime.gd \
