@@ -2,7 +2,7 @@
   "schema_version": 1,
   "language": "ar",
   "status": "arabic_voice_lines_generated_remote_cache_on_first_play",
-  "note_ar": "تم توليد 25 جملة عربية بأصوات بشرية اصطناعية مختلفة. يجلبها التطبيق عند أول تشغيل ويحفظها محلياً؛ يلزم الإنترنت للتنزيل الأول فقط.",
+  "note_ar": "تمت إضافة توجيهات أداء عاطفي لكل جملة. المقاطع الحالية ما زالت نسخاً أولية؛ يلزم إعادة توليدها بأداء تعبيري حقيقي قبل اعتبار الدبلجة النهائية مكتملة.",
   "characters": {
     "nader_harbor": {
       "name_ar": "نادر",
@@ -13,7 +13,15 @@
           "emotion_ar": "مرح",
           "audio_path": "res://audio/characters/nader_harbor/nader_001.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/24c7556125674f17bc2c4904074827e5/id=c3921f9a98214259ae5e408ed86b5476.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "joy",
+          "performance_direction_ar": "نبرة مبتسمة ومرحة، مع ضحكة قصيرة طبيعية عند بداية الجملة.",
+          "heygen_performance_tag": "[laughs]",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1.025,
+            "volume_db": 0
+          }
         },
         {
           "line_id": "nader_002",
@@ -21,7 +29,15 @@
           "emotion_ar": "قلق",
           "audio_path": "res://audio/characters/nader_harbor/nader_002.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/24c7556125674f17bc2c4904074827e5/id=b4f640bf9a08444f96e21ca83e6701fe.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "fear",
+          "performance_direction_ar": "قلق مسموع وتردد خفيف، مع نفس قصير ووقفات طبيعية.",
+          "heygen_performance_tag": "[whispers]",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1.015,
+            "volume_db": 0
+          }
         }
       ]
     },
@@ -34,7 +50,15 @@
           "emotion_ar": "ودودة",
           "audio_path": "res://audio/characters/salma_harbor/salma_001.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/deb98dd585124adc9b0e547b161cb2a0/id=e12ec8ddea5547878e2d76d30a581ac6.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "tenderness",
+          "performance_direction_ar": "دفء إنساني وابتسامة خفيفة في الصوت.",
+          "heygen_performance_tag": "[softly]",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         },
         {
           "line_id": "salma_002",
@@ -42,7 +66,15 @@
           "emotion_ar": "متحفظة",
           "audio_path": "res://audio/characters/salma_harbor/salma_002.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/deb98dd585124adc9b0e547b161cb2a0/id=544e0cd4157a445cae171f44924242dc.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "suspicion",
+          "performance_direction_ar": "صوت منخفض وحذر، كأن الشخصية تخشى أن يسمعها أحد.",
+          "heygen_performance_tag": "[whispers]",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         }
       ]
     },
@@ -55,7 +87,15 @@
           "emotion_ar": "هادئ",
           "audio_path": "res://audio/characters/rami_pines/rami_001.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/24c7556125674f17bc2c4904074827e5/id=2b65b02089ad4590b45235651cef1867.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "calm",
+          "performance_direction_ar": "هدوء وثقة وإيقاع محادثة طبيعي.",
+          "heygen_performance_tag": "",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         },
         {
           "line_id": "rami_002",
@@ -63,7 +103,15 @@
           "emotion_ar": "متأمل",
           "audio_path": "res://audio/characters/rami_pines/rami_002.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/24c7556125674f17bc2c4904074827e5/id=3e0afec26a8641fe8773ec855b07062c.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "wonder",
+          "performance_direction_ar": "تأمل وفضول هادئ مع وقفة قصيرة قبل نهاية الجملة.",
+          "heygen_performance_tag": "",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         }
       ]
     },
@@ -76,7 +124,15 @@
           "emotion_ar": "حازمة",
           "audio_path": "res://audio/characters/hala_pines/hala_001.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/033e70e372284077883e538608b65b69/id=618d5ed267344d61bcb083113736c657.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "determination",
+          "performance_direction_ar": "حزم واضح دون صراخ أو مبالغة.",
+          "heygen_performance_tag": "",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         },
         {
           "line_id": "hala_002",
@@ -84,7 +140,15 @@
           "emotion_ar": "متعاطفة",
           "audio_path": "res://audio/characters/hala_pines/hala_002.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/033e70e372284077883e538608b65b69/id=4f935cab73584cc8b4697458c13c742b.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "tenderness",
+          "performance_direction_ar": "تعاطف حقيقي ونبرة مطمئنة.",
+          "heygen_performance_tag": "[softly]",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         }
       ]
     },
@@ -97,7 +161,15 @@
           "emotion_ar": "صريح",
           "audio_path": "res://audio/characters/fares_valley/fares_001.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/dc4ee8e4f0bc4099ad5be2a8431ca556/id=fc87471c53794760941330fd7097bf5e.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "confident",
+          "performance_direction_ar": "صوت مباشر وواثق.",
+          "heygen_performance_tag": "",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         },
         {
           "line_id": "fares_002",
@@ -105,7 +177,15 @@
           "emotion_ar": "متوجس",
           "audio_path": "res://audio/characters/fares_valley/fares_002.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/dc4ee8e4f0bc4099ad5be2a8431ca556/id=a209e91b0ad44badb1ce369cffb88a4c.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "suspicion",
+          "performance_direction_ar": "شك وتوجس مع خفض النبرة.",
+          "heygen_performance_tag": "[whispers]",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         }
       ]
     },
@@ -118,7 +198,15 @@
           "emotion_ar": "واثقة",
           "audio_path": "res://audio/characters/layla_valley/layla_001.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/deb98dd585124adc9b0e547b161cb2a0/id=7a511fd7fa0e474c95262ae3cecba053.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "confident",
+          "performance_direction_ar": "ثقة ووضوح دون قراءة آلية.",
+          "heygen_performance_tag": "",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         },
         {
           "line_id": "layla_002",
@@ -126,7 +214,15 @@
           "emotion_ar": "غاضبة",
           "audio_path": "res://audio/characters/layla_valley/layla_002.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/deb98dd585124adc9b0e547b161cb2a0/id=440ec3c8a1d24289b4cda6d25cb6f45f.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "anger",
+          "performance_direction_ar": "غضب مكبوت يتصاعد في الكلمات المهمة، لا صراخ مستمر.",
+          "heygen_performance_tag": "[angry]",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         }
       ]
     },
@@ -139,7 +235,15 @@
           "emotion_ar": "ودود",
           "audio_path": "res://audio/characters/yasser_coast/yasser_001.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/24c7556125674f17bc2c4904074827e5/id=e11c7f4bf5fb43b78902e15c19b10cbe.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "joy",
+          "performance_direction_ar": "ترحيب دافئ ومرح خفيف.",
+          "heygen_performance_tag": "[laughs]",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1.025,
+            "volume_db": 0
+          }
         },
         {
           "line_id": "yasser_002",
@@ -147,7 +251,15 @@
           "emotion_ar": "قلق",
           "audio_path": "res://audio/characters/yasser_coast/yasser_002.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/24c7556125674f17bc2c4904074827e5/id=1f7da9965089427e9ecdc546fa74097c.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "fear",
+          "performance_direction_ar": "قلق مسموع وتردد خفيف، مع نفس قصير ووقفات طبيعية.",
+          "heygen_performance_tag": "[whispers]",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1.015,
+            "volume_db": 0
+          }
         }
       ]
     },
@@ -160,7 +272,15 @@
           "emotion_ar": "مطمئنة",
           "audio_path": "res://audio/characters/maryam_coast/maryam_001.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/033e70e372284077883e538608b65b69/id=09eebe49328244fe9014b369fa097100.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "reassurance",
+          "performance_direction_ar": "صوت مطمئن وحنون.",
+          "heygen_performance_tag": "[softly]",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         },
         {
           "line_id": "maryam_002",
@@ -168,7 +288,15 @@
           "emotion_ar": "حازمة",
           "audio_path": "res://audio/characters/maryam_coast/maryam_002.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/033e70e372284077883e538608b65b69/id=6622dfa001f54ccb878e02b1e2eeaa96.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "determination",
+          "performance_direction_ar": "حزم واضح دون صراخ أو مبالغة.",
+          "heygen_performance_tag": "",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         }
       ]
     },
@@ -182,7 +310,15 @@
           "emotion_ar": "واثقة",
           "audio_path": "res://audio/characters/nora_blake/nora_001.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/deb98dd585124adc9b0e547b161cb2a0/id=6280166256d84bbcbd2f0ed44001d11d.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "confident",
+          "performance_direction_ar": "ثقة ووضوح دون قراءة آلية.",
+          "heygen_performance_tag": "",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         },
         {
           "line_id": "nora_002",
@@ -190,7 +326,15 @@
           "emotion_ar": "جادة",
           "audio_path": "res://audio/characters/nora_blake/nora_002.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/deb98dd585124adc9b0e547b161cb2a0/id=df48382965124d508e4b15d5a4500171.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "neutral",
+          "performance_direction_ar": "أداء طبيعي غير آلي مع تنفس ووقفات واقعية.",
+          "heygen_performance_tag": "",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         }
       ]
     },
@@ -204,7 +348,15 @@
           "emotion_ar": "فرح",
           "audio_path": "res://audio/characters/mia_bennett/mia_001.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/deb98dd585124adc9b0e547b161cb2a0/id=d1fe97dfd549466baabf1789e89416ed.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "neutral",
+          "performance_direction_ar": "أداء طبيعي غير آلي مع تنفس ووقفات واقعية.",
+          "heygen_performance_tag": "",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         },
         {
           "line_id": "mia_002",
@@ -212,7 +364,15 @@
           "emotion_ar": "قلق",
           "audio_path": "res://audio/characters/mia_bennett/mia_002.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/deb98dd585124adc9b0e547b161cb2a0/id=4a121a2f50064a73a324750a20c1f7a8.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "fear",
+          "performance_direction_ar": "قلق مسموع وتردد خفيف، مع نفس قصير ووقفات طبيعية.",
+          "heygen_performance_tag": "[whispers]",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1.015,
+            "volume_db": 0
+          }
         }
       ]
     },
@@ -226,7 +386,15 @@
           "emotion_ar": "حنان",
           "audio_path": "res://audio/characters/claire_bennett/claire_001.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/033e70e372284077883e538608b65b69/id=24d51489f6214f2790c8b559ea8efcf3.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "neutral",
+          "performance_direction_ar": "أداء طبيعي غير آلي مع تنفس ووقفات واقعية.",
+          "heygen_performance_tag": "",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         },
         {
           "line_id": "claire_002",
@@ -234,7 +402,15 @@
           "emotion_ar": "حزن",
           "audio_path": "res://audio/characters/claire_bennett/claire_002.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/033e70e372284077883e538608b65b69/id=7ba9e2b3457e478dbfa3db108f3cc713.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "sadness",
+          "performance_direction_ar": "حزن منخفض مع وقفات ونفس هادئ.",
+          "heygen_performance_tag": "[sad]",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 0.985,
+            "volume_db": 0
+          }
         }
       ]
     },
@@ -248,7 +424,15 @@
           "emotion_ar": "بارد",
           "audio_path": "res://audio/characters/the_broker/broker_001.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/dc4ee8e4f0bc4099ad5be2a8431ca556/id=54bdbfe13cbb4a89bc22136c848d83c6.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "cold",
+          "performance_direction_ar": "برود محسوب وصوت منخفض وثابت.",
+          "heygen_performance_tag": "",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         },
         {
           "line_id": "broker_002",
@@ -256,7 +440,15 @@
           "emotion_ar": "تهديد",
           "audio_path": "res://audio/characters/the_broker/broker_002.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/dc4ee8e4f0bc4099ad5be2a8431ca556/id=183e6811be824bc2a6df018217c3ba6f.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "threat",
+          "performance_direction_ar": "تهديد هادئ وخطير، دون رفع الصوت.",
+          "heygen_performance_tag": "[whispers]",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         }
       ]
     },
@@ -270,7 +462,15 @@
           "emotion_ar": "ندم",
           "audio_path": "res://audio/characters/thomas_bennett/thomas_001.ogg",
           "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/24c7556125674f17bc2c4904074827e5/id=6563a346ac444f05958b6aa4cfc3a3fa.mp3",
-          "audio_status": "generated_remote_cache_on_first_play"
+          "audio_status": "generated_remote_cache_on_first_play",
+          "emotion_id": "regret",
+          "performance_direction_ar": "ندم وانكسار خفيف مع وقفة قبل نهاية الجملة.",
+          "heygen_performance_tag": "[sad]",
+          "performance_recording_status": "existing_clip_needs_expressive_retake",
+          "mix_profile": {
+            "pitch_scale": 1,
+            "volume_db": 0
+          }
         }
       ]
     }

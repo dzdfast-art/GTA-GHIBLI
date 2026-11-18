@@ -1,25 +1,30 @@
-# GTA GHIBLI — Living World Audio
+# GTA GHIBLI — Living World Audio and Performance
 
-## Prototype implementation
-- A procedural ambient-audio controller starts with the main scene.
-- One in-game day lasts 15 real-time minutes and begins at 05:00.
-- Dawn/day increase bird-like calls; dusk softens them; night brings cricket-like tones and rare, quiet owl-like calls.
-- Continuous wind gently changes with the time and biome.
-- Rain and storm ambience can be selected through the controller API.
-- Biome presets: village, forest, fields, river, coast and highlands.
-- Audio is synthesized locally. It does not use the microphone, inspect personal files, or require Android permissions.
+## Direction inspired by public GTA V sound-design practice
+The public GDC session “The Sound of Grand Theft Auto V” describes an open-world audio approach built from diverse, immersive world layers and real-time synthesis/DSP. GTA GHIBLI uses that high-level design principle only; it does not copy Rockstar recordings, code, dialogue, or proprietary assets.
 
-## Sound quality and remaining work
-These are synthesized prototype sound layers, not authentic field recordings. They make the day/night system audible and testable without bundling unlicensed recordings. Production audio should replace or layer them with original or properly licensed recordings: birds, insects, frogs, flowing water, leaves, wind, rain, thunder and region-specific wildlife. Character dialogue and cinematic sound remain separate systems.
+## Current in-game ambience
+- Procedural breeze with biome-dependent strength.
+- Leaf rustle in village, forest and fields.
+- Rain bed plus irregular droplet transients.
+- Storm-only distant low-frequency thunder events and stronger wind.
+- Dawn birds, night insects and owl-like calls.
+- Coast/river water layer and six looping WAV ambience themes.
+- Weather/biome selection and fade-in of the selected field ambience.
+- All procedural ambience is local: no microphone, personal files or runtime network access.
 
-## Integration API
-The node is available as `/root/NatureAmbience`.
-- `set_biome("forest")`, `set_biome("river")`, `set_biome("coast")`, etc.
-- `set_weather("clear")`, `set_weather("rain")`, or `set_weather("storm")`.
-- `set_master_gain(0.0..0.6)`.
-- `get_game_hour()` returns the current in-game hour.
+## Important audio-quality distinction
+The WAV themes already in `audio/ambience/` and the new weather layers are prototype-generated textures, not authentic field recordings. They are useful for implementation and testing but must be replaced or layered with properly licensed field recordings for a natural AAA result. Candidate source: foleykit CC0 nature synthesis repository and its license; inspect the upstream license before importing individual assets. Do not copy any GTA game audio.
 
-Future world streaming and weather systems should update biome/weather when the player crosses region boundaries. Water ambience is enabled only for river/coast presets; this does not mean water geometry or simulation is already complete.
+## Character acting
+Every existing world dialogue line now carries an emotion ID, Arabic acting direction and a supported HeyGen-style performance tag where applicable (for example [sad], [whispers], [angry], [laughs], [gasps]). The current voice clips are still first-pass synthetic reads. An expressive retake is required; metadata alone does not make a voice sound emotional. A HeyGen generation attempt for six emotion samples returned a 502 error, so no new expressive clips are claimed as completed.
 
-## Acceptance checks
-Project import, script parsing and main-scene smoke test are run in GitHub Actions. Listening on Android is still required to assess speaker quality, clipping, battery use and naturalness.
+## Production mix target
+- Dialogue must remain intelligible over ambience; dialogue bus is the priority.
+- Keep wind, rain, insects and wildlife in separate layers so weather and region changes can rebalance them.
+- Use 3D emitters for localized animals, machinery and nearby environmental sources; use a global bed only for broad environmental tone.
+- Use short natural transitions between time-of-day and weather states; avoid abrupt hard cuts.
+- Record or source distinct Arabic performances for joy, grief, fear, anger, surprise, tenderness, whispering and breath/pause timing.
+
+## Mobile constraints
+Use compressed OGG/MP3 for shipped long loops and short WAV only for lightweight transient events. Keep the number of simultaneous 3D emitters bounded, use mono for localized sources, and provide independent Music/SFX/Dialogue volume settings.

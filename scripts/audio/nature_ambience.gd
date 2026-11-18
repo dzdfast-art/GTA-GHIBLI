@@ -42,6 +42,14 @@ var _bird_level := 0.0
 var _insect_level := 0.0
 var _owl_level := 0.0
 var _rain_level := 0.0
+var _thunder_timer := 24.0
+var _thunder_remaining := 0.0
+var _thunder_duration := 2.4
+var _thunder_frequency := 48.0
+var _rain_drop_timer := 0.0
+var _rain_drop_remaining := 0.0
+var _rain_drop_amplitude := 0.0
+var _transition_tween: Tween
 
 func _ready() -> void:
 	add_to_group("nature_ambience")
@@ -71,6 +79,7 @@ func _process(delta: float) -> void:
 	_owl_level = lerpf(_owl_level, _target_owl, blend)
 	_rain_level = lerpf(_rain_level, _target_rain, blend)
 	_fill_audio_buffer()
+	_update_weather_events(delta)
 	_sync_field_recording()
 
 func _update_targets() -> void:
@@ -97,19 +106,61 @@ func _fill_audio_buffer() -> void:
 	for index in range(frames):
 		var wind_noise := _random.randf_range(-1.0, 1.0)
 		_wind_state = lerpf(_wind_state, wind_noise, 0.012)
-		var wind := _wind_state * _wind_level * 0.105
+		var gust_envelope := 0.72 + 0.28 * sin(_sample_clock * TAU * 0.075)
+		var wind := _wind_state * _wind_level * 0.105 * gust_envelope
 		var rain_noise := _random.randf_range(-1.0, 1.0)
 		var rain := rain_noise * _rain_level * 0.055
+		var rain_drops := _rain_drop_sample()
+		var thunder := _thunder_sample()
 		var insect_gate := 0.5 + 0.5 * sin(_sample_clock * TAU * 4.2)
 		var insect_carrier := sin(_sample_clock * TAU * 4150.0)
 		var insects := insect_carrier * insect_gate * _insect_level * 0.018
 		var bird := _bird_sample()
 		var owl := _owl_sample()
 		var water := _water_sample()
-		var sample := clampf((wind + rain + insects + bird + owl + water) * master_gain, -0.8, 0.8)
+		var leaf_rustle := wind_noise * _wind_level * (0.012 if biome in ["forest", "village", "fields"] else 0.003)
+		var sample := clampf((wind + leaf_rustle + rain + rain_drops + thunder + insects + bird + owl + water) * master_gain, -0.8, 0.8)
 		_playback.push_frame(Vector2(sample * (1.0 - maxf(0.0, _bird_pan) * 0.12),
 			sample * (1.0 + minf(0.0, _bird_pan) * 0.12)))
 		_sample_clock += 1.0 / SAMPLE_RATE
+
+
+func _update_weather_events(delta: float) -> void:
+	if weather == "storm":
+		_thunder_timer -= delta
+		if _thunder_timer <= 0.0 and _thunder_remaining <= 0.0:
+			_thunder_duration = _random.randf_range(1.8, 4.2)
+			_thunder_frequency = _random.randf_range(38.0, 66.0)
+			_thunder_remaining = _thunder_duration
+			_thunder_timer = _random.randf_range(22.0, 48.0)
+	else:
+		_thunder_remaining = 0.0
+		_thunder_timer = maxf(_thunder_timer, 12.0)
+	if weather in ["rain", "storm"]:
+		_rain_drop_timer -= delta
+		if _rain_drop_timer <= 0.0:
+			_rain_drop_timer = _random.randf_range(0.035, 0.18) / (1.0 if weather == "rain" else 1.7)
+			_rain_drop_remaining = _random.randf_range(0.012, 0.035)
+			_rain_drop_amplitude = _random.randf_range(0.08, 0.34)
+	else:
+		_rain_drop_remaining = 0.0
+
+func _rain_drop_sample() -> float:
+	if _rain_drop_remaining <= 0.0:
+		return 0.0
+	var envelope := _rain_drop_remaining / 0.035
+	_rain_drop_remaining -= 1.0 / SAMPLE_RATE
+	return _random.randf_range(-1.0, 1.0) * envelope * _rain_level * _rain_drop_amplitude
+
+func _thunder_sample() -> float:
+	if _thunder_remaining <= 0.0 or _thunder_duration <= 0.0:
+		return 0.0
+	var progress := 1.0 - (_thunder_remaining / _thunder_duration)
+	var envelope := pow(maxf(0.0, 1.0 - progress), 1.8) * minf(1.0, progress * 9.0)
+	var low_rumble := sin(_sample_clock * TAU * _thunder_frequency)
+	var distant_noise := _random.randf_range(-1.0, 1.0) * 0.22
+	_thunder_remaining -= 1.0 / SAMPLE_RATE
+	return (low_rumble * 0.72 + distant_noise) * envelope * 0.16
 
 func _bird_sample() -> float:
 	if _bird_remaining <= 0.0:
@@ -221,7 +272,13 @@ func _play_field_recording_segment() -> void:
 		push_warning("Could not load ambient recording: " + path)
 		return
 	_field_recording_player.stream = stream
+	_field_recording_player.volume_db = -25.0
 	_field_recording_player.play()
+	if _transition_tween != null and _transition_tween.is_running():
+		_transition_tween.kill()
+	_transition_tween = create_tween()
+	_transition_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_transition_tween.tween_property(_field_recording_player, "volume_db", -12.0, 1.15)
 
 func _on_field_recording_finished() -> void:
 	if _field_recording_player == null:

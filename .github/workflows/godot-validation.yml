@@ -149,6 +149,9 @@ jobs:
       - name: Test original ambience audio assets
         run: godot --headless --path . --script res://tests/nature_ambience_assets_test.gd
 
+      - name: Test Arabic voice emotion and acting directions
+        run: godot --headless --path . --script res://tests/voice_performance_data_test.gd
+
       - name: Test named audio buses and routing
         run: godot --headless --path . --script res://tests/audio_bus_layout_test.gd
 

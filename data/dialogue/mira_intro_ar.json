@@ -21,42 +21,57 @@
       "friendly_welcome",
       "hopeful_question"
     ],
-    "performance_direction_ar": "ابدئي بتحية مشرقة ومبتسمة، ثم اجعلي عبارة لقد اشتقنا إلى وجوه جديدة هنا أكثر حناناً، واختمي السؤال بأمل ولطف دون مبالغة.",
+    "performance_direction_ar": "ابدئي بابتسامة مسموعة ودفء، مع ضحكة خفيفة طبيعية جداً، وخففي السرعة عند عبارة اشتقنا إليك، ثم اختمي السؤال بأمل وحنان.",
     "audio_path": "res://assets/audio/dialogue/ar/mira_greeting_001.ogg",
     "audio_status": "generated_remote_cache_on_first_play",
-    "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/033e70e372284077883e538608b65b69/id=a7837ad72aa2436e96eaa03fd6122601.mp3"
+    "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/033e70e372284077883e538608b65b69/id=a7837ad72aa2436e96eaa03fd6122601.mp3",
+    "emotion_id": "joy",
+    "heygen_performance_tag": "[laughs]",
+    "performance_recording_status": "existing_clip_needs_expressive_retake"
   },
   "emotion_library": [
     {
       "id": "joy",
       "name_ar": "فرح",
-      "direction_ar": "نبرة مشرقة وخفيفة مع ابتسامة مسموعة"
+      "direction_ar": "نبرة مشرقة وخفيفة مع ابتسامة مسموعة",
+      "heygen_audio_tag": "[laughs]",
+      "recording_status": "needs_expressive_take"
     },
     {
       "id": "sadness",
       "name_ar": "حزن",
-      "direction_ar": "نبرة هادئة ومنخفضة مع وقفات طبيعية"
+      "direction_ar": "نبرة هادئة ومنخفضة مع وقفات طبيعية",
+      "heygen_audio_tag": "[sad]",
+      "recording_status": "needs_expressive_take"
     },
     {
       "id": "fear",
       "name_ar": "خوف",
-      "direction_ar": "صوت متردد قليلاً ونَفَس أسرع دون صراخ"
+      "direction_ar": "صوت متردد قليلاً ونَفَس أسرع دون صراخ",
+      "heygen_audio_tag": "[whispers]",
+      "recording_status": "needs_expressive_take"
     },
     {
       "id": "anger",
       "name_ar": "غضب",
-      "direction_ar": "نبرة حازمة ومشدودة دون صراخ مصطنع"
+      "direction_ar": "نبرة حازمة ومشدودة دون صراخ مصطنع",
+      "heygen_audio_tag": "[angry]",
+      "recording_status": "needs_expressive_take"
     },
     {
       "id": "surprise",
       "name_ar": "دهشة",
-      "direction_ar": "بداية قصيرة مرتفعة ثم استقرار طبيعي"
+      "direction_ar": "بداية قصيرة مرتفعة ثم استقرار طبيعي",
+      "heygen_audio_tag": "[gasps]",
+      "recording_status": "needs_expressive_take"
     },
     {
       "id": "tenderness",
       "name_ar": "حنان",
-      "direction_ar": "صوت لين وقريب وهادئ"
+      "direction_ar": "صوت لين وقريب وهادئ",
+      "heygen_audio_tag": "[softly]",
+      "recording_status": "needs_expressive_take"
     }
   ],
-  "note_ar": "تم توليد صوت ميرا العربي؛ يحفظه التطبيق محلياً بعد تنزيله أول مرة."
+  "note_ar": "أضيفت تعليمات أداء عاطفي وعلامات توجيه للممثل الصوتي. التسجيل الحالي لم يُعَد توليده بعد، لذلك لا يُوصف بأنه دبلجة عاطفية نهائية."
 }
