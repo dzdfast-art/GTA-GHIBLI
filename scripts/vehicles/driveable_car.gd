@@ -136,8 +136,9 @@ func _build_vehicle_visuals() -> void:
 	for side in [-1.0, 1.0]:
 		_add_box("Headlamp", Vector3(0.42, 0.24, 0.08), Vector3(side * 0.65, 1.03, -2.025), Color(1.0, 0.91, 0.68))
 		_add_box("TailLamp", Vector3(0.42, 0.22, 0.08), Vector3(side * 0.65, 1.02, 2.025), Color(0.72, 0.08, 0.055))
-		_add_wheel("FrontWheel_%s" % str(side), Vector3(side * 0.99, 0.43, -1.28))
-		_add_wheel("RearWheel_%s" % str(side), Vector3(side * 0.99, 0.43, 1.28))
+		var wheel_side := "Left" if side < 0.0 else "Right"
+		_add_wheel("FrontWheel" + wheel_side, Vector3(side * 0.99, 0.43, -1.28))
+		_add_wheel("RearWheel" + wheel_side, Vector3(side * 0.99, 0.43, 1.28))
 	_add_box("FrontBumperTrim", Vector3(1.38, 0.045, 0.045), Vector3(0.0, 0.43, -2.12), Color(0.55, 0.58, 0.54))
 	_add_box("RearBumperTrim", Vector3(1.38, 0.045, 0.045), Vector3(0.0, 0.43, 2.12), Color(0.55, 0.58, 0.54))
 	var shape := BoxShape3D.new()
