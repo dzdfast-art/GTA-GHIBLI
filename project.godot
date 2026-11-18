@@ -4,6 +4,7 @@ config_version=5
 [application]
 config/name="GTA GHIBLI"
 run/main_scene="res://main.tscn"
+icon="res://assets/ui/gta_ghibli_app_icon.svg"
 
 [audio]
 default_bus_layout="res://default_bus_layout.tres"

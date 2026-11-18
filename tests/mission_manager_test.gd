@@ -18,6 +18,7 @@ func _run_mission_test() -> void:
 
 	var player := Node3D.new()
 	var wallet: Node = WALLET_SCRIPT.new()
+	wallet.name = "PlayerWallet"
 	wallet.set("persistence_enabled", false)
 	wallet.set("initial_balance", 250)
 	player.add_child(wallet)
