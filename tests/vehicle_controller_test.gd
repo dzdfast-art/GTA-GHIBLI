@@ -2,6 +2,7 @@ extends SceneTree
 
 const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
 const CAR_SCENE: PackedScene = preload("res://scenes/vehicles/starter_car.tscn")
+const TEST_ENVIRONMENT_STATE = preload("res://tests/helpers/test_environment_state.gd")
 
 func _initialize() -> void:
 	call_deferred("_run_test")
@@ -15,6 +16,11 @@ func _run_test() -> void:
 	ground_collision.position.y = -0.5
 	ground.add_child(ground_collision)
 	root.add_child(ground)
+
+	var environment_state: Node = TEST_ENVIRONMENT_STATE.new()
+	environment_state.add_to_group("world_clock")
+	environment_state.add_to_group("world_weather")
+	root.add_child(environment_state)
 
 	var player := PLAYER_SCENE.instantiate() as CharacterBody3D
 	player.name = "Player"
@@ -47,18 +53,31 @@ func _run_test() -> void:
 		_fail("The humanoid driver was hidden while seated in the car.")
 		return
 
-	# Verify the automatic headlight system can illuminate both beams.
-	car.call("_set_headlights_enabled", true)
+	# Verify automatic headlights respond to night and storm conditions, but switch off in clear daylight.
 	var left_beam := car.get_node("HeadlightBeamLeft") as SpotLight3D
 	var right_beam := car.get_node("HeadlightBeamRight") as SpotLight3D
+	environment_state.set("game_hour", 22.0)
+	environment_state.set("weather_id", "clear")
+	car.call("_update_vehicle_lighting", Vector2.ZERO, 0.016)
 	if not left_beam.visible or not right_beam.visible:
-		_fail("Automatic headlight activation did not show both beams.")
+		_fail("Automatic headlights did not turn on at night.")
 		return
 	var headlamp_material := (car.get_node("HeadlampLeft") as MeshInstance3D).material_override as StandardMaterial3D
 	if headlamp_material == null or headlamp_material.emission_energy_multiplier < 1.5:
-		_fail("Headlamp lenses did not illuminate with the beams.")
+		_fail("Headlamp lenses did not illuminate at night.")
 		return
-	car.call("_set_headlights_enabled", false)
+	environment_state.set("game_hour", 14.0)
+	car.call("_update_vehicle_lighting", Vector2.ZERO, 0.016)
+	if left_beam.visible or right_beam.visible:
+		_fail("Automatic headlights stayed on during clear daylight.")
+		return
+	environment_state.set("weather_id", "storm")
+	car.call("_update_vehicle_lighting", Vector2.ZERO, 0.016)
+	if not left_beam.visible or not right_beam.visible:
+		_fail("Automatic headlights did not turn on during a daytime storm.")
+		return
+	environment_state.set("weather_id", "clear")
+	car.call("_update_vehicle_lighting", Vector2.ZERO, 0.016)
 
 	# Forward acceleration also animates the visible wheels.
 	var front_wheel := car.get_node("FrontWheelRight") as Node3D
