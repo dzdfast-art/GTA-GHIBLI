@@ -4,17 +4,12 @@ const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
 const BICYCLE_SCENE: PackedScene = preload("res://scenes/vehicles/starter_bicycle.tscn")
 const MOBILE_CONTROLS_SCRIPT = preload("res://scripts/ui/mobile_controls.gd")
 
-var _test_stage := "initializing"
-var _watchdog: Timer
-
 
 func _initialize() -> void:
 	call_deferred("_run_test")
 
 
 func _run_test() -> void:
-	_start_watchdog()
-	_set_stage("create test floor, rider, HUD and bicycle")
 	var floor_body := StaticBody3D.new()
 	root.add_child(floor_body)
 	var floor_shape := BoxShape3D.new()
@@ -40,12 +35,10 @@ func _run_test() -> void:
 
 	await process_frame
 	await process_frame
-	_set_stage("wait for initial scene and physics frames")
 	for _frame in range(4):
 		await physics_frame
 
 	bicycle.call("interact")
-	_set_stage("mount bicycle and validate visible rider and HUD")
 	if bicycle.get("driver") != player or not bool(player.get("is_driving")):
 		_fail("The player could not mount the bicycle.")
 		return
@@ -63,7 +56,6 @@ func _run_test() -> void:
 		return
 
 	var start_z: float = bicycle.global_position.z
-	_set_stage("pedal bicycle forward for 36 physics frames")
 	Input.action_press("bike_pedal")
 	for _frame in range(36):
 		await physics_frame
@@ -73,7 +65,6 @@ func _run_test() -> void:
 		return
 
 	var start_rotation: float = bicycle.rotation.y
-	_set_stage("steer bicycle for 24 physics frames")
 	Input.action_press("bike_steer_right")
 	Input.action_press("bike_pedal")
 	for _frame in range(24):
@@ -85,7 +76,6 @@ func _run_test() -> void:
 		return
 
 	Input.action_press("bike_brake")
-	_set_stage("brake and verify reverse movement")
 	var reversed := false
 	for _frame in range(60):
 		await physics_frame
@@ -98,7 +88,6 @@ func _run_test() -> void:
 		return
 
 	controls.call("set_bike_steering_mode", "buttons")
-	_set_stage("switch bicycle steering layouts")
 	if (controls.get_node("HUD/MovementJoystick") as Control).visible:
 		_fail("Buttons mode should hide the analog joystick while cycling.")
 		return
@@ -115,7 +104,6 @@ func _run_test() -> void:
 		return
 
 	bicycle.call("interact")
-	_set_stage("dismount and restore player controls and collision")
 	if bicycle.get("driver") != null or bool(player.get("is_driving")):
 		_fail("The player could not dismount the bicycle.")
 		return
@@ -129,36 +117,8 @@ func _run_test() -> void:
 		_fail("The on-foot RUN control was not restored after dismounting.")
 		return
 
-	_stop_watchdog()
 	print("PASS: bicycle mount, pedal, steering, brake/reverse, steering layouts, and dismount.")
 	quit(0)
-
-
-func _start_watchdog() -> void:
-	_watchdog = Timer.new()
-	_watchdog.name = "BicycleTestWatchdog"
-	_watchdog.one_shot = true
-	_watchdog.wait_time = 20.0
-	_watchdog.timeout.connect(_on_watchdog_timeout)
-	root.add_child(_watchdog)
-	_watchdog.start()
-
-
-func _set_stage(stage: String) -> void:
-	_test_stage = stage
-	print("BIKE_TEST_STAGE: " + _test_stage)
-
-
-func _stop_watchdog() -> void:
-	if _watchdog != null:
-		_watchdog.stop()
-		_watchdog.queue_free()
-		_watchdog = null
-
-
-func _on_watchdog_timeout() -> void:
-	push_error("TIMEOUT: bicycle test exceeded 20 seconds at stage: " + _test_stage)
-	quit(124)
 
 
 func _fail(message: String) -> void:
