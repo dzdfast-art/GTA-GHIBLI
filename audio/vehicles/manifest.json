@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "asset_pack": "gta_ghibli_original_bicycle_sfx",
+  "status": "original_procedurally_synthesized_gameplay_sfx",
+  "format": {
+    "container": "WAV PCM",
+    "sample_rate_hz": 22050,
+    "channels": 1,
+    "bit_depth": 16,
+    "duration_seconds": 0.9
+  },
+  "assets": [
+    {
+      "id": "bicycle_bell",
+      "file": "bicycle_bell.wav",
+      "trigger": "While mounted: mobile BELL button or keyboard B",
+      "runtime_use": "Spatial short-range bell emitted by StarterBicycle to make nearby pedestrians and players aware of the rider",
+      "controller": "res://scripts/vehicles/bicycle_controller.gd",
+      "playback_node": "BicycleBellAudio"
+    }
+  ],
+  "licensing_note": "Synthesized specifically for GTA GHIBLI from mathematical oscillator partials; no recordings or third-party samples are used."
+}

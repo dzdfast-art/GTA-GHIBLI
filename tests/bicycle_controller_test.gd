@@ -48,6 +48,23 @@ func _run_test() -> void:
 	if not (controls.get_node("HUD/BikePedal") as Control).visible:
 		_fail("The bicycle pedal control was not shown.")
 		return
+	var bell_button := controls.get_node("HUD/BikeBell") as Button
+	if not bell_button.visible:
+		_fail("The bicycle bell button was not shown while riding.")
+		return
+	var bell_player := bicycle.get_node_or_null("BicycleBellAudio") as AudioStreamPlayer3D
+	if bell_player == null or bell_player.stream == null:
+		_fail("The original spatial bicycle bell audio stream did not load.")
+		return
+	if not InputMap.has_action("bike_bell"):
+		_fail("The bicycle bell input action was not registered.")
+		return
+	bell_button.emit_signal("pressed")
+	await process_frame
+	if not bell_player.playing:
+		_fail("Pressing the mobile bell button did not start spatial bell playback.")
+		return
+	bell_player.stop()
 	if controls.get_node("HUD/ContextAction").text != "EXIT BIKE":
 		_fail("The contextual exit-bike action was not shown.")
 		return
@@ -112,6 +129,9 @@ func _run_test() -> void:
 		return
 	if not (controls.get_node("HUD/Sprint") as Control).visible:
 		_fail("The on-foot RUN control was not restored after dismounting.")
+		return
+	if bell_button.visible:
+		_fail("The bicycle bell button remained visible after dismounting.")
 		return
 
 	print("PASS: bicycle mount, pedal, steering, brake/reverse, steering layouts, and dismount.")

@@ -8,6 +8,7 @@ var _mode_label: Label
 var _context_button: Button
 var _brake_button: Button
 var _pedal_button: Button
+var _bell_button: Button
 var _sprint_button: Button
 var _steer_left_button: Button
 var _steer_right_button: Button
@@ -66,7 +67,7 @@ func _process(_delta: float) -> void:
 
 func _register_actions() -> void:
 	var actions := ["vehicle_brake", "bike_pedal", "bike_brake",
-		"bike_steer_left", "bike_steer_right", "sprint"]
+		"bike_steer_left", "bike_steer_right", "bike_bell", "sprint"]
 	for action in actions:
 		if not InputMap.has_action(action):
 			InputMap.add_action(action)
@@ -138,6 +139,13 @@ func _build_hud() -> void:
 	_pedal_button.button_up.connect(_release_action.bind(&"bike_pedal"))
 	_pedal_button.tree_exiting.connect(_release_action.bind(&"bike_pedal"))
 	root.add_child(_pedal_button)
+
+	_bell_button = _make_action_button("BELL", Vector2(72.0, 72.0))
+	_bell_button.name = "BikeBell"
+	_set_bottom_right(_bell_button, -236.0, -306.0, -164.0, -234.0)
+	_bell_button.visible = false
+	_bell_button.pressed.connect(_on_bike_bell_pressed)
+	root.add_child(_bell_button)
 
 	_sprint_button = _make_action_button("RUN", Vector2(82.0, 82.0))
 	_sprint_button.name = "Sprint"
@@ -227,6 +235,7 @@ func _refresh_controls() -> void:
 		_steer_right_button.visible = _bike_steering_mode == "buttons"
 		_pedal_button.visible = true
 		_brake_button.visible = true
+		_bell_button.visible = true
 		_sprint_button.visible = false
 	elif _is_car_mode:
 		_mode_label.text = "DRIVING"
@@ -237,6 +246,7 @@ func _refresh_controls() -> void:
 		_steer_right_button.visible = false
 		_pedal_button.visible = false
 		_brake_button.visible = true
+		_bell_button.visible = false
 		_sprint_button.visible = false
 	else:
 		_mode_label.text = "ON FOOT"
@@ -247,6 +257,7 @@ func _refresh_controls() -> void:
 		_steer_right_button.visible = false
 		_pedal_button.visible = false
 		_brake_button.visible = false
+		_bell_button.visible = false
 		_sprint_button.visible = true
 	if _joystick != null:
 		_joystick.call("_reset_stick")
@@ -261,6 +272,16 @@ func _on_joystick_vector_changed(value: Vector2) -> void:
 	_set_action(&"ui_right", value.x > 0.12)
 	_set_action(&"ui_up", value.y < -0.12)
 	_set_action(&"ui_down", value.y > 0.12)
+
+
+func _on_bike_bell_pressed() -> void:
+	if not _is_bicycle_mode:
+		return
+	var player := get_tree().get_first_node_in_group("player")
+	for bicycle in get_tree().get_nodes_in_group("bicycles"):
+		if bicycle.get("driver") == player and bicycle.has_method("ring_bell"):
+			bicycle.call("ring_bell")
+			return
 
 
 func _on_brake_down() -> void:
@@ -350,7 +371,7 @@ func set_controls_preferences(scale_value: float, opacity_value: float) -> void:
 		return
 	hud.modulate.a = clampf(opacity_value, 0.35, 1.0)
 	for node_name in ["MovementJoystick", "ContextAction", "VehicleBrake",
-			"BikePedal", "Sprint", "BikeSteerLeft", "BikeSteerRight"]:
+			"BikePedal", "BikeBell", "Sprint", "BikeSteerLeft", "BikeSteerRight"]:
 		var control := hud.get_node_or_null(node_name) as Control
 		if control == null:
 			continue

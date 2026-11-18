@@ -1,5 +1,7 @@
 extends CharacterBody3D
 
+const BICYCLE_BELL_STREAM: AudioStreamWAV = preload("res://audio/vehicles/bicycle_bell.wav")
+
 @export var max_forward_speed := 9.5
 @export var max_reverse_speed := 2.0
 @export var pedal_acceleration := 4.2
@@ -16,6 +18,7 @@ var _saved_collision_mask := 1
 var _visual_root: Node3D
 var _front_wheel: Node3D
 var _rear_wheel: Node3D
+var _bell_player: AudioStreamPlayer3D
 
 
 func _ready() -> void:
@@ -25,12 +28,23 @@ func _ready() -> void:
 	_build_bicycle_visuals()
 	_build_collision()
 	_build_interaction_area()
+	_build_bell_audio()
 
 
 func _register_input_actions() -> void:
-	for action in [&"bike_pedal", &"bike_brake", &"bike_steer_left", &"bike_steer_right"]:
+	for action in [&"bike_pedal", &"bike_brake", &"bike_steer_left", &"bike_steer_right", &"bike_bell"]:
 		if not InputMap.has_action(action):
 			InputMap.add_action(action)
+	_add_key_binding(&"bike_bell", KEY_B)
+
+
+func _add_key_binding(action: StringName, keycode: int) -> void:
+	for event in InputMap.action_get_events(action):
+		if event is InputEventKey and event.physical_keycode == keycode:
+			return
+	var key_event := InputEventKey.new()
+	key_event.physical_keycode = keycode
+	InputMap.action_add_event(action, key_event)
 
 
 func set_steering_method(method: String) -> void:
@@ -48,6 +62,9 @@ func _physics_process(delta: float) -> void:
 			velocity.y -= gravity * delta
 		move_and_slide()
 		return
+
+	if Input.is_action_just_pressed("bike_bell"):
+		ring_bell()
 
 	var steering_input := Input.get_axis("bike_steer_left", "bike_steer_right")
 	if Input.is_action_pressed("bike_pedal"):
@@ -74,6 +91,13 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	_sync_driver_pose()
 	_animate_bicycle(delta, steering_input)
+
+
+func ring_bell() -> void:
+	if driver == null or not is_instance_valid(driver) or _bell_player == null:
+		return
+	if not _bell_player.playing:
+		_bell_player.play()
 
 
 func interact() -> void:
@@ -251,6 +275,16 @@ func _animate_bicycle(delta: float, steering_input: float) -> void:
 		var target_lean := -steering_input * 0.12
 		_visual_root.rotation.z = lerp(_visual_root.rotation.z, target_lean,
 			clampf(delta * 5.0, 0.0, 1.0))
+
+
+func _build_bell_audio() -> void:
+	_bell_player = AudioStreamPlayer3D.new()
+	_bell_player.name = "BicycleBellAudio"
+	_bell_player.stream = BICYCLE_BELL_STREAM
+	_bell_player.volume_db = -4.0
+	_bell_player.unit_size = 5.0
+	_bell_player.max_distance = 24.0
+	add_child(_bell_player)
 
 
 func _build_collision() -> void:
