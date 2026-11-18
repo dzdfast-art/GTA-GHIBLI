@@ -1,13 +1,15 @@
 {
-  "schema_version": 1,
-  "asset_pack": "gta_ghibli_arabic_character_and_wildlife_audio",
-  "status": "voice_cast_plan_plus_runtime_synthesized_wildlife_calls",
+  "schema_version": 2,
+  "language": "ar",
+  "language_name": "العربية",
+  "status": "voice_cast_and_recording_paths_defined_recordings_pending",
   "character_dialogue": {
     "status": "recording_required",
     "audio_directory": "res://audio/characters/",
-    "filename_pattern": "{character_id}/{line_id}_{emotion}.ogg",
+    "filename_pattern": "{character_id}/{line_id}.ogg",
+    "preferred_format": "OGG Vorbis mono 22050 Hz",
     "language": "Arabic",
-    "required_emotions": [
+    "emotions": [
       "joy",
       "sadness",
       "fear",
@@ -17,28 +19,107 @@
       "whisper",
       "shout"
     ],
-    "note_ar": "لا توجد حالياً تسجيلات ممثلين صوتيين للشخصيات. هذا الملف خطة أداء وتسمية فقط."
+    "note_ar": "هذه ملفات تعريف ومسارات فقط؛ لا توجد تسجيلات ممثلين صوتيين مرفقة بعد."
+  },
+  "character_profiles": {
+    "leo_bennett": {
+      "name_ar": "ليو بينيت",
+      "voice": "شاب، صوت رجالي واضح ودافئ، حازم عند الخطر"
+    },
+    "mira_caretaker": {
+      "name_ar": "ميرا",
+      "voice": "نسائي دافئ وحنون، ترحيب هادئ"
+    },
+    "nora_blake": {
+      "name_ar": "نورا بليك",
+      "voice": "نسائي واثق وسريع، نبرة صحفية دقيقة"
+    },
+    "mia_bennett": {
+      "name_ar": "ميا بينيت",
+      "voice": "نسائي شاب، مرح ومتغير عاطفياً"
+    },
+    "claire_bennett": {
+      "name_ar": "كلير بينيت",
+      "voice": "نسائي ناضج، حنان وحزن مكبوت"
+    },
+    "the_broker": {
+      "name_ar": "الوسيط",
+      "voice": "رجالي منخفض وبارد ومهدد"
+    },
+    "thomas_bennett": {
+      "name_ar": "توماس بينيت",
+      "voice": "رجالي ناضج ومتعب ومشحون بالندم"
+    },
+    "nader_harbor": {
+      "name_ar": "نادر",
+      "voice": "رجالي متوسط العمر، ودود ومرح"
+    },
+    "salma_harbor": {
+      "name_ar": "سلمى",
+      "voice": "نسائي واضح وفضولي"
+    },
+    "rami_pines": {
+      "name_ar": "رامي",
+      "voice": "رجالي هادئ ومطمئن"
+    },
+    "hala_pines": {
+      "name_ar": "هالة",
+      "voice": "نسائي حازم ومتعاطف"
+    },
+    "fares_valley": {
+      "name_ar": "فارس",
+      "voice": "رجالي خشن قليلاً وصريح"
+    },
+    "layla_valley": {
+      "name_ar": "ليلى",
+      "voice": "نسائي واثق ومتزن"
+    },
+    "yasser_coast": {
+      "name_ar": "ياسر",
+      "voice": "رجالي بحري ودود"
+    },
+    "maryam_coast": {
+      "name_ar": "مريم",
+      "voice": "نسائي قوي وواضح"
+    }
   },
   "wildlife_calls": {
-    "status": "runtime_procedural_tonal_calls",
+    "status": "procedural_fallback_recordings_pending",
     "implementation": "res://scripts/audio/wildlife_voice.gd",
     "species": [
       {
         "id": "deer",
-        "name_ar": "غزال",
-        "call_ar": "نداء غزال اصطناعي قصير"
+        "audio_path": "res://audio/wildlife/deer_call.ogg"
       },
       {
         "id": "rabbit",
-        "name_ar": "أرنب",
-        "call_ar": "صرير أرنب اصطناعي خافت"
+        "audio_path": "res://audio/wildlife/rabbit_call.ogg"
       },
       {
         "id": "gull",
-        "name_ar": "نورس",
-        "call_ar": "نداء نورس اصطناعي متقطع"
+        "audio_path": "res://audio/wildlife/gull_call.ogg"
+      },
+      {
+        "id": "dog",
+        "audio_path": "res://audio/wildlife/dog_call.ogg"
+      },
+      {
+        "id": "cat",
+        "audio_path": "res://audio/wildlife/cat_call.ogg"
+      },
+      {
+        "id": "chicken",
+        "audio_path": "res://audio/wildlife/chicken_call.ogg"
+      },
+      {
+        "id": "cow",
+        "audio_path": "res://audio/wildlife/cow_call.ogg"
+      },
+      {
+        "id": "horse",
+        "audio_path": "res://audio/wildlife/horse_call.ogg"
       }
     ],
-    "note_ar": "الأصوات الحيوانية تُولد برمجياً وقت التشغيل كطبقة صوت أولية، وليست تسجيلات حيوانات واقعية."
+    "note_ar": "الأصوات الحالية نغمات اصطناعية مؤقتة. تستبدل تلقائياً بملفات OGG الحقيقية عند إضافتها."
   }
 }

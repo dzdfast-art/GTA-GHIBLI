@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "language": "ar",
-  "status": "dialogue_text_ready_voice_recordings_pending",
-  "note_ar": "الحوارات جاهزة كنصوص؛ ملفات تسجيل الممثلين لم تضاف بعد.",
+  "status": "arabic_dialogue_ready_voice_recordings_pending",
+  "note_ar": "جميع الجمل لديها مسارات صوت محددة. يجب إدراج تسجيلات OGG الفعلية في المسارات قبل سماع الدبلجة داخل اللعبة.",
   "characters": {
     "nader_harbor": {
       "name_ar": "نادر",
@@ -16,7 +16,8 @@
         {
           "line_id": "nader_002",
           "text_ar": "رأيت شاحنة سوداء قرب المخازن القديمة. لم يعجبني أمرها.",
-          "emotion_ar": "قلق"
+          "emotion_ar": "قلق",
+          "audio_path": "res://audio/characters/nader_harbor/nader_002.ogg"
         }
       ]
     },
@@ -26,12 +27,14 @@
         {
           "line_id": "salma_001",
           "text_ar": "تصل إلى الميناء أخبار أكثر مما تصل إليه البضائع.",
-          "emotion_ar": "ودودة"
+          "emotion_ar": "ودودة",
+          "audio_path": "res://audio/characters/salma_harbor/salma_001.ogg"
         },
         {
           "line_id": "salma_002",
           "text_ar": "اسأل عن السفينة التي غادرت بعد منتصف الليل.",
-          "emotion_ar": "متحفظة"
+          "emotion_ar": "متحفظة",
+          "audio_path": "res://audio/characters/salma_harbor/salma_002.ogg"
         }
       ]
     },
@@ -41,12 +44,14 @@
         {
           "line_id": "rami_001",
           "text_ar": "لا تسرع في الطريق الجبلي إذا بدأ الضباب.",
-          "emotion_ar": "هادئ"
+          "emotion_ar": "هادئ",
+          "audio_path": "res://audio/characters/rami_pines/rami_001.ogg"
         },
         {
           "line_id": "rami_002",
           "text_ar": "سمعت نداء غزال قرب النهر عند الفجر.",
-          "emotion_ar": "متأمل"
+          "emotion_ar": "متأمل",
+          "audio_path": "res://audio/characters/rami_pines/rami_002.ogg"
         }
       ]
     },
@@ -56,12 +61,14 @@
         {
           "line_id": "hala_001",
           "text_ar": "في الجبال، دقيقة واحدة قد تصنع الفرق.",
-          "emotion_ar": "حازمة"
+          "emotion_ar": "حازمة",
+          "audio_path": "res://audio/characters/hala_pines/hala_001.ogg"
         },
         {
           "line_id": "hala_002",
           "text_ar": "إذا رأيت شخصاً مصاباً، أبلغني وسأصل بسرعة.",
-          "emotion_ar": "متعاطفة"
+          "emotion_ar": "متعاطفة",
+          "audio_path": "res://audio/characters/hala_pines/hala_002.ogg"
         }
       ]
     },
@@ -71,12 +78,14 @@
         {
           "line_id": "fares_001",
           "text_ar": "هذا الوادي يطعم الجميع إذا اعتنوا بأرضه.",
-          "emotion_ar": "صريح"
+          "emotion_ar": "صريح",
+          "audio_path": "res://audio/characters/fares_valley/fares_001.ogg"
         },
         {
           "line_id": "fares_002",
           "text_ar": "بعض الصناديق لم تكن تحمل ما كُتب عليها.",
-          "emotion_ar": "متوجس"
+          "emotion_ar": "متوجس",
+          "audio_path": "res://audio/characters/fares_valley/fares_002.ogg"
         }
       ]
     },
@@ -86,12 +95,14 @@
         {
           "line_id": "layla_001",
           "text_ar": "الماء حق للجميع، ولا يجب أن يتحكم به شخص واحد.",
-          "emotion_ar": "واثقة"
+          "emotion_ar": "واثقة",
+          "audio_path": "res://audio/characters/layla_valley/layla_001.ogg"
         },
         {
           "line_id": "layla_002",
           "text_ar": "هناك من يعبث بمضخات المزارعين.",
-          "emotion_ar": "غاضبة"
+          "emotion_ar": "غاضبة",
+          "audio_path": "res://audio/characters/layla_valley/layla_002.ogg"
         }
       ]
     },
@@ -101,12 +112,14 @@
         {
           "line_id": "yasser_001",
           "text_ar": "البحر كريم لمن يحترمه.",
-          "emotion_ar": "ودود"
+          "emotion_ar": "ودود",
+          "audio_path": "res://audio/characters/yasser_coast/yasser_001.ogg"
         },
         {
           "line_id": "yasser_002",
           "text_ar": "مرّ قارب بلا أضواء قرب الساحل.",
-          "emotion_ar": "قلق"
+          "emotion_ar": "قلق",
+          "audio_path": "res://audio/characters/yasser_coast/yasser_002.ogg"
         }
       ]
     },
@@ -116,12 +129,14 @@
         {
           "line_id": "maryam_001",
           "text_ar": "إذا احتجت إلى مساعدة في الماء، أطلق إشارة واضحة.",
-          "emotion_ar": "مطمئنة"
+          "emotion_ar": "مطمئنة",
+          "audio_path": "res://audio/characters/maryam_coast/maryam_001.ogg"
         },
         {
           "line_id": "maryam_002",
           "text_ar": "لا تقترب من الصخور وقت العاصفة.",
-          "emotion_ar": "حازمة"
+          "emotion_ar": "حازمة",
+          "audio_path": "res://audio/characters/maryam_coast/maryam_002.ogg"
         }
       ]
     },
@@ -132,12 +147,14 @@
         {
           "line_id": "nora_001",
           "text_ar": "أنا نورا بليك. أبحث عن الحقيقة حتى عندما يحاول الجميع إخفاءها.",
-          "emotion_ar": "واثقة"
+          "emotion_ar": "واثقة",
+          "audio_path": "res://audio/characters/nora_blake/nora_001.ogg"
         },
         {
           "line_id": "nora_002",
           "text_ar": "اختفاء والدك ليس حادثاً عادياً. اسم الوسيط يتكرر في سجلات الميناء.",
-          "emotion_ar": "جادة"
+          "emotion_ar": "جادة",
+          "audio_path": "res://audio/characters/nora_blake/nora_002.ogg"
         }
       ]
     },
@@ -148,12 +165,14 @@
         {
           "line_id": "mia_001",
           "text_ar": "ليو! كنت أعلم أنك ستعود. لدي ألف سؤال!",
-          "emotion_ar": "فرح"
+          "emotion_ar": "فرح",
+          "audio_path": "res://audio/characters/mia_bennett/mia_001.ogg"
         },
         {
           "line_id": "mia_002",
           "text_ar": "وجدت رسالة قديمة في صندوق أبي.",
-          "emotion_ar": "قلق"
+          "emotion_ar": "قلق",
+          "audio_path": "res://audio/characters/mia_bennett/mia_002.ogg"
         }
       ]
     },
@@ -164,12 +183,14 @@
         {
           "line_id": "claire_001",
           "text_ar": "الحمد لله أنك عدت يا ليو. البيت لم يكن كما كان في غيابك.",
-          "emotion_ar": "حنان"
+          "emotion_ar": "حنان",
+          "audio_path": "res://audio/characters/claire_bennett/claire_001.ogg"
         },
         {
           "line_id": "claire_002",
           "text_ar": "هناك أمور عن اختفاء والدك لم أستطع إخبارك بها.",
-          "emotion_ar": "حزن"
+          "emotion_ar": "حزن",
+          "audio_path": "res://audio/characters/claire_bennett/claire_002.ogg"
         }
       ]
     },
@@ -180,12 +201,14 @@
         {
           "line_id": "broker_001",
           "text_ar": "في هذه المدينة، لكل سر ثمن. هل تستطيع دفعه؟",
-          "emotion_ar": "بارد"
+          "emotion_ar": "بارد",
+          "audio_path": "res://audio/characters/the_broker/broker_001.ogg"
         },
         {
           "line_id": "broker_002",
           "text_ar": "أنصحك أن تتوقف عن البحث يا ليو.",
-          "emotion_ar": "تهديد"
+          "emotion_ar": "تهديد",
+          "audio_path": "res://audio/characters/the_broker/broker_002.ogg"
         }
       ]
     },
@@ -196,7 +219,8 @@
         {
           "line_id": "thomas_001",
           "text_ar": "إذا كنت تسمع هذه الرسالة، فهذا يعني أنني لم أستطع العودة.",
-          "emotion_ar": "ندم"
+          "emotion_ar": "ندم",
+          "audio_path": "res://audio/characters/thomas_bennett/thomas_001.ogg"
         }
       ]
     }

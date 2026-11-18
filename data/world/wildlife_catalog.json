@@ -1,31 +1,132 @@
 {
   "schema_version": 1,
-  "status": "prototype_wildlife_catalog",
+  "status": "eight_species_prototype_catalog",
   "species": [
     {
       "id": "deer",
       "name_ar": "غزال",
       "habitat": "pine_highlands",
-      "behavior": ["roam", "flee", "bond_after_feeding"],
-      "preferred_food": ["wild_berries", "carrot"],
-      "prototype_population": 3
+      "behavior": [
+        "roam",
+        "flee",
+        "bond_after_feeding"
+      ],
+      "preferred_food": [
+        "wild_berries",
+        "carrot"
+      ],
+      "prototype_population": 3,
+      "audio_path": "res://audio/wildlife/deer_call.ogg"
     },
     {
       "id": "rabbit",
       "name_ar": "أرنب",
       "habitat": "amber_valley",
-      "behavior": ["roam", "flee", "bond_after_feeding"],
-      "preferred_food": ["carrot", "wild_berries"],
-      "prototype_population": 5
+      "behavior": [
+        "roam",
+        "flee",
+        "bond_after_feeding"
+      ],
+      "preferred_food": [
+        "carrot",
+        "wild_berries"
+      ],
+      "prototype_population": 5,
+      "audio_path": "res://audio/wildlife/rabbit_call.ogg"
     },
     {
       "id": "gull",
       "name_ar": "نورس",
       "habitat": "sapphire_coast",
-      "behavior": ["roam", "flee", "bond_after_feeding"],
-      "preferred_food": ["wild_berries"],
-      "prototype_population": 4
+      "behavior": [
+        "roam",
+        "flee",
+        "bond_after_feeding"
+      ],
+      "preferred_food": [
+        "wild_berries"
+      ],
+      "prototype_population": 4,
+      "audio_path": "res://audio/wildlife/gull_call.ogg"
+    },
+    {
+      "id": "dog",
+      "name_ar": "كلب",
+      "habitat": "harbor_city",
+      "behavior": [
+        "roam",
+        "flee",
+        "bond_after_feeding"
+      ],
+      "preferred_food": [
+        "wild_berries",
+        "carrot"
+      ],
+      "prototype_population": 2,
+      "audio_path": "res://audio/wildlife/dog_call.ogg"
+    },
+    {
+      "id": "cat",
+      "name_ar": "قط",
+      "habitat": "willow_village",
+      "behavior": [
+        "roam",
+        "flee",
+        "bond_after_feeding"
+      ],
+      "preferred_food": [
+        "wild_berries"
+      ],
+      "prototype_population": 2,
+      "audio_path": "res://audio/wildlife/cat_call.ogg"
+    },
+    {
+      "id": "chicken",
+      "name_ar": "دجاجة",
+      "habitat": "willow_village",
+      "behavior": [
+        "roam",
+        "flee",
+        "bond_after_feeding"
+      ],
+      "preferred_food": [
+        "carrot",
+        "wild_berries"
+      ],
+      "prototype_population": 4,
+      "audio_path": "res://audio/wildlife/chicken_call.ogg"
+    },
+    {
+      "id": "cow",
+      "name_ar": "بقرة",
+      "habitat": "amber_valley",
+      "behavior": [
+        "roam",
+        "flee",
+        "bond_after_feeding"
+      ],
+      "preferred_food": [
+        "wild_berries"
+      ],
+      "prototype_population": 1,
+      "audio_path": "res://audio/wildlife/cow_call.ogg"
+    },
+    {
+      "id": "horse",
+      "name_ar": "حصان",
+      "habitat": "pine_highlands",
+      "behavior": [
+        "roam",
+        "flee",
+        "bond_after_feeding"
+      ],
+      "preferred_food": [
+        "carrot",
+        "wild_berries"
+      ],
+      "prototype_population": 1,
+      "audio_path": "res://audio/wildlife/horse_call.ogg"
     }
   ],
-  "notes_ar": "أصول الشخصيات الحيوانية الحالية نماذج هندسية أولية بلا رسوم تحريك نهائية أو مؤثرات صوتية فردية."
+  "notes_ar": "الأشكال الحالية نماذج هندسية أولية. الأصوات الحالية توليد برمجي مؤقت، وملفات OGG الحقيقية يمكن وضعها في مسارات audio_path."
 }

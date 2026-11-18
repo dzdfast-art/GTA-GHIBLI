@@ -12,7 +12,7 @@ func _ready() -> void:
 func get_spawned_count()->int:
 	return _count
 
-func _spawn(n:String,parent_path:String,id:String,at:Vector3,outfit:Color,skin:Color,hair:Color,hidden:=false)->void:
+func _spawn(n:String,parent_path:String,id:String,at:Vector3,outfit:Color,skin:Color,hair:Color,hidden: bool = false)->void:
 	var parent:=get_parent().get_node_or_null(parent_path) as Node3D
 	if parent==null:
 		push_warning("Story character location missing: "+parent_path)
