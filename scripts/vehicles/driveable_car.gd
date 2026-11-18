@@ -23,7 +23,8 @@ var _headlight_spots: Array[SpotLight3D] = []
 var _headlight_materials: Array[StandardMaterial3D] = []
 var _brake_light_materials: Array[StandardMaterial3D] = []
 var _reverse_light_materials: Array[StandardMaterial3D] = []
-var _indicator_materials: Array[StandardMaterial3D] = []
+var _left_indicator_materials: Array[StandardMaterial3D] = []
+var _right_indicator_materials: Array[StandardMaterial3D] = []
 var _turn_signal_clock := 0.0
 
 func _ready() -> void:
@@ -183,12 +184,18 @@ func _build_vehicle_visuals() -> void:
 		var front_indicator := get_node("FrontIndicator" + wheel_side) as MeshInstance3D
 		var front_indicator_material := _make_emissive_material(Color(0.55, 0.22, 0.025), Color(1.0, 0.34, 0.015), 0.08)
 		front_indicator.material_override = front_indicator_material
-		_indicator_materials.append(front_indicator_material)
+		if side < 0.0:
+			_left_indicator_materials.append(front_indicator_material)
+		else:
+			_right_indicator_materials.append(front_indicator_material)
 		_add_box("RearIndicator" + wheel_side, Vector3(0.15, 0.12, 0.055), Vector3(side * 0.89, 1.03, 2.045), Color(0.68, 0.30, 0.04))
 		var rear_indicator := get_node("RearIndicator" + wheel_side) as MeshInstance3D
 		var rear_indicator_material := _make_emissive_material(Color(0.55, 0.22, 0.025), Color(1.0, 0.34, 0.015), 0.08)
 		rear_indicator.material_override = rear_indicator_material
-		_indicator_materials.append(rear_indicator_material)
+		if side < 0.0:
+			_left_indicator_materials.append(rear_indicator_material)
+		else:
+			_right_indicator_materials.append(rear_indicator_material)
 		var front_wheel := _add_wheel("FrontWheel" + wheel_side, Vector3(side * 0.99, 0.43, -1.28))
 		_front_wheels.append(front_wheel)
 		var rear_wheel := _add_wheel("RearWheel" + wheel_side, Vector3(side * 0.99, 0.43, 1.28))
@@ -331,7 +338,10 @@ func _update_vehicle_lighting(input_vector: Vector2, delta: float) -> void:
 	_turn_signal_clock += delta
 	var wants_signal := occupied and absf(input_vector.x) > 0.18 and absf(_speed) > 0.15
 	var signal_on := wants_signal and fposmod(_turn_signal_clock, 0.9) < 0.45
-	_set_material_emission(_indicator_materials, 2.0 if signal_on else 0.08)
+	var left_signal_on := signal_on and input_vector.x < -0.18
+	var right_signal_on := signal_on and input_vector.x > 0.18
+	_set_material_emission(_left_indicator_materials, 2.0 if left_signal_on else 0.08)
+	_set_material_emission(_right_indicator_materials, 2.0 if right_signal_on else 0.08)
 
 func _build_interaction_area() -> void:
 	var area := Area3D.new()
