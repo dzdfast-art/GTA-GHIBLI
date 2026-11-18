@@ -2,7 +2,7 @@ extends Node3D
 
 ## Procedural blockout for four explorable districts linked to Willow Village.
 ## Geometry is original, light-weight and assembled at runtime for mobile testing.
-const NPC_BRAIN_SCRIPT = preload("res://scripts/systems/npc_brain.gd")
+const CIVILIAN_NPC_SCRIPT = preload("res://scripts/characters/world_npc_actor.gd")
 
 var _region_ids: Array[String] = []
 var _population_count := 0
@@ -170,43 +170,25 @@ func _build_district_details(district: Node3D, region_id: String, ground_color: 
 			pass
 
 func _build_civilians(district: Node3D, region_id: String, npc_names: Array) -> void:
-	var positions := [Vector3(-5.0, 0.0, 2.0), Vector3(7.0, 0.0, 1.0)]
-	for index in range(positions.size()):
-		var civilian := Node3D.new()
-		civilian.name = "Civilian_%s_%d" % [region_id, index + 1]
-		civilian.position = positions[index]
+	var positions := [Vector3(-5.0,0.0,2.0),Vector3(7.0,0.0,1.0)]
+	var ids := {
+		"harbor_city":["nader_harbor","salma_harbor"],
+		"pine_highlands":["rami_pines","hala_pines"],
+		"amber_valley":["fares_valley","layla_valley"],
+		"sapphire_coast":["yasser_coast","maryam_coast"]
+	}
+	var palette := [Color(0.25,0.42,0.62),Color(0.57,0.34,0.30),Color(0.34,0.48,0.31),Color(0.56,0.43,0.62)]
+	for i in range(2):
+		var civilian:=Node3D.new()
+		civilian.name="Civilian_%s_%d" % [region_id,i+1]
+		civilian.position=positions[i]
 		civilian.add_to_group("civilian_npcs")
+		civilian.set_script(CIVILIAN_NPC_SCRIPT)
+		civilian.set("character_id",ids[region_id][i])
+		civilian.set("character_name_ar",str(npc_names[i]))
+		civilian.set("outfit_color",palette[(i+_region_ids.size())%palette.size()])
 		district.add_child(civilian)
-		var body := MeshInstance3D.new()
-		body.name = "Body"
-		var capsule := CapsuleMesh.new()
-		capsule.radius = 0.34
-		capsule.height = 1.65
-		body.mesh = capsule
-		body.position.y = 0.83
-		body.material_override = _material(Color(0.32 + index * 0.16, 0.42, 0.58 - index * 0.08))
-		civilian.add_child(body)
-		var name_tag := Label3D.new()
-		name_tag.text = str(npc_names[index])
-		name_tag.position.y = 2.05
-		name_tag.font_size = 26
-		name_tag.modulate = Color(1.0, 0.93, 0.78)
-		civilian.add_child(name_tag)
-
-		var brain := Node.new()
-		brain.name = "NPCBrain"
-		brain.set_script(NPC_BRAIN_SCRIPT)
-		brain.set("persistence_id", "%s_civilian_%d" % [region_id, index + 1])
-		brain.set("schedule_enabled", true)
-		brain.set("work_start_hour", 8 + index)
-		brain.set("work_end_hour", 17 + index)
-		brain.set("work_position", civilian.to_global(positions[index] + Vector3(1.5, 0.0, 1.0)))
-		brain.set("home_position", civilian.global_position)
-		civilian.add_child(brain)
-		var clocks := get_tree().get_nodes_in_group("world_clock")
-		if not clocks.is_empty() and is_instance_valid(clocks[0]):
-			brain.call("set_world_hour", int(clocks[0].call("get_hour")))
-		_population_count += 1
+		_population_count+=1
 
 func _add_tree(parent: Node3D, tree_name: String, at: Vector3, scale_value: float) -> void:
 	var tree := Node3D.new()

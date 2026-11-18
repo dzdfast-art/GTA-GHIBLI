@@ -17,14 +17,14 @@ func _run_test() -> void:
 	var director := Node3D.new()
 	director.set_script(WILDLIFE_DIRECTOR_SCRIPT)
 	world.add_child(director)
-	if int(director.call("get_wildlife_count")) != 12:
+	if int(director.call("get_wildlife_count")) != 22:
 		_fail("Wildlife director did not create all habitat animals.")
 		return
 	var counts: Dictionary = director.call("get_species_counts")
-	if int(counts.get("deer", 0)) != 3 or int(counts.get("rabbit", 0)) != 5 or int(counts.get("gull", 0)) != 4:
+	if int(counts.get("deer", 0)) != 3 or int(counts.get("rabbit", 0)) != 5 or int(counts.get("gull", 0)) != 4 or int(counts.get("dog", 0)) != 2 or int(counts.get("cat", 0)) != 2 or int(counts.get("chicken", 0)) != 4 or int(counts.get("cow", 0)) != 1 or int(counts.get("horse", 0)) != 1:
 		_fail("The wildlife species population does not match the habitat plan.")
 		return
-	for region_name in ["PineHighlands", "AmberValley", "SapphireCoast"]:
+	for region_name in ["PineHighlands", "AmberValley", "SapphireCoast", "HarborCity"]:
 		var habitat := regions.get_node_or_null(region_name)
 		if habitat == null or habitat.get_child_count() < 1:
 			_fail("Wildlife habitat is missing: " + region_name)

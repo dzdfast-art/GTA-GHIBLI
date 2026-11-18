@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "language": "ar",
+  "status": "dialogue_text_ready_voice_recordings_pending",
+  "note_ar": "الحوارات جاهزة كنصوص؛ ملفات تسجيل الممثلين لم تضاف بعد.",
+  "characters": {
+    "nader_harbor": {
+      "name_ar": "نادر",
+      "lines": [
+        {
+          "line_id": "nader_001",
+          "text_ar": "أهلاً بك! إذا تعطلت سيارتك في المدينة، تعال إليّ قبل أن تدفع مالك للغرباء.",
+          "emotion_ar": "مرح",
+          "audio_path": "res://audio/characters/nader_harbor/nader_001.ogg"
+        },
+        {
+          "line_id": "nader_002",
+          "text_ar": "رأيت شاحنة سوداء قرب المخازن القديمة. لم يعجبني أمرها.",
+          "emotion_ar": "قلق"
+        }
+      ]
+    },
+    "salma_harbor": {
+      "name_ar": "سلمى",
+      "lines": [
+        {
+          "line_id": "salma_001",
+          "text_ar": "تصل إلى الميناء أخبار أكثر مما تصل إليه البضائع.",
+          "emotion_ar": "ودودة"
+        },
+        {
+          "line_id": "salma_002",
+          "text_ar": "اسأل عن السفينة التي غادرت بعد منتصف الليل.",
+          "emotion_ar": "متحفظة"
+        }
+      ]
+    },
+    "rami_pines": {
+      "name_ar": "رامي",
+      "lines": [
+        {
+          "line_id": "rami_001",
+          "text_ar": "لا تسرع في الطريق الجبلي إذا بدأ الضباب.",
+          "emotion_ar": "هادئ"
+        },
+        {
+          "line_id": "rami_002",
+          "text_ar": "سمعت نداء غزال قرب النهر عند الفجر.",
+          "emotion_ar": "متأمل"
+        }
+      ]
+    },
+    "hala_pines": {
+      "name_ar": "هالة",
+      "lines": [
+        {
+          "line_id": "hala_001",
+          "text_ar": "في الجبال، دقيقة واحدة قد تصنع الفرق.",
+          "emotion_ar": "حازمة"
+        },
+        {
+          "line_id": "hala_002",
+          "text_ar": "إذا رأيت شخصاً مصاباً، أبلغني وسأصل بسرعة.",
+          "emotion_ar": "متعاطفة"
+        }
+      ]
+    },
+    "fares_valley": {
+      "name_ar": "فارس",
+      "lines": [
+        {
+          "line_id": "fares_001",
+          "text_ar": "هذا الوادي يطعم الجميع إذا اعتنوا بأرضه.",
+          "emotion_ar": "صريح"
+        },
+        {
+          "line_id": "fares_002",
+          "text_ar": "بعض الصناديق لم تكن تحمل ما كُتب عليها.",
+          "emotion_ar": "متوجس"
+        }
+      ]
+    },
+    "layla_valley": {
+      "name_ar": "ليلى",
+      "lines": [
+        {
+          "line_id": "layla_001",
+          "text_ar": "الماء حق للجميع، ولا يجب أن يتحكم به شخص واحد.",
+          "emotion_ar": "واثقة"
+        },
+        {
+          "line_id": "layla_002",
+          "text_ar": "هناك من يعبث بمضخات المزارعين.",
+          "emotion_ar": "غاضبة"
+        }
+      ]
+    },
+    "yasser_coast": {
+      "name_ar": "ياسر",
+      "lines": [
+        {
+          "line_id": "yasser_001",
+          "text_ar": "البحر كريم لمن يحترمه.",
+          "emotion_ar": "ودود"
+        },
+        {
+          "line_id": "yasser_002",
+          "text_ar": "مرّ قارب بلا أضواء قرب الساحل.",
+          "emotion_ar": "قلق"
+        }
+      ]
+    },
+    "maryam_coast": {
+      "name_ar": "مريم",
+      "lines": [
+        {
+          "line_id": "maryam_001",
+          "text_ar": "إذا احتجت إلى مساعدة في الماء، أطلق إشارة واضحة.",
+          "emotion_ar": "مطمئنة"
+        },
+        {
+          "line_id": "maryam_002",
+          "text_ar": "لا تقترب من الصخور وقت العاصفة.",
+          "emotion_ar": "حازمة"
+        }
+      ]
+    },
+    "nora_blake": {
+      "name_ar": "نورا بليك",
+      "role_ar": "صحفية استقصائية",
+      "lines": [
+        {
+          "line_id": "nora_001",
+          "text_ar": "أنا نورا بليك. أبحث عن الحقيقة حتى عندما يحاول الجميع إخفاءها.",
+          "emotion_ar": "واثقة"
+        },
+        {
+          "line_id": "nora_002",
+          "text_ar": "اختفاء والدك ليس حادثاً عادياً. اسم الوسيط يتكرر في سجلات الميناء.",
+          "emotion_ar": "جادة"
+        }
+      ]
+    },
+    "mia_bennett": {
+      "name_ar": "ميا بينيت",
+      "role_ar": "أخت ليو",
+      "lines": [
+        {
+          "line_id": "mia_001",
+          "text_ar": "ليو! كنت أعلم أنك ستعود. لدي ألف سؤال!",
+          "emotion_ar": "فرح"
+        },
+        {
+          "line_id": "mia_002",
+          "text_ar": "وجدت رسالة قديمة في صندوق أبي.",
+          "emotion_ar": "قلق"
+        }
+      ]
+    },
+    "claire_bennett": {
+      "name_ar": "كلير بينيت",
+      "role_ar": "والدة ليو وميا",
+      "lines": [
+        {
+          "line_id": "claire_001",
+          "text_ar": "الحمد لله أنك عدت يا ليو. البيت لم يكن كما كان في غيابك.",
+          "emotion_ar": "حنان"
+        },
+        {
+          "line_id": "claire_002",
+          "text_ar": "هناك أمور عن اختفاء والدك لم أستطع إخبارك بها.",
+          "emotion_ar": "حزن"
+        }
+      ]
+    },
+    "the_broker": {
+      "name_ar": "الوسيط",
+      "role_ar": "خصم غامض",
+      "lines": [
+        {
+          "line_id": "broker_001",
+          "text_ar": "في هذه المدينة، لكل سر ثمن. هل تستطيع دفعه؟",
+          "emotion_ar": "بارد"
+        },
+        {
+          "line_id": "broker_002",
+          "text_ar": "أنصحك أن تتوقف عن البحث يا ليو.",
+          "emotion_ar": "تهديد"
+        }
+      ]
+    },
+    "thomas_bennett": {
+      "name_ar": "توماس بينيت",
+      "role_ar": "والد ليو",
+      "lines": [
+        {
+          "line_id": "thomas_001",
+          "text_ar": "إذا كنت تسمع هذه الرسالة، فهذا يعني أنني لم أستطع العودة.",
+          "emotion_ar": "ندم"
+        }
+      ]
+    }
+  }
+}

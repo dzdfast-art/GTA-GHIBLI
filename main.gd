@@ -21,6 +21,7 @@ const PLAYER_NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
 const CONSUMABLE_INVENTORY_SCRIPT = preload("res://scripts/systems/consumable_inventory.gd")
 const PLAYER_WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
 const WILDLIFE_DIRECTOR_SCRIPT = preload("res://scripts/world/wildlife_director.gd")
+const STORY_CHARACTER_DIRECTOR_SCRIPT = preload("res://scripts/characters/story_character_director.gd")
 const WORLD_WEATHER_SCRIPT = preload("res://scripts/world/world_weather.gd")
 
 func _ready() -> void:
@@ -31,6 +32,7 @@ func _ready() -> void:
 	_create_red_bridge()
 	_create_wildlife()
 	_create_player()
+	_create_story_characters()
 	_create_player_needs()
 	_create_starter_car()
 	_create_starter_bicycle()
@@ -235,6 +237,11 @@ func _create_red_bridge() -> void:
 	bridge.add_to_group("world_landmarks")
 	amber_valley.add_child(bridge)
 
+
+func _create_story_characters() -> void:
+	var director: Node3D = STORY_CHARACTER_DIRECTOR_SCRIPT.new() as Node3D
+	director.name = "StoryCharacterDirector"
+	add_child(director)
 
 func _create_wildlife() -> void:
 	var wildlife: Node3D = WILDLIFE_DIRECTOR_SCRIPT.new() as Node3D
