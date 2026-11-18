@@ -3,7 +3,7 @@ extends Node3D
 ## Mobile-conscious global weather controller with lightweight rain particles.
 signal weather_changed(weather_id: String)
 
-@export var automatic_weather_enabled := false
+@export var automatic_weather_enabled := true
 @export_range(30.0, 1800.0, 10.0) var change_interval_seconds := 240.0
 
 var weather_id := "clear"
@@ -15,6 +15,7 @@ var _random := RandomNumberGenerator.new()
 func _ready() -> void:
 	_random.randomize()
 	add_to_group("world_weather")
+	_weather_timer = change_interval_seconds
 	_build_rain_particles()
 	_sync_ambience()
 	set_weather("clear")

@@ -11,10 +11,11 @@ The public GDC session “The Sound of Grand Theft Auto V” describes an open-w
 - Dawn birds, night insects and owl-like calls.
 - Coast/river water layer and six looping WAV ambience themes.
 - Weather/biome selection and fade-in of the selected field ambience.
+- Automatic clear/rain/storm changes approximately every four minutes, with a random weighted weather choice.
 - All procedural ambience is local: no microphone, personal files or runtime network access.
 
 ## Important audio-quality distinction
-The WAV themes already in `audio/ambience/` and the new weather layers are prototype-generated textures, not authentic field recordings. They are useful for implementation and testing but must be replaced or layered with properly licensed field recordings for a natural AAA result. Candidate source: foleykit CC0 nature synthesis repository and its license; inspect the upstream license before importing individual assets. Do not copy any GTA game audio.
+The WAV themes already in `audio/ambience/` and the new weather layers are prototype-generated textures, not authentic field recordings. They are useful for implementation and testing but must be replaced or layered with properly licensed field recordings for a natural AAA result. Candidate open-source reference: [foleykit](https://github.com/rudqlsdla/foleykit), which documents 335 procedural CC0 sound designs including rain, wind, water, fire, insects, birds and place ambiences. Its CC0 dedication permits reuse of its rendered sounds; GTA GHIBLI has not yet imported those binary sounds. The project currently uses its own procedural prototype layers. Do not copy any GTA game audio.
 
 ## Character acting
 Every existing world dialogue line now carries an emotion ID, Arabic acting direction and a supported HeyGen-style performance tag where applicable (for example [sad], [whispers], [angry], [laughs], [gasps]). The current voice clips are still first-pass synthetic reads. An expressive retake is required; metadata alone does not make a voice sound emotional. A HeyGen generation attempt for six emotion samples returned a 502 error, so no new expressive clips are claimed as completed.
