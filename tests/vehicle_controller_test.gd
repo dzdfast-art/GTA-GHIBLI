@@ -124,9 +124,21 @@ func _run_test() -> void:
 		return
 	car.set("_turn_signal_clock", 0.0)
 	car.call("_update_vehicle_lighting", Vector2(1.0, 0.0), 0.1)
-	var indicator_material := (car.get_node("FrontIndicatorRight") as MeshInstance3D).material_override as StandardMaterial3D
-	if indicator_material == null or indicator_material.emission_energy_multiplier < 1.5:
+	var right_indicator_material := (car.get_node("FrontIndicatorRight") as MeshInstance3D).material_override as StandardMaterial3D
+	var left_indicator_material := (car.get_node("FrontIndicatorLeft") as MeshInstance3D).material_override as StandardMaterial3D
+	if right_indicator_material == null or right_indicator_material.emission_energy_multiplier < 1.5:
 		_fail("Right turn indicator did not flash while steering right.")
+		return
+	if left_indicator_material == null or left_indicator_material.emission_energy_multiplier > 0.2:
+		_fail("Left turn indicators incorrectly flashed during a right turn.")
+		return
+	car.set("_turn_signal_clock", 0.0)
+	car.call("_update_vehicle_lighting", Vector2(-1.0, 0.0), 0.1)
+	if left_indicator_material.emission_energy_multiplier < 1.5:
+		_fail("Left turn indicator did not flash while steering left.")
+		return
+	if right_indicator_material.emission_energy_multiplier > 0.2:
+		_fail("Right turn indicators incorrectly flashed during a left turn.")
 		return
 
 	# Braking should reduce speed instead of continuing to accelerate.
