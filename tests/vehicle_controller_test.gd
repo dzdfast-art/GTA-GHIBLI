@@ -47,7 +47,9 @@ func _run_test() -> void:
 		_fail("The humanoid driver was hidden while seated in the car.")
 		return
 
-	# Forward acceleration.
+	# Forward acceleration also animates the visible wheels.
+	var front_wheel := car.get_node("FrontWheelRight") as Node3D
+	var wheel_roll_before := front_wheel.rotation.x
 	var start_z := car.global_position.z
 	Input.action_press("ui_up")
 	for _frame in range(30):
@@ -55,6 +57,9 @@ func _run_test() -> void:
 	Input.action_release("ui_up")
 	if car.global_position.z >= start_z - 0.5:
 		_fail("Forward input did not move the vehicle.")
+		return
+	if absf(wrapf(front_wheel.rotation.x - wheel_roll_before, -PI, PI)) < 0.05:
+		_fail("Forward driving did not spin the visible front wheel.")
 		return
 
 	# Reverse must move the car back along its current heading.
@@ -77,6 +82,9 @@ func _run_test() -> void:
 	Input.action_release("ui_right")
 	if is_equal_approx(car.rotation.y, start_rotation):
 		_fail("Steering input did not change the vehicle heading.")
+		return
+	if absf(front_wheel.rotation.y) < deg_to_rad(5.0):
+		_fail("Steering input did not angle the visible front wheels.")
 		return
 
 	# Braking should reduce speed instead of continuing to accelerate.
