@@ -32,6 +32,8 @@ jobs:
           python -m json.tool data/world/side_activities.json > /dev/null
           python -m json.tool data/items/consumables.json > /dev/null
           python -m json.tool data/world/wildlife_catalog.json > /dev/null
+          python -m json.tool data/characters/world_dialogue_ar.json > /dev/null
+          python -m json.tool data/world/wildlife_audio_manifest.json > /dev/null
           python -m json.tool audio/ambience/manifest.json > /dev/null
 
       - name: Validate OBJ mesh surface budgets
@@ -69,6 +71,8 @@ jobs:
             res://scripts/ui/virtual_joystick.gd \
             res://scripts/world/willow_village.gd \
             res://scripts/characters/mira_npc.gd \
+            res://scripts/characters/world_npc_actor.gd \
+            res://scripts/characters/story_character_director.gd \
             res://scripts/missions/mission_manager.gd \
             res://scripts/missions/mission_002_runtime.gd \
             res://scripts/missions/mission_003_runtime.gd \
@@ -79,6 +83,7 @@ jobs:
             res://scripts/world/terrain_expansion_runtime.gd \
             res://scripts/world/wildlife_actor.gd \
             res://scripts/world/wildlife_director.gd \
+            res://scripts/audio/wildlife_voice.gd \
             res://scripts/world/world_weather.gd \
             res://scripts/missions/cinematic_director.gd
           do
@@ -103,6 +108,9 @@ jobs:
 
       - name: Test NPC perception and reactions
         run: godot --headless --path . --script res://tests/npc_brain_test.gd
+
+      - name: Test named Arabic character population and interaction
+        run: godot --headless --path . --script res://tests/character_population_test.gd
 
       - name: Test shared interaction contract
         run: godot --headless --path . --script res://tests/interaction_system_test.gd

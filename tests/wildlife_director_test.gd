@@ -10,6 +10,9 @@ func _initialize() -> void:
 func _run_test() -> void:
 	var world := Node3D.new()
 	root.add_child(world)
+	var village := Node3D.new()
+	village.name = "WillowVillage"
+	world.add_child(village)
 	var regions := Node3D.new()
 	regions.name = "OpenWorldRegions"
 	regions.set_script(REGIONS_SCRIPT)
@@ -23,6 +26,9 @@ func _run_test() -> void:
 	var counts: Dictionary = director.call("get_species_counts")
 	if int(counts.get("deer", 0)) != 3 or int(counts.get("rabbit", 0)) != 5 or int(counts.get("gull", 0)) != 4 or int(counts.get("dog", 0)) != 2 or int(counts.get("cat", 0)) != 2 or int(counts.get("chicken", 0)) != 4 or int(counts.get("cow", 0)) != 1 or int(counts.get("horse", 0)) != 1:
 		_fail("The wildlife species population does not match the habitat plan.")
+		return
+	if village.get_node_or_null("Cat_01") == null or village.get_node_or_null("Chicken_01") == null:
+		_fail("Village cats and chickens were not created.")
 		return
 	for region_name in ["PineHighlands", "AmberValley", "SapphireCoast", "HarborCity"]:
 		var habitat := regions.get_node_or_null(region_name)

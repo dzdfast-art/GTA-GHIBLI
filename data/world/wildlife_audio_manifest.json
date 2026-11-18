@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "procedural_calls_with_recording_fallback",
+  "species": [
+    {
+      "id": "deer",
+      "name_ar": "غزال",
+      "audio_path": "res://audio/wildlife/deer_call.ogg"
+    },
+    {
+      "id": "rabbit",
+      "name_ar": "أرنب",
+      "audio_path": "res://audio/wildlife/rabbit_call.ogg"
+    },
+    {
+      "id": "gull",
+      "name_ar": "نورس",
+      "audio_path": "res://audio/wildlife/gull_call.ogg"
+    },
+    {
+      "id": "dog",
+      "name_ar": "كلب",
+      "audio_path": "res://audio/wildlife/dog_call.ogg"
+    },
+    {
+      "id": "cat",
+      "name_ar": "قط",
+      "audio_path": "res://audio/wildlife/cat_call.ogg"
+    },
+    {
+      "id": "chicken",
+      "name_ar": "دجاجة",
+      "audio_path": "res://audio/wildlife/chicken_call.ogg"
+    },
+    {
+      "id": "cow",
+      "name_ar": "بقرة",
+      "audio_path": "res://audio/wildlife/cow_call.ogg"
+    },
+    {
+      "id": "horse",
+      "name_ar": "حصان",
+      "audio_path": "res://audio/wildlife/horse_call.ogg"
+    }
+  ],
+  "note_ar": "الأصوات الحالية مؤثرات اصطناعية مؤقتة. يقرأ النظام ملف OGG الحقيقي تلقائياً عند إضافته للمسار المحدد."
+}
