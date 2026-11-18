@@ -50,6 +50,8 @@ func _ready() -> void:
 
 func setup(player: CharacterBody3D) -> void:
 	_player = player
+	if _phase == Phase.COMPLETE:
+		_claim_mission_reward()
 
 
 func _physics_process(delta: float) -> void:
@@ -192,6 +194,7 @@ func _complete_mission() -> void:
 			"detections": _detections,
 			"reward_currency": 220
 		}, "\t"))
+	_claim_mission_reward()
 	_status_override = "أحسنت! وصلت الأدلة إلى نورا. انفتح مسار التحقيق في الميناء."
 	for guard in _guards:
 		if is_instance_valid(guard):
@@ -199,6 +202,22 @@ func _complete_mission() -> void:
 	if _retry_button != null:
 		_retry_button.visible = false
 	_refresh_hud()
+
+
+func _claim_mission_reward() -> void:
+	if _player == null:
+		return
+	var wallet := _player.get_node_or_null("PlayerWallet")
+	if wallet == null or not wallet.has_method("claim_reward"):
+		return
+	var reward_amount := 220
+	var mission_file := FileAccess.open(MISSION_DATA_PATH, FileAccess.READ)
+	if mission_file != null:
+		var mission_data = JSON.parse_string(mission_file.get_as_text())
+		if mission_data is Dictionary:
+			var rewards: Dictionary = mission_data.get("rewards", {})
+			reward_amount = int(rewards.get("currency", 220))
+	wallet.call("claim_reward", "mission_003_shadows_over_the_harbor", reward_amount)
 
 
 func _fail_mission(reason: String) -> void:

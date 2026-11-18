@@ -11,6 +11,7 @@ const MISSION_MANAGER_SCRIPT = preload("res://scripts/missions/mission_manager.g
 const MISSION_002_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_002_runtime.gd")
 const MISSION_003_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_003_runtime.gd")
 const MISSION_004_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_004_runtime.gd")
+const MISSION_CAMPAIGN_SCRIPT = preload("res://scripts/missions/campaign_progress.gd")
 const SIDE_ACTIVITY_DIRECTOR_SCRIPT = preload("res://scripts/world/side_activity_director.gd")
 const CINEMATIC_DIRECTOR_SCRIPT = preload("res://scripts/missions/cinematic_director.gd")
 const AMBIENCE_SCRIPT = preload("res://scripts/audio/nature_ambience.gd")
@@ -43,6 +44,7 @@ func _ready() -> void:
 	_create_mission_002_runtime()
 	_create_mission_003_runtime()
 	_create_mission_004_runtime()
+	_create_campaign_progress()
 	_create_story_cinematic()
 	_create_nature_ambience()
 	_create_world_weather()
@@ -182,6 +184,11 @@ func _create_mission_003_runtime() -> void:
 	mission_runtime.name = "Mission003Runtime"
 	add_child(mission_runtime)
 	mission_runtime.setup(player)
+
+func _create_campaign_progress() -> void:
+	var progress: Node = MISSION_CAMPAIGN_SCRIPT.new()
+	progress.name = "MissionCampaignProgress"
+	add_child(progress)
 
 func _create_mission_004_runtime() -> void:
 	var player := get_node_or_null("Player") as CharacterBody3D

@@ -18,6 +18,9 @@ func _run_test() -> void:
 	if int(regions.call("get_population_count")) != 8:
 		_fail("The four districts did not create their civilian population.")
 		return
+	if int(regions.call("get_detail_count")) < 180:
+		_fail("The four districts did not create their facade and street details.")
+		return
 	for region_id in ["harbor_city", "pine_highlands", "amber_valley", "sapphire_coast"]:
 		if regions.get_node_or_null(str(region_id).to_pascal_case()) == null:
 			_fail("A named district node is missing: " + str(region_id))

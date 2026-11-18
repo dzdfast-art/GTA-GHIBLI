@@ -112,24 +112,40 @@ func _set_hud_vehicle_mode(active: bool) -> void:
 		hud.call("set_vehicle_mode", active)
 
 func _build_vehicle_visuals() -> void:
-	_add_box("LowerBody", Vector3(1.9, 0.72, 3.9), Vector3(0.0, 0.86, 0.0), Color(0.22, 0.43, 0.35))
-	_add_box("Cabin", Vector3(1.55, 0.78, 1.9), Vector3(0.0, 1.58, 0.22), Color(0.25, 0.48, 0.48))
-	_add_box("FrontGlass", Vector3(1.38, 0.48, 0.06), Vector3(0.0, 1.63, -0.76), Color(0.48, 0.70, 0.75))
-	_add_box("RearGlass", Vector3(1.35, 0.42, 0.06), Vector3(0.0, 1.62, 1.19), Color(0.42, 0.64, 0.70))
-	_add_box("FrontBumper", Vector3(1.95, 0.16, 0.16), Vector3(0.0, 0.48, -1.98), Color(0.16, 0.18, 0.17))
-	_add_box("RearBumper", Vector3(1.95, 0.16, 0.16), Vector3(0.0, 0.48, 1.98), Color(0.16, 0.18, 0.17))
-	_add_box("LeftHeadlight", Vector3(0.38, 0.22, 0.08), Vector3(-0.62, 0.91, -1.98), Color(1.0, 0.91, 0.66))
-	_add_box("RightHeadlight", Vector3(0.38, 0.22, 0.08), Vector3(0.62, 0.91, -1.98), Color(1.0, 0.91, 0.66))
-	_add_wheel("FrontLeftWheel", Vector3(-0.98, 0.43, -1.25))
-	_add_wheel("FrontRightWheel", Vector3(0.98, 0.43, -1.25))
-	_add_wheel("RearLeftWheel", Vector3(-0.98, 0.43, 1.25))
-	_add_wheel("RearRightWheel", Vector3(0.98, 0.43, 1.25))
+	# Original compact sedan silhouette: chassis, hood, trunk, glass, trim, lights and wheels.
+	_add_box("Undercarriage", Vector3(1.82, 0.34, 3.82), Vector3(0.0, 0.60, 0.0), Color(0.075, 0.09, 0.085))
+	_add_box("LowerBody", Vector3(1.92, 0.62, 4.05), Vector3(0.0, 0.91, 0.0), Color(0.19, 0.40, 0.31))
+	_add_box("FrontHood", Vector3(1.86, 0.22, 1.15), Vector3(0.0, 1.30, -1.38), Color(0.22, 0.47, 0.35))
+	_add_box("RearTrunk", Vector3(1.82, 0.22, 0.78), Vector3(0.0, 1.28, 1.56), Color(0.18, 0.39, 0.30))
+	_add_box("Cabin", Vector3(1.53, 0.84, 2.10), Vector3(0.0, 1.62, 0.08), Color(0.16, 0.34, 0.28))
+	_add_box("Roof", Vector3(1.42, 0.16, 1.34), Vector3(0.0, 2.12, 0.12), Color(0.20, 0.43, 0.32))
+	_add_box_rotated("FrontWindshield", Vector3(1.40, 0.62, 0.055), Vector3(0.0, 1.70, -0.82), Vector3(deg_to_rad(-24.0), 0.0, 0.0), Color(0.10, 0.20, 0.24))
+	_add_box_rotated("RearWindshield", Vector3(1.34, 0.54, 0.055), Vector3(0.0, 1.69, 1.05), Vector3(deg_to_rad(24.0), 0.0, 0.0), Color(0.10, 0.20, 0.24))
+	for side in [-1.0, 1.0]:
+		_add_box_rotated("FrontSideWindow", Vector3(0.055, 0.53, 0.78), Vector3(side * 0.785, 1.73, -0.35), Vector3(0.0, 0.0, 0.0), Color(0.11, 0.22, 0.25))
+		_add_box_rotated("RearSideWindow", Vector3(0.055, 0.53, 0.78), Vector3(side * 0.785, 1.73, 0.53), Vector3(0.0, 0.0, 0.0), Color(0.11, 0.22, 0.25))
+		_add_box("WindowPillar", Vector3(0.08, 0.72, 0.10), Vector3(side * 0.79, 1.70, 0.08), Color(0.075, 0.10, 0.10))
+		_add_box("SideMirror", Vector3(0.22, 0.16, 0.25), Vector3(side * 0.97, 1.62, -0.63), Color(0.12, 0.16, 0.15))
+		_add_box("DoorHandleFront", Vector3(0.055, 0.08, 0.30), Vector3(side * 0.975, 1.08, -0.18), Color(0.78, 0.72, 0.56))
+		_add_box("DoorHandleRear", Vector3(0.055, 0.08, 0.30), Vector3(side * 0.975, 1.08, 0.78), Color(0.78, 0.72, 0.56))
+	_add_box("FrontBumper", Vector3(1.98, 0.18, 0.18), Vector3(0.0, 0.52, -2.02), Color(0.10, 0.13, 0.12))
+	_add_box("RearBumper", Vector3(1.98, 0.18, 0.18), Vector3(0.0, 0.52, 2.02), Color(0.10, 0.13, 0.12))
+	_add_box("FrontGrille", Vector3(0.88, 0.30, 0.075), Vector3(0.0, 0.91, -2.015), Color(0.045, 0.065, 0.06))
+	_add_box("FrontPlate", Vector3(0.46, 0.16, 0.045), Vector3(0.0, 0.62, -2.12), Color(0.82, 0.82, 0.73))
+	_add_box("RearPlate", Vector3(0.46, 0.16, 0.045), Vector3(0.0, 0.74, 2.07), Color(0.82, 0.82, 0.73))
+	for side in [-1.0, 1.0]:
+		_add_box("Headlamp", Vector3(0.42, 0.24, 0.08), Vector3(side * 0.65, 1.03, -2.025), Color(1.0, 0.91, 0.68))
+		_add_box("TailLamp", Vector3(0.42, 0.22, 0.08), Vector3(side * 0.65, 1.02, 2.025), Color(0.72, 0.08, 0.055))
+		_add_wheel("FrontWheel_%s" % str(side), Vector3(side * 0.99, 0.43, -1.28))
+		_add_wheel("RearWheel_%s" % str(side), Vector3(side * 0.99, 0.43, 1.28))
+	_add_box("FrontBumperTrim", Vector3(1.38, 0.045, 0.045), Vector3(0.0, 0.43, -2.12), Color(0.55, 0.58, 0.54))
+	_add_box("RearBumperTrim", Vector3(1.38, 0.045, 0.045), Vector3(0.0, 0.43, 2.12), Color(0.55, 0.58, 0.54))
 	var shape := BoxShape3D.new()
-	shape.size = Vector3(1.85, 0.82, 3.85)
+	shape.size = Vector3(1.88, 1.35, 3.98)
 	var collision := CollisionShape3D.new()
 	collision.name = "VehicleCollision"
 	collision.shape = shape
-	collision.position.y = 0.86
+	collision.position.y = 0.91
 	add_child(collision)
 
 func _add_box(node_name: String, dimensions: Vector3, local_position: Vector3, tint: Color) -> void:
@@ -145,22 +161,67 @@ func _add_box(node_name: String, dimensions: Vector3, local_position: Vector3, t
 	visual.material_override = material
 	add_child(visual)
 
-func _add_wheel(node_name: String, local_position: Vector3) -> void:
-	var wheel := MeshInstance3D.new()
-	wheel.name = node_name
-	var mesh := CylinderMesh.new()
-	mesh.top_radius = 0.42
-	mesh.bottom_radius = 0.42
-	mesh.height = 0.28
-	mesh.radial_segments = 12
-	wheel.mesh = mesh
-	wheel.position = local_position
-	wheel.rotation.z = PI * 0.5
+func _add_box_rotated(node_name: String, dimensions: Vector3, local_position: Vector3, local_rotation: Vector3, tint: Color) -> void:
+	var visual := MeshInstance3D.new()
+	visual.name = node_name
+	var mesh := BoxMesh.new()
+	mesh.size = dimensions
+	visual.mesh = mesh
+	visual.position = local_position
+	visual.rotation = local_rotation
 	var material := StandardMaterial3D.new()
-	material.albedo_color = Color(0.075, 0.08, 0.075)
-	material.roughness = 1.0
-	wheel.material_override = material
-	add_child(wheel)
+	material.albedo_color = tint
+	material.roughness = 0.28
+	material.metallic = 0.08
+	visual.material_override = material
+	add_child(visual)
+
+func _add_wheel(node_name: String, local_position: Vector3) -> void:
+	var wheel_root := Node3D.new()
+	wheel_root.name = node_name
+	wheel_root.position = local_position
+	add_child(wheel_root)
+	var tyre := MeshInstance3D.new()
+	tyre.name = "Tyre"
+	var tyre_mesh := CylinderMesh.new()
+	tyre_mesh.top_radius = 0.43
+	tyre_mesh.bottom_radius = 0.43
+	tyre_mesh.height = 0.30
+	tyre_mesh.radial_segments = 20
+	tyre.mesh = tyre_mesh
+	tyre.rotation.z = PI * 0.5
+	var tyre_material := StandardMaterial3D.new()
+	tyre_material.albedo_color = Color(0.045, 0.052, 0.05)
+	tyre_material.roughness = 0.98
+	tyre.material_override = tyre_material
+	wheel_root.add_child(tyre)
+	var rim := MeshInstance3D.new()
+	rim.name = "AlloyRim"
+	var rim_mesh := CylinderMesh.new()
+	rim_mesh.top_radius = 0.275
+	rim_mesh.bottom_radius = 0.275
+	rim_mesh.height = 0.315
+	rim_mesh.radial_segments = 16
+	rim.mesh = rim_mesh
+	rim.rotation.z = PI * 0.5
+	var rim_material := StandardMaterial3D.new()
+	rim_material.albedo_color = Color(0.48, 0.52, 0.51)
+	rim_material.metallic = 0.72
+	rim_material.roughness = 0.32
+	rim.material_override = rim_material
+	wheel_root.add_child(rim)
+	var hub := MeshInstance3D.new()
+	hub.name = "WheelHub"
+	var hub_mesh := SphereMesh.new()
+	hub_mesh.radius = 0.105
+	hub_mesh.height = 0.21
+	hub.mesh = hub_mesh
+	hub.scale = Vector3(1.0, 0.72, 1.0)
+	var hub_material := StandardMaterial3D.new()
+	hub_material.albedo_color = Color(0.76, 0.78, 0.73)
+	hub_material.metallic = 0.8
+	hub.material_override = hub_material
+	wheel_root.add_child(hub)
 
 func _build_interaction_area() -> void:
 	var area := Area3D.new()

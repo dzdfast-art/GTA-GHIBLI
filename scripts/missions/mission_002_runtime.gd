@@ -56,6 +56,8 @@ func _ready() -> void:
 func setup(player: CharacterBody3D, vehicle: CharacterBody3D) -> void:
 	_player = player
 	_vehicle = vehicle
+	if _phase == Phase.COMPLETE:
+		_claim_mission_reward()
 
 
 func _process(delta: float) -> void:
@@ -183,6 +185,7 @@ func _rescue_witness() -> void:
 func _complete_mission() -> void:
 	_phase = Phase.COMPLETE
 	_save_completion()
+	_claim_mission_reward()
 	if _pursuer != null and is_instance_valid(_pursuer):
 		_pursuer.visible = false
 	if _backup_pursuer != null and is_instance_valid(_backup_pursuer):
@@ -190,6 +193,16 @@ func _complete_mission() -> void:
 	_set_phase(Phase.COMPLETE, "نجحت العملية! عاد الشاهد إلى الأمان.")
 	if _retry_button != null:
 		_retry_button.visible = false
+
+
+func _claim_mission_reward() -> void:
+	if _player == null:
+		return
+	var wallet := _player.get_node_or_null("PlayerWallet")
+	if wallet == null or not wallet.has_method("claim_reward"):
+		return
+	var rewards: Dictionary = _mission_data.get("rewards", {})
+	wallet.call("claim_reward", "mission_002_the_old_road_rescue", int(rewards.get("currency", 180)))
 
 
 func _fail_mission(reason: String) -> void:

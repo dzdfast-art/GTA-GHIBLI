@@ -29,6 +29,7 @@ jobs:
           python -m json.tool data/missions/mission_002.json > /dev/null
           python -m json.tool data/missions/mission_003.json > /dev/null
           python -m json.tool data/missions/mission_004.json > /dev/null
+          python -m json.tool data/missions/chapter_01_campaign.json > /dev/null
           python -m json.tool data/world/side_activities.json > /dev/null
           python -m json.tool data/items/consumables.json > /dev/null
           python -m json.tool data/world/wildlife_catalog.json > /dev/null
@@ -83,6 +84,7 @@ jobs:
             res://scripts/missions/mission_002_runtime.gd \
             res://scripts/missions/mission_003_runtime.gd \
             res://scripts/missions/mission_004_runtime.gd \
+            res://scripts/missions/campaign_progress.gd \
             res://scripts/world/side_activity_director.gd \
             res://scripts/world/world_clock.gd \
             res://scripts/world/open_world_regions.gd \
@@ -185,6 +187,12 @@ jobs:
 
       - name: Test last train escort mission 004
         run: godot --headless --path . --script res://tests/mission_004_runtime_test.gd
+
+      - name: Test campaign chapter progression
+        run: godot --headless --path . --script res://tests/campaign_progress_test.gd
+
+      - name: Test idempotent mission rewards
+        run: godot --headless --path . --script res://tests/campaign_reward_test.gd
 
       - name: Test original ambience audio assets
         run: godot --headless --path . --script res://tests/nature_ambience_assets_test.gd

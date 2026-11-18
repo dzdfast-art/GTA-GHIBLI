@@ -33,6 +33,7 @@ func setup(player: Node3D, mira: Node) -> void:
 		var callback := Callable(self, "_on_mira_dialogue_spoken")
 		if not mira.is_connected("dialogue_spoken", callback):
 			mira.connect("dialogue_spoken", callback)
+	_claim_mission_reward()
 
 
 func _load_mission_data() -> void:
@@ -126,6 +127,7 @@ func _process(_delta: float) -> void:
 		if _player.global_position.distance_to(Vector3(0.0, 0.0, 27.0)) <= 8.0:
 			_garden_visited = true
 			_save_progress()
+			_claim_mission_reward()
 			_refresh_hud()
 
 
@@ -134,6 +136,16 @@ func _on_mira_dialogue_spoken() -> void:
 		_mira_spoken_to = true
 		_save_progress()
 		_refresh_hud()
+
+
+func _claim_mission_reward() -> void:
+	if not (_square_reached and _mira_spoken_to and _garden_visited) or _player == null:
+		return
+	var wallet := _player.get_node_or_null("PlayerWallet")
+	if wallet == null or not wallet.has_method("claim_reward"):
+		return
+	var rewards: Dictionary = _mission_data.get("rewards", {})
+	wallet.call("claim_reward", "mission_001_meet_the_village", int(rewards.get("currency", 25)))
 
 
 func _build_hud() -> void:
@@ -209,4 +221,8 @@ func _refresh_hud() -> void:
 		_objective_label.text = "اكتملت المهمة الأولى!"
 		var rewards: Dictionary = _mission_data.get("rewards", {})
 		var currency := int(rewards.get("currency", 25))
-		_status_label.text = "مكافأة تجريبية: %d قطعة نقدية" % currency
+		var wallet := _player.get_node_or_null("PlayerWallet") if _player != null else null
+		if wallet != null and wallet.has_method("get_balance"):
+			_status_label.text = "اكتملت المهمة! +%d قطعة — رصيدك %d" % [currency, int(wallet.call("get_balance"))]
+		else:
+			_status_label.text = "اكتملت المهمة! مكافأتها %d قطعة نقدية" % currency

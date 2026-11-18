@@ -56,6 +56,8 @@ func _ready() -> void:
 
 func setup(player: CharacterBody3D) -> void:
 	_player = player
+	if _phase == Phase.COMPLETE:
+		_claim_saved_mission_reward()
 
 
 func _physics_process(delta: float) -> void:
@@ -173,10 +175,30 @@ func _complete_mission(choice: String) -> void:
 			"alarms_disabled": _alarms_disabled,
 			"reward_currency": reward
 		}, "\t"))
+	_claim_mission_reward(reward)
 	_status_override = "نجحت! أنقذت ميا وأوصلت القطار عبر المسار %s. مكافأتك %d." % ["الشمالي" if choice == "north" else "الجنوبي", reward]
 	if _retry_button != null:
 		_retry_button.visible = false
 	_refresh_hud()
+
+
+func _claim_mission_reward(amount: int) -> void:
+	if _player == null or amount <= 0:
+		return
+	var wallet := _player.get_node_or_null("PlayerWallet")
+	if wallet != null and wallet.has_method("claim_reward"):
+		wallet.call("claim_reward", "mission_004_the_last_train", amount)
+
+
+func _claim_saved_mission_reward() -> void:
+	if not FileAccess.file_exists(COMPLETION_SAVE):
+		return
+	var file := FileAccess.open(COMPLETION_SAVE, FileAccess.READ)
+	if file == null:
+		return
+	var saved = JSON.parse_string(file.get_as_text())
+	if saved is Dictionary and bool(saved.get("completed", false)):
+		_claim_mission_reward(int(saved.get("reward_currency", 0)))
 
 
 func _fail_mission(reason: String) -> void:

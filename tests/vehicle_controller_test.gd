@@ -26,6 +26,11 @@ func _run_test() -> void:
 	car.position = Vector3(2.4, 0.0, 0.0)
 	root.add_child(car)
 
+	for required_visual in ["Roof", "FrontGrille", "FrontWindshield", "RearWindshield", "FrontWheel_-1.0", "RearWheel_1.0"]:
+		if car.get_node_or_null(required_visual) == null:
+			_fail("The detailed sedan visual is missing: " + required_visual)
+			return
+
 	for _frame in range(3):
 		await physics_frame
 
