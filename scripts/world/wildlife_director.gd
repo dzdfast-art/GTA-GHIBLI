@@ -1,7 +1,9 @@
 extends Node3D
 
-## Places original low-poly prototype wildlife in three habitats.
+## Places lightweight wildlife prototypes in their matching open-world habitats.
+## Each animal receives a small 3D procedural vocalization player.
 const WILDLIFE_SCRIPT = preload("res://scripts/world/wildlife_actor.gd")
+const WILDLIFE_VOICE_SCRIPT = preload("res://scripts/audio/wildlife_voice.gd")
 
 var _wildlife_count := 0
 var _species_counts := {}
@@ -51,5 +53,12 @@ func _spawn_group(region_node_name: String, species: String, name_ar: String, po
 		animal.set("flee_distance", flee_distance)
 		animal.set("follow_distance", 7.0)
 		habitat.add_child(animal)
+
+		var voice := AudioStreamPlayer3D.new()
+		voice.name = "WildlifeVoice"
+		voice.set_script(WILDLIFE_VOICE_SCRIPT)
+		voice.set("species_id", species)
+		animal.add_child(voice)
+
 		_wildlife_count += 1
 		_species_counts[species] = int(_species_counts.get(species, 0)) + 1
