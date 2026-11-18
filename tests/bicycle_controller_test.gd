@@ -122,6 +122,5 @@ func _run_test() -> void:
 
 
 func _fail(message: String) -> void:
-	_stop_watchdog()
 	push_error("FAIL: " + message)
 	quit(1)
