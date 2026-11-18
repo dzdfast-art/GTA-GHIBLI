@@ -15,6 +15,8 @@ var _saved_collision_mask := 1
 const WHEEL_RADIUS := 0.43
 const MAX_FRONT_STEER_ANGLE := deg_to_rad(28.0)
 const WHEEL_STEER_RESPONSE := 10.0
+const STEERING_WHEEL_RATIO := 3.5
+var _steering_wheel_pivot: Node3D
 var _front_wheels: Array[Node3D] = []
 var _rear_wheels: Array[Node3D] = []
 var _wheel_roll_angle := 0.0
@@ -292,6 +294,9 @@ func _update_wheel_visuals(steering_input: float, delta: float) -> void:
 	if absf(_speed) <= 0.15:
 		target_steer = 0.0
 	_visual_steer_angle = move_toward(_visual_steer_angle, target_steer, WHEEL_STEER_RESPONSE * delta)
+	if is_instance_valid(_steering_wheel_pivot):
+		var steering_wheel_angle := _visual_steer_angle * STEERING_WHEEL_RATIO
+		_steering_wheel_pivot.basis = Basis(Vector3.RIGHT, PI * 0.5) * Basis(Vector3.UP, steering_wheel_angle)
 	_wheel_roll_angle = wrapf(_wheel_roll_angle + (_speed / WHEEL_RADIUS) * delta, -PI, PI)
 	for wheel in _front_wheels:
 		if is_instance_valid(wheel):
@@ -340,6 +345,11 @@ func _build_vehicle_interior() -> void:
 	column_material.metallic = 0.28
 	steering_column.material_override = column_material
 	add_child(steering_column)
+	_steering_wheel_pivot = Node3D.new()
+	_steering_wheel_pivot.name = "SteeringWheelPivot"
+	_steering_wheel_pivot.position = Vector3(-0.48, 1.57, -0.53)
+	_steering_wheel_pivot.basis = Basis(Vector3.RIGHT, PI * 0.5)
+	add_child(_steering_wheel_pivot)
 	var steering_wheel := MeshInstance3D.new()
 	steering_wheel.name = "SteeringWheel"
 	var wheel_mesh := TorusMesh.new()
@@ -348,14 +358,12 @@ func _build_vehicle_interior() -> void:
 	wheel_mesh.rings = 28
 	wheel_mesh.ring_segments = 8
 	steering_wheel.mesh = wheel_mesh
-	steering_wheel.position = Vector3(-0.48, 1.57, -0.53)
-	steering_wheel.rotation.x = PI * 0.5
 	var wheel_material := StandardMaterial3D.new()
 	wheel_material.albedo_color = Color(0.045, 0.055, 0.05)
 	wheel_material.roughness = 0.46
 	wheel_material.metallic = 0.14
 	steering_wheel.material_override = wheel_material
-	add_child(steering_wheel)
+	_steering_wheel_pivot.add_child(steering_wheel)
 	_add_box("SteeringWheelHub", Vector3(0.12, 0.12, 0.08), Vector3(-0.48, 1.57, -0.55), metal_trim)
 	_add_box("FrontWiperLeft", Vector3(0.68, 0.035, 0.035), Vector3(-0.36, 1.36, -0.92), Color(0.035, 0.045, 0.042))
 	_add_box("FrontWiperRight", Vector3(0.68, 0.035, 0.035), Vector3(0.36, 1.36, -0.92), Color(0.035, 0.045, 0.042))
