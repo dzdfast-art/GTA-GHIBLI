@@ -32,7 +32,7 @@ func _run_test() -> void:
 	car.position = Vector3(2.4, 0.0, 0.0)
 	root.add_child(car)
 
-	for required_visual in ["Roof", "FrontGrille", "FrontWindshield", "RearWindshield", "FrontWheelLeft", "RearWheelRight", "HeadlightBeamLeft", "HeadlightBeamRight", "BrakeLightLeft", "ReverseLightRight", "FrontIndicatorLeft", "RearIndicatorRight", "Dashboard", "FrontSeatBackLeft", "FrontSeatBackRight", "RearSeatBack", "CenterConsole", "SteeringColumn", "SteeringWheel", "SteeringWheelHub"]:
+	for required_visual in ["Roof", "FrontGrille", "FrontWindshield", "RearWindshield", "FrontWheelLeft", "RearWheelRight", "HeadlightBeamLeft", "HeadlightBeamRight", "BrakeLightLeft", "ReverseLightRight", "FrontIndicatorLeft", "RearIndicatorRight", "Dashboard", "FrontSeatBackLeft", "FrontSeatBackRight", "RearSeatBack", "CenterConsole", "SteeringColumn", "SteeringWheelPivot", "SteeringWheel", "SteeringWheelHub"]:
 		if car.get_node_or_null(required_visual) == null:
 			_fail("The detailed sedan visual is missing: " + required_visual)
 			return
@@ -41,6 +41,8 @@ func _run_test() -> void:
 	if steering_wheel_mesh == null or not steering_wheel_mesh is TorusMesh:
 		_fail("The sedan interior is missing a rendered steering-wheel ring.")
 		return
+	var steering_wheel_pivot := car.get_node("SteeringWheelPivot") as Node3D
+	var steering_wheel_neutral_basis := steering_wheel_pivot.basis
 	for _frame in range(3):
 		await physics_frame
 
@@ -125,6 +127,14 @@ func _run_test() -> void:
 		return
 	if absf(front_wheel.rotation.y) < deg_to_rad(5.0):
 		_fail("Steering input did not angle the visible front wheels.")
+		return
+	if steering_wheel_pivot.basis.is_equal_approx(steering_wheel_neutral_basis):
+		_fail("Steering input did not rotate the visible steering wheel.")
+		return
+	for _frame in range(24):
+		await physics_frame
+	if not steering_wheel_pivot.basis.is_equal_approx(steering_wheel_neutral_basis):
+		_fail("The visible steering wheel did not return to center after steering input was released.")
 		return
 	car.set("_turn_signal_clock", 0.0)
 	car.call("_update_vehicle_lighting", Vector2(1.0, 0.0), 0.1)
