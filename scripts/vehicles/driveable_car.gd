@@ -19,6 +19,12 @@ var _front_wheels: Array[Node3D] = []
 var _rear_wheels: Array[Node3D] = []
 var _wheel_roll_angle := 0.0
 var _visual_steer_angle := 0.0
+var _headlight_spots: Array[SpotLight3D] = []
+var _headlight_materials: Array[StandardMaterial3D] = []
+var _brake_light_materials: Array[StandardMaterial3D] = []
+var _reverse_light_materials: Array[StandardMaterial3D] = []
+var _indicator_materials: Array[StandardMaterial3D] = []
+var _turn_signal_clock := 0.0
 
 func _ready() -> void:
 	add_to_group("vehicles")
@@ -32,6 +38,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if driver == null or not is_instance_valid(driver):
 		_update_wheel_visuals(0.0, delta)
+		_update_vehicle_lighting(Vector2.ZERO, delta)
 		return
 	var input_vector := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	var throttle := -input_vector.y
@@ -55,6 +62,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= gravity * delta
 	move_and_slide()
 	_update_wheel_visuals(input_vector.x, delta)
+	_update_vehicle_lighting(input_vector, delta)
 	_sync_driver_pose()
 
 func interact() -> void:
@@ -143,9 +151,44 @@ func _build_vehicle_visuals() -> void:
 	_add_box("FrontPlate", Vector3(0.46, 0.16, 0.045), Vector3(0.0, 0.62, -2.12), Color(0.82, 0.82, 0.73))
 	_add_box("RearPlate", Vector3(0.46, 0.16, 0.045), Vector3(0.0, 0.74, 2.07), Color(0.82, 0.82, 0.73))
 	for side in [-1.0, 1.0]:
-		_add_box("Headlamp", Vector3(0.42, 0.24, 0.08), Vector3(side * 0.65, 1.03, -2.025), Color(1.0, 0.91, 0.68))
-		_add_box("TailLamp", Vector3(0.42, 0.22, 0.08), Vector3(side * 0.65, 1.02, 2.025), Color(0.72, 0.08, 0.055))
 		var wheel_side := "Left" if side < 0.0 else "Right"
+		_add_box("Headlamp" + wheel_side, Vector3(0.42, 0.24, 0.08), Vector3(side * 0.65, 1.03, -2.025), Color(1.0, 0.91, 0.68))
+		var headlamp := get_node("Headlamp" + wheel_side) as MeshInstance3D
+		var headlamp_material := _make_emissive_material(Color(0.72, 0.67, 0.48), Color(1.0, 0.87, 0.55), 0.12)
+		headlamp.material_override = headlamp_material
+		_headlight_materials.append(headlamp_material)
+		var beam := SpotLight3D.new()
+		beam.name = "HeadlightBeam" + wheel_side
+		beam.position = Vector3(side * 0.65, 1.03, -2.04)
+		beam.light_color = Color(1.0, 0.88, 0.66)
+		beam.light_energy = 1.5
+		beam.spot_range = 22.0
+		beam.spot_angle = 34.0
+		beam.shadow_enabled = false
+		beam.visible = false
+		add_child(beam)
+		_headlight_spots.append(beam)
+		_add_box("TailLamp" + wheel_side, Vector3(0.42, 0.22, 0.08), Vector3(side * 0.65, 1.02, 2.025), Color(0.48, 0.035, 0.025))
+		_add_box("BrakeLight" + wheel_side, Vector3(0.30, 0.13, 0.055), Vector3(side * 0.65, 1.03, 2.075), Color(0.62, 0.04, 0.025))
+		var brake_visual := get_node("BrakeLight" + wheel_side) as MeshInstance3D
+		var brake_material := _make_emissive_material(Color(0.48, 0.025, 0.018), Color(1.0, 0.035, 0.012), 0.10)
+		brake_visual.material_override = brake_material
+		_brake_light_materials.append(brake_material)
+		_add_box("ReverseLight" + wheel_side, Vector3(0.15, 0.10, 0.045), Vector3(side * 0.27, 1.02, 2.075), Color(0.70, 0.76, 0.78))
+		var reverse_visual := get_node("ReverseLight" + wheel_side) as MeshInstance3D
+		var reverse_material := _make_emissive_material(Color(0.55, 0.60, 0.62), Color(0.80, 0.91, 1.0), 0.08)
+		reverse_visual.material_override = reverse_material
+		_reverse_light_materials.append(reverse_material)
+		_add_box("FrontIndicator" + wheel_side, Vector3(0.15, 0.12, 0.055), Vector3(side * 0.89, 1.03, -2.045), Color(0.68, 0.30, 0.04))
+		var front_indicator := get_node("FrontIndicator" + wheel_side) as MeshInstance3D
+		var front_indicator_material := _make_emissive_material(Color(0.55, 0.22, 0.025), Color(1.0, 0.34, 0.015), 0.08)
+		front_indicator.material_override = front_indicator_material
+		_indicator_materials.append(front_indicator_material)
+		_add_box("RearIndicator" + wheel_side, Vector3(0.15, 0.12, 0.055), Vector3(side * 0.89, 1.03, 2.045), Color(0.68, 0.30, 0.04))
+		var rear_indicator := get_node("RearIndicator" + wheel_side) as MeshInstance3D
+		var rear_indicator_material := _make_emissive_material(Color(0.55, 0.22, 0.025), Color(1.0, 0.34, 0.015), 0.08)
+		rear_indicator.material_override = rear_indicator_material
+		_indicator_materials.append(rear_indicator_material)
 		var front_wheel := _add_wheel("FrontWheel" + wheel_side, Vector3(side * 0.99, 0.43, -1.28))
 		_front_wheels.append(front_wheel)
 		var rear_wheel := _add_wheel("RearWheel" + wheel_side, Vector3(side * 0.99, 0.43, 1.28))
@@ -248,6 +291,47 @@ func _update_wheel_visuals(steering_input: float, delta: float) -> void:
 	for wheel in _rear_wheels:
 		if is_instance_valid(wheel):
 			wheel.rotation = Vector3(_wheel_roll_angle, 0.0, 0.0)
+
+func _make_emissive_material(base_color: Color, glow_color: Color, idle_energy: float) -> StandardMaterial3D:
+	var material := StandardMaterial3D.new()
+	material.albedo_color = base_color
+	material.roughness = 0.38
+	material.emission_enabled = true
+	material.emission = glow_color
+	material.emission_energy_multiplier = idle_energy
+	return material
+
+func _set_material_emission(materials: Array[StandardMaterial3D], energy: float) -> void:
+	for material in materials:
+		if is_instance_valid(material):
+			material.emission_energy_multiplier = energy
+
+func _set_headlights_enabled(enabled: bool) -> void:
+	for beam in _headlight_spots:
+		if is_instance_valid(beam):
+			beam.visible = enabled
+	_set_material_emission(_headlight_materials, 2.2 if enabled else 0.12)
+
+func _update_vehicle_lighting(input_vector: Vector2, delta: float) -> void:
+	var game_hour := 12.0
+	var clocks := get_tree().get_nodes_in_group("world_clock")
+	if not clocks.is_empty() and is_instance_valid(clocks[0]) and clocks[0].has_method("get_game_hour"):
+		game_hour = float(clocks[0].call("get_game_hour"))
+	var storm_active := false
+	var weather_nodes := get_tree().get_nodes_in_group("world_weather")
+	if not weather_nodes.is_empty() and is_instance_valid(weather_nodes[0]) and weather_nodes[0].has_method("get_weather"):
+		storm_active = str(weather_nodes[0].call("get_weather")) == "storm"
+	var night_active := game_hour >= 18.5 or game_hour < 6.0
+	_set_headlights_enabled(night_active or storm_active)
+	var occupied := driver != null and is_instance_valid(driver)
+	var braking := occupied and Input.is_action_pressed("vehicle_brake")
+	var reversing := occupied and input_vector.y > 0.25
+	_set_material_emission(_brake_light_materials, 2.8 if braking else 0.10)
+	_set_material_emission(_reverse_light_materials, 1.8 if reversing else 0.08)
+	_turn_signal_clock += delta
+	var wants_signal := occupied and absf(input_vector.x) > 0.18 and absf(_speed) > 0.15
+	var signal_on := wants_signal and fposmod(_turn_signal_clock, 0.9) < 0.45
+	_set_material_emission(_indicator_materials, 2.0 if signal_on else 0.08)
 
 func _build_interaction_area() -> void:
 	var area := Area3D.new()
