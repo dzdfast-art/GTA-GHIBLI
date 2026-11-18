@@ -12,6 +12,13 @@ var driver: CharacterBody3D
 var _speed := 0.0
 var _saved_collision_layer := 1
 var _saved_collision_mask := 1
+const WHEEL_RADIUS := 0.43
+const MAX_FRONT_STEER_ANGLE := deg_to_rad(28.0)
+const WHEEL_STEER_RESPONSE := 10.0
+var _front_wheels: Array[Node3D] = []
+var _rear_wheels: Array[Node3D] = []
+var _wheel_roll_angle := 0.0
+var _visual_steer_angle := 0.0
 
 func _ready() -> void:
 	add_to_group("vehicles")
@@ -24,6 +31,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if driver == null or not is_instance_valid(driver):
+		_update_wheel_visuals(0.0, delta)
 		return
 	var input_vector := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	var throttle := -input_vector.y
@@ -46,6 +54,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y -= gravity * delta
 	move_and_slide()
+	_update_wheel_visuals(input_vector.x, delta)
 	_sync_driver_pose()
 
 func interact() -> void:
@@ -137,8 +146,10 @@ func _build_vehicle_visuals() -> void:
 		_add_box("Headlamp", Vector3(0.42, 0.24, 0.08), Vector3(side * 0.65, 1.03, -2.025), Color(1.0, 0.91, 0.68))
 		_add_box("TailLamp", Vector3(0.42, 0.22, 0.08), Vector3(side * 0.65, 1.02, 2.025), Color(0.72, 0.08, 0.055))
 		var wheel_side := "Left" if side < 0.0 else "Right"
-		_add_wheel("FrontWheel" + wheel_side, Vector3(side * 0.99, 0.43, -1.28))
-		_add_wheel("RearWheel" + wheel_side, Vector3(side * 0.99, 0.43, 1.28))
+		var front_wheel := _add_wheel("FrontWheel" + wheel_side, Vector3(side * 0.99, 0.43, -1.28))
+		_front_wheels.append(front_wheel)
+		var rear_wheel := _add_wheel("RearWheel" + wheel_side, Vector3(side * 0.99, 0.43, 1.28))
+		_rear_wheels.append(rear_wheel)
 	_add_box("FrontBumperTrim", Vector3(1.38, 0.045, 0.045), Vector3(0.0, 0.43, -2.12), Color(0.55, 0.58, 0.54))
 	_add_box("RearBumperTrim", Vector3(1.38, 0.045, 0.045), Vector3(0.0, 0.43, 2.12), Color(0.55, 0.58, 0.54))
 	var shape := BoxShape3D.new()
@@ -177,7 +188,7 @@ func _add_box_rotated(node_name: String, dimensions: Vector3, local_position: Ve
 	visual.material_override = material
 	add_child(visual)
 
-func _add_wheel(node_name: String, local_position: Vector3) -> void:
+func _add_wheel(node_name: String, local_position: Vector3) -> Node3D:
 	var wheel_root := Node3D.new()
 	wheel_root.name = node_name
 	wheel_root.position = local_position
@@ -223,6 +234,20 @@ func _add_wheel(node_name: String, local_position: Vector3) -> void:
 	hub_material.metallic = 0.8
 	hub.material_override = hub_material
 	wheel_root.add_child(hub)
+	return wheel_root
+
+func _update_wheel_visuals(steering_input: float, delta: float) -> void:
+	var target_steer := -clampf(steering_input, -1.0, 1.0) * MAX_FRONT_STEER_ANGLE
+	if absf(_speed) <= 0.15:
+		target_steer = 0.0
+	_visual_steer_angle = move_toward(_visual_steer_angle, target_steer, WHEEL_STEER_RESPONSE * delta)
+	_wheel_roll_angle = wrapf(_wheel_roll_angle + (_speed / WHEEL_RADIUS) * delta, -PI, PI)
+	for wheel in _front_wheels:
+		if is_instance_valid(wheel):
+			wheel.rotation = Vector3(_wheel_roll_angle, _visual_steer_angle, 0.0)
+	for wheel in _rear_wheels:
+		if is_instance_valid(wheel):
+			wheel.rotation = Vector3(_wheel_roll_angle, 0.0, 0.0)
 
 func _build_interaction_area() -> void:
 	var area := Area3D.new()
