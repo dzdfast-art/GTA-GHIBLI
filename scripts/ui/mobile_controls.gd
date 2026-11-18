@@ -344,7 +344,7 @@ func _make_action_button(caption: String, button_size: Vector2) -> Button:
 		var icon_texture = load(caption)
 		if icon_texture is Texture2D:
 			button.icon = icon_texture
-			button.icon_max_width = 42
+			button.add_theme_constant_override("icon_max_width", 42)
 			button.text = ""
 	else:
 		button.text = caption
