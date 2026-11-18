@@ -92,6 +92,31 @@ func _add_house(house_name: String, origin: Vector3,
 	_add_mesh(house, "RightWindow", window_mesh, Vector3(1.55, 1.9, 2.31),
 		Color(0.40, 0.68, 0.75))
 
+	# Architectural trim: foundations, roof fascia, window frames and door hardware.
+	_add_mesh(house, "StoneFoundation", BoxMesh.new(), Vector3(0.0, 0.18, 0.0),
+		Color(0.43, 0.40, 0.34))
+	var foundation_node := house.get_node("StoneFoundation") as MeshInstance3D
+	(foundation_node.mesh as BoxMesh).size = Vector3(5.18, 0.36, 4.68)
+	_add_mesh(house, "RoofFrontFascia", BoxMesh.new(), Vector3(0.0, 2.94, 2.58),
+		Color(0.34, 0.25, 0.19))
+	var fascia_node := house.get_node("RoofFrontFascia") as MeshInstance3D
+	(fascia_node.mesh as BoxMesh).size = Vector3(5.92, 0.16, 0.16)
+	_add_mesh(house, "DoorFrame", BoxMesh.new(), Vector3(0.0, 0.98, 2.37),
+		Color(0.66, 0.53, 0.37))
+	var door_frame := house.get_node("DoorFrame") as MeshInstance3D
+	(door_frame.mesh as BoxMesh).size = Vector3(1.18, 2.08, 0.12)
+	_add_mesh(house, "DoorHandle", SphereMesh.new(), Vector3(0.31, 0.95, 2.40),
+		Color(0.88, 0.68, 0.28))
+	for window_x in [-1.55, 1.55]:
+		var frame := BoxMesh.new()
+		frame.size = Vector3(1.02, 0.91, 0.10)
+		_add_mesh(house, "WindowFrame_%s" % str(window_x), frame,
+			Vector3(window_x, 1.9, 2.39), Color(0.34, 0.25, 0.18))
+		var crossbar := BoxMesh.new()
+		crossbar.size = Vector3(0.06, 0.76, 0.06)
+		_add_mesh(house, "WindowMullion_%s" % str(window_x), crossbar,
+			Vector3(window_x, 1.9, 2.46), Color(0.78, 0.69, 0.52))
+
 
 func _build_house_portal() -> void:
 	var portal_script = preload("res://scripts/world/house_interior_portal.gd")
