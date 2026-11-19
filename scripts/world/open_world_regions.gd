@@ -328,7 +328,7 @@ func _load_surface_texture(texture_path: String) -> Texture2D:
 		push_warning("District surface SVG is empty: " + texture_path)
 		return null
 	var image := Image.new()
-	var image_error := image.load_svg_from_string(svg_text)
+	var image_error := image.load_svg_from_string(svg_text, 0.5)
 	if image_error != OK or image.is_empty():
 		push_warning("Could not rasterize district surface SVG: " + texture_path)
 		return null
