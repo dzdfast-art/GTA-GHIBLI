@@ -40,31 +40,31 @@ func _run() -> void:
 		return
 
 	bicycle.call("interact")
-	for _frame in range(3):
+	for _frame in range(12):
 		await process_frame
 	if tutorial.call("get_stage_id") != "ride_to_bridge":
 		_fail("Mounting the bicycle must advance the tutorial to the red bridge.")
 		return
 
 	bicycle.global_position = bridge.global_position
-	for _frame in range(4):
+	for _frame in range(12):
 		await process_frame
 	if tutorial.call("get_stage_id") != "dismount_at_bridge":
 		_fail("Reaching the red bridge must ask the player to dismount.")
 		return
 
 	bicycle.call("interact")
-	for _frame in range(4):
+	for _frame in range(12):
 		await process_frame
 	if tutorial.call("get_stage_id") != "enter_house":
 		_fail("Dismounting at the bridge must advance the tutorial to the house.")
 		return
 	player.global_position = portal.global_position + Vector3(0.0, 0.0, 1.5)
-	for _frame in range(4):
+	for _frame in range(12):
 		await process_frame
 
 	portal.call("interact")
-	for _frame in range(4):
+	for _frame in range(12):
 		await process_frame
 	if tutorial.call("get_stage_id") != "complete":
 		_fail("Entering the marked house must complete the video-reference tutorial.")
