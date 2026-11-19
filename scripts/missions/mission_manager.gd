@@ -11,6 +11,7 @@ var _player: Node3D
 var _square_reached := false
 var _mira_spoken_to := false
 var _garden_visited := false
+var _completion_reward_claimed := false
 var _mission_data: Dictionary = {}
 var _objectives: Array = []
 var _objective_label: Label
@@ -27,6 +28,7 @@ func _ready() -> void:
 
 func setup(player: Node3D, mira: Node) -> void:
 	_player = player
+	_claim_completion_reward_if_ready()
 	if mira != null and mira.has_signal("dialogue_spoken"):
 		var callback := Callable(self, "_on_mira_dialogue_spoken")
 		if not mira.is_connected("dialogue_spoken", callback):
@@ -80,6 +82,7 @@ func _load_progress() -> void:
 	_square_reached = bool(parsed.get("square_reached", false))
 	_mira_spoken_to = bool(parsed.get("mira_spoken_to", false))
 	_garden_visited = bool(parsed.get("garden_visited", false))
+	_completion_reward_claimed = bool(parsed.get("completion_reward_claimed", false))
 
 
 func _save_progress() -> bool:
@@ -88,7 +91,8 @@ func _save_progress() -> bool:
 		"mission_id": str(_mission_data.get("mission_id", "meet_the_village")),
 		"square_reached": _square_reached,
 		"mira_spoken_to": _mira_spoken_to,
-		"garden_visited": _garden_visited
+		"garden_visited": _garden_visited,
+		"completion_reward_claimed": _completion_reward_claimed
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file == null:
@@ -124,7 +128,34 @@ func _process(_delta: float) -> void:
 		if _player.global_position.distance_to(Vector3(0.0, 0.0, 27.0)) <= 8.0:
 			_garden_visited = true
 			_save_progress()
+			_claim_completion_reward_if_ready()
 			_refresh_hud()
+
+
+func _claim_completion_reward_if_ready() -> void:
+	if not _garden_visited or _completion_reward_claimed or _player == null:
+		return
+	var wallet := _player.get_node_or_null("PlayerWallet")
+	if wallet == null or not wallet.has_method("add_money_once"):
+		return
+	var rewards: Dictionary = _mission_data.get("rewards", {})
+	var reward_currency := int(rewards.get("currency", 25))
+	if reward_currency > 0:
+		wallet.call("add_money_once", "mission_001_completion", reward_currency)
+	_completion_reward_claimed = true
+	_save_progress()
+
+
+func get_hud_snapshot() -> Dictionary:
+	var completed := _square_reached and _mira_spoken_to and _garden_visited
+	return {
+		"active": not completed,
+		"priority": 0,
+		"title": str(_mission_data.get("title", "المهمة الأولى")),
+		"objective": _objective_label.text if _objective_label != null else "",
+		"status": _status_label.text if _status_label != null else "",
+		"completed": completed
+	}
 
 
 func _on_mira_dialogue_spoken() -> void:
@@ -142,6 +173,7 @@ func _build_hud() -> void:
 	panel.anchor_right = 0.55
 	panel.anchor_bottom = 0.34
 	add_child(panel)
+	add_to_group("mission_hud_sources")
 
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override("separation", 5)
@@ -185,4 +217,4 @@ func _refresh_hud() -> void:
 		_objective_label.text = "اكتملت المهمة الأولى!"
 		var rewards: Dictionary = _mission_data.get("rewards", {})
 		var currency := int(rewards.get("currency", 25))
-		_status_label.text = "مكافأة تجريبية: %d قطعة نقدية" % currency
+		_status_label.text = "اكتملت المهمة! أضيفت مكافأة %d إلى رصيدك." % currency
