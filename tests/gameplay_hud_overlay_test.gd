@@ -55,6 +55,7 @@ func _run() -> void:
 		_fail("Health bar does not match the live PlayerHealth value.")
 		return
 
+	wallet.set("persistence_enabled", false)
 	wallet.call("add_money", 25)
 	health.call("apply_damage", 15.0)
 	for _frame in range(16):
