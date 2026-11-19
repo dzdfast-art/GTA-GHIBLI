@@ -122,32 +122,26 @@ func _run_test() -> void:
 		return
 	menu.call("_show_info", "الإحصائيات")
 	var overlay := menu.get_node("PauseAndSettingsOverlay") as Control
-	var dialogs: Array[AcceptDialog] = []
-	for child in overlay.get_children():
-		if child is AcceptDialog:
-			dialogs.append(child as AcceptDialog)
-	if dialogs.is_empty():
-		_fail("STATS did not open a data dialog.")
+	var stats_dialog := overlay.get_node_or_null("PauseInfoDialog") as AcceptDialog
+	if stats_dialog == null or not stats_dialog.visible:
+		_fail("STATS did not open its information dialog.")
 		return
-	var stats_text := dialogs[dialogs.size() - 1].dialog_text
+	var stats_text := stats_dialog.dialog_text
 	if not stats_text.contains("76 / 100") or not stats_text.contains("425") or not stats_text.contains("62 / 100"):
 		_fail("STATS did not display live health, wallet and hunger values.")
 		return
-	dialogs[dialogs.size() - 1].queue_free()
 
+	stats_dialog.hide()
 	menu.call("_show_info", "ملخص المهام")
-	dialogs.clear()
-	for child in overlay.get_children():
-		if child is AcceptDialog:
-			dialogs.append(child as AcceptDialog)
-	if dialogs.is_empty():
-		_fail("BRIEF did not open the mission report.")
+	var brief_dialog := overlay.get_node_or_null("PauseInfoDialog") as AcceptDialog
+	if brief_dialog == null or brief_dialog != stats_dialog or not brief_dialog.visible:
+		_fail("BRIEF must reuse the existing information dialog instead of stacking another window.")
 		return
-	var brief_text := dialogs[dialogs.size() - 1].dialog_text
+	var brief_text := brief_dialog.dialog_text
 	if not brief_text.contains("الفصل الأول: طريق العودة") or not brief_text.contains("صباح جديد في قرية الصفصاف") or brief_text.contains("سيتم ربط هذه الصفحة"):
 		_fail("BRIEF did not display the real campaign and mission data.")
 		return
-	dialogs[dialogs.size() - 1].queue_free()
+	brief_dialog.hide()
 
 	menu.call("_save_settings")
 	menu.call("_close_menu")
