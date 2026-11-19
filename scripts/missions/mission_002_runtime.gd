@@ -55,6 +55,8 @@ func _ready() -> void:
 func setup(player: CharacterBody3D, vehicle: CharacterBody3D) -> void:
 	_player = player
 	_vehicle = vehicle
+	if _phase == Phase.COMPLETE:
+		_award_completion_reward()
 
 
 func _process(delta: float) -> void:
@@ -182,6 +184,7 @@ func _rescue_witness() -> void:
 func _complete_mission() -> void:
 	_phase = Phase.COMPLETE
 	_save_completion()
+	_award_completion_reward()
 	if _pursuer != null and is_instance_valid(_pursuer):
 		_pursuer.visible = false
 	if _backup_pursuer != null and is_instance_valid(_backup_pursuer):
@@ -190,6 +193,15 @@ func _complete_mission() -> void:
 	if _retry_button != null:
 		_retry_button.visible = false
 
+
+
+func _award_completion_reward() -> void:
+	if _player == null:
+		return
+	var wallet := _player.get_node_or_null("PlayerWallet")
+	if wallet == null or not wallet.has_method("add_money_once"):
+		return
+	wallet.call("add_money_once", "mission_002_completion", int(_mission_data.get("rewards", {}).get("currency", 180)))
 
 func _fail_mission(reason: String) -> void:
 	_phase = Phase.FAILED
@@ -396,6 +408,7 @@ func _build_hud() -> void:
 	_panel.anchor_right = 0.58
 	_panel.anchor_bottom = 0.57
 	add_child(_panel)
+	add_to_group("mission_hud_sources")
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override("separation", 4)
 	_panel.add_child(content)
