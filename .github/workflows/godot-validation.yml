@@ -70,6 +70,7 @@ jobs:
             res://scripts/ui/mobile_controls.gd \
             res://scripts/ui/game_hud.gd \
             res://scripts/ui/minimap_radar.gd \
+            res://scripts/missions/video_reference_tutorial.gd \
             res://scripts/ui/pause_settings_menu.gd \
             res://scripts/ui/virtual_joystick.gd \
             res://scripts/world/willow_village.gd \
@@ -178,6 +179,9 @@ jobs:
 
       - name: Test video-reference gameplay HUD overlay
         run: godot --headless --path . --script res://tests/gameplay_hud_overlay_test.gd
+
+      - name: Test continuous video-reference bicycle and house tutorial
+        run: godot --headless --path . --script res://tests/video_reference_tutorial_test.gd
 
       - name: Run main scene smoke test
         run: godot --headless --path . --quit-after 180
