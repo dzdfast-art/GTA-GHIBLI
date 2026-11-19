@@ -473,10 +473,75 @@ func _show_main_menu() -> void:
 
 func _show_info(section: String) -> void:
 	var dialog := AcceptDialog.new()
-	dialog.dialog_text = section + "\nسيتم ربط هذه الصفحة ببيانات اللعب لاحقاً."
-	dialog.title = "GTA GHIBLI"
+	dialog.title = "GTA GHIBLI  |  " + section
+	if section == "الإحصائيات":
+		dialog.dialog_text = _build_stats_report()
+	else:
+		dialog.dialog_text = _build_mission_brief_report()
 	_overlay.add_child(dialog)
 	dialog.popup_centered()
+
+
+func _build_stats_report() -> String:
+	var player := get_tree().get_first_node_in_group("player")
+	if player == null:
+		return "بيانات اللاعب غير متاحة حالياً."
+
+	var lines: Array[String] = ["إحصائيات اللاعب", ""]
+	var health := player.get_node_or_null("PlayerHealth")
+	if health != null:
+		lines.append("الصحة: %d / %d" % [
+			roundi(float(health.get("current_health"))),
+			roundi(float(health.get("maximum_health")))
+		])
+	else:
+		lines.append("الصحة: غير متاحة")
+
+	var wallet := player.get_node_or_null("PlayerWallet")
+	if wallet != null and wallet.has_method("get_balance"):
+		lines.append("النقود: %d قطعة" % int(wallet.call("get_balance")))
+	else:
+		lines.append("النقود: غير متاحة")
+
+	var needs := player.get_node_or_null("PlayerNeeds")
+	if needs != null:
+		lines.append("الجوع: %d / 100" % roundi(float(needs.get("hunger"))))
+		lines.append("العطش: %d / 100" % roundi(float(needs.get("thirst"))))
+		lines.append("الطاقة: %d / 100" % roundi(float(needs.get("energy"))))
+	return "\n".join(lines)
+
+
+func _build_mission_brief_report() -> String:
+	var campaign := get_tree().get_first_node_in_group("campaign_progress")
+	if campaign == null or not campaign.has_method("get_campaign_snapshot"):
+		return "لا يوجد سجل تقدم للمهام متاح حالياً."
+
+	var snapshot: Dictionary = campaign.call("get_campaign_snapshot")
+	var missions: Array = snapshot.get("missions", [])
+	var lines: Array[String] = [
+		str(snapshot.get("chapter_title", "ملخص الفصل الأول")),
+		"المهام المكتملة: %d / %d" % [
+			int(snapshot.get("completed_count", 0)),
+			int(snapshot.get("total_count", missions.size()))
+		],
+		""
+	]
+	for mission_value in missions:
+		if not mission_value is Dictionary:
+			continue
+		var mission: Dictionary = mission_value
+		var state := "مكتملة" if bool(mission.get("completed", false)) else ("متاحة" if bool(mission.get("unlocked", false)) else "مقفلة")
+		lines.append("%d. %s — %s" % [
+			int(mission.get("number", lines.size())),
+			str(mission.get("title", "مهمة")),
+			state
+		])
+	var current_mission_id := str(snapshot.get("current_mission_id", ""))
+	if current_mission_id.is_empty():
+		lines.append("\nاكتمل الفصل الأول.")
+	else:
+		lines.append("\nالمهمة الحالية: " + current_mission_id)
+	return "\n".join(lines)
 
 func _on_slider_changed(value: float, key: String, label: Label, caption: String, step: float) -> void:
 	_settings[key] = value
