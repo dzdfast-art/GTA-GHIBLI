@@ -86,6 +86,18 @@ func _build_road(center: Vector3) -> void:
 	road.rotation.y = atan2(center.x, center.z)
 	road.material_override = _material(Color(0.20, 0.22, 0.22), CITY_MATERIALS + "hd_city_asphalt_cracked.svg")
 	add_child(road)
+	var lane_direction := Vector3(center.x, 0.0, center.z).normalized()
+	for dash_index in range(12):
+		var lane_mark := MeshInstance3D.new()
+		lane_mark.name = "RoadLaneMarking_%02d_%s" % [dash_index, str(_region_ids.back())]
+		var mark_mesh := BoxMesh.new()
+		mark_mesh.size = Vector3(0.22, 0.035, maxf(1.8, length / 34.0))
+		lane_mark.mesh = mark_mesh
+		lane_mark.position = lane_direction * ((float(dash_index) + 0.5) * length / 12.0)
+		lane_mark.position.y = 0.17
+		lane_mark.rotation.y = road.rotation.y
+		lane_mark.material_override = _material(Color(0.94, 0.82, 0.52), CITY_MATERIALS + "hd_urban_road_marking.svg")
+		add_child(lane_mark)
 
 func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: Color, region_id: String) -> void:
 	var offsets := [
@@ -250,6 +262,11 @@ func _build_street_furniture(district: Node3D, region_id: String) -> void:
 	_add_box(district, "RestBenchBack", Vector3(-14.0, 1.12, 0.30), Vector3(2.6, 0.88, 0.14), Color(0.34, 0.22, 0.13))
 	_add_box(district, "DistrictNoticeBoard", Vector3(14.0, 1.45, -14.0), Vector3(2.2, 1.5, 0.16), Color(0.28, 0.22, 0.14))
 	_add_box(district, "DistrictNoticeHeader", Vector3(14.0, 2.30, -13.89), Vector3(2.3, 0.16, 0.22), Color(0.78, 0.62, 0.30))
+	for fence_side in [-1.0, 1.0]:
+		for rail_level in range(2):
+			_add_box(district, "FenceRail_%s_%d" % [str(fence_side), rail_level], Vector3(fence_side * 17.0, 0.62 + float(rail_level) * 0.72, 0.0), Vector3(0.16, 0.12, 6.8), Color(0.46, 0.31, 0.20))
+		for post_index in range(4):
+			_add_box(district, "FencePost_%s_%d" % [str(fence_side), post_index], Vector3(fence_side * 17.0, 0.72, -3.0 + float(post_index) * 2.0), Vector3(0.18, 1.44, 0.18), Color(0.38, 0.25, 0.17))
 	if region_id == "harbor_city":
 		_add_box(district, "HarborSafetyStripe", Vector3(0.0, 0.09, 16.0), Vector3(26.0, 0.04, 0.12), Color(0.92, 0.74, 0.28))
 	elif region_id == "amber_valley":
@@ -313,8 +330,10 @@ func _add_box(parent: Node3D, node_name: String, at: Vector3, size: Vector3, tin
 	instance.mesh = mesh
 	instance.position = at
 	var texture_path := ""
-	if node_name == "LoadingDock" or node_name == "CoastalPier":
-		texture_path = "res://assets/environment/materials/hd_weathered_dock_timber.svg"
+	if node_name == "LoadingDock" or node_name == "CoastalPier" or node_name == "RestBenchSeat" or node_name == "RestBenchBack" or node_name.begins_with("FenceRail") or node_name.begins_with("FencePost"):
+		texture_path = CITY_MATERIALS + "hd_weathered_wood_fence.svg"
+	elif node_name == "StreetLampPole" or node_name.begins_with("CargoContainer"):
+		texture_path = CITY_MATERIALS + "hd_rusted_steel_pipe.svg"
 	instance.material_override = _material(tint, texture_path)
 	parent.add_child(instance)
 	_detail_count += 1

@@ -135,6 +135,30 @@
       "origin": "Original GTA GHIBLI procedural material",
       "resolution": "2048x2048",
       "purpose": "shutter"
+    },
+    {
+      "id": "hd_urban_road_marking",
+      "path": "assets/environment/materials/hd_urban_road_marking.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "Worn painted road lane markings with flaking and aggregate"
+    },
+    {
+      "id": "hd_weathered_wood_fence",
+      "path": "assets/environment/materials/hd_weathered_wood_fence.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "Weathered wood grain for benches, fence rails, fence posts and dock timbers"
+    },
+    {
+      "id": "hd_rusted_steel_pipe",
+      "path": "assets/environment/materials/hd_rusted_steel_pipe.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "Rusted ribbed steel for streetlamp poles and harbor cargo containers"
     }
   ]
 }

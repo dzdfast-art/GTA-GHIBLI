@@ -33,7 +33,10 @@ func _run_test() -> void:
 		"res://assets/environment/materials/hd_ceramic_roof_tiles.svg",
 		"res://assets/environment/materials/hd_stone_sidewalk.svg",
 		"res://assets/environment/materials/hd_shopfront_glass.svg",
-		"res://assets/environment/materials/hd_metal_garage_shutter.svg"
+		"res://assets/environment/materials/hd_metal_garage_shutter.svg",
+		"res://assets/environment/materials/hd_urban_road_marking.svg",
+		"res://assets/environment/materials/hd_weathered_wood_fence.svg",
+		"res://assets/environment/materials/hd_rusted_steel_pipe.svg"
 	]
 	for texture_path in required_textures:
 		if not FileAccess.file_exists(texture_path):
@@ -56,12 +59,27 @@ func _run_test() -> void:
 	if window_material == null or window_material.albedo_texture == null:
 		_fail("Storefront glass texture was not applied.")
 		return
+	var lane_mark := regions.get_node("RoadLaneMarking_00_harbor_city") as MeshInstance3D
+	var lane_material := lane_mark.material_override as StandardMaterial3D
+	if lane_material == null or lane_material.albedo_texture == null:
+		_fail("Road lane marking material was not applied.")
+		return
+	var bench := regions.get_node("HarborCity/RestBenchSeat") as MeshInstance3D
+	var bench_material := bench.material_override as StandardMaterial3D
+	if bench_material == null or bench_material.albedo_texture == null:
+		_fail("Weathered timber bench material was not applied.")
+		return
+	var lamp := regions.get_node("HarborCity/StreetLampPole") as MeshInstance3D
+	var lamp_material := lamp.material_override as StandardMaterial3D
+	if lamp_material == null or lamp_material.albedo_texture == null:
+		_fail("Rusted steel streetlamp material was not applied.")
+		return
 	var sidewalk := regions.get_node("HarborCity/TexturedSidewalk_North") as MeshInstance3D
 	var sidewalk_material := sidewalk.material_override as StandardMaterial3D
 	if sidewalk_material == null or sidewalk_material.albedo_texture == null:
 		_fail("Sidewalk paving texture was not applied.")
 		return
-	print("PASS: Four districts plus eight imported high-detail materials are attached to road, facade, glass, roof, metal and sidewalk meshes.")
+	print("PASS: Four districts plus eleven high-detail materials are attached to roads, lane paint, facades, roofs, glass, metal, timber and sidewalks.")
 	quit(0)
 
 func _fail(message: String) -> void:
