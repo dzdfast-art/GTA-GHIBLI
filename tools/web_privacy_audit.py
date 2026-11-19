@@ -6,7 +6,7 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-SCAN_SUFFIXES = {".gd", ".tscn", ".tres", ".godot", ".cfg", ".json", ".yml", ".yaml"}
+SCAN_SUFFIXES = {".gd", ".tscn", ".tres", ".godot", ".cfg", ".json", ".yml", ".yaml", ".cjs"}
 ALLOWED_VOICE_REQUEST_FILES = {
     "scripts/characters/mira_npc.gd",
     "scripts/characters/world_npc_actor.gd",
