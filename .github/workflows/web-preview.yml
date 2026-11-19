@@ -15,7 +15,8 @@ concurrency:
 jobs:
   build:
     if: github.ref == 'refs/heads/web-preview'
-    runs-on: ubuntu-latest
+    # Playwright 1.55 supports Ubuntu 24.04; Ubuntu 26.04 is not supported by its Chromium installer.
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     permissions:
       contents: read
