@@ -18,6 +18,7 @@ The Web Preview is a second export of the same Godot project. It is **not** an A
 - Godot Web uses the Compatibility renderer already configured by the project.
 - Thread Support and GDExtension Support are disabled. This avoids requiring `SharedArrayBuffer` and cross-origin isolation headers for the initial preview.
 - Progressive Web App/offline caching is disabled until cache behavior and storage handling are separately tested.
+- The browser preview skips the native procedural `AudioStreamGenerator` and uses the imported ambience-loop audio assets instead; Android keeps its existing procedural ambience path.
 - The workflow checks the Android privacy audit and a Web-specific static audit before export.
 - The Web-specific audit rejects browser JavaScript bridges, camera/microphone capture APIs, shell/process execution, and unreviewed HTTP request code.
 - The two existing NPC voice-download call sites are explicitly blocked when Godot reports the `web` feature. Local bundled audio or browser-local cache may still play; remote voice-host fallback is not used by the Web preview.
