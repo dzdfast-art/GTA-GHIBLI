@@ -137,13 +137,13 @@ Before approving a new character, mission or activity, compare it against existi
 
 Reuse of a core mechanic is acceptable when context, stakes, route, constraints or player choices create a different experience. Remove or merge repetition that adds no meaningful value. Do not inflate counts to make the game appear larger.
 
-**Current prototype:** the first tutorial mission tracks reaching the village square, talking to Mira and visiting the garden. Its flags persist locally. The displayed currency reward is not yet connected to a real wallet or inventory.
+**Current prototype:** the first tutorial mission tracks reaching the village square, talking to Mira and visiting the garden. Its flags persist locally. On the comprehensive repair candidate branch, completing it credits the configured 25-currency reward through a wallet transaction ID so the same mission cannot pay twice; this branch change remains subject to its new CI run.
 
 ### Cinematic storytelling and mission content
 
 **Opening cinematic presentation added:** `scripts/missions/cinematic_director.gd` displays an Arabic chapter card, cinematic letterbox bars, timed story subtitles and touch/keyboard advance over the live game view. The opening introduces Leo Bennett, Mira and a mysterious radio signal. It is a presentation-layer prototype, not yet a fully animated camera cutscene; recorded Arabic voices are still pending.
 
-**Three original main-story mission designs added:** `data/missions/mission_002.json` (timed rescue and vehicle pursuit), `mission_003.json` (harbor stealth investigation with a trust choice), and `mission_004.json` (timed family escort and branching escape). These are design records only, not yet playable. The runtime mission manager still implements only the introductory village tutorial. The next implementation milestone is to turn the rescue/pursuit design into the first complete action mission with checkpoints, timer, pursuit actors, failure/retry and save progression.
+**Three original main-story mission prototypes added:** `data/missions/mission_002.json`, `mission_003.json`, and `mission_004.json` each have a corresponding runtime state machine in `scripts/missions/`. Their automated state-flow tests cover rescue/chase, harbor evidence collection, and the train escort/route choice. They are playable blockout prototypes, not finished production missions or a complete campaign. The repair candidate branch adds idempotent wallet reward transactions to all four mission completions and exposes active mission objectives to BRIEF; this new integration awaits CI confirmation.
 
 ## 9. World, buildings and services
 
@@ -159,9 +159,9 @@ Do not imply that every building is enterable. Document which category each loca
 
 ## 10. Save, progression and data
 
-**Implemented in prototype:** versioned local save for the first mission's three progress flags.
+**Implemented in prototype:** versioned local save for the first mission's three progress flags, separate mission-completion records, a local wallet file, player-needs data and inventory data. The repair candidate adds a schema-v2 wallet record with a reward-transaction ledger while preserving older balance-only wallet files.
 
-**Planned:** a centralized versioned save manager for player position/state, mission progress, inventory, currency, settings, unlocked regions and relevant vehicle/world state. Include validation, defaults, migration and corruption handling.
+**Still planned:** a centralized versioned save manager for player position/state, mission progress, inventory, currency, settings, unlocked regions and relevant vehicle/world state. Add cross-file migration, defaults, corruption recovery, atomic writes and restart/restore tests; the current separate files do not yet constitute a complete game-wide save.
 
 ## 11. Mobile performance and content budget
 
