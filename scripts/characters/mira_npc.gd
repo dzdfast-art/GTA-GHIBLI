@@ -204,6 +204,10 @@ func _play_greeting_voice()->void:
 		_play_cached(cache)
 		return
 	var url:=str(_greeting.get("audio_url",""))
+	# Web preview is deliberately offline from external voice hosts. It may use
+	# a locally bundled clip or the browser-local cache, but never requests a URL.
+	if OS.has_feature("web"):
+		return
 	if not url.is_empty():
 		var error:=_voice_request.request(url)
 		if error!=OK:push_warning("Could not start Mira voice download.")
