@@ -114,10 +114,13 @@ jobs:
             echo "- **حجم APK الخام:** ملف القياس غير موجود داخل artifact." >> "$GITHUB_STEP_SUMMARY"
           fi
 
+      - name: Prepare report artifact
+        run: cp "$GITHUB_STEP_SUMMARY" daily-health-report.md
+
       - name: Upload daily report
         uses: actions/upload-artifact@v4
         with:
           name: GTA-GHIBLI-daily-health-report
-          path: ${{ github.step_summary }}
-          if-no-files-found: warn
+          path: daily-health-report.md
+          if-no-files-found: error
           retention-days: 30
