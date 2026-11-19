@@ -3,6 +3,7 @@ extends SceneTree
 ## Headless progression test for the rescue mission state machine.
 
 const RUNTIME_SCRIPT = preload("res://scripts/missions/mission_002_runtime.gd")
+const WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
 const PLAYER_SCRIPT = preload("res://scripts/player/player_controller.gd")
 const CAR_SCRIPT = preload("res://scripts/vehicles/driveable_car.gd")
 
@@ -21,6 +22,11 @@ func _run_test() -> void:
 	camera_pivot.name = "CameraPivot"
 	player.add_child(camera_pivot)
 	world.add_child(player)
+	var wallet: Node = WALLET_SCRIPT.new()
+	wallet.name = "PlayerWallet"
+	wallet.set("persistence_enabled", false)
+	wallet.set("initial_balance", 0)
+	player.add_child(wallet)
 	var car := CharacterBody3D.new()
 	car.set_script(CAR_SCRIPT)
 	world.add_child(car)
@@ -79,6 +85,9 @@ func _run_test() -> void:
 	runtime._process(0.0)
 	if runtime._phase != 6:
 		_fail("Returning safely to the village did not complete the mission.")
+		return
+	if int(wallet.call("get_balance")) != 180:
+		_fail("Completing mission 002 did not credit its reward to the player wallet.")
 		return
 
 	print("PASS: Mission 002 progresses from vehicle entry through checkpoint, blockade, rescue, and escape.")
