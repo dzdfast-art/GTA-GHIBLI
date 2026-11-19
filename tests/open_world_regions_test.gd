@@ -25,7 +25,43 @@ func _run_test() -> void:
 		if regions.get_node_or_null(str(region_id).to_pascal_case()) == null:
 			_fail("A named district node is missing: " + str(region_id))
 			return
-	print("PASS: Four world districts, 24 building shells and eight scheduled civilians.")
+	var required_textures := [
+		"res://assets/environment/materials/hd_city_asphalt_cracked.svg",
+		"res://assets/environment/materials/hd_harbor_red_brick.svg",
+		"res://assets/environment/materials/hd_city_concrete_stains.svg",
+		"res://assets/environment/materials/hd_corrugated_iron.svg",
+		"res://assets/environment/materials/hd_ceramic_roof_tiles.svg",
+		"res://assets/environment/materials/hd_stone_sidewalk.svg",
+		"res://assets/environment/materials/hd_shopfront_glass.svg",
+		"res://assets/environment/materials/hd_metal_garage_shutter.svg"
+	]
+	for texture_path in required_textures:
+		if not FileAccess.file_exists(texture_path):
+			_fail("A city material is missing: " + texture_path)
+			return
+		if FileAccess.get_file_as_bytes(texture_path).size() < 1000000:
+			_fail("A city material is incomplete: " + texture_path)
+			return
+		if load(texture_path) == null:
+			_fail("Godot could not import a city material: " + texture_path)
+			return
+	var harbor := regions.get_node("HarborCity/DistrictBuilding_01") as Node3D
+	var walls := harbor.get_node("Walls") as MeshInstance3D
+	var wall_material := walls.material_override as StandardMaterial3D
+	if wall_material == null or wall_material.albedo_texture == null:
+		_fail("Harbor facade is missing its detailed wall texture.")
+		return
+	var windows := harbor.get_node("FrontWindow_00") as MeshInstance3D
+	var window_material := windows.material_override as StandardMaterial3D
+	if window_material == null or window_material.albedo_texture == null:
+		_fail("Storefront glass texture was not applied.")
+		return
+	var sidewalk := regions.get_node("HarborCity/TexturedSidewalk_North") as MeshInstance3D
+	var sidewalk_material := sidewalk.material_override as StandardMaterial3D
+	if sidewalk_material == null or sidewalk_material.albedo_texture == null:
+		_fail("Sidewalk paving texture was not applied.")
+		return
+	print("PASS: Four districts plus eight imported high-detail materials are attached to road, facade, glass, roof, metal and sidewalk meshes.")
 	quit(0)
 
 func _fail(message: String) -> void:

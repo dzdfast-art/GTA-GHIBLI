@@ -10,6 +10,8 @@ var _building_count := 0
 var _detail_count := 0
 var _material_cache: Dictionary = {}
 
+const CITY_MATERIALS := "res://assets/environment/materials/"
+
 func _ready() -> void:
 	_build_region("harbor_city", "مدينة الميناء", Vector3(-82.0, 0.0, -54.0),
 		Color(0.48, 0.57, 0.63), Color(0.30, 0.39, 0.48), Color(0.66, 0.72, 0.73),
@@ -54,6 +56,8 @@ func _build_region(region_id: String, region_name: String, center: Vector3,
 	pad.material_override = _material(Color.WHITE, ground_texture_path)
 	district.add_child(pad)
 
+	_build_district_sidewalks(district)
+
 	var title := Label3D.new()
 	title.name = "DistrictName"
 	title.text = region_name
@@ -64,7 +68,7 @@ func _build_region(region_id: String, region_name: String, center: Vector3,
 	district.add_child(title)
 
 	_build_road(center)
-	_build_district_buildings(district, wall_color, roof_color)
+	_build_district_buildings(district, wall_color, roof_color, region_id)
 	_build_district_details(district, region_id, ground_color)
 	_build_street_furniture(district, region_id)
 	_build_civilians(district, region_id, npc_names)
@@ -80,10 +84,10 @@ func _build_road(center: Vector3) -> void:
 	road.mesh = road_mesh
 	road.position = midpoint
 	road.rotation.y = atan2(center.x, center.z)
-	road.material_override = _material(Color(0.20, 0.22, 0.22), "res://assets/environment/materials/hd_district_asphalt.svg")
+	road.material_override = _material(Color(0.20, 0.22, 0.22), CITY_MATERIALS + "hd_city_asphalt_cracked.svg")
 	add_child(road)
 
-func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: Color) -> void:
+func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: Color, region_id: String) -> void:
 	var offsets := [
 		Vector3(-12.0, 0.0, -7.0),
 		Vector3(0.0, 0.0, -7.0),
@@ -107,7 +111,7 @@ func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: 
 		visual.name = "Walls"
 		visual.mesh = body_mesh
 		visual.position.y = dimensions.y * 0.5
-		visual.material_override = _material(wall_color, "res://assets/environment/materials/hd_village_plaster_wall.svg")
+		visual.material_override = _material(wall_color, _district_wall_texture(region_id, index))
 		building.add_child(visual)
 
 		var shape := BoxShape3D.new()
@@ -123,7 +127,7 @@ func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: 
 		roof.name = "Roof"
 		roof.mesh = roof_mesh
 		roof.position.y = dimensions.y + 0.2
-		roof.material_override = _material(roof_color, "res://assets/environment/materials/hd_terracotta_roof.svg")
+		roof.material_override = _material(roof_color, CITY_MATERIALS + "hd_ceramic_roof_tiles.svg")
 		building.add_child(roof)
 
 		var door_mesh := BoxMesh.new()
@@ -132,7 +136,7 @@ func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: 
 		door.name = "Door"
 		door.mesh = door_mesh
 		door.position = Vector3(0.0, 0.95, dimensions.z * 0.5 + 0.07)
-		door.material_override = _material(Color(0.25, 0.18, 0.13))
+		door.material_override = _material(Color(0.25, 0.18, 0.13), CITY_MATERIALS + ("hd_metal_garage_shutter.svg" if index % 3 == 0 else "hd_village_plaster_wall.svg"))
 		building.add_child(door)
 
 		# Distinct facade details break up the repeated prototype boxes.
@@ -140,7 +144,7 @@ func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: 
 		for window_index in range(2):
 			var window_x := -2.05 + float(window_index) * 4.1
 			_add_building_detail(building, "FrontWindow_%02d" % window_index,
-				Vector3(1.38, 1.02, 0.08), Vector3(window_x, 2.20, front_z), Color(0.10, 0.20, 0.25))
+				Vector3(1.38, 1.02, 0.08), Vector3(window_x, 2.20, front_z), Color(0.10, 0.20, 0.25), CITY_MATERIALS + "hd_shopfront_glass.svg")
 			_add_building_detail(building, "WindowLintel_%02d" % window_index,
 				Vector3(1.50, 0.11, 0.14), Vector3(window_x, 2.78, front_z + 0.035), Color(0.86, 0.80, 0.66))
 			_add_building_detail(building, "WindowSill_%02d" % window_index,
@@ -151,7 +155,7 @@ func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: 
 			Vector3(0.0, dimensions.y + 0.43, front_z - 0.04), roof_color.lightened(0.12))
 		if index % 3 == 0:
 			_add_building_detail(building, "ShopAwning", Vector3(3.2, 0.16, 1.05),
-				Vector3(0.0, 2.55, front_z + 0.48), Color(0.68, 0.30 + float(index % 2) * 0.12, 0.18))
+				Vector3(0.0, 2.55, front_z + 0.48), Color(0.68, 0.30 + float(index % 2) * 0.12, 0.18), CITY_MATERIALS + "hd_corrugated_iron.svg")
 			for post_x in [-1.42, 1.42]:
 				_add_building_detail(building, "AwningSupport", Vector3(0.10, 1.48, 0.10),
 					Vector3(post_x, 1.82, front_z + 0.83), Color(0.30, 0.25, 0.18))
@@ -161,6 +165,29 @@ func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: 
 			_add_building_detail(building, "BalconyRail", Vector3(3.8, 0.12, 0.08),
 				Vector3(0.0, 2.78, front_z + 0.79), Color(0.18, 0.20, 0.20))
 		_building_count += 1
+
+func _district_wall_texture(region_id: String, index: int) -> String:
+	match region_id:
+		"harbor_city":
+			return CITY_MATERIALS + ("hd_harbor_red_brick.svg" if index % 2 == 0 else "hd_city_concrete_stains.svg")
+		"pine_highlands":
+			return CITY_MATERIALS + "hd_city_concrete_stains.svg"
+		"amber_valley":
+			return "res://assets/environment/materials/hd_village_plaster_wall.svg" if index % 2 == 0 else CITY_MATERIALS + "hd_harbor_red_brick.svg"
+		"sapphire_coast":
+			return CITY_MATERIALS + ("hd_corrugated_iron.svg" if index % 3 == 0 else "hd_city_concrete_stains.svg")
+	return "res://assets/environment/materials/hd_village_plaster_wall.svg"
+
+func _build_district_sidewalks(district: Node3D) -> void:
+	for side in [-1.0, 1.0]:
+		var sidewalk := MeshInstance3D.new()
+		sidewalk.name = "TexturedSidewalk_%s" % ("North" if side < 0.0 else "South")
+		var mesh := BoxMesh.new()
+		mesh.size = Vector3(41.0, 0.16, 2.2)
+		sidewalk.mesh = mesh
+		sidewalk.position = Vector3(0.0, 0.15, side * 15.0)
+		sidewalk.material_override = _material(Color(0.9, 0.9, 0.9), CITY_MATERIALS + "hd_stone_sidewalk.svg")
+		district.add_child(sidewalk)
 
 func _build_district_details(district: Node3D, region_id: String, ground_color: Color) -> void:
 	match region_id:
@@ -201,14 +228,14 @@ func _build_district_details(district: Node3D, region_id: String, ground_color: 
 		_:
 			pass
 
-func _add_building_detail(parent: Node3D, node_name: String, size: Vector3, at: Vector3, tint: Color) -> void:
+func _add_building_detail(parent: Node3D, node_name: String, size: Vector3, at: Vector3, tint: Color, texture_path: String = "") -> void:
 	var visual := MeshInstance3D.new()
 	visual.name = node_name
 	var mesh := BoxMesh.new()
 	mesh.size = size
 	visual.mesh = mesh
 	visual.position = at
-	visual.material_override = _material(tint)
+	visual.material_override = _material(tint, texture_path)
 	parent.add_child(visual)
 	_detail_count += 1
 

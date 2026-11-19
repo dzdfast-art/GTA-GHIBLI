@@ -70,5 +70,71 @@
       "status": "research_only",
       "reason": "Official pack page confirms 315 modular environment pieces and CC0; page describes a Godot 4.5 source version. Free-tier contents must be checked before selecting the actual download."
     }
+  ],
+  "original_materials": [
+    {
+      "id": "hd_city_asphalt_cracked",
+      "path": "assets/environment/materials/hd_city_asphalt_cracked.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "asphalt"
+    },
+    {
+      "id": "hd_harbor_red_brick",
+      "path": "assets/environment/materials/hd_harbor_red_brick.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "brick"
+    },
+    {
+      "id": "hd_city_concrete_stains",
+      "path": "assets/environment/materials/hd_city_concrete_stains.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "concrete"
+    },
+    {
+      "id": "hd_corrugated_iron",
+      "path": "assets/environment/materials/hd_corrugated_iron.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "metal"
+    },
+    {
+      "id": "hd_ceramic_roof_tiles",
+      "path": "assets/environment/materials/hd_ceramic_roof_tiles.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "roof"
+    },
+    {
+      "id": "hd_stone_sidewalk",
+      "path": "assets/environment/materials/hd_stone_sidewalk.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "pavers"
+    },
+    {
+      "id": "hd_shopfront_glass",
+      "path": "assets/environment/materials/hd_shopfront_glass.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "glass"
+    },
+    {
+      "id": "hd_metal_garage_shutter",
+      "path": "assets/environment/materials/hd_metal_garage_shutter.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "shutter"
+    }
   ]
 }
