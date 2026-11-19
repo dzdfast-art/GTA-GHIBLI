@@ -16,6 +16,9 @@ var _is_car_mode := false
 var _is_bicycle_mode := false
 var _bike_steering_mode := "analog"
 var _flick_touch_index := -1
+var _flick_start_x := 0.0
+const FLICK_DEADZONE_PX := 12.0
+const FLICK_FULL_PX := 110.0
 
 
 func _ready() -> void:
@@ -32,34 +35,16 @@ func _process(_delta: float) -> void:
 	if player == null:
 		return
 	var prompt := "USE"
-	var nearest_distance := 4.0
-	for bicycle in get_tree().get_nodes_in_group("bicycles"):
-		if not bicycle is Node3D:
-			continue
-		var distance := player.global_position.distance_to((bicycle as Node3D).global_position)
-		if distance < nearest_distance:
-			nearest_distance = distance
-			prompt = "RIDE"
-	for vehicle in get_tree().get_nodes_in_group("vehicles"):
-		if vehicle.is_in_group("bicycles") or not vehicle is Node3D:
-			continue
-		var distance := player.global_position.distance_to((vehicle as Node3D).global_position)
-		if distance < nearest_distance:
-			nearest_distance = distance
-			prompt = "ENTER"
-	for portal in get_tree().get_nodes_in_group("building_portals"):
-		if not portal is Node3D:
-			continue
-		var portal_node := portal as Node3D
-		var portal_position := portal_node.global_position
-		if bool(portal.get("_is_inside")):
-			portal_position += portal.get("room_offset") + Vector3(0.0, 0.9, 3.1)
-			if player.global_position.distance_to(portal_position) < nearest_distance:
-				nearest_distance = player.global_position.distance_to(portal_position)
-				prompt = "EXIT HOUSE"
-		elif player.global_position.distance_to(portal_position) < nearest_distance:
-			nearest_distance = player.global_position.distance_to(portal_position)
-			prompt = "ENTER HOUSE"
+	var interactor := player.get_node_or_null("PlayerInteractor")
+	if interactor != null and interactor.has_method("get_nearest_interactable"):
+		var target := interactor.call("get_nearest_interactable") as Node
+		if target != null:
+			if target.is_in_group("bicycles"):
+				prompt = "RIDE"
+			elif target.is_in_group("vehicles"):
+				prompt = "ENTER"
+			elif target.is_in_group("building_portals"):
+				prompt = "EXIT HOUSE" if bool(target.get("_is_inside")) else "ENTER HOUSE"
 	if _context_button.text != prompt:
 		_context_button.text = prompt
 
@@ -203,7 +188,9 @@ func set_bicycle_mode(active: bool) -> void:
 	_is_bicycle_mode = active
 	_is_car_mode = active
 	_flick_touch_index = -1
-	if not active:
+	if active:
+		_release_on_foot_actions()
+	else:
 		_release_bicycle_actions()
 	_refresh_controls()
 
@@ -254,8 +241,10 @@ func _refresh_controls() -> void:
 
 func _on_joystick_vector_changed(value: Vector2) -> void:
 	if _is_bicycle_mode:
-		_set_action(&"bike_steer_left", value.x < -0.12)
-		_set_action(&"bike_steer_right", value.x > 0.12)
+		var left_strength := clampf((-value.x - 0.12) / 0.88, 0.0, 1.0)
+		var right_strength := clampf((value.x - 0.12) / 0.88, 0.0, 1.0)
+		_set_action_strength(&"bike_steer_left", left_strength)
+		_set_action_strength(&"bike_steer_right", right_strength)
 		return
 	_set_action(&"ui_left", value.x < -0.12)
 	_set_action(&"ui_right", value.x > 0.12)
@@ -279,19 +268,37 @@ func _input(event: InputEvent) -> void:
 		if event.pressed:
 			if _flick_touch_index == -1 and event.position.x < screen_width * 0.60:
 				_flick_touch_index = event.index
+				_flick_start_x = event.position.x
 		elif event.index == _flick_touch_index:
 			_flick_touch_index = -1
-			_set_action(&"bike_steer_left", false)
-			_set_action(&"bike_steer_right", false)
+			_set_action_strength(&"bike_steer_left", 0.0)
+			_set_action_strength(&"bike_steer_right", 0.0)
 	elif event is InputEventScreenDrag and event.index == _flick_touch_index:
-		if absf(event.relative.x) > 3.0:
-			_set_action(&"bike_steer_left", event.relative.x < 0.0)
-			_set_action(&"bike_steer_right", event.relative.x > 0.0)
+		var offset_x: float = event.position.x - _flick_start_x
+		var strength := clampf((absf(offset_x) - FLICK_DEADZONE_PX) / (FLICK_FULL_PX - FLICK_DEADZONE_PX), 0.0, 1.0)
+		_set_action_strength(&"bike_steer_left", strength if offset_x < 0.0 else 0.0)
+		_set_action_strength(&"bike_steer_right", strength if offset_x > 0.0 else 0.0)
 
 
 func _release_bicycle_actions() -> void:
 	for action in [&"bike_pedal", &"bike_brake", &"bike_steer_left", &"bike_steer_right"]:
+		_active_actions.erase(action)
+		Input.action_release(action)
+
+
+func _release_on_foot_actions() -> void:
+	for action in [&"ui_left", &"ui_right", &"ui_up", &"ui_down", &"sprint"]:
 		_set_action(action, false)
+
+
+func _set_action_strength(action: StringName, strength: float) -> void:
+	var clamped_strength := clampf(strength, 0.0, 1.0)
+	if clamped_strength <= 0.0:
+		_set_action(action, false)
+		return
+	if not _active_actions.has(action):
+		_active_actions.append(action)
+	Input.action_press(action, clamped_strength)
 
 
 func _set_action(action: StringName, pressed: bool) -> void:
