@@ -14,7 +14,7 @@ var _map_view: Control
 var _pause_touch_button: Button
 var _menu_buttons: Array[Button] = []
 var _menu_cursors: Array[Label] = []
-var _selected_menu_index := 2
+var _selected_menu_index := 0
 var _settings := {
 	"master_volume": 0.85, "music_volume": 0.65, "effects_volume": 0.85,
 	"dialogue_volume": 1.0, "look_sensitivity": 1.0, "graphics_quality": 2,
@@ -52,6 +52,8 @@ func toggle_pause() -> void:
 		_open_menu()
 
 func _open_menu() -> void:
+	_selected_menu_index = 0
+	_refresh_menu_selection()
 	_overlay.visible = true
 	_main_panel.visible = true
 	_settings_panel.visible = false
