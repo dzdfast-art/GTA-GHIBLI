@@ -23,7 +23,7 @@ func _run() -> void:
 		_fail("PlayerHealth is not attached to the live player.")
 		return
 
-	var hud := game.get_node_or_null("MobileControls/HUD/GameplayHUD") as Control
+	var hud := game.get_node_or_null("MobileControls/GameplayHUD") as Control
 	if hud == null:
 		_fail("The live GameplayHUD overlay is missing from MobileControls.")
 		return
@@ -48,7 +48,7 @@ func _run() -> void:
 	if clock_label.text.is_empty():
 		_fail("Gameplay HUD did not show the existing world clock.")
 		return
-	if cash_label.text != "¤ %d" % int(wallet.call("get_balance")):
+	if cash_label.text != "$ %d" % int(wallet.call("get_balance")):
 		_fail("Cash display does not match the live player wallet balance.")
 		return
 	if not is_equal_approx(health_bar.value, float(health.get("current_health"))):
