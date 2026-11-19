@@ -1,0 +1,9 @@
+{
+  "pack": "District Architecture Expansion",
+  "version": 1,
+  "model_count": 1,
+  "models": [
+    "harbor_warehouse_01"
+  ],
+  "description": "High-detail warehouse shell with 40,000 relief wall vertices, tiled pitched roof, framed windows, loading doors and metal trim."
+}
