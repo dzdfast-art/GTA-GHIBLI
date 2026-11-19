@@ -2,7 +2,7 @@ name: Repository security audit
 
 on:
   push:
-    branches: [main]
+    branches: [main, web-preview]
   pull_request:
   schedule:
     - cron: "23 4 * * *"
