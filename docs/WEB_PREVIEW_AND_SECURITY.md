@@ -9,9 +9,10 @@ The Web Preview is a second export of the same Godot project. It is **not** an A
 - The work lives on `web-preview` only.
 - `main` is not modified by this preview setup.
 - The Android export preset and Android build workflow are retained.
-- Web builds are generated as workflow artifacts when this branch is pushed.
-- GitHub Pages deployment is **manual only**. A workflow run must be started from `web-preview` and the `deploy_pages` input must be set to `true`.
-- No pull-request event is allowed to deploy the public preview.
+- Web builds are generated only inside a temporary GitHub-hosted runner for validation.
+- The workflow does not upload the Web build as an artifact and does not create a downloadable build link.
+- There is no GitHub Pages deployment job, deployment input, or publishing step.
+- Manual workflow dispatch is limited to building and checking; it cannot publish the game.
 
 ## Web export security choices
 
@@ -48,13 +49,13 @@ For a stricter approval gate, the repository owner should configure required rev
 3. Godot 4.7 resource import.
 4. Existing mobile-control and ambient-audio regression tests in headless mode.
 5. Creation of a Web export containing a non-empty `index.html`, WebAssembly binary, and PCK.
-6. Upload of the preview as a short-retention GitHub Actions artifact.
+6. Confirmation that the generated files stay on the temporary runner; no artifact is uploaded or shared.
 
 A passing headless build does not prove browser rendering, browser audio behavior, or real Android touchscreen performance. Those require an actual browser run and physical-device testing.
 
-## Enable GitHub Pages once
+## Publishing remains disabled
 
-The owner must set the repository's Pages publishing source to **GitHub Actions**. Until that is configured, artifact-only preview builds can still run. Deployment remains disabled unless manually requested through the workflow input.
+Do not configure GitHub Pages for this preview branch. Keep the Web export confined to the temporary CI runner. Any future public or private distribution proposal must receive a separate security and ownership review first.
 
 ## Related security records
 
