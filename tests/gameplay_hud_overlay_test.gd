@@ -30,6 +30,9 @@ func _run() -> void:
 	if get_nodes_in_group("gameplay_hud").size() != 1:
 		_fail("Expected exactly one gameplay HUD in the live scene.")
 		return
+	if get_nodes_in_group("radar_roads").size() < 8:
+		_fail("The mini-radar must contain registered village streets and district roads.")
+		return
 
 	for node_path in ["LiveRadar", "PlayerStatus/ClockRow/WorldClock",
 			"PlayerStatus/CashBalance", "PlayerStatus/HealthRow/PlayerHealthBar",
