@@ -1,6 +1,17 @@
 extends CanvasLayer
 
 const SETTINGS_PATH := "user://gta_ghibli_settings.cfg"
+const NEW_GAME_SAVE_PATHS := [
+	"user://gta_ghibli_save.json",
+	"user://gta_ghibli_mission_002.json",
+	"user://gta_ghibli_mission_003.json",
+	"user://gta_ghibli_mission_004.json",
+	"user://player_wallet.json",
+	"user://player_needs.json",
+	"user://player_inventory.json",
+	"user://gta_ghibli_side_activities.json"
+]
+const NPC_RELATIONSHIPS_DIRECTORY := "user://npc_relationships"
 const WORLD_MAP_VIEW_SCRIPT = preload("res://scripts/ui/world_map_view.gd")
 const PANEL_COLOR := Color(0.055, 0.075, 0.075, 0.97)
 const ACCENT := Color(0.83, 0.72, 0.43, 1.0)
@@ -628,8 +639,64 @@ func _load_settings() -> void:
 		_settings[key] = config.get_value("game", key, _settings[key])
 
 func _restart_game() -> void:
+	var dialog := _overlay.get_node_or_null("NewGameConfirmation") as ConfirmationDialog
+	if dialog == null:
+		dialog = ConfirmationDialog.new()
+		dialog.name = "NewGameConfirmation"
+		dialog.title = "بدء لعبة جديدة"
+		dialog.dialog_text = "سيتم حذف تقدم المهمات والنقود والاحتياجات والمخزون والعلاقات المحفوظة. ستبقى إعداداتك كما هي. هل تريد المتابعة؟"
+		dialog.ok_button_text = "بدء لعبة جديدة"
+		dialog.cancel_button_text = "إلغاء"
+		dialog.confirmed.connect(_confirm_new_game)
+		_overlay.add_child(dialog)
+	dialog.popup_centered()
+
+func _confirm_new_game() -> void:
+	if not _clear_saved_game_data():
+		if _info_dialog == null or not is_instance_valid(_info_dialog):
+			_info_dialog = AcceptDialog.new()
+			_info_dialog.name = "PauseInfoDialog"
+			_overlay.add_child(_info_dialog)
+		_info_dialog.title = "تعذر بدء لعبة جديدة"
+		_info_dialog.dialog_text = "تعذر حذف كل ملفات الحفظ. لم تتم إعادة تحميل اللعبة حتى لا يبقى تقدم قديم."
+		_info_dialog.popup_centered()
+		return
 	get_tree().paused = false
 	get_tree().reload_current_scene()
+
+func _clear_saved_game_data() -> bool:
+	var all_removed := true
+	for save_path in NEW_GAME_SAVE_PATHS:
+		if not FileAccess.file_exists(save_path):
+			continue
+		var error := DirAccess.remove_absolute(ProjectSettings.globalize_path(save_path))
+		if error != OK:
+			push_error("Could not remove new-game save %s: %s" % [save_path, error_string(error)])
+			all_removed = false
+	if not _remove_user_directory(NPC_RELATIONSHIPS_DIRECTORY):
+		all_removed = false
+	return all_removed
+
+func _remove_user_directory(directory_path: String) -> bool:
+	var absolute_directory := ProjectSettings.globalize_path(directory_path)
+	if not DirAccess.dir_exists_absolute(absolute_directory):
+		return true
+	var files := DirAccess.get_files_at(absolute_directory)
+	var directories := DirAccess.get_directories_at(absolute_directory)
+	for file_name in files:
+		var file_path := directory_path.path_join(file_name)
+		var error := DirAccess.remove_absolute(ProjectSettings.globalize_path(file_path))
+		if error != OK:
+			push_error("Could not remove saved relationship %s: %s" % [file_path, error_string(error)])
+			return false
+	for directory_name in directories:
+		if not _remove_user_directory(directory_path.path_join(directory_name)):
+			return false
+	var remove_error := DirAccess.remove_absolute(absolute_directory)
+	if remove_error != OK:
+		push_error("Could not remove save directory %s: %s" % [directory_path, error_string(remove_error)])
+		return false
+	return true
 
 func _quit_game() -> void:
 	get_tree().paused = false
