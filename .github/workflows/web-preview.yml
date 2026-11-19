@@ -79,3 +79,29 @@ jobs:
 
       # The build stays on the temporary GitHub-hosted runner. No Pages deployment,
       # artifact upload, public download link, or cross-job publishing is configured.
+
+  remove-previous-public-preview-artifacts:
+    if: always() && github.ref == 'refs/heads/web-preview'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Delete previously uploaded public Web preview artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifact_ids="$(gh api --paginate --jq '.artifacts[] | select(.name == "GTA-GHIBLI-Web-Preview") | .id' "/repos/${GITHUB_REPOSITORY}/actions/artifacts?per_page=100")"
+          if [ -z "$artifact_ids" ]; then
+            echo "No previous public Web preview artifacts remain."
+            exit 0
+          fi
+          while IFS= read -r artifact_id; do
+            [ -n "$artifact_id" ] || continue
+            echo "Deleting previous public Web preview artifact ID: $artifact_id"
+            gh api --method DELETE "/repos/${GITHUB_REPOSITORY}/actions/artifacts/$artifact_id"
+          done <<< "$artifact_ids"
+          echo "Previous GTA-GHIBLI-Web-Preview artifacts have been deleted."
