@@ -8,6 +8,7 @@ var _clock_label: Label
 var _cash_label: Label
 var _health_label: Label
 var _health_bar: ProgressBar
+var _objective_label: Label
 var _refresh_timer := 0.0
 
 
@@ -27,6 +28,15 @@ func bind_player(player: Node3D) -> void:
 
 func set_gameplay_visible(value: bool) -> void:
 	visible = value
+
+
+func set_tutorial_objective(text_value: String, target_position: Vector3, active: bool) -> void:
+	if _objective_label == null:
+		return
+	_objective_label.text = text_value
+	_objective_label.visible = active
+	if _radar != null:
+		_radar.call("set_target_position", target_position, active)
 
 
 func set_target_position(position: Vector3, active: bool) -> void:
@@ -132,6 +142,28 @@ func _build_interface() -> void:
 	_health_bar.add_theme_stylebox_override("background", bar_background)
 	_health_bar.add_theme_stylebox_override("fill", bar_fill)
 	health_row.add_child(_health_bar)
+
+	_objective_label = Label.new()
+	_objective_label.name = "TutorialObjective"
+	_objective_label.anchor_left = 0.20
+	_objective_label.anchor_top = 0.175
+	_objective_label.anchor_right = 0.80
+	_objective_label.anchor_bottom = 0.245
+	_objective_label.offset_left = 0.0
+	_objective_label.offset_top = 0.0
+	_objective_label.offset_right = 0.0
+	_objective_label.offset_bottom = 0.0
+	_objective_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_objective_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_objective_label.text_direction = Control.TEXT_DIRECTION_RTL
+	_objective_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_objective_label.add_theme_font_size_override("font_size", 17)
+	_objective_label.add_theme_color_override("font_color", Color(1.0, 0.90, 0.60, 1.0))
+	_objective_label.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 1.0))
+	_objective_label.add_theme_constant_override("shadow_offset_x", 2)
+	_objective_label.add_theme_constant_override("shadow_offset_y", 2)
+	_objective_label.visible = false
+	add_child(_objective_label)
 
 
 func _refresh_status() -> void:
