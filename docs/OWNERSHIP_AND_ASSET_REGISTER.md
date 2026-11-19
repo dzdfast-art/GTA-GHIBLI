@@ -17,6 +17,7 @@ Add one row for every externally sourced, commissioned, generated, or contributo
 | Asset / file path | Type | Creator / source | Creation or acquisition date | Licence / written permission | Evidence link or record | Release cleared? |
 |---|---|---|---|---|---|---|
 | Example: `assets/characters/hero.glb` | 3D model | Project creator / named artist | YYYY-MM-DD | Original / contract / licence name | Commit, source file, contract reference | No |
+| `assets/ui/gta_ghibli_icon.svg` | Application icon (SVG) | Original project-authored vector artwork | 2026-11-20 | Original project asset | Repair branch commit `9d14c8119c01d04e83cf6094fa942d073267ddc1` | Pending final release review |
 
 ## Evidence to preserve
 
