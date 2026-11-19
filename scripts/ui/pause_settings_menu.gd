@@ -483,13 +483,13 @@ func _mission_progress_snapshot() -> Dictionary:
 	var second := _read_json_record("user://gta_ghibli_mission_002.json")
 	var third := _read_json_record("user://gta_ghibli_mission_003.json")
 	var fourth := _read_json_record("user://gta_ghibli_mission_004.json")
-	var first_done := first.get("square_reached", false) == true \
+	var first_done: bool = first.get("square_reached", false) == true \
 		and first.get("mira_spoken_to", false) == true \
 		and first.get("garden_visited", false) == true
-	var second_done := str(second.get("mission_id", "")) == "the_old_road_rescue" and second.get("completed", false) == true
-	var third_done := str(third.get("mission_id", "")) == "shadows_over_the_harbor" and third.get("completed", false) == true
-	var fourth_done := str(fourth.get("mission_id", "")) == "the_last_train" and fourth.get("completed", false) == true
-	var first_started := first.get("square_reached", false) == true or first.get("mira_spoken_to", false) == true or first.get("garden_visited", false) == true
+	var second_done: bool = str(second.get("mission_id", "")) == "the_old_road_rescue" and second.get("completed", false) == true
+	var third_done: bool = str(third.get("mission_id", "")) == "shadows_over_the_harbor" and third.get("completed", false) == true
+	var fourth_done: bool = str(fourth.get("mission_id", "")) == "the_last_train" and fourth.get("completed", false) == true
+	var first_started: bool = first.get("square_reached", false) == true or first.get("mira_spoken_to", false) == true or first.get("garden_visited", false) == true
 	return {
 		"completed": [first_done, second_done, third_done, fourth_done],
 		"unlocked": [true, first_done, second_done, third_done],
