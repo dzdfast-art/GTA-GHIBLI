@@ -33,7 +33,7 @@ func _run() -> void:
 
 	for node_path in ["LiveRadar", "PlayerStatus/ClockRow/WorldClock",
 			"PlayerStatus/CashBalance", "PlayerStatus/HealthRow/PlayerHealthBar",
-			"PlayerStatus/HealthRow/HealthValue", "PlayerStatus/UnarmedFistIcon"]:
+			"PlayerStatus/HealthRow/HealthValue", "PlayerStatus/ClockRow/UnarmedFistIcon"]:
 		if hud.get_node_or_null(node_path) == null:
 			_fail("Gameplay HUD is missing required node: " + node_path)
 			return
