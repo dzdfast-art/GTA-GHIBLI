@@ -18,6 +18,7 @@ const DETECTION_RADIUS := 3.2
 const MAX_DETECTIONS := 3
 
 var _player: CharacterBody3D
+var _mission_data: Dictionary = {}
 var _world_root: Node3D
 var _phase: Phase = Phase.LOCKED
 var _evidence_found := 0
@@ -36,6 +37,7 @@ var _status_override := ""
 
 
 func _ready() -> void:
+	_load_mission_data()
 	_world_root = get_tree().current_scene as Node3D
 	_build_hud()
 	if _is_completed():
@@ -93,6 +95,19 @@ func _mission_002_completed() -> bool:
 		return false
 	var data = JSON.parse_string(file.get_as_text())
 	return data is Dictionary and str(data.get("mission_id", "")) == "the_old_road_rescue" and bool(data.get("completed", false))
+
+
+func _load_mission_data() -> void:
+	if not FileAccess.file_exists(MISSION_DATA_PATH):
+		push_warning("Mission 003 data is missing.")
+		return
+	var file := FileAccess.open(MISSION_DATA_PATH, FileAccess.READ)
+	if file == null:
+		push_warning("Could not open Mission 003 data.")
+		return
+	var parsed = JSON.parse_string(file.get_as_text())
+	if parsed is Dictionary:
+		_mission_data = parsed
 
 
 func _is_completed() -> bool:
