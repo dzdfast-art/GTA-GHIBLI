@@ -13,7 +13,7 @@ ALLOWED_VOICE_REQUEST_FILES = {
 }
 FORBIDDEN_BROWSER_OR_DEVICE_APIS = re.compile(
     r"JavaScriptBridge|CameraServer|AudioStreamMicrophone|"
-    r"OS\\.execute|OS\\.shell_open",
+    r"OS\.execute|OS\.shell_open",
     re.IGNORECASE,
 )
 
@@ -30,17 +30,17 @@ for path in ROOT.rglob("*"):
     source = path.read_text(encoding="utf-8", errors="replace")
 
     for match in FORBIDDEN_BROWSER_OR_DEVICE_APIS.finditer(source):
-        line = source.count("\\n", 0, match.start()) + 1
+        line = source.count("\n", 0, match.start()) + 1
         errors.append(f"{rel}:{line}: unapproved browser/device API: {match.group(0)}")
 
-    if "HTTPRequest.new()" in source or re.search(r"\\.request\\s*\\(", source):
+    if "HTTPRequest.new()" in source or re.search(r"\.request\s*\(", source):
         request_files.add(rel)
         if rel not in ALLOWED_VOICE_REQUEST_FILES:
             errors.append(f"{rel}: unreviewed HTTP request capability found")
             continue
 
         guard = re.search(
-            r'if\\s+OS\\.has_feature\\("web"\\):\\s*\\n\\s*return',
+            r'if\s+OS\.has_feature\("web"\):\s*\n\s*return',
             source,
         )
         request_call = source.find(".request(url)")
@@ -62,7 +62,7 @@ if unexpected:
 
 if errors:
     print("WEB PRIVACY AUDIT FAILED:")
-    print("\\n".join(f"- {item}" for item in errors))
+    print("\n".join(f"- {item}" for item in errors))
     sys.exit(1)
 
 print("WEB PRIVACY AUDIT PASSED:")
