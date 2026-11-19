@@ -12,6 +12,7 @@ var _settings_panel: PanelContainer
 var _map_panel: Control
 var _map_view: Control
 var _pause_touch_button: Button
+var _info_dialog: AcceptDialog
 var _menu_buttons: Array[Button] = []
 var _menu_cursors: Array[Label] = []
 var _selected_menu_index := 0
@@ -472,14 +473,18 @@ func _show_main_menu() -> void:
 	_refresh_menu_selection()
 
 func _show_info(section: String) -> void:
-	var dialog := AcceptDialog.new()
-	dialog.title = "GTA GHIBLI  |  " + section
+	if _info_dialog == null or not is_instance_valid(_info_dialog):
+		_info_dialog = AcceptDialog.new()
+		_info_dialog.name = "PauseInfoDialog"
+		_overlay.add_child(_info_dialog)
+	_info_dialog.title = "GTA GHIBLI  |  " + section
 	if section == "الإحصائيات":
-		dialog.dialog_text = _build_stats_report()
+		_info_dialog.dialog_text = _build_stats_report()
 	else:
-		dialog.dialog_text = _build_mission_brief_report()
-	_overlay.add_child(dialog)
-	dialog.popup_centered()
+		_info_dialog.dialog_text = _build_mission_brief_report()
+	if _info_dialog.visible:
+		_info_dialog.hide()
+	_info_dialog.popup_centered()
 
 
 func _build_stats_report() -> String:
