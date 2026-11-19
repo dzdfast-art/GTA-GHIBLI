@@ -51,6 +51,17 @@ jobs:
           mkdir -p build/web
           godot --headless --path . --export-release "Web Preview" build/web/index.html
 
+      - name: Install pinned Chromium for private browser testing
+        run: |
+          mkdir -p /tmp/gta-ghibli-playwright
+          npm install --prefix /tmp/gta-ghibli-playwright playwright@1.55.0
+          /tmp/gta-ghibli-playwright/node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Run private Chromium Web runtime smoke test
+        env:
+          NODE_PATH: /tmp/gta-ghibli-playwright/node_modules
+        run: node .github/scripts/web_browser_smoke_test.cjs
+
       - name: Verify Web export and exclude sensitive build files
         shell: bash
         run: |
