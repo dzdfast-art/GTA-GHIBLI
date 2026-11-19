@@ -1,16 +1,10 @@
-name: GTA GHIBLI Web Preview
+name: GTA GHIBLI Web Preview (Private CI Only)
 
 on:
   push:
     branches:
       - web-preview
   workflow_dispatch:
-    inputs:
-      deploy_pages:
-        description: "Publish the built Web preview publicly on GitHub Pages"
-        required: true
-        type: boolean
-        default: false
 
 permissions: {}
 
@@ -52,7 +46,7 @@ jobs:
       - name: Test ambience asset loading and transitions
         run: godot --headless --path . --script res://tests/nature_ambience_assets_test.gd
 
-      - name: Export browser build
+      - name: Export browser build locally on the temporary runner
         run: |
           mkdir -p build/web
           godot --headless --path . --export-release "Web Preview" build/web/index.html
@@ -79,36 +73,9 @@ jobs:
             exit 1
           fi
 
-          echo "Web export files:"
+          echo "Private CI Web export verified:"
           find build/web -maxdepth 1 -type f -printf '%f %s bytes\n' | sort
           du -sh build/web
 
-      - name: Upload downloadable browser-preview artifact
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # immutable artifact action commit
-        with:
-          name: GTA-GHIBLI-Web-Preview
-          path: build/web/
-          if-no-files-found: error
-          retention-days: 7
-          compression-level: 0
-
-      - name: Prepare GitHub Pages deployment artifact (manual dispatch only)
-        if: github.event_name == 'workflow_dispatch' && inputs.deploy_pages == true
-        uses: actions/upload-pages-artifact@5f327015a708106f6f1b7c9a633901af30fe80cb # immutable Pages artifact action commit
-        with:
-          path: build/web/
-
-  deploy:
-    if: github.event_name == 'workflow_dispatch' && inputs.deploy_pages == true && github.ref == 'refs/heads/web-preview'
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Publish browser preview
-        id: deployment
-        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # immutable Pages deploy action commit
+      # The build stays on the temporary GitHub-hosted runner. No Pages deployment,
+      # artifact upload, public download link, or cross-job publishing is configured.
