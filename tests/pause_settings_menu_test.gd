@@ -86,6 +86,15 @@ func _run_test() -> void:
 	if menu_cursors.size() != 7 or not menu_cursors[0].visible:
 		_fail("Pause menu selection cursor must be visible beside RESUME on open.")
 		return
+	var expected_menu_order := ["RESUME", "START NEW GAME", "MAP", "STATS", "BRIEF", "OPTIONS", "QUIT GAME"]
+	var menu_buttons: Array = menu.get("_menu_buttons")
+	if menu_buttons.size() != expected_menu_order.size():
+		_fail("Pause menu must contain exactly seven classic options.")
+		return
+	for index in range(expected_menu_order.size()):
+		if (menu_buttons[index] as Button).text != expected_menu_order[index]:
+			_fail("Pause menu option order changed at position %d." % index)
+			return
 	var previous_selection := int(menu.get("_selected_menu_index"))
 	menu.call("_unhandled_input", movement_event)
 	if int(menu.get("_selected_menu_index")) != posmod(previous_selection - 1, 7):
@@ -143,14 +152,83 @@ func _run_test() -> void:
 		return
 	brief_dialog.hide()
 
+	if not _test_new_game_confirmation_and_reset(menu):
+		return
+
 	menu.call("_save_settings")
 	menu.call("_close_menu")
 	if get_root().get_tree().paused:
 		_fail("Closing pause did not resume the game.")
 		return
-	print("PASS: pause menu, settings page, pause/resume and save.")
+	print("PASS: pause menu order, settings, campaign reports, new-game reset, pause/resume and save.")
 	quit(0)
 
 func _fail(message: String) -> void:
 	push_error("FAIL: " + message)
 	quit(1)
+
+
+func _test_new_game_confirmation_and_reset(menu: CanvasLayer) -> bool:
+	var save_paths := [
+		"user://gta_ghibli_save.json",
+		"user://gta_ghibli_mission_002.json",
+		"user://gta_ghibli_mission_003.json",
+		"user://gta_ghibli_mission_004.json",
+		"user://player_wallet.json",
+		"user://player_needs.json",
+		"user://player_inventory.json",
+		"user://gta_ghibli_side_activities.json"
+	]
+	for save_path in save_paths:
+		var save_file := FileAccess.open(save_path, FileAccess.WRITE)
+		if save_file == null:
+			_fail("Could not seed a game save for new-game reset verification: " + save_path)
+			return false
+		save_file.store_string("{\"test\":true}")
+		save_file.close()
+
+	var relationships_path := "user://npc_relationships/new_game_reset_test"
+	var relationships_absolute := ProjectSettings.globalize_path(relationships_path)
+	if DirAccess.make_dir_recursive_absolute(relationships_absolute) != OK:
+		_fail("Could not create relationship save directory for reset verification.")
+		return false
+	var relationship_file := FileAccess.open(relationships_path.path_join("npc.json"), FileAccess.WRITE)
+	if relationship_file == null:
+		_fail("Could not seed an NPC relationship save.")
+		return false
+	relationship_file.store_string("{\"trust\":99}")
+	relationship_file.close()
+
+	var settings_file := FileAccess.open("user://gta_ghibli_settings.cfg", FileAccess.WRITE)
+	if settings_file == null:
+		_fail("Could not seed the settings file for preservation verification.")
+		return false
+	settings_file.store_string("[game]\\nmaster_volume=0.85\\n")
+	settings_file.close()
+
+	menu.call("_restart_game")
+	var confirmation := menu.get_node_or_null("PauseAndSettingsOverlay/NewGameConfirmation") as ConfirmationDialog
+	if confirmation == null or not confirmation.visible:
+		_fail("START NEW GAME must ask for confirmation before deleting progress.")
+		return false
+	for save_path in save_paths:
+		if not FileAccess.file_exists(save_path):
+			_fail("New-game confirmation deleted progress before the player confirmed.")
+			return false
+	confirmation.hide()
+
+	if not bool(menu.call("_clear_saved_game_data")):
+		_fail("New-game reset reported that saved progress could not be cleared.")
+		return false
+	for save_path in save_paths:
+		if FileAccess.file_exists(save_path):
+			_fail("New-game reset left a saved progress file behind: " + save_path)
+			return false
+	if DirAccess.dir_exists_absolute(ProjectSettings.globalize_path("user://npc_relationships")):
+		_fail("New-game reset left saved NPC relationships behind.")
+		return false
+	if not FileAccess.file_exists("user://gta_ghibli_settings.cfg"):
+		_fail("New-game reset must preserve the player's settings.")
+		return false
+	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://gta_ghibli_settings.cfg"))
+	return true
