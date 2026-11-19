@@ -35,13 +35,13 @@ The Web Preview is a second export of the same Godot project. It is **not** an A
 - Browser sandboxing limits access to arbitrary device files; any future file-import feature would require a separate review and explicit user selection.
 - The audit is a guardrail, not a mathematical guarantee. Every new browser bridge, network call, plugin, import feature, or permission request must be reviewed before merging.
 
-## Public publishing and ownership limits
+## Public source repository and Web-output boundary
 
-This repository is intentionally public. A GitHub Pages deployment of this game will also be public to anyone who has its URL. A Web export is downloadable/inspectable by visitors; it cannot hide client-side game data or guarantee prevention of copying, reverse engineering, or modified builds. Copyright notices and the ownership register remain important evidence, but they are not technical copy protection.
+The GitHub repository remains intentionally **Public**. Therefore, source code and files committed on `web-preview` can still be viewed or forked by people who can access the public repository. This CI-only decision does **not** make the source repository private and does not provide anti-copy protection for source assets.
 
-Do not put secrets, private signing material, personal data, or unreleased material that must remain confidential into a public Web export. The Web preview is for testing, not a private beta.
+The generated Web bundle is different: it is built only on a temporary GitHub-hosted runner, is not uploaded as a workflow artifact, has no public download link, and is not deployed to GitHub Pages. No public browser game URL is created.
 
-For a stricter approval gate, the repository owner should configure required reviewers for the `github-pages` environment in GitHub Settings → Environments before enabling deployment. The Actions workflow grants `pages: write` and `id-token: write` only to the deployment job; the build job receives only `contents: read`.
+Never commit secrets, private signing material, personal data, or unreleased material that must remain confidential to a public repository. Copyright notices and the ownership register are evidence-management measures, not technical copy protection.
 
 ## What the automated workflow verifies
 
@@ -50,9 +50,10 @@ For a stricter approval gate, the repository owner should configure required rev
 3. Godot 4.7 resource import.
 4. Existing mobile-control and ambient-audio regression tests in headless mode.
 5. Creation of a Web export containing a non-empty `index.html`, WebAssembly binary, and PCK.
-6. Confirmation that the generated files stay on the temporary runner; no artifact is uploaded or shared.
+6. A private Chromium smoke test served only from `127.0.0.1` on the temporary runner; it checks canvas startup, WebGL 2 availability, browser runtime errors, input delivery, and absence of external network requests.
+7. Confirmation that the generated files stay on the temporary runner; no artifact is uploaded or shared.
 
-A passing headless build does not prove browser rendering, browser audio behavior, or real Android touchscreen performance. Those require an actual browser run and physical-device testing.
+The Chromium smoke test is a startup check, not a full gameplay or visual-quality certification. Long play sessions, touch behavior on real phones, sustained frame rate, audio quality and Android device compatibility still need dedicated testing.
 
 ## Publishing remains disabled
 
