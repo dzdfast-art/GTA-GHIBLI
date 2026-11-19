@@ -54,12 +54,14 @@ func _run() -> void:
 		return
 
 	bicycle.call("interact")
-	player.global_position = portal.global_position + Vector3(0.0, 0.0, 1.5)
 	for _frame in range(4):
 		await process_frame
 	if tutorial.call("get_stage_id") != "enter_house":
-		_fail("After dismounting, the tutorial must guide the player to the house.")
+		_fail("Dismounting at the bridge must advance the tutorial to the house.")
 		return
+	player.global_position = portal.global_position + Vector3(0.0, 0.0, 1.5)
+	for _frame in range(4):
+		await process_frame
 
 	portal.call("interact")
 	for _frame in range(4):
