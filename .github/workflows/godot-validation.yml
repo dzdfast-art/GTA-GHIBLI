@@ -35,6 +35,7 @@ jobs:
           python -m json.tool data/characters/world_dialogue_ar.json > /dev/null
           python -m json.tool data/world/wildlife_audio_manifest.json > /dev/null
           python -m json.tool audio/ambience/manifest.json > /dev/null
+          python -m json.tool audio/vehicles/manifest.json > /dev/null
 
       - name: Validate OBJ mesh surface budgets
         run: python tools/validate_obj_surface_counts.py
