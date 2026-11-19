@@ -49,6 +49,8 @@ func _ready() -> void:
 
 func setup(player: CharacterBody3D) -> void:
 	_player = player
+	if _phase == Phase.COMPLETE:
+		_award_completion_reward()
 
 
 func _physics_process(delta: float) -> void:
@@ -191,6 +193,7 @@ func _complete_mission() -> void:
 			"detections": _detections,
 			"reward_currency": 220
 		}, "\t"))
+	_award_completion_reward()
 	_status_override = "أحسنت! وصلت الأدلة إلى نورا. انفتح مسار التحقيق في الميناء."
 	for guard in _guards:
 		if is_instance_valid(guard):
@@ -199,6 +202,29 @@ func _complete_mission() -> void:
 		_retry_button.visible = false
 	_refresh_hud()
 
+
+
+func _get_mission_reward_currency() -> int:
+	const MISSION_PATH := "res://data/missions/mission_003.json"
+	if not FileAccess.file_exists(MISSION_PATH):
+		return 220
+	var file := FileAccess.open(MISSION_PATH, FileAccess.READ)
+	if file == null:
+		return 220
+	var parsed = JSON.parse_string(file.get_as_text())
+	if not parsed is Dictionary:
+		return 220
+	var rewards: Dictionary = parsed.get("rewards", {})
+	return maxi(0, int(rewards.get("currency", 220)))
+
+
+func _award_completion_reward() -> void:
+	if _player == null:
+		return
+	var wallet := _player.get_node_or_null("PlayerWallet")
+	if wallet == null or not wallet.has_method("add_money_once"):
+		return
+	wallet.call("add_money_once", "mission_003_completion", _get_mission_reward_currency())
 
 func _fail_mission(reason: String) -> void:
 	_phase = Phase.FAILED
@@ -307,6 +333,7 @@ func _build_hud() -> void:
 	_panel.anchor_right = 0.58
 	_panel.anchor_bottom = 0.82
 	add_child(_panel)
+	add_to_group("mission_hud_sources")
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override("separation", 4)
 	_panel.add_child(content)
