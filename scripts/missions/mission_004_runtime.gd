@@ -190,7 +190,14 @@ func _award_completion_reward(amount: int = -1) -> void:
 		return
 	var reward_amount := amount
 	if reward_amount < 0:
-		reward_amount = 350 if _route_choice == "north" else 400
+		var saved_route := _route_choice
+		if FileAccess.file_exists(COMPLETION_SAVE):
+			var file := FileAccess.open(COMPLETION_SAVE, FileAccess.READ)
+			if file != null:
+				var parsed = JSON.parse_string(file.get_as_text())
+				if parsed is Dictionary:
+					saved_route = str(parsed.get("route_choice", saved_route))
+		reward_amount = 350 if saved_route == "north" else 400
 	wallet.call("add_money_once", "mission_004_completion", reward_amount)
 
 func _fail_mission(reason: String) -> void:
