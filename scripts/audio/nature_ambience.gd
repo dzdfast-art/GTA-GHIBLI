@@ -54,17 +54,20 @@ var _transition_tween: Tween
 func _ready() -> void:
 	add_to_group("nature_ambience")
 	_random.randomize()
-	_player = AudioStreamPlayer.new()
-	_player.name = "ProceduralNatureAudio"
-	_player.bus = "SFX"
-	_player.volume_db = -3.0
-	var generator := AudioStreamGenerator.new()
-	generator.mix_rate = SAMPLE_RATE
-	generator.buffer_length = 0.5
-	_player.stream = generator
-	add_child(_player)
-	_player.play()
-	_playback = _player.get_stream_playback() as AudioStreamGeneratorPlayback
+	# Web Audio sample playback does not support AudioStreamGenerator. The browser
+	# preview uses the imported ambience loops below; native Android retains synthesis.
+	if not OS.has_feature("web"):
+		_player = AudioStreamPlayer.new()
+		_player.name = "ProceduralNatureAudio"
+		_player.bus = "SFX"
+		_player.volume_db = -3.0
+		var generator := AudioStreamGenerator.new()
+		generator.mix_rate = SAMPLE_RATE
+		generator.buffer_length = 0.5
+		_player.stream = generator
+		add_child(_player)
+		_player.play()
+		_playback = _player.get_stream_playback() as AudioStreamGeneratorPlayback
 	_build_field_recording_player()
 	_update_targets()
 	_sync_field_recording(true)
