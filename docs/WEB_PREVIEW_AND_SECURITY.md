@@ -13,6 +13,7 @@ The Web Preview is a second export of the same Godot project. It is **not** an A
 - The workflow does not upload the Web build as an artifact and does not create a downloadable build link.
 - There is no GitHub Pages deployment job, deployment input, or publishing step.
 - Manual workflow dispatch is limited to building and checking; it cannot publish the game.
+- A narrowly scoped cleanup job deletes any earlier `GTA-GHIBLI-Web-Preview` workflow artifacts; only that cleanup job receives `actions: write`.
 
 ## Web export security choices
 
