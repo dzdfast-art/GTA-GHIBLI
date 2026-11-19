@@ -16,9 +16,11 @@ var _objectives: Array = []
 var _objective_label: Label
 var _status_label: Label
 var _mission_title_label: Label
+var _panel: PanelContainer
 
 
 func _ready() -> void:
+	add_to_group("mission_hud_sources")
 	_load_mission_data()
 	_load_progress()
 	_build_hud()
@@ -31,6 +33,7 @@ func setup(player: Node3D, mira: Node) -> void:
 		var callback := Callable(self, "_on_mira_dialogue_spoken")
 		if not mira.is_connected("dialogue_spoken", callback):
 			mira.connect("dialogue_spoken", callback)
+	_claim_mission_reward()
 
 
 func _load_mission_data() -> void:
@@ -124,6 +127,7 @@ func _process(_delta: float) -> void:
 		if _player.global_position.distance_to(Vector3(0.0, 0.0, 27.0)) <= 8.0:
 			_garden_visited = true
 			_save_progress()
+			_claim_mission_reward()
 			_refresh_hud()
 
 
@@ -134,18 +138,29 @@ func _on_mira_dialogue_spoken() -> void:
 		_refresh_hud()
 
 
+func _claim_mission_reward() -> void:
+	if not (_square_reached and _mira_spoken_to and _garden_visited) or _player == null:
+		return
+	var wallet := _player.get_node_or_null("PlayerWallet")
+	if wallet == null or not wallet.has_method("claim_reward"):
+		return
+	var rewards: Dictionary = _mission_data.get("rewards", {})
+	wallet.call("claim_reward", "mission_001_meet_the_village", int(rewards.get("currency", 25)))
+
+
 func _build_hud() -> void:
-	var panel := PanelContainer.new()
-	panel.name = "MissionPanel"
-	panel.anchor_left = 0.02
-	panel.anchor_top = 0.13
-	panel.anchor_right = 0.55
-	panel.anchor_bottom = 0.34
-	add_child(panel)
+	_panel = PanelContainer.new()
+	_panel.name = "MissionPanel"
+	_panel.anchor_left = 0.02
+	_panel.anchor_top = 0.13
+	_panel.anchor_right = 0.55
+	_panel.anchor_bottom = 0.34
+	_panel.visible = false
+	add_child(_panel)
 
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override("separation", 5)
-	panel.add_child(content)
+	_panel.add_child(content)
 
 	_mission_title_label = Label.new()
 	_mission_title_label.text = str(_mission_data.get("title", "المهمة الأولى: صباح جديد"))
@@ -168,6 +183,27 @@ func _build_hud() -> void:
 	content.add_child(_status_label)
 
 
+func get_hud_snapshot() -> Dictionary:
+	var completed := _square_reached and _mira_spoken_to and _garden_visited
+	var target := Vector3.ZERO
+	var has_target := not completed
+	if not _square_reached:
+		target = Vector3.ZERO
+	elif not _mira_spoken_to:
+		target = Vector3(0.0, 0.0, -4.0)
+	elif not _garden_visited:
+		target = Vector3(0.0, 0.0, 27.0)
+	return {
+		"active": not completed,
+		"priority": 1,
+		"title": str(_mission_data.get("title", "صباح جديد في قرية الصفصاف")),
+		"objective": _objective_label.text if _objective_label != null else "",
+		"status": _status_label.text if _status_label != null else "",
+		"target_position": target,
+		"has_target": has_target
+	}
+
+
 func _refresh_hud() -> void:
 	if _objective_label == null or _status_label == null:
 		return
@@ -185,4 +221,8 @@ func _refresh_hud() -> void:
 		_objective_label.text = "اكتملت المهمة الأولى!"
 		var rewards: Dictionary = _mission_data.get("rewards", {})
 		var currency := int(rewards.get("currency", 25))
-		_status_label.text = "مكافأة تجريبية: %d قطعة نقدية" % currency
+		var wallet := _player.get_node_or_null("PlayerWallet") if _player != null else null
+		if wallet != null and wallet.has_method("get_balance"):
+			_status_label.text = "اكتملت المهمة! +%d قطعة — رصيدك %d" % [currency, int(wallet.call("get_balance"))]
+		else:
+			_status_label.text = "اكتملت المهمة! مكافأتها %d قطعة نقدية" % currency

@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "policy": {
+    "require_license_file": true,
+    "require_nonempty_asset": true,
+    "reject_unverified_assets": true
+  },
+  "assets": [
+    {
+      "id": "player_quaternius_superhero_male",
+      "path": "assets/characters/quaternius_superhero_male.glb",
+      "format": "glb",
+      "license": "CC0-1.0",
+      "license_file": "assets/characters/QUATERNIUS-LICENSE.txt",
+      "status": "integrated",
+      "purpose": "First rigged humanoid player visual; procedural poses are supplied by CharacterAnimationDriver.",
+      "source": "https://quaternius.com/packs/universalbasecharacters.html"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "quaternius_universal_animation_library_2",
+      "source": "https://quaternius.com/packs/universalanimationlibrary2.html",
+      "license": "CC0-1.0",
+      "formats": [
+        "FBX",
+        "GLB",
+        "Blend"
+      ],
+      "reported_animation_count": "130+",
+      "status": "research_only",
+      "reason": "Official pack page confirms 130+ humanoid animations, GLB format and CC0. Archive not yet imported; compatibility/retargeting must be tested."
+    },
+    {
+      "id": "quaternius_modular_streets",
+      "source": "https://quaternius.com/packs/modularstreets.html",
+      "license": "CC0-1.0",
+      "formats": [
+        "FBX",
+        "OBJ",
+        "Blend"
+      ],
+      "reported_model_count": 25,
+      "status": "research_only",
+      "reason": "Official pack page confirms 25 modular street models and CC0. Archive not yet imported into the game."
+    },
+    {
+      "id": "quaternius_cars",
+      "source": "https://quaternius.com/packs/cars.html",
+      "license": "CC0-1.0",
+      "formats": [
+        "FBX",
+        "OBJ",
+        "Blend"
+      ],
+      "reported_model_count": 8,
+      "status": "research_only",
+      "reason": "Official pack page confirms eight car models and CC0. Archive not yet imported or adapted to the vehicle controller."
+    },
+    {
+      "id": "quaternius_downtown_city_megakit",
+      "source": "https://quaternius.com/packs/downtowncitymegakit.html",
+      "license": "CC0-1.0",
+      "formats": [
+        "FBX",
+        "Blend",
+        "glTF"
+      ],
+      "reported_model_count": 315,
+      "status": "research_only",
+      "reason": "Official pack page confirms 315 modular environment pieces and CC0; page describes a Godot 4.5 source version. Free-tier contents must be checked before selecting the actual download."
+    }
+  ],
+  "original_materials": [
+    {
+      "id": "hd_city_asphalt_cracked",
+      "path": "assets/environment/materials/hd_city_asphalt_cracked.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "asphalt"
+    },
+    {
+      "id": "hd_harbor_red_brick",
+      "path": "assets/environment/materials/hd_harbor_red_brick.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "brick"
+    },
+    {
+      "id": "hd_city_concrete_stains",
+      "path": "assets/environment/materials/hd_city_concrete_stains.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "concrete"
+    },
+    {
+      "id": "hd_corrugated_iron",
+      "path": "assets/environment/materials/hd_corrugated_iron.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "metal"
+    },
+    {
+      "id": "hd_ceramic_roof_tiles",
+      "path": "assets/environment/materials/hd_ceramic_roof_tiles.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "roof"
+    },
+    {
+      "id": "hd_stone_sidewalk",
+      "path": "assets/environment/materials/hd_stone_sidewalk.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "pavers"
+    },
+    {
+      "id": "hd_shopfront_glass",
+      "path": "assets/environment/materials/hd_shopfront_glass.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "glass"
+    },
+    {
+      "id": "hd_metal_garage_shutter",
+      "path": "assets/environment/materials/hd_metal_garage_shutter.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "shutter"
+    },
+    {
+      "id": "hd_urban_road_marking",
+      "path": "assets/environment/materials/hd_urban_road_marking.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "Worn painted road lane markings with flaking and aggregate"
+    },
+    {
+      "id": "hd_weathered_wood_fence",
+      "path": "assets/environment/materials/hd_weathered_wood_fence.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "Weathered wood grain for benches, fence rails, fence posts and dock timbers"
+    },
+    {
+      "id": "hd_rusted_steel_pipe",
+      "path": "assets/environment/materials/hd_rusted_steel_pipe.svg",
+      "format": "svg",
+      "origin": "Original GTA GHIBLI procedural material",
+      "resolution": "2048x2048",
+      "purpose": "Rusted ribbed steel for streetlamp poles and harbor cargo containers"
+    }
+  ]
+}

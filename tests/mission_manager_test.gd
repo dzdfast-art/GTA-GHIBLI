@@ -3,6 +3,7 @@ extends SceneTree
 ## Headless regression test for mission JSON loading, objective order, and save persistence.
 
 const MISSION_MANAGER_SCRIPT = preload("res://scripts/missions/mission_manager.gd")
+const WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
 const SAVE_PATH := "user://gta_ghibli_save.json"
 
 
@@ -16,6 +17,11 @@ func _run_mission_test() -> void:
 		DirAccess.remove_absolute(absolute_save_path)
 
 	var player := Node3D.new()
+	var wallet: Node = WALLET_SCRIPT.new()
+	wallet.name = "PlayerWallet"
+	wallet.set("persistence_enabled", false)
+	wallet.set("initial_balance", 250)
+	player.add_child(wallet)
 	root.add_child(player)
 
 	var mira := Node.new()
@@ -55,6 +61,13 @@ func _run_mission_test() -> void:
 	manager._process(0.0)
 	if not manager._garden_visited:
 		_fail("The garden objective did not complete at the community garden.")
+		return
+	if int(wallet.call("get_balance")) != 275:
+		_fail("Completing mission 001 did not pay its 25-coin reward.")
+		return
+	manager.call("_claim_mission_reward")
+	if int(wallet.call("get_balance")) != 275:
+		_fail("Completing mission 001 more than once paid a duplicate reward.")
 		return
 
 	if not FileAccess.file_exists(SAVE_PATH):

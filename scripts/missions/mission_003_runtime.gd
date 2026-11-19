@@ -36,6 +36,7 @@ var _status_override := ""
 
 
 func _ready() -> void:
+	add_to_group("mission_hud_sources")
 	_world_root = get_tree().current_scene as Node3D
 	_build_hud()
 	if _is_completed():
@@ -49,6 +50,8 @@ func _ready() -> void:
 
 func setup(player: CharacterBody3D) -> void:
 	_player = player
+	if _phase == Phase.COMPLETE:
+		_claim_mission_reward()
 
 
 func _physics_process(delta: float) -> void:
@@ -191,6 +194,7 @@ func _complete_mission() -> void:
 			"detections": _detections,
 			"reward_currency": 220
 		}, "\t"))
+	_claim_mission_reward()
 	_status_override = "أحسنت! وصلت الأدلة إلى نورا. انفتح مسار التحقيق في الميناء."
 	for guard in _guards:
 		if is_instance_valid(guard):
@@ -198,6 +202,22 @@ func _complete_mission() -> void:
 	if _retry_button != null:
 		_retry_button.visible = false
 	_refresh_hud()
+
+
+func _claim_mission_reward() -> void:
+	if _player == null:
+		return
+	var wallet := _player.get_node_or_null("PlayerWallet")
+	if wallet == null or not wallet.has_method("claim_reward"):
+		return
+	var reward_amount := 220
+	var mission_file := FileAccess.open(MISSION_DATA_PATH, FileAccess.READ)
+	if mission_file != null:
+		var mission_data = JSON.parse_string(mission_file.get_as_text())
+		if mission_data is Dictionary:
+			var rewards: Dictionary = mission_data.get("rewards", {})
+			reward_amount = int(rewards.get("currency", 220))
+	wallet.call("claim_reward", "mission_003_shadows_over_the_harbor", reward_amount)
 
 
 func _fail_mission(reason: String) -> void:
@@ -299,6 +319,42 @@ func _add_box(node_name: String, at: Vector3, size: Vector3, tint: Color) -> voi
 	_world_root.add_child(body)
 
 
+func get_hud_snapshot() -> Dictionary:
+	var target := CONTACT_POSITION
+	var has_target := true
+	match _phase:
+		Phase.MEET_CONTACT:
+			target = CONTACT_POSITION
+		Phase.ENTER_HARBOR:
+			target = HARBOR_GATE_POSITION
+		Phase.COLLECT_EVIDENCE:
+			has_target = false
+			for marker in _evidence_markers:
+				if is_instance_valid(marker) and marker.visible:
+					target = marker.global_position
+					has_target = true
+					break
+		Phase.RETURN_EVIDENCE:
+			target = CONTACT_POSITION
+		_:
+			has_target = false
+	var active := _phase != Phase.LOCKED and _phase != Phase.COMPLETE
+	return {
+		"active": active,
+		"priority": 3,
+		"title": "ظلال فوق الميناء",
+		"objective": _objective_label.text if _objective_label != null else "",
+		"status": _status_override,
+		"target_position": target,
+		"has_target": has_target and active,
+		"can_retry": _phase == Phase.FAILED
+	}
+
+
+func retry_from_hud() -> void:
+	_on_retry_pressed()
+
+
 func _build_hud() -> void:
 	_panel = PanelContainer.new()
 	_panel.name = "Mission003Panel"
@@ -306,6 +362,7 @@ func _build_hud() -> void:
 	_panel.anchor_top = 0.60
 	_panel.anchor_right = 0.58
 	_panel.anchor_bottom = 0.82
+	_panel.visible = false
 	add_child(_panel)
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override("separation", 4)

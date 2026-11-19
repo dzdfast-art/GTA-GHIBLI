@@ -22,7 +22,18 @@ func _run_test() -> void:
 	if total < 20:
 		_fail("Expected the existing character dialogue library to contain at least 20 lines.")
 		return
-	print("PASS: %d Arabic dialogue lines have explicit acting and emotion direction." % total)
+	var mira_file := FileAccess.open("res://data/dialogue/mira_intro_ar.json", FileAccess.READ)
+	if mira_file == null:
+		_fail("Mira greeting voice record is missing.")
+		return
+	var mira_data = JSON.parse_string(mira_file.get_as_text())
+	var greeting: Dictionary = mira_data.get("greeting", {}) if mira_data is Dictionary else {}
+	if not str(greeting.get("audio_url", "")).contains("id=938b382f2c51457d852345ff8d830d47.mp3"):
+		_fail("The refreshed Mira expressive voice URL is missing.")
+		return
+	if str(greeting.get("performance_recording_status", "")) != "new_tts_take_generated_not_yet_auditioned_on_device":
+		_fail("Mira voice status must remain pending owner/device audition.")
+	print("PASS: %d Arabic dialogue lines have acting metadata and Mira's refreshed voice sample is registered." % total)
 	quit(0)
 
 func _fail(message: String) -> void:
