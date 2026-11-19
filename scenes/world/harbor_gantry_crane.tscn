@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="ArrayMesh" path="res://assets/environment/industrial/harbor_gantry_crane.obj" id="1_frame"]
+[ext_resource type="Script" path="res://scripts/world/harbor_gantry_crane.gd" id="2_script"]
+
+[sub_resource type="BoxShape3D" id="LegCollision"]
+size = Vector3(0.95, 11.5, 0.95)
+
+[node name="HarborGantryCrane" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("2_script")
+
+[node name="CraneFrame" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_frame")
+
+[node name="LegCollision_NW" type="CollisionShape3D" parent="."]
+shape = SubResource("LegCollision")
+position = Vector3(-5.6, 5.75, -4.5)
+
+[node name="LegCollision_NE" type="CollisionShape3D" parent="."]
+shape = SubResource("LegCollision")
+position = Vector3(5.6, 5.75, -4.5)
+
+[node name="LegCollision_SW" type="CollisionShape3D" parent="."]
+shape = SubResource("LegCollision")
+position = Vector3(-5.6, 5.75, 4.5)
+
+[node name="LegCollision_SE" type="CollisionShape3D" parent="."]
+shape = SubResource("LegCollision")
+position = Vector3(5.6, 5.75, 4.5)
