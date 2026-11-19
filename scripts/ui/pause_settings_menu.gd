@@ -483,13 +483,13 @@ func _mission_progress_snapshot() -> Dictionary:
 	var second := _read_json_record("user://gta_ghibli_mission_002.json")
 	var third := _read_json_record("user://gta_ghibli_mission_003.json")
 	var fourth := _read_json_record("user://gta_ghibli_mission_004.json")
-	var first_done := bool(first.get("square_reached", false)) \
-		and bool(first.get("mira_spoken_to", false)) \
-		and bool(first.get("garden_visited", false))
-	var second_done := str(second.get("mission_id", "")) == "the_old_road_rescue" and bool(second.get("completed", false))
-	var third_done := str(third.get("mission_id", "")) == "shadows_over_the_harbor" and bool(third.get("completed", false))
-	var fourth_done := str(fourth.get("mission_id", "")) == "the_last_train" and bool(fourth.get("completed", false))
-	var first_started := bool(first.get("square_reached", false)) or bool(first.get("mira_spoken_to", false)) or bool(first.get("garden_visited", false))
+	var first_done := first.get("square_reached", false) == true \
+		and first.get("mira_spoken_to", false) == true \
+		and first.get("garden_visited", false) == true
+	var second_done := str(second.get("mission_id", "")) == "the_old_road_rescue" and second.get("completed", false) == true
+	var third_done := str(third.get("mission_id", "")) == "shadows_over_the_harbor" and third.get("completed", false) == true
+	var fourth_done := str(fourth.get("mission_id", "")) == "the_last_train" and fourth.get("completed", false) == true
+	var first_started := first.get("square_reached", false) == true or first.get("mira_spoken_to", false) == true or first.get("garden_visited", false) == true
 	return {
 		"completed": [first_done, second_done, third_done, fourth_done],
 		"unlocked": [true, first_done, second_done, third_done],
@@ -515,7 +515,7 @@ func _build_stats_report() -> String:
 		if needs != null:
 			lines.append("الجوع: %.0f%% | العطش: %.0f%% | الطاقة: %.0f%%" % [
 				float(needs.get("hunger")), float(needs.get("thirst")), float(needs.get("energy"))])
-		lines.append("الحالة: %s" % ("داخل مركبة" if bool(player.get("is_driving")) else "على القدمين"))
+		lines.append("الحالة: %s" % ("داخل مركبة" if player.get("is_driving") == true else "على القدمين"))
 		lines.append("الموقع: X %.1f | Z %.1f" % [player.global_position.x, player.global_position.z])
 	else:
 		lines.append("اللاعب لم يتم تحميله بعد.")
@@ -557,7 +557,7 @@ func _build_brief_report() -> String:
 		var data := _read_json_record(str(spec.get("path", "")))
 		var title := str(data.get("title", spec.get("fallback", "مهمة")))
 		var description := str(data.get("description", ""))
-		var status := "مكتملة" if bool(completed[index]) else ("مقفلة" if not bool(unlocked[index]) else ("قيد التنفيذ" if bool(started[index]) else "متاحة"))
+		var status := "مكتملة" if completed[index] == true else ("مقفلة" if not unlocked[index] == true else ("قيد التنفيذ" if started[index] == true else "متاحة"))
 		lines.append("%d. %s — %s" % [index + 1, title, status])
 		if not description.is_empty():
 			lines.append(description)
@@ -566,7 +566,7 @@ func _build_brief_report() -> String:
 		if not is_instance_valid(source) or not source.has_method("get_hud_snapshot"):
 			continue
 		var snapshot = source.call("get_hud_snapshot")
-		if snapshot is Dictionary and bool(snapshot.get("active", false)):
+		if snapshot is Dictionary and snapshot.get("active", false) == true:
 			if active_snapshot.is_empty() or int(snapshot.get("priority", 99)) < int(active_snapshot.get("priority", 99)):
 				active_snapshot = snapshot
 	if not active_snapshot.is_empty():
