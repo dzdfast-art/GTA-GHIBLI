@@ -60,7 +60,7 @@ func _run() -> void:
 	health.call("apply_damage", 15.0)
 	for _frame in range(16):
 		await process_frame
-	if cash_label.text != "¤ %d" % int(wallet.call("get_balance")):
+	if cash_label.text != "$ %d" % int(wallet.call("get_balance")):
 		_fail("Cash display did not refresh after the wallet balance changed.")
 		return
 	if not is_equal_approx(health_bar.value, float(health.get("current_health"))):
