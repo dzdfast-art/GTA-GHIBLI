@@ -1,6 +1,10 @@
 extends SceneTree
 
 const MENU_SCRIPT = preload("res://scripts/ui/pause_settings_menu.gd")
+const HEALTH_SCRIPT = preload("res://scripts/systems/player_health.gd")
+const WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
+const NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
+const CAMPAIGN_SCRIPT = preload("res://scripts/missions/campaign_progress.gd")
 
 func _initialize() -> void:
 	call_deferred("_run_test")
@@ -13,6 +17,30 @@ func _run_test() -> void:
 	var sun := DirectionalLight3D.new()
 	sun.add_to_group("quality_managed_sun")
 	root.add_child(sun)
+
+	var player := Node3D.new()
+	player.name = "Player"
+	player.add_to_group("player")
+	var health: Node = HEALTH_SCRIPT.new()
+	health.name = "PlayerHealth"
+	player.add_child(health)
+	health.set("current_health", 76.0)
+	var wallet: Node = WALLET_SCRIPT.new()
+	wallet.name = "PlayerWallet"
+	wallet.set("persistence_enabled", false)
+	wallet.set("initial_balance", 425)
+	player.add_child(wallet)
+	var needs: Node = NEEDS_SCRIPT.new()
+	needs.name = "PlayerNeeds"
+	needs.set("persistence_enabled", false)
+	player.add_child(needs)
+	needs.set("hunger", 62.0)
+	needs.set("thirst", 48.0)
+	needs.set("energy", 81.0)
+	root.add_child(player)
+
+	var campaign: Node = CAMPAIGN_SCRIPT.new()
+	root.add_child(campaign)
 
 	var menu: CanvasLayer = MENU_SCRIPT.new() as CanvasLayer
 	root.add_child(menu)
@@ -92,6 +120,35 @@ func _run_test() -> void:
 	if not (menu.get_node("PauseAndSettingsOverlay/SettingsMenu") as Control).visible:
 		_fail("Settings page did not open.")
 		return
+	menu.call("_show_info", "الإحصائيات")
+	var overlay := menu.get_node("PauseAndSettingsOverlay") as Control
+	var dialogs: Array[AcceptDialog] = []
+	for child in overlay.get_children():
+		if child is AcceptDialog:
+			dialogs.append(child as AcceptDialog)
+	if dialogs.is_empty():
+		_fail("STATS did not open a data dialog.")
+		return
+	var stats_text := dialogs[dialogs.size() - 1].dialog_text
+	if not stats_text.contains("76 / 100") or not stats_text.contains("425") or not stats_text.contains("62 / 100"):
+		_fail("STATS did not display live health, wallet and hunger values.")
+		return
+	dialogs[dialogs.size() - 1].queue_free()
+
+	menu.call("_show_info", "ملخص المهام")
+	dialogs.clear()
+	for child in overlay.get_children():
+		if child is AcceptDialog:
+			dialogs.append(child as AcceptDialog)
+	if dialogs.is_empty():
+		_fail("BRIEF did not open the mission report.")
+		return
+	var brief_text := dialogs[dialogs.size() - 1].dialog_text
+	if not brief_text.contains("الفصل الأول: طريق العودة") or not brief_text.contains("صباح جديد في قرية الصفصاف") or brief_text.contains("سيتم ربط هذه الصفحة"):
+		_fail("BRIEF did not display the real campaign and mission data.")
+		return
+	dialogs[dialogs.size() - 1].queue_free()
+
 	menu.call("_save_settings")
 	menu.call("_close_menu")
 	if get_root().get_tree().paused:
