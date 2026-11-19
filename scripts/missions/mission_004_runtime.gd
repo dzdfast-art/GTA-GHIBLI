@@ -3,6 +3,7 @@ extends CanvasLayer
 ## Mission 004: escort Mia and protect the last train.
 ## Lightweight runtime blockout; final train art, animation and voice acting are pending.
 
+const MISSION_DATA_PATH := "res://data/missions/mission_004.json"
 const MISSION_003_SAVE := "user://gta_ghibli_mission_003.json"
 const COMPLETION_SAVE := "user://gta_ghibli_mission_004.json"
 
@@ -22,6 +23,7 @@ const MAX_MISSION_TIME := 180.0
 const MAX_ABANDON_TIME := 7.0
 
 var _player: CharacterBody3D
+var _mission_data: Dictionary = {}
 var _world_root: Node3D
 var _phase: Phase = Phase.LOCKED
 var _mia: Node3D
@@ -42,6 +44,7 @@ var _status_override := ""
 
 
 func _ready() -> void:
+	_load_mission_data()
 	_world_root = get_tree().current_scene as Node3D
 	_build_hud()
 	if _is_completed():
@@ -51,6 +54,19 @@ func _ready() -> void:
 	else:
 		_phase = Phase.LOCKED
 	_refresh_hud()
+
+
+func _load_mission_data() -> void:
+	if not FileAccess.file_exists(MISSION_DATA_PATH):
+		push_warning("Mission 004 data is missing.")
+		return
+	var file := FileAccess.open(MISSION_DATA_PATH, FileAccess.READ)
+	if file == null:
+		push_warning("Could not open Mission 004 data.")
+		return
+	var parsed = JSON.parse_string(file.get_as_text())
+	if parsed is Dictionary:
+		_mission_data = parsed
 
 
 func setup(player: CharacterBody3D) -> void:
