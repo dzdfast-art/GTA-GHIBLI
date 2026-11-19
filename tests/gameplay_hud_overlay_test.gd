@@ -40,7 +40,7 @@ func _run() -> void:
 
 	var cash_label := hud.get_node("PlayerStatus/CashBalance") as Label
 	var health_bar := hud.get_node("PlayerStatus/HealthRow/PlayerHealthBar") as ProgressBar
-	var clock_label := hud.get_node("PlayerStatus/WorldClock") as Label
+	var clock_label := hud.get_node("PlayerStatus/ClockRow/WorldClock") as Label
 	var wallet := player.get_node_or_null("PlayerWallet")
 	if wallet == null or not wallet.has_method("get_balance"):
 		_fail("Gameplay HUD has no existing PlayerWallet source.")
