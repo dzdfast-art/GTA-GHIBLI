@@ -53,6 +53,9 @@ jobs:
             res://main.gd \
             res://scripts/audio/nature_ambience.gd \
             res://scripts/player/player_controller.gd \
+            res://scripts/player/humanoid_visual.gd \
+            res://scripts/world/ambient_traffic_car.gd \
+            res://scripts/world/ambient_traffic_director.gd \
             res://scripts/vehicles/driveable_car.gd \
             res://scripts/vehicles/bicycle_controller.gd \
             res://scripts/world/house_interior_portal.gd \
@@ -64,9 +67,13 @@ jobs:
             res://scripts/systems/player_needs.gd \
             res://scripts/systems/consumable_inventory.gd \
             res://scripts/systems/player_wallet.gd \
+            res://scripts/systems/player_health.gd \
             res://scripts/world/consumable_shop.gd \
             res://scripts/camera/third_person_camera.gd \
             res://scripts/ui/mobile_controls.gd \
+            res://scripts/ui/game_hud.gd \
+            res://scripts/ui/minimap_radar.gd \
+            res://scripts/missions/video_reference_tutorial.gd \
             res://scripts/ui/pause_settings_menu.gd \
             res://scripts/ui/virtual_joystick.gd \
             res://scripts/world/willow_village.gd \
@@ -172,6 +179,18 @@ jobs:
 
       - name: Test optional world side activities and wallet rewards
         run: godot --headless --path . --script res://tests/side_activity_director_test.gd
+
+      - name: Test video-reference gameplay HUD overlay
+        run: godot --headless --path . --script res://tests/gameplay_hud_overlay_test.gd
+
+      - name: Test continuous video-reference bicycle and house tutorial
+        run: godot --headless --path . --script res://tests/video_reference_tutorial_test.gd
+
+      - name: Test original humanoid player visual
+        run: godot --headless --path . --script res://tests/player_humanoid_visual_test.gd
+
+      - name: Test moving ambient traffic on village roads
+        run: godot --headless --path . --script res://tests/ambient_traffic_test.gd
 
       - name: Run main scene smoke test
         run: godot --headless --path . --quit-after 180

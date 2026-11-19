@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 const JOYSTICK_SCRIPT = preload("res://scripts/ui/virtual_joystick.gd")
+const GAME_HUD_SCRIPT = preload("res://scripts/ui/game_hud.gd")
 const JOYSTICK_SIZE := Vector2(176.0, 176.0)
 
 var _active_actions: Array[StringName] = []
@@ -12,6 +13,7 @@ var _sprint_button: Button
 var _steer_left_button: Button
 var _steer_right_button: Button
 var _joystick: Control
+var _game_hud: Control
 var _is_car_mode := false
 var _is_bicycle_mode := false
 var _bike_steering_mode := "analog"
@@ -64,6 +66,16 @@ func _process(_delta: float) -> void:
 		_context_button.text = prompt
 
 
+func bind_player(player: Node3D) -> void:
+	if _game_hud != null and _game_hud.has_method("bind_player"):
+		_game_hud.call("bind_player", player)
+
+
+func set_gameplay_visible(value: bool) -> void:
+	if _game_hud != null and _game_hud.has_method("set_gameplay_visible"):
+		_game_hud.call("set_gameplay_visible", value)
+
+
 func _register_actions() -> void:
 	var actions := ["vehicle_brake", "bike_pedal", "bike_brake",
 		"bike_steer_left", "bike_steer_right", "sprint"]
@@ -93,9 +105,13 @@ func _build_hud() -> void:
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
 
+	_game_hud = GAME_HUD_SCRIPT.new() as Control
+	_game_hud.name = "GameplayHUD"
+	add_child(_game_hud)
+
 	_mode_label = Label.new()
 	_mode_label.text = "ON FOOT"
-	_mode_label.position = Vector2(22.0, 18.0)
+	_mode_label.position = Vector2(22.0, 178.0)
 	_mode_label.add_theme_font_size_override("font_size", 15)
 	_mode_label.add_theme_color_override("font_color", Color(1.0, 0.96, 0.82, 0.92))
 	root.add_child(_mode_label)

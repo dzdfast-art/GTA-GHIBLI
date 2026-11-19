@@ -20,6 +20,9 @@ const TERRAIN_EXPANSION_SCRIPT = preload("res://scripts/world/terrain_expansion_
 const PLAYER_NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
 const CONSUMABLE_INVENTORY_SCRIPT = preload("res://scripts/systems/consumable_inventory.gd")
 const PLAYER_WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
+const PLAYER_HEALTH_SCRIPT = preload("res://scripts/systems/player_health.gd")
+const VIDEO_REFERENCE_TUTORIAL_SCRIPT = preload("res://scripts/missions/video_reference_tutorial.gd")
+const AMBIENT_TRAFFIC_DIRECTOR_SCRIPT = preload("res://scripts/world/ambient_traffic_director.gd")
 const WILDLIFE_DIRECTOR_SCRIPT = preload("res://scripts/world/wildlife_director.gd")
 const STORY_CHARACTER_DIRECTOR_SCRIPT = preload("res://scripts/characters/story_character_director.gd")
 const WORLD_WEATHER_SCRIPT = preload("res://scripts/world/world_weather.gd")
@@ -36,6 +39,7 @@ func _ready() -> void:
 	_create_player_needs()
 	_create_starter_car()
 	_create_starter_bicycle()
+	_create_ambient_traffic()
 	_create_mobile_controls()
 	_create_pause_settings_menu()
 	_create_mission_manager()
@@ -46,6 +50,7 @@ func _ready() -> void:
 	_create_nature_ambience()
 	_create_world_weather()
 	_create_side_activity_director()
+	_create_video_reference_tutorial()
 
 func _create_world() -> void:
 	var world_environment := WorldEnvironment.new()
@@ -122,6 +127,9 @@ func _create_player() -> void:
 	var player: CharacterBody3D = PLAYER_SCENE.instantiate() as CharacterBody3D
 	player.name = "Player"
 	player.add_to_group("player")
+	var health: Node = PLAYER_HEALTH_SCRIPT.new()
+	health.name = "PlayerHealth"
+	player.add_child(health)
 	player.position = Vector3(0.0, 0.95, -18.0)
 	player.rotation.y = PI
 	add_child(player)
@@ -143,6 +151,7 @@ func _create_mobile_controls() -> void:
 	var mobile_controls: CanvasLayer = MOBILE_CONTROLS_SCRIPT.new() as CanvasLayer
 	mobile_controls.name = "MobileControls"
 	add_child(mobile_controls)
+	mobile_controls.call_deferred("bind_player", get_node_or_null("Player") as Node3D)
 
 func _create_mission_manager() -> void:
 	var player := get_node_or_null("Player") as Node3D
@@ -259,3 +268,15 @@ func _create_pause_settings_menu() -> void:
 	var pause_menu: CanvasLayer = PAUSE_SETTINGS_MENU_SCRIPT.new() as CanvasLayer
 	pause_menu.name = "PauseSettingsMenu"
 	add_child(pause_menu)
+
+
+func _create_video_reference_tutorial() -> void:
+	var tutorial: Node = VIDEO_REFERENCE_TUTORIAL_SCRIPT.new()
+	tutorial.name = "VideoReferenceTutorial"
+	add_child(tutorial)
+
+
+func _create_ambient_traffic() -> void:
+	var traffic: Node3D = AMBIENT_TRAFFIC_DIRECTOR_SCRIPT.new()
+	traffic.name = "AmbientTrafficDirector"
+	add_child(traffic)
