@@ -45,6 +45,7 @@ func _draw() -> void:
 	draw_line(center + Vector2(-radius * 0.82, 0.0), center + Vector2(radius * 0.82, 0.0), Color(0.72, 0.78, 0.72, 0.24), 1.0)
 	draw_line(center + Vector2(0.0, -radius * 0.82), center + Vector2(0.0, radius * 0.82), Color(0.72, 0.78, 0.72, 0.24), 1.0)
 	if _player != null and is_instance_valid(_player):
+		_draw_world_roads(center, radius)
 		_draw_world_markers(center, radius)
 		if _has_target:
 			_draw_target(center, radius)
@@ -93,3 +94,57 @@ func _draw_player_arrow(center: Vector2) -> void:
 	])
 	draw_colored_polygon(arrow, Color(0.98, 0.97, 0.88, 1.0))
 	draw_polyline(PackedVector2Array([arrow[0], arrow[1], arrow[2], arrow[3], arrow[0]]), Color(0.06, 0.09, 0.08, 1.0), 1.5, true)
+
+
+
+func _draw_world_roads(center: Vector2, radius: float) -> void:
+	for candidate in get_tree().get_nodes_in_group("radar_roads"):
+		var road := candidate as MeshInstance3D
+		if road == null or not is_instance_valid(road):
+			continue
+		var box := road.mesh as BoxMesh
+		if box == null:
+			continue
+		var local_axis: Vector3
+		var road_length: float
+		var road_width: float
+		if box.size.x >= box.size.z:
+			local_axis = road.global_basis.x
+			road_length = box.size.x
+			road_width = box.size.z
+		else:
+			local_axis = road.global_basis.z
+			road_length = box.size.z
+			road_width = box.size.x
+		var half_length := local_axis.normalized() * road_length * 0.5
+		var world_start := road.global_position - half_length
+		var world_end := road.global_position + half_length
+		var point_start := _world_to_radar(world_start, center, radius)
+		var point_end := _world_to_radar(world_end, center, radius)
+		var line_width := clampf(road_width * (radius - 12.0) / maxf(world_radius, 1.0), 1.5, 4.5)
+		_draw_clipped_road(point_start, point_end, center, radius - 3.0, line_width)
+
+
+func _draw_clipped_road(start: Vector2, finish: Vector2, center: Vector2,
+		clip_radius: float, line_width: float) -> void:
+	var delta := finish - start
+	var relative_start := start - center
+	var a := delta.dot(delta)
+	if a <= 0.0001:
+		return
+	var b := 2.0 * relative_start.dot(delta)
+	var c := relative_start.dot(relative_start) - clip_radius * clip_radius
+	var discriminant := b * b - 4.0 * a * c
+	if discriminant < 0.0:
+		if relative_start.length() <= clip_radius and (finish - center).length() <= clip_radius:
+			draw_line(start, finish, Color(0.72, 0.79, 0.79, 0.58), line_width, true)
+		return
+	var root := sqrt(discriminant)
+	var entry := (-b - root) / (2.0 * a)
+	var exit := (-b + root) / (2.0 * a)
+	var from_t := maxf(0.0, entry)
+	var to_t := minf(1.0, exit)
+	if from_t > to_t:
+		return
+	draw_line(start + delta * from_t, start + delta * to_t,
+		Color(0.72, 0.79, 0.79, 0.58), line_width, true)
