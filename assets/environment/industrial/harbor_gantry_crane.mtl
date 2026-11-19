@@ -1,0 +1,54 @@
+# Original GTA GHIBLI industrial materials. UVs address matching atlas quadrants.
+newmtl steel
+Ka 0.16 0.16 0.16
+Kd 1.0 1.0 1.0
+Ks 0.34 0.34 0.34
+Ns 55
+d 1.0
+illum 2
+map_Kd harbor_industrial_atlas.svg
+
+newmtl red_paint
+Ka 0.16 0.16 0.16
+Kd 1.0 1.0 1.0
+Ks 0.34 0.34 0.34
+Ns 55
+d 1.0
+illum 2
+map_Kd harbor_industrial_atlas.svg
+
+newmtl hazard
+Ka 0.16 0.16 0.16
+Kd 1.0 1.0 1.0
+Ks 0.34 0.34 0.34
+Ns 55
+d 1.0
+illum 2
+map_Kd harbor_industrial_atlas.svg
+
+newmtl glass
+Ka 0.16 0.16 0.16
+Kd 1.0 1.0 1.0
+Ks 0.34 0.34 0.34
+Ns 120
+d 1.0
+illum 2
+map_Kd harbor_industrial_atlas.svg
+
+newmtl rubber
+Ka 0.16 0.16 0.16
+Kd 0.45 0.48 0.47
+Ks 0.34 0.34 0.34
+Ns 55
+d 1.0
+illum 2
+map_Kd harbor_industrial_atlas.svg
+
+newmtl concrete
+Ka 0.16 0.16 0.16
+Kd 1.0 1.0 1.0
+Ks 0.34 0.34 0.34
+Ns 55
+d 1.0
+illum 2
+map_Kd harbor_industrial_atlas.svg

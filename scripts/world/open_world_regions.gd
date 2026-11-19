@@ -3,6 +3,7 @@ extends Node3D
 ## Procedural blockout for four explorable districts linked to Willow Village.
 ## Geometry is original, light-weight and assembled at runtime for mobile testing.
 const CIVILIAN_NPC_SCRIPT = preload("res://scripts/characters/world_npc_actor.gd")
+const HARBOR_GANTRY_CRANE_SCENE: PackedScene = preload("res://scenes/world/harbor_gantry_crane.tscn")
 
 var _region_ids: Array[String] = []
 var _population_count := 0
@@ -139,6 +140,11 @@ func _build_district_details(district: Node3D, region_id: String, ground_color: 
 					Vector3(6.5, 2.0, 2.7), Color(0.42 + float(index % 2) * 0.12, 0.34, 0.25))
 			_add_box(district, "LoadingDock", Vector3(0.0, 0.25, 15.0),
 				Vector3(30.0, 0.5, 4.0), Color(0.34, 0.36, 0.35))
+			var gantry_crane := HARBOR_GANTRY_CRANE_SCENE.instantiate() as StaticBody3D
+			gantry_crane.name = "HarborGantryCrane"
+			gantry_crane.position = Vector3(16.0, 0.0, 15.0)
+			gantry_crane.scale = Vector3.ONE * 0.72
+			district.add_child(gantry_crane)
 		"pine_highlands":
 			for index in range(10):
 				var x := -18.0 + float(index % 5) * 9.0
