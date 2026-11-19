@@ -122,6 +122,23 @@ Repository inspection confirms:
 
 GitHub Actions run **43513899542** completed successfully: JSON validation, Godot 4.7 import, gameplay-script parsing, first-mission flow test and 180-frame main-scene smoke test all passed. This is a headless CI result, not Android/device validation.
 
+## 6A. Comprehensive repair candidate branch — 2026-11-20
+
+This section records changes on `fix/comprehensive-stability-2026-11-20`. They are **not merged into `main`**. Their new tests are pending the draft pull request's CI run until a run URL and conclusion are recorded.
+
+- The tested gameplay HUD/player/traffic/bicycle tutorial work from PR #30 was copied onto this isolated branch as a parent commit; the PR itself was not merged.
+- On-foot RUN now multiplies base movement speed by a configurable sprint multiplier (default 1.6) while the sprint action is held. A regression assertion was added.
+- The local wallet now stores one-time reward transaction IDs with its balance (schema version 2, reads old balance-only files). Mission 001–004 completion paths use unique transaction IDs to prevent duplicate reward payments.
+- STATS now reads the live wallet, health when present, player needs, world clock, district and population counts, mission completion count and saved side-activity completions.
+- BRIEF now reads mission JSON titles/descriptions, saved progress and the active mission HUD snapshot.
+- The pause menu test now checks the required seven-item order and live STATS/BRIEF data.
+- The 72 existing terrain tile paths are retained, but the candidate replaces eager preload/attachment of all meshes with 72-unit load radius, 96-unit unload radius, six active-tile limit and at most two loads per 0.35-second refresh. Each loaded visual gets a matching trimesh collision.
+- An original SVG application icon is added and configured in `project.godot`.
+- Marsa Al-Noor is recorded as a proposed Harbor City waterfront landmark at local coordinate (14, 0, 10), world coordinate (-68, 0, -44). It is explicitly a candidate placement proposal, not a confirmed story/canon fact. A scene landmark, world-map marker and matching regression test are included.
+- The candidate does not claim a complete game-wide save manager, full NavMesh NPC navigation, expressive Arabic voice recordings, production-grade vehicle physics or physical Android validation.
+
+The separate `web-preview` branch already completed the private Chromium smoke test on Ubuntu 24.04 (workflow run #14). This candidate branch does not publish Web content.
+
 ## 7. Production order and acceptance gates
 
 1. Resolve the clean-production-project versus existing-prototype boundary without losing history.
