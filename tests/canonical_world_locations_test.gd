@@ -34,10 +34,16 @@ func _run_test() -> void:
 		_fail("Marsa Al-Noor is not assigned to Harbor City.")
 		return
 
+	# Build only Harbor City here. The separate open-world regression test covers
+	# all four districts and their surface textures, avoiding duplicate heavy SVG rasterization.
 	var world := REGIONS_SCRIPT.new() as Node3D
-	root.add_child(world)
-	await process_frame
+	world.call("_build_region", "harbor_city", "مدينة الميناء",
+		Vector3(-82.0, 0.0, -54.0),
+		Color(0.48, 0.57, 0.63), Color(0.30, 0.39, 0.48), Color(0.66, 0.72, 0.73),
+		["نادر", "سلمى"])
 	var harbor := world.get_node_or_null("HarborCity") as Node3D
+	if harbor != null:
+		world.call("_build_marsa_al_noor", harbor)
 	var landmark := harbor.get_node_or_null("MarsaAlNoor") as StaticBody3D if harbor != null else null
 	if landmark == null:
 		_fail("Harbor City did not instantiate the Marsa Al-Noor landmark.")
@@ -60,7 +66,7 @@ func _run_test() -> void:
 	if not landmark.position.is_equal_approx(expected_local):
 		_fail("Marsa Al-Noor scene placement differs from its canonical local coordinates.")
 		return
-	if not landmark.global_position.is_equal_approx(expected_world):
+	if not (harbor.position + landmark.position).is_equal_approx(expected_world):
 		_fail("Marsa Al-Noor world coordinates differ from the canonical world map.")
 		return
 	if landmark.get_node_or_null("BeaconLantern") == null or landmark.get_node_or_null("LocationSign") == null:
