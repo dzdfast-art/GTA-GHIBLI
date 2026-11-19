@@ -108,8 +108,15 @@ func _run_test() -> void:
 		_fail("The MAP page does not contain the interactive world map canvas.")
 		return
 	var map_markers: Array = map_canvas.call("get_region_markers")
-	if map_markers.size() != 5:
-		_fail("The world map must include Willow Village and all four open-world districts.")
+	if map_markers.size() != 6:
+		_fail("The world map must include Willow Village, all four districts, and Marsa Al-Noor.")
+		return
+	var has_marsa := false
+	for marker in map_markers:
+		if str(marker.get("id", "")) == "marsa_al_noor":
+			has_marsa = true
+	if not has_marsa:
+		_fail("The world map does not show the Marsa Al-Noor location.")
 		return
 	menu.call("_show_main_menu")
 	if not (menu.get_node("PauseAndSettingsOverlay/PauseMenu") as Control).visible:
