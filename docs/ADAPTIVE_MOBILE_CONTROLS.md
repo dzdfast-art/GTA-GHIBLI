@@ -1,40 +1,32 @@
-# Adaptive Mobile Controls
+# Adaptive Mobile Controls and Gameplay HUD
 
 ## Design direction
 
-The mobile HUD follows a contextual, state-driven design: controls are shown only when the player can use them. The supplied reference images are visual guidance for a left analog movement stick and a compact right-side action cluster; GTA GHIBLI uses its own original visual treatment.
+GTA GHIBLI uses its own original touch interface while reproducing the useful interaction patterns shown in the supplied gameplay reference. The existing `MobileControls` CanvasLayer owns the touch controls; the gameplay status overlay is a sibling layer so control opacity/scale settings do not fade the radar or player status.
 
 ## Current implementation
 
-- The on-foot HUD now uses a draggable analog virtual joystick at the lower left.
-- The joystick drives the same `ui_left`, `ui_right`, `ui_up` and `ui_down` input actions as desktop movement.
-- A large contextual `USE` button drives the shared `interact` action.
-- Touch release and HUD teardown release held input actions to avoid a stuck movement/action state.
-- The HUD uses circular, high-contrast controls with a soft dark outline and shadow, sized for touch.
-
-## Context profiles to implement with their gameplay systems
-
-| Player state | HUD controls |
-|---|---|
-| On foot | Movement joystick, context interaction; later jump/sprint/attack when those actions are implemented |
-| Bicycle | Steering/balance, pedal or accelerate, brake, dismount |
-| Motorcycle | Steering/lean, throttle, brake, handbrake where appropriate, dismount |
-| Car | Steering, accelerator, brake/reverse, handbrake, horn, exit |
-| Truck/bus | Steering, accelerator, brake/reverse, parking brake, horn, exit |
-| Boat | Steering, throttle, reverse/decelerate, exit |
-| Aircraft/helicopter | Pitch, roll, yaw, throttle, climb/descent, landing and exit controls |
-| Armed on foot | Aim, fire, reload, weapon switch and contextual interaction, based on weapon capabilities |
+- **On foot:** lower-left analog movement stick, contextual interaction, and RUN.
+- **Bicycle:** mount/dismount, PEDAL, BRAKE / REVERSE, and selectable ANALOG, BUTTONS, or FLICK steering. The choice is saved in the existing Options settings.
+- **Car:** contextual enter/exit, steering input, and brake control are shown by the existing vehicle mode.
+- Held touch actions are released on button-up, mode transitions, and HUD teardown.
+- The player camera remains a separate touch-look input and is covered by the mobile-control regression tests.
+- The live gameplay overlay includes a mini-radar, world clock, wallet balance, health value/bar, and unarmed-fist icon. It reads the existing world clock and wallet rather than maintaining duplicate values.
+- The pause menu still owns the full-screen world map; the live mini-radar is a separate in-game display.
 
 ## State-transition contract
 
-The future HUD controller must receive explicit player-state, vehicle-category and equipped-weapon changes from gameplay systems. It must:
+The control profile is selected by gameplay systems and must:
 1. Hide controls irrelevant to the active state.
-2. Show only actions supported by the current controller and equipped item.
-3. Release all held actions before switching profiles.
-4. Preserve safe touch zones and avoid overlapping the camera-look area.
-5. Return to the on-foot profile after dismounting or exiting a vehicle.
-6. Provide accessible button sizes and configurable opacity/position.
+2. Show only actions supported by the current controller.
+3. Release held input before switching profiles.
+4. Preserve safe touch zones and avoid overlapping camera look.
+5. Return to on-foot controls after exiting a vehicle.
+6. Keep control opacity/scale preferences separate from the mini-radar/status overlay.
 
-## Honest implementation boundary
+## Remaining boundaries
 
-Only the analog on-foot movement stick and shared interaction button are implemented in this change. Vehicle driving, weapon handling, jump, sprint and their HUD profiles remain unimplemented until the corresponding gameplay systems exist. Do not display placeholder controls as if they work. The new HUD has not yet been visually or touch-tested on a physical Android device.
+- Motorcycle, truck/bus, boat, aircraft and weapon-specific profiles are not implemented.
+- The health component and display exist, but damage sources across the world still need gameplay integration.
+- The HUD has automated/headless integration coverage; it has not been visually or touch-tested on a physical Android phone.
+- The video’s complete guided route/tutorial, road traffic and final animated character model are follow-on implementation tasks, not implied by this HUD layer.
