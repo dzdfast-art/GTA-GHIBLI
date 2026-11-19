@@ -55,6 +55,8 @@ func _ready() -> void:
 
 func setup(player: CharacterBody3D) -> void:
 	_player = player
+	if _phase == Phase.COMPLETE:
+		_award_completion_reward()
 
 
 func _physics_process(delta: float) -> void:
@@ -172,11 +174,24 @@ func _complete_mission(choice: String) -> void:
 			"alarms_disabled": _alarms_disabled,
 			"reward_currency": reward
 		}, "\t"))
+	_award_completion_reward(reward)
 	_status_override = "نجحت! أنقذت ميا وأوصلت القطار عبر المسار %s. مكافأتك %d." % ["الشمالي" if choice == "north" else "الجنوبي", reward]
 	if _retry_button != null:
 		_retry_button.visible = false
 	_refresh_hud()
 
+
+
+func _award_completion_reward(amount: int = -1) -> void:
+	if _player == null:
+		return
+	var wallet := _player.get_node_or_null("PlayerWallet")
+	if wallet == null or not wallet.has_method("add_money_once"):
+		return
+	var reward_amount := amount
+	if reward_amount < 0:
+		reward_amount = 350 if _route_choice == "north" else 400
+	wallet.call("add_money_once", "mission_004_completion", reward_amount)
 
 func _fail_mission(reason: String) -> void:
 	_phase = Phase.FAILED
@@ -336,6 +351,7 @@ func _build_hud() -> void:
 	_panel.anchor_right = 0.58
 	_panel.anchor_bottom = 0.84
 	add_child(_panel)
+	add_to_group("mission_hud_sources")
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override("separation", 4)
 	_panel.add_child(content)
