@@ -12,6 +12,7 @@ var _settings_panel: PanelContainer
 var _map_panel: Control
 var _map_view: Control
 var _pause_touch_button: Button
+var _info_dialog: AcceptDialog
 var _menu_buttons: Array[Button] = []
 var _menu_cursors: Array[Label] = []
 var _selected_menu_index := 2
@@ -467,12 +468,124 @@ func _show_main_menu() -> void:
 	_main_panel.visible = true
 	_refresh_menu_selection()
 
+func _read_json_record(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path):
+		return {}
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return {}
+	var parsed = JSON.parse_string(file.get_as_text())
+	return parsed if parsed is Dictionary else {}
+
+
+func _mission_progress_snapshot() -> Dictionary:
+	var first := _read_json_record("user://gta_ghibli_save.json")
+	var second := _read_json_record("user://gta_ghibli_mission_002.json")
+	var third := _read_json_record("user://gta_ghibli_mission_003.json")
+	var fourth := _read_json_record("user://gta_ghibli_mission_004.json")
+	var first_done := bool(first.get("square_reached", false)) \
+		and bool(first.get("mira_spoken_to", false)) \
+		and bool(first.get("garden_visited", false))
+	var second_done := str(second.get("mission_id", "")) == "the_old_road_rescue" and bool(second.get("completed", false))
+	var third_done := str(third.get("mission_id", "")) == "shadows_over_the_harbor" and bool(third.get("completed", false))
+	var fourth_done := str(fourth.get("mission_id", "")) == "the_last_train" and bool(fourth.get("completed", false))
+	var first_started := bool(first.get("square_reached", false)) or bool(first.get("mira_spoken_to", false)) or bool(first.get("garden_visited", false))
+	return {
+		"completed": [first_done, second_done, third_done, fourth_done],
+		"unlocked": [true, first_done, second_done, third_done],
+		"started": [first_started, second_done, third_done, fourth_done],
+		"count": int(first_done) + int(second_done) + int(third_done) + int(fourth_done)
+	}
+
+
+func _build_stats_report() -> String:
+	var lines := PackedStringArray()
+	lines.append("إحصائيات اللاعب")
+	lines.append("------------------------------")
+	var player := get_tree().get_first_node_in_group("player") as Node3D
+	if player != null:
+		var wallet := player.get_node_or_null("PlayerWallet")
+		var health := player.get_node_or_null("PlayerHealth")
+		var needs := player.get_node_or_null("PlayerNeeds")
+		lines.append("المال: %d" % int(wallet.call("get_balance")) if wallet != null and wallet.has_method("get_balance") else "المال: غير متاح")
+		if health != null:
+			lines.append("الصحة: %.0f / %.0f" % [float(health.get("current_health")), float(health.get("maximum_health"))])
+		else:
+			lines.append("الصحة: غير متاحة في هذا الإصدار")
+		if needs != null:
+			lines.append("الجوع: %.0f%% | العطش: %.0f%% | الطاقة: %.0f%%" % [
+				float(needs.get("hunger")), float(needs.get("thirst")), float(needs.get("energy"))])
+		lines.append("الحالة: %s" % ("داخل مركبة" if bool(player.get("is_driving")) else "على القدمين"))
+		lines.append("الموقع: X %.1f | Z %.1f" % [player.global_position.x, player.global_position.z])
+	else:
+		lines.append("اللاعب لم يتم تحميله بعد.")
+	var clock := get_tree().get_first_node_in_group("world_clock")
+	if clock != null and clock.has_method("get_clock_text"):
+		lines.append("اليوم %d | الوقت %s" % [int(clock.call("get_day_number")), str(clock.call("get_clock_text"))])
+	var scene := get_tree().current_scene
+	if scene != null:
+		var regions := scene.get_node_or_null("OpenWorldRegions")
+		if regions != null:
+			var region_count := (regions.call("get_region_ids") as Array).size() if regions.has_method("get_region_ids") else 0
+			var buildings := int(regions.call("get_building_count")) if regions.has_method("get_building_count") else 0
+			var population := int(regions.call("get_population_count")) if regions.has_method("get_population_count") else 0
+			lines.append("المناطق: %d | المباني: %d | السكان: %d" % [region_count, buildings, population])
+	var progress := _mission_progress_snapshot()
+	lines.append("المهمات الرئيسية المكتملة: %d / 4" % int(progress.get("count", 0)))
+	var activities := _read_json_record("user://gta_ghibli_side_activities.json")
+	var completed_activities: Array = activities.get("completed_ids", []) if activities.get("completed_ids", []) is Array else []
+	lines.append("الأنشطة الجانبية المكتملة: %d" % completed_activities.size())
+	return "\n".join(lines)
+
+
+func _build_brief_report() -> String:
+	var lines := PackedStringArray()
+	lines.append("الفصل الأول | سجل المهمات")
+	lines.append("------------------------------")
+	var progress := _mission_progress_snapshot()
+	var completed: Array = progress.get("completed", [])
+	var unlocked: Array = progress.get("unlocked", [])
+	var started: Array = progress.get("started", [])
+	var specs := [
+		{"path": "res://data/missions/mission_001.json", "fallback": "صباح جديد في قرية الصفصاف"},
+		{"path": "res://data/missions/mission_002.json", "fallback": "الطريق القديم: عملية الإنقاذ"},
+		{"path": "res://data/missions/mission_003.json", "fallback": "ظلال فوق الميناء"},
+		{"path": "res://data/missions/mission_004.json", "fallback": "القطار الأخير"}
+	]
+	for index in range(specs.size()):
+		var spec: Dictionary = specs[index]
+		var data := _read_json_record(str(spec.get("path", "")))
+		var title := str(data.get("title", spec.get("fallback", "مهمة")))
+		var description := str(data.get("description", ""))
+		var status := "مكتملة" if bool(completed[index]) else ("مقفلة" if not bool(unlocked[index]) else ("قيد التنفيذ" if bool(started[index]) else "متاحة"))
+		lines.append("%d. %s — %s" % [index + 1, title, status])
+		if not description.is_empty():
+			lines.append(description)
+	var active_snapshot: Dictionary = {}
+	for source in get_tree().get_nodes_in_group("mission_hud_sources"):
+		if not is_instance_valid(source) or not source.has_method("get_hud_snapshot"):
+			continue
+		var snapshot = source.call("get_hud_snapshot")
+		if snapshot is Dictionary and bool(snapshot.get("active", false)):
+			if active_snapshot.is_empty() or int(snapshot.get("priority", 99)) < int(active_snapshot.get("priority", 99)):
+				active_snapshot = snapshot
+	if not active_snapshot.is_empty():
+		lines.append("")
+		lines.append("الهدف الحالي:")
+		lines.append(str(active_snapshot.get("objective", "")))
+		lines.append(str(active_snapshot.get("status", "")))
+	return "\n".join(lines)
+
+
 func _show_info(section: String) -> void:
-	var dialog := AcceptDialog.new()
-	dialog.dialog_text = section + "\nسيتم ربط هذه الصفحة ببيانات اللعب لاحقاً."
-	dialog.title = "GTA GHIBLI"
-	_overlay.add_child(dialog)
-	dialog.popup_centered()
+	if _info_dialog != null and is_instance_valid(_info_dialog):
+		_info_dialog.queue_free()
+	_info_dialog = AcceptDialog.new()
+	_info_dialog.title = "GTA GHIBLI | " + section
+	_info_dialog.dialog_text = _build_stats_report() if section == "الإحصائيات" else _build_brief_report()
+	_info_dialog.min_size = Vector2i(620, 440)
+	_overlay.add_child(_info_dialog)
+	_info_dialog.popup_centered(Vector2i(760, 560))
 
 func _on_slider_changed(value: float, key: String, label: Label, caption: String, step: float) -> void:
 	_settings[key] = value
