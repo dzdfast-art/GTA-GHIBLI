@@ -19,8 +19,17 @@ func _run_test() -> void:
 		_fail("The four districts did not create their civilian population.")
 		return
 	for region_id in ["harbor_city", "pine_highlands", "amber_valley", "sapphire_coast"]:
-		if regions.get_node_or_null(str(region_id).to_pascal_case()) == null:
+		var district := regions.get_node_or_null(str(region_id).to_pascal_case()) as Node3D
+		if district == null:
 			_fail("A named district node is missing: " + str(region_id))
+			return
+		var ground := district.get_node_or_null("DistrictGround") as MeshInstance3D
+		if ground == null:
+			_fail("A district is missing its ground mesh: " + str(region_id))
+			return
+		var surface_material := ground.material_override as StandardMaterial3D
+		if surface_material == null or surface_material.albedo_texture == null:
+			_fail("The SVG ground surface texture did not load for district: " + str(region_id))
 			return
 	print("PASS: Four world districts, 24 building shells and eight scheduled civilians.")
 	quit(0)
