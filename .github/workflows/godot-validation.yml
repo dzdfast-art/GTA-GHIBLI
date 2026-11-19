@@ -173,5 +173,8 @@ jobs:
       - name: Test optional world side activities and wallet rewards
         run: godot --headless --path . --script res://tests/side_activity_director_test.gd
 
+      - name: Test video-reference gameplay HUD overlay
+        run: godot --headless --path . --script res://tests/gameplay_hud_overlay_test.gd
+
       - name: Run main scene smoke test
         run: godot --headless --path . --quit-after 180
