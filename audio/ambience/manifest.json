@@ -1,17 +1,25 @@
 {
   "schema_version": 2,
   "asset_pack": "gta_ghibli_original_world_ambience",
-  "status": "original_synthesized_ambience_with_three_variations_and_dynamic_weather_events",
+  "status": "original_synthesized_ambience_with_six_variations_and_dynamic_weather_events",
   "format": {
     "container": "WAV PCM",
     "sample_rate_hz": 22050,
     "channels": 2,
     "bit_depth": 16,
     "segment_duration_seconds": 22.5,
-    "segments_per_theme": 3,
+    "segments_per_theme": 6,
     "pair_duration_seconds": 45,
     "third_segment_duration_seconds": 20,
-    "cycle_duration_seconds": 65
+    "cycle_duration_seconds": 132.5,
+    "variation_durations_seconds": [
+      22.5,
+      22.5,
+      20,
+      22.5,
+      22.5,
+      22.5
+    ]
   },
   "themes": [
     {
@@ -19,60 +27,78 @@
       "files": [
         "dawn_01.wav",
         "dawn_02.wav",
-        "dawn_03.wav"
+        "dawn_03.wav",
+        "dawn_04.wav",
+        "dawn_05.wav",
+        "dawn_06.wav"
       ],
       "use_when": "game time from 04:30 to 08:30",
-      "sound_design": "soft breeze, layered original bird-like calls and light leaf rustle; third original 20-second variation"
+      "sound_design": "soft breeze, layered original bird-like calls and light leaf rustle; third original 20-second variation; three additional original 22.5-second variations (04-06) add spatial movement and non-identical event timing"
     },
     {
       "id": "forest_day",
       "files": [
         "forest_day_01.wav",
         "forest_day_02.wav",
-        "forest_day_03.wav"
+        "forest_day_03.wav",
+        "forest_day_04.wav",
+        "forest_day_05.wav",
+        "forest_day_06.wav"
       ],
       "use_when": "clear daytime in inland biomes",
-      "sound_design": "wind through foliage, subtle rustling and scattered bird calls; third original 20-second variation"
+      "sound_design": "wind through foliage, subtle rustling and scattered bird calls; third original 20-second variation; three additional original 22.5-second variations (04-06) add spatial movement and non-identical event timing"
     },
     {
       "id": "night",
       "files": [
         "night_01.wav",
         "night_02.wav",
-        "night_03.wav"
+        "night_03.wav",
+        "night_04.wav",
+        "night_05.wav",
+        "night_06.wav"
       ],
       "use_when": "game time from 20:00 to 05:00",
-      "sound_design": "pulsing night insects, distant owl-like calls and low air movement; third original 20-second variation"
+      "sound_design": "pulsing night insects, distant owl-like calls and low air movement; third original 20-second variation; three additional original 22.5-second variations (04-06) add spatial movement and non-identical event timing"
     },
     {
       "id": "coast",
       "files": [
         "coast_01.wav",
         "coast_02.wav",
-        "coast_03.wav"
+        "coast_03.wav",
+        "coast_04.wav",
+        "coast_05.wav",
+        "coast_06.wav"
       ],
       "use_when": "coast or river biome",
-      "sound_design": "rolling surf, foam-like noise and distant gull-like calls; third original 20-second variation"
+      "sound_design": "rolling surf, foam-like noise and distant gull-like calls; third original 20-second variation; three additional original 22.5-second variations (04-06) add spatial movement and non-identical event timing"
     },
     {
       "id": "rain",
       "files": [
         "rain_01.wav",
         "rain_02.wav",
-        "rain_03.wav"
+        "rain_03.wav",
+        "rain_04.wav",
+        "rain_05.wav",
+        "rain_06.wav"
       ],
       "use_when": "rain weather state",
-      "sound_design": "continuous rainfall texture, droplets and subdued breeze; third original 20-second variation"
+      "sound_design": "continuous rainfall texture, droplets and subdued breeze; third original 20-second variation; three additional original 22.5-second variations (04-06) add spatial movement and non-identical event timing"
     },
     {
       "id": "storm",
       "files": [
         "storm_01.wav",
         "storm_02.wav",
-        "storm_03.wav"
+        "storm_03.wav",
+        "storm_04.wav",
+        "storm_05.wav",
+        "storm_06.wav"
       ],
       "use_when": "storm weather state",
-      "sound_design": "stronger gusts, dense rainfall and low rolling thunder-like rumbles; third original 20-second variation"
+      "sound_design": "stronger gusts, dense rainfall and low rolling thunder-like rumbles; third original 20-second variation; three additional original 22.5-second variations (04-06) add spatial movement and non-identical event timing"
     }
   ],
   "technical_notes_ar": [
@@ -80,7 +106,10 @@
     "كل مقطع مدته 22.5 ثانية ويُشغّل المقطعان بالتتابع لتكوين دورة 45 ثانية لكل بيئة.",
     "تم خفض مستوى المقاطع داخل اللعبة حتى تبقى طبقات الصوت الإجرائية واضحة.",
     "هذه النسخة أساس صوتي أولي؛ الحوار العربي المسجل بأداء تمثيلي يظل مرحلة مستقلة.",
-    "أضيف مقطع ثالث مستقل مدته 20 ثانية لكل بيئة؛ أول مقطعين مدتهما 22.5 ثانية، لتصبح الدورة الكاملة 65 ثانية."
+    "أضيف مقطع ثالث مستقل مدته 20 ثانية لكل بيئة؛ أول مقطعين مدتهما 22.5 ثانية، لتصبح الدورة الكاملة 65 ثانية.",
+    "أضيفت ثلاثة مقاطع أصلية جديدة لكل بيئة (04 و05 و06)، مدة كل منها 22.5 ثانية، بصيغة WAV PCM ستيريو 16-bit وبتردد 22050 Hz.",
+    "أصبحت لكل بيئة ستة مقاطع متتابعة: خمسة مقاطع مدتها 22.5 ثانية ومقطع قديم مدته 20 ثانية، بإجمالي 132.5 ثانية قبل إعادة الدورة.",
+    "المقاطع الجديدة مؤثرات بيئية تركيبية أصلية وليست تسجيلات ميدانية أو أصوات أشخاص."
   ],
   "additional_layers": [
     {

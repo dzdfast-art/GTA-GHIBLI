@@ -16,12 +16,12 @@ var _field_recording_player: AudioStreamPlayer
 var _field_recording_theme := ""
 var _field_recording_segment := 0
 const FIELD_RECORDING_PATHS := {
-	"dawn": ["res://audio/ambience/dawn_01.wav", "res://audio/ambience/dawn_02.wav", "res://audio/ambience/dawn_03.wav"],
-	"forest_day": ["res://audio/ambience/forest_day_01.wav", "res://audio/ambience/forest_day_02.wav", "res://audio/ambience/forest_day_03.wav"],
-	"night": ["res://audio/ambience/night_01.wav", "res://audio/ambience/night_02.wav", "res://audio/ambience/night_03.wav"],
-	"coast": ["res://audio/ambience/coast_01.wav", "res://audio/ambience/coast_02.wav", "res://audio/ambience/coast_03.wav"],
-	"rain": ["res://audio/ambience/rain_01.wav", "res://audio/ambience/rain_02.wav", "res://audio/ambience/rain_03.wav"],
-	"storm": ["res://audio/ambience/storm_01.wav", "res://audio/ambience/storm_02.wav", "res://audio/ambience/storm_03.wav"]
+	"dawn": ["res://audio/ambience/dawn_01.wav", "res://audio/ambience/dawn_02.wav", "res://audio/ambience/dawn_03.wav", "res://audio/ambience/dawn_04.wav", "res://audio/ambience/dawn_05.wav", "res://audio/ambience/dawn_06.wav"],
+	"forest_day": ["res://audio/ambience/forest_day_01.wav", "res://audio/ambience/forest_day_02.wav", "res://audio/ambience/forest_day_03.wav", "res://audio/ambience/forest_day_04.wav", "res://audio/ambience/forest_day_05.wav", "res://audio/ambience/forest_day_06.wav"],
+	"night": ["res://audio/ambience/night_01.wav", "res://audio/ambience/night_02.wav", "res://audio/ambience/night_03.wav", "res://audio/ambience/night_04.wav", "res://audio/ambience/night_05.wav", "res://audio/ambience/night_06.wav"],
+	"coast": ["res://audio/ambience/coast_01.wav", "res://audio/ambience/coast_02.wav", "res://audio/ambience/coast_03.wav", "res://audio/ambience/coast_04.wav", "res://audio/ambience/coast_05.wav", "res://audio/ambience/coast_06.wav"],
+	"rain": ["res://audio/ambience/rain_01.wav", "res://audio/ambience/rain_02.wav", "res://audio/ambience/rain_03.wav", "res://audio/ambience/rain_04.wav", "res://audio/ambience/rain_05.wav", "res://audio/ambience/rain_06.wav"],
+	"storm": ["res://audio/ambience/storm_01.wav", "res://audio/ambience/storm_02.wav", "res://audio/ambience/storm_03.wav", "res://audio/ambience/storm_04.wav", "res://audio/ambience/storm_05.wav", "res://audio/ambience/storm_06.wav"]
 }
 var _sample_clock := 0.0
 var _wind_state := 0.0
@@ -98,6 +98,10 @@ func _update_targets() -> void:
 		_target_wind = minf(1.0, _target_wind + 0.5)
 		_target_birds *= 0.18
 		_target_insects *= 0.35
+
+
+func get_field_recording_paths(theme: String) -> PackedStringArray:
+	return PackedStringArray(FIELD_RECORDING_PATHS.get(theme, []))
 
 func _fill_audio_buffer() -> void:
 	if _playback == null:
@@ -260,7 +264,7 @@ func _sync_field_recording(force: bool = false) -> void:
 	_play_field_recording_segment()
 
 func _play_field_recording_segment() -> void:
-	var tracks: Array = FIELD_RECORDING_PATHS.get(_field_recording_theme, [])
+	var tracks: PackedStringArray = get_field_recording_paths(_field_recording_theme)
 	if tracks.is_empty():
 		return
 	var path := str(tracks[_field_recording_segment % tracks.size()])
@@ -283,7 +287,7 @@ func _play_field_recording_segment() -> void:
 func _on_field_recording_finished() -> void:
 	if _field_recording_player == null:
 		return
-	var tracks: Array = FIELD_RECORDING_PATHS.get(_field_recording_theme, [])
+	var tracks: PackedStringArray = get_field_recording_paths(_field_recording_theme)
 	if tracks.is_empty():
 		return
 	_field_recording_segment = (_field_recording_segment + 1) % tracks.size()
