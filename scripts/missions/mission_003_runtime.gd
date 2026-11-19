@@ -218,6 +218,21 @@ func _get_mission_reward_currency() -> int:
 	return maxi(0, int(rewards.get("currency", 220)))
 
 
+func get_hud_snapshot() -> Dictionary:
+	var is_complete := _phase == Phase.COMPLETE
+	var is_active := _phase != Phase.LOCKED and not is_complete
+	var status_text := _status_label.text if _status_label != null else _status_override
+	var objective_text := _objective_label.text if _objective_label != null else status_text
+	return {
+		"active": is_active,
+		"priority": 2,
+		"title": str(_mission_data.get("title", "المهمة")),
+		"objective": objective_text,
+		"status": status_text,
+		"completed": is_complete
+}
+
+
 func _award_completion_reward() -> void:
 	if _player == null:
 		return
