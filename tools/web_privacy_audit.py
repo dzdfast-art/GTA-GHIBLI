@@ -33,6 +33,17 @@ for path in ROOT.rglob("*"):
         line = source.count("\n", 0, match.start()) + 1
         errors.append(f"{rel}:{line}: unapproved browser/device API: {match.group(0)}")
 
+    if "AudioStreamGenerator.new()" in source:
+        if rel != "scripts/audio/nature_ambience.gd":
+            errors.append(f"{rel}: procedural audio generator needs a platform-specific review")
+        elif (
+            'if not OS.has_feature("web"):' not in source
+            or source.find('if not OS.has_feature("web"):') > source.find("AudioStreamGenerator.new()")
+        ):
+            errors.append(
+                "scripts/audio/nature_ambience.gd: AudioStreamGenerator must remain outside the Web code path"
+            )
+
     if "HTTPRequest.new()" in source or re.search(r"\.request\s*\(", source):
         request_files.add(rel)
         if rel not in ALLOWED_VOICE_REQUEST_FILES:
