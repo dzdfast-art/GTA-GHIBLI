@@ -1,0 +1,114 @@
+name: GTA GHIBLI Web Preview
+
+on:
+  push:
+    branches:
+      - web-preview
+  workflow_dispatch:
+    inputs:
+      deploy_pages:
+        description: "Publish the built Web preview publicly on GitHub Pages"
+        required: true
+        type: boolean
+        default: false
+
+permissions: {}
+
+concurrency:
+  group: gta-ghibli-web-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/web-preview'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the isolated preview branch
+        uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # immutable checkout action commit
+        with:
+          persist-credentials: false
+          lfs: false
+
+      - name: Install Godot 4.7 and Web export templates
+        uses: SolarLabyrinth/Action-Setup-Godot@6ca948845e6489770ebb3be5fd1cc4589c65b8ad # immutable action commit
+        with:
+          version: 4.7-stable
+          export-templates: true
+
+      - name: Run privacy audits
+        run: |
+          python tools/privacy_audit.py
+          python tools/web_privacy_audit.py
+
+      - name: Import project resources
+        run: godot --headless --editor --path . --quit
+
+      - name: Test mobile controls and camera isolation
+        run: godot --headless --path . --script res://tests/mobile_controls_regression_test.gd
+
+      - name: Test ambience asset loading and transitions
+        run: godot --headless --path . --script res://tests/nature_ambience_assets_test.gd
+
+      - name: Export browser build
+        run: |
+          mkdir -p build/web
+          godot --headless --path . --export-release "Web Preview" build/web/index.html
+
+      - name: Verify Web export and exclude sensitive build files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s build/web/index.html
+          wasm_file="$(find build/web -type f -name '*.wasm' -print -quit)"
+          pck_file="$(find build/web -type f -name '*.pck' -print -quit)"
+          test -n "$wasm_file"
+          test -n "$pck_file"
+
+          forbidden_file="$(find build/web -type f \( -name '.env' -o -name '.env.*' -o -name '*.keystore' -o -name '*.jks' -o -name '*.p12' \) -print -quit)"
+          if [ -n "$forbidden_file" ]; then
+            echo "A secret or signing-key file was found in the Web export: $forbidden_file"
+            exit 1
+          fi
+
+          large_source="$(find build/web -type f -iname '*.wav' -size +50M -print -quit)"
+          if [ -n "$large_source" ]; then
+            echo "An uncompressed source master was included in the Web export: $large_source"
+            exit 1
+          fi
+
+          echo "Web export files:"
+          find build/web -maxdepth 1 -type f -printf '%f %s bytes\n' | sort
+          du -sh build/web
+
+      - name: Upload downloadable browser-preview artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # immutable artifact action commit
+        with:
+          name: GTA-GHIBLI-Web-Preview
+          path: build/web/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Prepare GitHub Pages deployment artifact (manual dispatch only)
+        if: github.event_name == 'workflow_dispatch' && inputs.deploy_pages == true
+        uses: actions/upload-pages-artifact@5f327015a708106f6f1b7c9a633901af30fe80cb # immutable Pages artifact action commit
+        with:
+          path: build/web/
+
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy_pages == true && github.ref == 'refs/heads/web-preview'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish browser preview
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # immutable Pages deploy action commit
