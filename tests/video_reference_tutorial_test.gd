@@ -31,6 +31,13 @@ func _run() -> void:
 	if str(tutorial.call("get_objective_text")).is_empty():
 		_fail("The tutorial objective text must be visible.")
 		return
+	var hud := game.get_node_or_null("MobileControls/GameplayHUD") as Control
+	if hud == null or hud.get_node_or_null("TutorialObjective") == null:
+		_fail("The route objective must be displayed by the gameplay HUD.")
+		return
+	if not (hud.get_node("TutorialObjective") as Label).visible:
+		_fail("The first route objective should be visible at game start.")
+		return
 
 	bicycle.call("interact")
 	for _frame in range(3):
