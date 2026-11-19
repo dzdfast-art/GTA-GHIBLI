@@ -140,6 +140,7 @@ func _build_district_details(district: Node3D, region_id: String, ground_color: 
 					Vector3(6.5, 2.0, 2.7), Color(0.42 + float(index % 2) * 0.12, 0.34, 0.25))
 			_add_box(district, "LoadingDock", Vector3(0.0, 0.25, 15.0),
 				Vector3(30.0, 0.5, 4.0), Color(0.34, 0.36, 0.35))
+			_build_marsa_al_noor(district)
 		"pine_highlands":
 			for index in range(10):
 				var x := -18.0 + float(index % 5) * 9.0
@@ -169,6 +170,68 @@ func _build_district_details(district: Node3D, region_id: String, ground_color: 
 					Vector3(1.4, 1.0, 1.2), Color(0.58, 0.43, 0.28))
 		_:
 			pass
+
+
+func _build_marsa_al_noor(district: Node3D) -> void:
+	# Initial canonical landmark placement: Harbor City local (14, 0, 10).
+	var landmark := StaticBody3D.new()
+	landmark.name = "MarsaAlNoor"
+	landmark.position = Vector3(14.0, 0.0, 10.0)
+	landmark.add_to_group("world_landmarks")
+	landmark.add_to_group("marsa_al_noor")
+	landmark.set_meta("location_id", "marsa_al_noor")
+	landmark.collision_layer = 1
+	landmark.collision_mask = 1
+
+	var base := MeshInstance3D.new()
+	base.name = "BeaconBase"
+	var base_mesh := CylinderMesh.new()
+	base_mesh.top_radius = 1.05
+	base_mesh.bottom_radius = 1.25
+	base_mesh.height = 0.36
+	base.mesh = base_mesh
+	base.position.y = 0.18
+	base.material_override = _material(Color(0.34, 0.37, 0.35))
+	landmark.add_child(base)
+
+	var beacon := MeshInstance3D.new()
+	beacon.name = "HarborBeacon"
+	var beacon_mesh := CylinderMesh.new()
+	beacon_mesh.top_radius = 0.34
+	beacon_mesh.bottom_radius = 0.48
+	beacon_mesh.height = 2.8
+	beacon.mesh = beacon_mesh
+	beacon.position.y = 1.76
+	beacon.material_override = _material(Color(0.78, 0.60, 0.27))
+	landmark.add_child(beacon)
+
+	var lantern := OmniLight3D.new()
+	lantern.name = "BeaconLantern"
+	lantern.position.y = 3.35
+	lantern.light_color = Color(1.0, 0.78, 0.39)
+	lantern.light_energy = 0.7
+	lantern.omni_range = 8.0
+	landmark.add_child(lantern)
+
+	var sign := Label3D.new()
+	sign.name = "LocationSign"
+	sign.text = "مرسى النور\nMARSA AL-NOOR"
+	sign.position = Vector3(0.0, 4.25, 0.0)
+	sign.font_size = 30
+	sign.outline_size = 7
+	sign.modulate = Color(1.0, 0.90, 0.67)
+	landmark.add_child(sign)
+
+	var collision := CollisionShape3D.new()
+	collision.name = "BeaconCollision"
+	var shape := CylinderShape3D.new()
+	shape.radius = 1.25
+	shape.height = 3.2
+	collision.shape = shape
+	collision.position.y = 1.6
+	landmark.add_child(collision)
+
+	district.add_child(landmark)
 
 func _build_civilians(district: Node3D, region_id: String, npc_names: Array) -> void:
 	var positions := [Vector3(-5.0,0.0,2.0),Vector3(7.0,0.0,1.0)]
