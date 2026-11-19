@@ -31,7 +31,7 @@ func _run() -> void:
 		_fail("Expected exactly one gameplay HUD in the live scene.")
 		return
 
-	for node_path in ["LiveRadar", "PlayerStatus/WorldClock",
+	for node_path in ["LiveRadar", "PlayerStatus/ClockRow/WorldClock",
 			"PlayerStatus/CashBalance", "PlayerStatus/HealthRow/PlayerHealthBar",
 			"PlayerStatus/HealthRow/HealthValue", "PlayerStatus/UnarmedFistIcon"]:
 		if hud.get_node_or_null(node_path) == null:
