@@ -6,7 +6,7 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-SCAN_SUFFIXES = {".gd", ".tscn", ".tres", ".godot", ".cfg", ".json"}
+SCAN_SUFFIXES = {".gd", ".tscn", ".tres", ".godot", ".cfg", ".json", ".yml", ".yaml"}
 ALLOWED_VOICE_REQUEST_FILES = {
     "scripts/characters/mira_npc.gd",
     "scripts/characters/world_npc_actor.gd",
@@ -58,6 +58,25 @@ for path in ROOT.rglob("*"):
         if guard is None or request_call < 0 or guard.start() > request_call:
             errors.append(
                 f"{rel}: external voice request is not blocked before request(url) on Web"
+            )
+
+web_workflow = ROOT / ".github" / "workflows" / "web-preview.yml"
+if not web_workflow.is_file():
+    errors.append(".github/workflows/web-preview.yml is missing")
+else:
+    workflow_text = web_workflow.read_text(encoding="utf-8", errors="replace")
+    forbidden_publish_features = (
+        "actions/upload-artifact",
+        "actions/upload-pages-artifact",
+        "actions/deploy-pages",
+        "pages: write",
+        "id-token: write",
+        "deploy_pages",
+    )
+    for feature in forbidden_publish_features:
+        if feature in workflow_text:
+            errors.append(
+                f".github/workflows/web-preview.yml: public artifact/deployment capability is enabled ({feature})"
             )
 
 expected_master_guard = ROOT / "audio" / "ambience" / "source_master" / ".gdignore"
