@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "world_id": "gta_ghibli_canonical_world",
+  "note": "Canonical project locations remain distinct from the Green Valley / Willow Village prototype slice.",
+  "regions": [
+    {"id": "harbor_city", "name": "Harbor City", "name_ar": "مدينة الميناء", "status": "prototype_district"},
+    {"id": "sapphire_coast", "name": "Sapphire Coast", "name_ar": "ساحل الياقوت", "status": "prototype_district"},
+    {"id": "pine_highlands", "name": "Pine Highlands", "name_ar": "مرتفعات الصنوبر", "status": "prototype_district"},
+    {"id": "amber_valley", "name": "Amber Valley", "name_ar": "وادي الكهرمان", "status": "prototype_district"}
+  ],
+  "locations": [
+    {
+      "id": "marsa_al_noor",
+      "name": "Marsa Al-Noor",
+      "name_ar": "مرسى النور",
+      "region_id": "harbor_city",
+      "type": "coastal_harbor_landmark",
+      "world_position": {"x": -68.0, "y": 0.0, "z": -44.0},
+      "district_local_position": {"x": 14.0, "y": 0.0, "z": 10.0},
+      "status": "prototype_landmark",
+      "placement_note": "Initial design placement on the waterfront edge of Harbor City, beside the loading dock. This is a project proposal, not a previously approved story fact."
+    }
+  ]
+}
