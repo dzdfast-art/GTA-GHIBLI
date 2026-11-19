@@ -34,10 +34,14 @@ jobs:
           python -m json.tool data/world/wildlife_catalog.json > /dev/null
           python -m json.tool data/characters/world_dialogue_ar.json > /dev/null
           python -m json.tool data/world/wildlife_audio_manifest.json > /dev/null
+          python -m json.tool data/world/canonical_world.json > /dev/null
           python -m json.tool audio/ambience/manifest.json > /dev/null
 
       - name: Validate OBJ mesh surface budgets
         run: python tools/validate_obj_surface_counts.py
+
+      - name: Test canonical world locations and Marsa Al-Noor
+        run: godot --headless --path . --script res://tests/canonical_world_locations_test.gd
 
       - name: Audit Android privacy permissions
         run: python tools/privacy_audit.py
