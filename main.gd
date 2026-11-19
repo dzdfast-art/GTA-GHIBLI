@@ -20,6 +20,7 @@ const TERRAIN_EXPANSION_SCRIPT = preload("res://scripts/world/terrain_expansion_
 const PLAYER_NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
 const CONSUMABLE_INVENTORY_SCRIPT = preload("res://scripts/systems/consumable_inventory.gd")
 const PLAYER_WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
+const PLAYER_HEALTH_SCRIPT = preload("res://scripts/systems/player_health.gd")
 const WILDLIFE_DIRECTOR_SCRIPT = preload("res://scripts/world/wildlife_director.gd")
 const STORY_CHARACTER_DIRECTOR_SCRIPT = preload("res://scripts/characters/story_character_director.gd")
 const WORLD_WEATHER_SCRIPT = preload("res://scripts/world/world_weather.gd")
@@ -122,6 +123,9 @@ func _create_player() -> void:
 	var player: CharacterBody3D = PLAYER_SCENE.instantiate() as CharacterBody3D
 	player.name = "Player"
 	player.add_to_group("player")
+	var health: Node = PLAYER_HEALTH_SCRIPT.new()
+	health.name = "PlayerHealth"
+	player.add_child(health)
 	player.position = Vector3(0.0, 0.95, -18.0)
 	player.rotation.y = PI
 	add_child(player)
@@ -143,6 +147,7 @@ func _create_mobile_controls() -> void:
 	var mobile_controls: CanvasLayer = MOBILE_CONTROLS_SCRIPT.new() as CanvasLayer
 	mobile_controls.name = "MobileControls"
 	add_child(mobile_controls)
+	mobile_controls.call_deferred("bind_player", get_node_or_null("Player") as Node3D)
 
 func _create_mission_manager() -> void:
 	var player := get_node_or_null("Player") as Node3D
