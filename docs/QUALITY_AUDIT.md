@@ -51,3 +51,34 @@ GitHub Actions run #9 passed with Godot 4.7. It imported the project, parsed all
 5. Test button release after lifting a finger or moving a finger away from a button.
 6. Test on the target Android device in landscape orientation.
 7. Add the first villager, interaction prompt, and mission objective tracker.
+
+## Repair candidate addendum — 2026-11-20
+
+**Audited candidate branch:** `fix/comprehensive-stability-2026-11-20`  
+**Base:** `main` at `c9fc82936a43b80af0e3c25eef41c9fee59e47b7`  
+**Merge status:** not merged; `main` remains unchanged.
+
+Candidate changes (not yet CI-verified at the time this addendum was written):
+- Added real sprint speed handling and a regression assertion for the mobile RUN action.
+- Added one-time wallet reward transactions and connected mission completion rewards for missions 001–004.
+- Replaced STATS/BRIEF placeholder copy with live wallet/player/world/mission data reads.
+- Added a pause-menu regression test for the required button order and live page content.
+- Replaced eager loading of the full 72-tile terrain set with bounded proximity streaming and a lifecycle/collision regression test.
+- Added a project application icon and configured the Godot icon property.
+- Added Marsa Al-Noor as a proposed Harbor City landmark, canonical metadata entry, world-map marker and scene/data coordinate test.
+
+Verified separately on `web-preview`, not this candidate branch:
+- Web export and private Chromium smoke test succeeded in [Web Preview run #14](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/44633964747).
+- Chromium launched under Ubuntu 24.04 with Playwright 1.55; the test observed a Godot canvas, WebGL 2, browser input delivery without runtime errors and no external network requests.
+- This is a browser startup/input smoke test, not complete visual gameplay validation.
+
+Known blockers / limits that remain:
+- All 25 dialogue lines in `data/characters/world_dialogue_ar.json` remain marked as needing expressive voice retakes; no new actual performance recordings are included by this candidate.
+- No physical Android device is connected to this testing session; touchscreen feel, sustained FPS, RAM, temperature, audio audibility and install/launch on the target phone remain NOT VERIFIED.
+- NPC movement remains simple direct movement rather than a fully obstacle-aware NavMesh system.
+- Advanced car physics, all additional vehicle classes, broad damage integration, and a centralized game-wide save/migration system remain incomplete.
+- Asset provenance register still needs per-asset evidence review before a release.
+- Android output is a debug ARM64 test build, not a signed production release.
+- `main` still contains the capsule player, old STATS/BRIEF placeholder and eager terrain loading; candidate branch changes must pass CI and owner review before any merge decision.
+
+No public Web deployment or Pages publishing was performed.
