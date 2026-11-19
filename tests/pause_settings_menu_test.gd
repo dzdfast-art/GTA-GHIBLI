@@ -51,10 +51,22 @@ func _run_test() -> void:
 	if not bool(menu.call("_can_capture_menu_navigation")):
 		_fail("Visible main pause menu does not accept navigation.")
 		return
+	if int(menu.get("_selected_menu_index")) != 0:
+		_fail("Pause menu must initially select RESUME, not another option.")
+		return
+	var menu_cursors: Array = menu.get("_menu_cursors")
+	if menu_cursors.size() != 7 or not menu_cursors[0].visible:
+		_fail("Pause menu selection cursor must be visible beside RESUME on open.")
+		return
 	var previous_selection := int(menu.get("_selected_menu_index"))
 	menu.call("_unhandled_input", movement_event)
 	if int(menu.get("_selected_menu_index")) != posmod(previous_selection - 1, 7):
 		_fail("Visible pause menu did not move its selection for ui_up.")
+		return
+	menu.call("_close_menu")
+	menu.call("_open_menu")
+	if int(menu.get("_selected_menu_index")) != 0 or not menu_cursors[0].visible:
+		_fail("Reopening pause menu must reset selection to RESUME.")
 		return
 	if not get_root().get_tree().paused:
 		_fail("Opening pause did not pause the game.")
