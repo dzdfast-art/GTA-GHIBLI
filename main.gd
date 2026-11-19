@@ -22,6 +22,7 @@ const CONSUMABLE_INVENTORY_SCRIPT = preload("res://scripts/systems/consumable_in
 const PLAYER_WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
 const PLAYER_HEALTH_SCRIPT = preload("res://scripts/systems/player_health.gd")
 const VIDEO_REFERENCE_TUTORIAL_SCRIPT = preload("res://scripts/missions/video_reference_tutorial.gd")
+const AMBIENT_TRAFFIC_DIRECTOR_SCRIPT = preload("res://scripts/world/ambient_traffic_director.gd")
 const WILDLIFE_DIRECTOR_SCRIPT = preload("res://scripts/world/wildlife_director.gd")
 const STORY_CHARACTER_DIRECTOR_SCRIPT = preload("res://scripts/characters/story_character_director.gd")
 const WORLD_WEATHER_SCRIPT = preload("res://scripts/world/world_weather.gd")
@@ -38,6 +39,7 @@ func _ready() -> void:
 	_create_player_needs()
 	_create_starter_car()
 	_create_starter_bicycle()
+	_create_ambient_traffic()
 	_create_mobile_controls()
 	_create_pause_settings_menu()
 	_create_mission_manager()
@@ -272,3 +274,9 @@ func _create_video_reference_tutorial() -> void:
 	var tutorial: Node = VIDEO_REFERENCE_TUTORIAL_SCRIPT.new()
 	tutorial.name = "VideoReferenceTutorial"
 	add_child(tutorial)
+
+
+func _create_ambient_traffic() -> void:
+	var traffic: Node3D = AMBIENT_TRAFFIC_DIRECTOR_SCRIPT.new()
+	traffic.name = "AmbientTrafficDirector"
+	add_child(traffic)
