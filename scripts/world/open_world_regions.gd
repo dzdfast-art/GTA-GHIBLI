@@ -7,6 +7,7 @@ const CIVILIAN_NPC_SCRIPT = preload("res://scripts/characters/world_npc_actor.gd
 var _region_ids: Array[String] = []
 var _population_count := 0
 var _building_count := 0
+var _surface_texture_cache: Dictionary = {}
 
 func _ready() -> void:
 	_build_region("harbor_city", "مدينة الميناء", Vector3(-82.0, 0.0, -54.0),
@@ -309,8 +310,31 @@ func _material(tint: Color, texture_path: String = "") -> StandardMaterial3D:
 	material.albedo_color = tint
 	material.roughness = 0.88
 	if not texture_path.is_empty():
-		var texture := load(texture_path) as Texture2D
+		var texture := _load_surface_texture(texture_path)
 		if texture != null:
 			material.albedo_texture = texture
 			material.uv1_scale = Vector3(3.0, 3.0, 3.0)
 	return material
+
+
+func _load_surface_texture(texture_path: String) -> Texture2D:
+	if _surface_texture_cache.has(texture_path):
+		return _surface_texture_cache[texture_path] as Texture2D
+	if not FileAccess.file_exists(texture_path):
+		push_warning("District surface texture does not exist: " + texture_path)
+		return null
+	var svg_text := FileAccess.get_file_as_string(texture_path)
+	if svg_text.is_empty():
+		push_warning("District surface SVG is empty: " + texture_path)
+		return null
+	var image := Image.new()
+	var image_error := image.load_svg_from_string(svg_text)
+	if image_error != OK or image.is_empty():
+		push_warning("Could not rasterize district surface SVG: " + texture_path)
+		return null
+	var texture := ImageTexture.create_from_image(image)
+	if texture == null:
+		push_warning("Could not create district surface texture: " + texture_path)
+		return null
+	_surface_texture_cache[texture_path] = texture
+	return texture
