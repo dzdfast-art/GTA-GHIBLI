@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Fail CI if the project declares permissions that can expose personal device data.
 
-This checks repository-side Android configuration only. The final exported APK/AAB
-must also be inspected because Godot/plugins can contribute generated manifest entries.
+This checks that the project does not declare unnecessary access to personal device data.
+It remains useful as a source privacy guard even when the current delivery target is Web.
 """
 from pathlib import Path
 import re
@@ -45,4 +45,3 @@ if found:
 
 print("PRIVACY AUDIT PASSED: no configured camera, microphone, media, storage,")
 print("contacts, location, SMS, call-log, or phone-state permissions found.")
-print("Reminder: inspect the merged manifest inside every final APK/AAB as well.")
