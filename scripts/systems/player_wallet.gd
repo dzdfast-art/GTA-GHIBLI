@@ -85,3 +85,31 @@ func _save_balance() -> void:
 		"balance": balance,
 		"reward_transactions": _reward_transactions
 	}, "\t"))
+
+func get_save_snapshot() -> Dictionary:
+	return {
+		"schema_version": 2,
+		"balance": balance,
+		"reward_transactions": _reward_transactions.duplicate()
+	}
+
+
+func apply_save_snapshot(snapshot: Dictionary) -> bool:
+	if not snapshot.has("balance"):
+		return false
+	balance = clampi(int(snapshot.get("balance", balance)), 0, 999999999)
+	_reward_transactions.clear()
+	var transactions = snapshot.get("reward_transactions", [])
+	if transactions is Array:
+		for transaction in transactions:
+			var transaction_id := str(transaction).strip_edges()
+			if not transaction_id.is_empty() and not _reward_transactions.has(transaction_id):
+				_reward_transactions.append(transaction_id)
+	_save_balance()
+	balance_changed.emit(balance)
+	return true
+
+
+func reload_saved_state() -> void:
+	_load_balance()
+	balance_changed.emit(balance)
