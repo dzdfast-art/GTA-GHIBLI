@@ -210,7 +210,7 @@ func _update_wheels(delta: float) -> void:
 	var rotation_step := -_speed * delta / 0.42
 	for wheel in _wheel_nodes:
 		if is_instance_valid(wheel):
-			wheel.rotate_object_local(Vector3.RIGHT, rotation_step)
+			wheel.rotate_object_local(Vector3.UP, rotation_step)
 
 func _apply_collision_damage(velocity_before_move: Vector3) -> void:
 	if _collision_cooldown > 0.0 or get_slide_collision_count() <= 0:
