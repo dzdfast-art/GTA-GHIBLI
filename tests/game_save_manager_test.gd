@@ -42,6 +42,9 @@ func _run() -> void:
 	if not manager.call("_is_allowed_legacy_restore_path", TEST_RELATIONSHIP_PATH):
 		_fail("A safe flat NPC relationship JSON path must remain eligible for migration.")
 		return
+	if not manager.call("_is_allowed_legacy_restore_path", "user://npc_relationships/npc_12.json"):
+		_fail("Safe NPC IDs with digits must remain eligible for migration.")
+		return
 	if manager.call("_is_allowed_legacy_restore_path", TEST_UNRELATED_PATH):
 		_fail("An unrelated user file must not be accepted as a legacy save.")
 		return

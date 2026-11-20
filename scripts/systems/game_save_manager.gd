@@ -338,10 +338,7 @@ func _is_allowed_legacy_restore_path(path: String) -> bool:
 	var stable_id := filename.get_basename()
 	if stable_id.is_empty():
 		return false
-	for character in stable_id:
-		if not character.is_valid_identifier() and character != "-":
-			return false
-	return true
+	return stable_id.replace("-", "_").is_valid_ascii_identifier()
 
 
 func _reload_legacy_components() -> void:
