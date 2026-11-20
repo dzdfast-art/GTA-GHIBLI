@@ -40,7 +40,7 @@ var _wander_timer := 0.0
 var _alarm_timer := 0.0
 var _rng := RandomNumberGenerator.new()
 var _navigation_agent: NavigationAgent3D
-var _navigation_target := Vector3.INF
+var _navigation_target := Vector3(1e20, 1e20, 1e20)
 
 
 func _ready() -> void:
@@ -201,14 +201,15 @@ func _move_toward(actor: Node3D, destination: Vector3, speed: float, delta: floa
 		if _navigation_target.distance_to(destination) > navigation_target_update_distance:
 			_navigation_target = destination
 			_navigation_agent.target_position = destination
-		if not _navigation_agent.is_navigation_finished():
-			var next_position := _navigation_agent.get_next_path_position()
-			direction = next_position - actor.global_position
-			direction.y = 0.0
-			if direction.length_squared() <= 0.0025:
-				return
-			actor.global_position += direction.normalized() * speed * delta
+		if _navigation_agent.is_navigation_finished():
 			return
+		var next_position := _navigation_agent.get_next_path_position()
+		direction = next_position - actor.global_position
+		direction.y = 0.0
+		if direction.length_squared() <= 0.0025:
+			return
+		actor.global_position += direction.normalized() * speed * delta
+		return
 	# Fallback for prototype areas that do not yet contain a NavigationRegion3D.
 	actor.global_position += direction.normalized() * speed * delta
 
