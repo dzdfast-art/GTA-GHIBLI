@@ -37,7 +37,7 @@ func _run() -> void:
 	if camera_pivot == null or spring_arm == null or camera == null:
 		_fail("The third-person camera rig is incomplete.")
 		return
-	if absf(spring_arm.spring_length - 5.8) > 0.01 or absf(camera.fov - 65.0) > 0.01:
+	if absf(spring_arm.spring_length - 3.6) > 0.01 or absf(camera.fov - 65.0) > 0.01:
 		_fail("The camera must use the reference-matched follow distance and field of view.")
 
 	var village := game.get_node_or_null("WillowVillage")
