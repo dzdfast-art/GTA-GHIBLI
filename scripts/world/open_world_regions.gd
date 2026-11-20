@@ -62,6 +62,7 @@ func _build_region(region_id: String, region_name: String, center: Vector3,
 	_build_road(center)
 	_build_district_buildings(district, wall_color, roof_color)
 	_build_district_details(district, region_id, ground_color)
+	_build_district_navigation(district)
 	_build_civilians(district, region_id, npc_names)
 
 func _build_road(center: Vector3) -> void:
@@ -338,3 +339,60 @@ func _load_surface_texture(texture_path: String) -> Texture2D:
 		return null
 	_surface_texture_cache[texture_path] = texture
 	return texture
+
+## Builds a small, authored low-poly walkable grid around the district's six
+## building footprints. This avoids expensive run-time geometry baking on mobile.
+func _build_district_navigation(district: Node3D) -> void:
+	var region := NavigationRegion3D.new()
+	region.name = "NavigationRegion3D"
+	var navigation_mesh := NavigationMesh.new()
+	navigation_mesh.agent_radius = 0.35
+	navigation_mesh.agent_height = 1.7
+	navigation_mesh.cell_size = 0.25
+	navigation_mesh.cell_height = 0.2
+
+	var vertices := PackedVector3Array()
+	var cell_size := 2.5
+	var minimum_x := -20.0
+	var minimum_z := -16.0
+	var columns := 16
+	var rows := 12
+	var polygon_count := 0
+
+	for x_index in range(columns):
+		var left := minimum_x + float(x_index) * cell_size
+		var right := left + cell_size
+		for z_index in range(rows):
+			var top := minimum_z + float(z_index) * cell_size
+			var bottom := top + cell_size
+			if _navigation_cell_overlaps_building(left, right, top, bottom):
+				continue
+			var base_index := vertices.size()
+			# Counter-clockwise when viewed from above, so each polygon faces +Y.
+			vertices.append(Vector3(left, 0.08, top))
+			vertices.append(Vector3(left, 0.08, bottom))
+			vertices.append(Vector3(right, 0.08, bottom))
+			vertices.append(Vector3(right, 0.08, top))
+			navigation_mesh.add_polygon(PackedInt32Array([
+				base_index, base_index + 1, base_index + 2, base_index + 3
+			]))
+			polygon_count += 1
+
+	navigation_mesh.set_vertices(vertices)
+	region.navigation_mesh = navigation_mesh
+	region.add_to_group("world_navigation_regions")
+	district.add_child(region)
+	if polygon_count == 0:
+		push_warning("No walkable navigation cells were created for " + district.name)
+
+
+func _navigation_cell_overlaps_building(left: float, right: float, top: float, bottom: float) -> bool:
+	const BUILDING_HALF_WIDTH := 4.25
+	const BUILDING_HALF_DEPTH := 3.85
+	for center_x in [-12.0, 0.0, 12.0]:
+		for center_z in [-7.0, 8.0]:
+			var overlaps_x := right > center_x - BUILDING_HALF_WIDTH and left < center_x + BUILDING_HALF_WIDTH
+			var overlaps_z := bottom > center_z - BUILDING_HALF_DEPTH and top < center_z + BUILDING_HALF_DEPTH
+			if overlaps_x and overlaps_z:
+				return true
+	return false
