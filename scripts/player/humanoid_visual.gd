@@ -25,17 +25,29 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	var movement := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	var target_weight := clampf(movement.length(), 0.0, 1.0)
-	_locomotion_weight = move_toward(_locomotion_weight, target_weight, delta * 6.0)
-	_animation_time += delta
-	var swing := sin(_animation_time * 8.5) * 0.48 * _locomotion_weight
-	var breathing := sin(_animation_time * 2.2) * 0.012 * (1.0 - _locomotion_weight)
+	# Animate from the character's actual world velocity, not raw keyboard input.
+	# This keeps the visual gait synchronized with touch controls, slopes and sprint.
+	var actor := get_parent() as CharacterBody3D
+	var horizontal_speed := 0.0
+	var movement := Vector2.ZERO
+	if actor != null:
+		horizontal_speed = Vector2(actor.velocity.x, actor.velocity.z).length()
+		var local_velocity := actor.global_basis.inverse() * actor.velocity
+		movement = Vector2(local_velocity.x, local_velocity.z)
+	var base_speed := float(actor.get("move_speed")) if actor != null else 5.0
+	var target_weight := clampf(horizontal_speed / maxf(base_speed, 0.1), 0.0, 1.25)
+	_locomotion_weight = move_toward(_locomotion_weight, target_weight, delta * 7.0)
+	var gait_rate := lerpf(7.5, 12.0, clampf(horizontal_speed / 8.0, 0.0, 1.0))
+	_animation_time += delta * gait_rate
+	var stride := sin(_animation_time) * lerpf(0.34, 0.52, clampf(target_weight, 0.0, 1.0))
+	var swing := stride * _locomotion_weight
+	var breathing := sin(_animation_time * 0.28) * 0.012 * (1.0 - clampf(_locomotion_weight, 0.0, 1.0))
 	_left_leg.rotation.x = swing
 	_right_leg.rotation.x = -swing
-	_left_arm.rotation.x = -swing * 0.78
-	_right_arm.rotation.x = swing * 0.78
-	rotation.z = lerpf(rotation.z, -movement.x * 0.035 * _locomotion_weight,
+	_left_arm.rotation.x = -swing * 0.82
+	_right_arm.rotation.x = swing * 0.82
+	var lean := clampf(movement.x / maxf(base_speed, 0.1), -1.0, 1.0)
+	rotation.z = lerpf(rotation.z, -lean * 0.045 * _locomotion_weight,
 		clampf(delta * 7.0, 0.0, 1.0))
 	position.y = breathing
 
