@@ -413,3 +413,67 @@ func _refresh_hud() -> void:
 			_objective_label.text = "فشلت المهمة. يمكنك إعادة المحاولة."
 	_status_label.text = _status_override
 	_progress_label.text = "الأدلة: %d/3   |   مرات الانكشاف: %d/%d" % [_evidence_found, _detections, MAX_DETECTIONS]
+
+func get_save_snapshot() -> Dictionary:
+	var guard_positions: Array = []
+	var evidence_visibility: Array = []
+	for guard in _guards:
+		guard_positions.append(_node_position_snapshot(guard))
+	for marker in _evidence_markers:
+		evidence_visibility.append(marker.visible if is_instance_valid(marker) else false)
+	return {
+		"phase": int(_phase),
+		"evidence_found": _evidence_found,
+		"detections": _detections,
+		"elapsed": _elapsed,
+		"status_override": _status_override,
+		"guard_positions": guard_positions,
+		"evidence_visibility": evidence_visibility
+	}
+
+
+func apply_save_snapshot(snapshot: Dictionary) -> bool:
+	if not snapshot.has("phase"):
+		return false
+	_phase = clampi(int(snapshot.get("phase", int(Phase.LOCKED))), int(Phase.LOCKED), int(Phase.FAILED))
+	_evidence_found = clampi(int(snapshot.get("evidence_found", 0)), 0, EVIDENCE_POSITIONS.size())
+	_detections = clampi(int(snapshot.get("detections", 0)), 0, MAX_DETECTIONS)
+	_elapsed = maxf(0.0, float(snapshot.get("elapsed", 0.0)))
+	_status_override = str(snapshot.get("status_override", ""))
+	if _phase != Phase.LOCKED and _phase != Phase.COMPLETE and _phase != Phase.FAILED and not _visuals_created:
+		_create_harbor_blockout()
+	var positions = snapshot.get("guard_positions", [])
+	if positions is Array:
+		for index in range(mini(positions.size(), _guards.size())):
+			_restore_node_position(_guards[index], positions[index])
+	var visibility = snapshot.get("evidence_visibility", [])
+	if visibility is Array:
+		for index in range(mini(visibility.size(), _evidence_markers.size())):
+			if is_instance_valid(_evidence_markers[index]):
+				_evidence_markers[index].visible = bool(visibility[index])
+	_refresh_hud()
+	return true
+
+
+func reload_saved_state() -> void:
+	if _is_completed():
+		_phase = Phase.COMPLETE
+		_award_completion_reward()
+	elif _mission_002_completed():
+		if not _visuals_created:
+			_start_mission()
+	else:
+		_phase = Phase.LOCKED
+	_refresh_hud()
+
+
+func _node_position_snapshot(node: Node3D) -> Array:
+	if not is_instance_valid(node):
+		return []
+	return [node.global_position.x, node.global_position.y, node.global_position.z]
+
+
+func _restore_node_position(node: Node3D, value: Variant) -> void:
+	if not is_instance_valid(node) or not value is Array or value.size() < 3:
+		return
+	node.global_position = Vector3(float(value[0]), float(value[1]), float(value[2]))
