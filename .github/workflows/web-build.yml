@@ -1,0 +1,140 @@
+name: GTA GHIBLI Web Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/comprehensive-stability-2026-11-20
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gta-ghibli-web-build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-web:
+    name: Export and verify browser game
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - name: Check out Web-first repair candidate
+        uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
+        with:
+          persist-credentials: false
+          lfs: false
+
+      - name: Install Godot 4.7 with Web export templates
+        uses: SolarLabyrinth/Action-Setup-Godot@6ca948845e6489770ebb3be5fd1cc4589c65b8ad
+        with:
+          version: 4.7-stable
+          export-templates: true
+
+      - name: Run privacy audits
+        run: |
+          python tools/privacy_audit.py
+          python tools/web_privacy_audit.py
+          python tools/web_dialogue_privacy_audit.py
+
+      - name: Validate original OBJ assets
+        run: |
+          python tools/validate_obj_surface_counts.py
+          python tools/validate_obj_material_references.py
+
+      - name: Import project resources
+        run: godot --headless --editor --path . --quit
+
+      - name: Test graphics reference profile
+        run: godot --headless --path . --script res://tests/graphics_reference_profile_test.gd
+
+      - name: Test video-reference HUD and controls
+        run: godot --headless --path . --script res://tests/gameplay_hud_overlay_test.gd
+
+      - name: Test bicycle, house and world tutorial
+        run: godot --headless --path . --script res://tests/video_reference_tutorial_test.gd
+
+      - name: Export single-threaded WebAssembly build
+        run: |
+          mkdir -p build/web
+          godot --headless --path . --export-release "GTA GHIBLI Web" build/web/index.html
+
+      - name: Verify required browser files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s build/web/index.html
+          wasm_file="$(find build/web -maxdepth 1 -type f -name '*.wasm' -print -quit)"
+          pck_file="$(find build/web -maxdepth 1 -type f -name '*.pck' -print -quit)"
+          js_file="$(find build/web -maxdepth 1 -type f -name '*.js' -print -quit)"
+          test -n "$wasm_file"
+          test -n "$pck_file"
+          test -n "$js_file"
+          forbidden_file="$(find build/web -type f \\( -name '.env' -o -name '.env.*' -o -name '*.keystore' -o -name '*.jks' -o -name '*.p12' \\) -print -quit)"
+          if [ -n "$forbidden_file" ]; then
+            echo "A secret or signing-key file was found in the Web export: $forbidden_file"
+            exit 1
+          fi
+
+      - name: Install pinned Chromium for browser runtime test
+        run: |
+          mkdir -p /tmp/gta-ghibli-playwright
+          npm install --prefix /tmp/gta-ghibli-playwright playwright@1.55.0
+          /tmp/gta-ghibli-playwright/node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Test exported game in Chromium
+        env:
+          NODE_PATH: /tmp/gta-ghibli-playwright/node_modules
+        run: node .github/scripts/web_browser_smoke_test.cjs
+
+      - name: Package browser game and record exact size
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > build/web/README-WEB.txt <<'EOF'
+          GTA GHIBLI — Web build
+
+          This is a browser game export, not an Android APK.
+          Upload the entire folder contents to a static HTTPS web host.
+          Open index.html through the web host; do not use file://.
+          The host must serve .wasm as application/wasm and .pck as application/octet-stream.
+          The game uses a single-threaded Web export and does not require COOP/COEP headers.
+          Use a current browser with WebAssembly and WebGL 2 support.
+          EOF
+          (cd build/web && zip -q -r ../GTA-GHIBLI-Web.zip .)
+          bytes="$(stat -c%s build/GTA-GHIBLI-Web.zip)"
+          python3 - "$bytes" <<'PY' > build/web-size.txt
+          import hashlib
+          import os
+          import sys
+          size = int(sys.argv[1])
+          print(f"WEB_ZIP_BYTES={size}")
+          print(f"WEB_ZIP_MB_DECIMAL={size / 1_000_000:.2f}")
+          print(f"WEB_ZIP_MIB={size / 1_048_576:.2f}")
+          with open("build/GTA-GHIBLI-Web.zip", "rb") as f:
+              print(f"WEB_ZIP_SHA256={hashlib.sha256(f.read()).hexdigest()}")
+          total = 0
+          count = 0
+          for root, _, files in os.walk("build/web"):
+              for name in files:
+                  path = os.path.join(root, name)
+                  total += os.path.getsize(path)
+                  count += 1
+          print(f"WEB_FOLDER_FILES={count}")
+          print(f"WEB_FOLDER_BYTES={total}")
+          print(f"WEB_FOLDER_MIB={total / 1_048_576:.2f}")
+          PY
+          cat build/web-size.txt
+
+      - name: Upload verified Web game bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTA-GHIBLI-Web
+          path: |
+            build/GTA-GHIBLI-Web.zip
+            build/web-size.txt
+          if-no-files-found: error
+          retention-days: 30
