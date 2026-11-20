@@ -67,6 +67,9 @@ func _run() -> void:
 	if button_style == null or button_style.bg_color.r > 0.20 or button_style.bg_color.a > 0.85:
 		_fail("Mobile action buttons must use dark, translucent circular backgrounds.")
 		return
+	if context_button.text != "" or sprint_button.text != "":
+		_fail("Primary mobile actions should use icon-only controls like the reference HUD.")
+		return
 	var joystick := controls_root.get_node_or_null("MovementJoystick") as Control
 	if joystick == null or joystick.size.x < 170.0:
 		_fail("The reference-sized analog joystick is missing.")
@@ -76,6 +79,9 @@ func _run() -> void:
 	var fist_icon := gameplay_hud.get_node_or_null("PlayerStatus/ClockRow/UnarmedFistIcon") as TextureRect if gameplay_hud != null else null
 	if radar == null or radar.custom_minimum_size.x < 175.0 or fist_icon == null or fist_icon.custom_minimum_size.x < 55.0:
 		_fail("The reference-sized circular minimap or fist HUD icon is missing.")
+		return
+	if get_nodes_in_group("radar_buildings").size() < 30:
+		_fail("World buildings are not registered for map block outlines.")
 		return
 	var clock_row := gameplay_hud.get_node("PlayerStatus/ClockRow") as HBoxContainer
 	if clock_row.get_child_count() < 2 or clock_row.get_child(clock_row.get_child_count() - 1) != fist_icon:
