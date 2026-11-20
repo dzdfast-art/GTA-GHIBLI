@@ -171,3 +171,13 @@ A gate passes only when its implementation and tests exist. Keep **implemented**
 - **Regression coverage:** IMPLEMENTED, TEST PENDING. A dedicated fountain test checks the gameplay effects; the district test checks that the actual Harbor City world scene instantiates the fountain and exposes its interaction area.
 - **Performance / device acceptance:** NOT VERIFIED. The target 4 GB / Unisoc T606 Android device has not been used to inspect the model, measure RAM, FPS, load time or thermal impact.
 - This feature is a candidate-branch addition only. It has not changed `main` and requires PR #31 review and CI before it can be considered accepted.
+
+
+## 6D. Sapphire Coast seafood market — 2026-11-20
+
+- **World content:** IMPLEMENTED on the repair candidate. A working fishmonger stand is placed along the Sapphire Coast, reusing the existing market-stall asset and adding an original fish/ice display mesh with six material groups.
+- **Food catalogue:** IMPLEMENTED in source. Grilled sardines, seafood stew and red mullet plate are edible consumables with nutrition, hydration and energy values.
+- **Wallet and inventory:** IMPLEMENTED in source. The vendor checks range and balance, grants products to inventory and refunds money if delivery fails. Items use the shared food-consumption contract.
+- **Regression:** IMPLEMENTED, TEST PENDING. The new test checks mesh import, products, purchase signals, wallet, inventory, food effects, unknown products, insufficient funds and range rejection. The four-district test checks actual Sapphire Coast placement and interaction registration.
+- **Android acceptance:** NOT VERIFIED. No physical target-device profiling was performed.
+- This remains a Draft PR #31 candidate. It is not included in `main` until owner review and an explicit merge.

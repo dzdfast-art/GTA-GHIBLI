@@ -18,6 +18,7 @@ Status: repair candidate; no changes to `main`, no public Web deployment.
 | Terrain streaming | Preserves the 72-mesh catalog; near-load radius 72, far-unload radius 96, up to six active tiles and two loads per 0.35-second refresh | Existing terrain lifecycle regression; final branch run pending |
 | District navigation | Four prototype districts receive lightweight authored navigation grids made from walkable cells around the six building footprints | New path-query checks in `open_world_regions_test.gd`; final branch run pending |
 | NPC movement | NPC brains create NavigationAgent3D and use a live navigation map for wandering, schedules and fleeing; legacy direct movement remains a fallback only where no navigation region exists | Existing NPC tests plus district path-query checks; final branch run pending |
+| Sapphire Coast seafood market | Functional Arabic vendor in Sapphire Coast; reuses the existing original stall model and adds a six-material fish/ice display, three edible catalogue items, wallet/inventory transactions and refund-on-delivery-failure | New `seafood_market_test.gd` and district integration assertions; current-head CI pending |
 | Public drinking fountain | Original OBJ/MTL prop scene integrated into Harbor City plaza; shared interaction restores up to 30 thirst using PlayerNeeds, with cooldown and Arabic prompt/feedback | New `public_drinking_fountain_test.gd`; current-head CI pending |
 | Vehicle condition | Vehicle health, collision-impact damage, disabled state, repairs, speed degradation and a serializable condition snapshot | New `vehicle_damage_repair_test.gd`; final branch run pending |
 | Vehicle visuals | Rear brake lights and animated wheel meshes | New vehicle visual regression; final branch run pending |
@@ -81,3 +82,11 @@ No asset files were added in this save-safety/CI repair commit. The asset regist
 - Model provenance is recorded in [OWNERSHIP_AND_ASSET_REGISTER.md](OWNERSHIP_AND_ASSET_REGISTER.md).
 - The new test is wired into the Godot 4.7 validation workflow. No imported audio or external runtime service is used.
 - Physical performance acceptance remains pending on the 4 GB / Unisoc T606 device; the prop uses one imported mesh, one static collision cylinder and one proximity area.
+
+
+## Seafood market content update — 2026-11-20
+
+- Added a six-material original seafood display OBJ/MTL and placed it with the existing modular market stall in Sapphire Coast. The existing stall asset is reused rather than duplicated.
+- Added grilled sardines, seafood stew and red mullet plate to the validated consumables catalogue. They are edible and use the existing PlayerNeeds/ConsumableInventory flow.
+- Added vendor purchase handling, transaction rollback, a dedicated regression test and world district integration assertions. Godot CI is pending for this head.
+- Physical Unisoc T606 / 4 GB frame-time, memory, thermal and touch acceptance remains NOT VERIFIED.

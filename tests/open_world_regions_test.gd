@@ -39,6 +39,18 @@ func _run_test() -> void:
 	if fountain_area == null or not fountain_area.is_in_group("interaction_areas"):
 		_fail("The public fountain must register its shared proximity interaction area.")
 		return
+	var seafood_market := regions.get_node_or_null("SapphireCoast/SeafoodMarket") as Node3D
+	if seafood_market == null:
+		_fail("Sapphire Coast must instantiate its functional seafood market.")
+		return
+	var seafood_display := seafood_market.get_node_or_null("SeafoodDisplay") as MeshInstance3D
+	if seafood_display == null or seafood_display.mesh == null or seafood_display.mesh.get_surface_count() < 6:
+		_fail("Sapphire Coast must load the original six-surface seafood display asset.")
+		return
+	var seafood_area := seafood_market.get_node_or_null("InteractionArea") as Area3D
+	if seafood_area == null or not seafood_area.is_in_group("interaction_areas"):
+		_fail("The seafood market must register with the shared interaction system.")
+		return
 	if harbor.get_children().filter(func(node): return str(node.name).begins_with("HarborHouseCollision_")).size() != 16:
 		_fail("Harbor City must keep 16 collision footprints for its 16 houses.")
 		return

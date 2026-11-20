@@ -41,3 +41,5 @@ Add one row for every externally sourced, commissioned, generated, or contributo
 ## Important
 
 This register is an internal evidence-management aid, not proof of ownership by itself and not a substitute for contracts, official deposits, trademark registration, or legal advice. Do not enter passwords, private keys, identity numbers, or other secrets here.
+
+| `assets/environment/props/seafood_display.obj` + `.mtl` | Original low-poly fish, ice, trays and weighing-scale display mesh | Project-authored geometry and material definitions | 2026-11-20 | Original project asset; no external source | Loaded by `scenes/world/seafood_market.tscn` in Sapphire Coast; tested by `tests/seafood_market_test.gd` | Pending final release review |

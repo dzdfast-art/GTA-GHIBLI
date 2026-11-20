@@ -6,6 +6,7 @@ const CIVILIAN_NPC_SCRIPT = preload("res://scripts/characters/world_npc_actor.gd
 const HARBOR_HOUSES_MESH = preload("res://assets/environment/modular/village_house_collection.obj")
 const HARBOR_ROADS_MESH = preload("res://assets/environment/modular/road_street_collection.obj")
 const PUBLIC_DRINKING_FOUNTAIN_SCENE = preload("res://scenes/world/public_drinking_fountain.tscn")
+const SEAFOOD_MARKET_SCENE = preload("res://scenes/world/seafood_market.tscn")
 
 var _region_ids: Array[String] = []
 var _population_count := 0
@@ -217,6 +218,7 @@ func _build_district_details(district: Node3D, region_id: String, ground_color: 
 			for index in range(5):
 				_add_box(district, "FishCrate_%02d" % index, Vector3(-12.0 + float(index) * 5.0, 0.5, 4.0),
 					Vector3(1.4, 1.0, 1.2), Color(0.58, 0.43, 0.28))
+			_build_seafood_market(district)
 		_:
 			pass
 
@@ -227,6 +229,14 @@ func _build_public_drinking_fountain(district: Node3D) -> void:
 	fountain.name = "PublicDrinkingFountain"
 	fountain.position = Vector3(0.0, 0.0, -9.0)
 	district.add_child(fountain)
+
+
+func _build_seafood_market(district: Node3D) -> void:
+	# Reuses the existing market stall and adds a functional seafood display.
+	var market := SEAFOOD_MARKET_SCENE.instantiate()
+	market.name = "SeafoodMarket"
+	market.position = Vector3(17.0, 0.0, 14.0)
+	district.add_child(market)
 
 
 func _build_marsa_al_noor(district: Node3D) -> void:

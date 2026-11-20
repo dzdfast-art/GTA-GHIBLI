@@ -80,6 +80,7 @@ jobs:
             res://scripts/systems/player_health.gd \
             res://scripts/systems/game_save_manager.gd \
             res://scripts/world/consumable_shop.gd \
+            res://scripts/world/seafood_market.gd \
             res://scripts/world/public_drinking_fountain.gd \
             res://scripts/camera/third_person_camera.gd \
             res://scripts/ui/mobile_controls.gd \
@@ -125,6 +126,9 @@ jobs:
 
       - name: Test public drinking fountain interaction
         run: godot --headless --path . --script res://tests/public_drinking_fountain_test.gd
+
+      - name: Test Sapphire Coast seafood market purchases
+        run: godot --headless --path . --script res://tests/seafood_market_test.gd
 
       - name: Test food and drink inventory
         run: godot --headless --path . --script res://tests/consumable_inventory_test.gd

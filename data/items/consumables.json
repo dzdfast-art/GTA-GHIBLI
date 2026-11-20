@@ -74,5 +74,33 @@
       "energy": 2,
       "description_ar": "ثمار برية يمكن أكلها أو تقديمها للحيوانات الوديعة."
     }
+,
+    {
+      "id": "grilled_sardines",
+      "name_ar": "سردين مشوي",
+      "category": "food",
+      "nutrition": 26,
+      "hydration": 4,
+      "energy": 10,
+      "description_ar": "طبق سردين مشوي من سوق صيادي الساحل."
+    },
+    {
+      "id": "seafood_stew",
+      "name_ar": "حساء السمك",
+      "category": "food",
+      "nutrition": 32,
+      "hydration": 20,
+      "energy": 9,
+      "description_ar": "حساء بحري دافئ يعيد بعض الطاقة والترطيب."
+    },
+    {
+      "id": "red_mullet_plate",
+      "name_ar": "طبق البوري الأحمر",
+      "category": "food",
+      "nutrition": 29,
+      "hydration": 5,
+      "energy": 15,
+      "description_ar": "وجبة سمك محلية محضرة على طريقة ساحل الياقوت."
+    }
   ]
 }

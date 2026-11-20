@@ -242,3 +242,8 @@ The data catalogue is `data/world/side_activities.json`; the headless regression
 - Physical Android install/touch/FPS/RAM/thermal/audio acceptance remains NOT VERIFIED.
 - Arabic dialogue performance remains incomplete until local offline audio files are present and playback is tested; synthetic TTS must not be labelled human acting.
 - No new asset was added in the save-safety/CI repair commit, so the ownership/asset register has no new row to add.
+
+
+## Sapphire Coast seafood market — IMPLEMENTED on repair candidate
+
+The district instantiates a functional Arabic fishmonger stall using the existing original market-stall model and a new six-material seafood-display mesh (timber, ice, silver fish, golden fish, red fish and weighing-scale details). Three ready-to-eat foods are added to the consumables catalogue: grilled sardines, seafood stew and red mullet plate. The vendor uses the common `interact()` contract, debits the player wallet, grants the food to inventory and refunds the debit if item delivery fails. The foods use the existing consumption/needs system. Regression coverage checks imported display surfaces, world placement, purchase signals, wallet/inventory, food use, unknown products, insufficient funds and interaction range. **CI verification is pending; physical-device performance is NOT VERIFIED.**

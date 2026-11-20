@@ -103,3 +103,12 @@ No public Web deployment or Pages publishing was performed.
 - The new model is documented in `OWNERSHIP_AND_ASSET_REGISTER.md` as original project-authored geometry. It has not been externally sourced.
 - These tests are **implemented but not yet verified** until the current repair-branch Godot workflow completes. No Android device profiling has been performed for the fountain; frame time, memory and visual scale on Unisoc T606 remain NOT VERIFIED.
 - `main` remains unchanged; this work is on Draft PR #31 only.
+
+
+## Seafood market content — 2026-11-20
+
+- **IMPLEMENTED (source):** A functional Sapphire Coast market reuses the existing `market_stall_lowpoly.obj` and adds an original six-material seafood display OBJ/MTL. The market scene is attached to the Sapphire Coast district.
+- **IMPLEMENTED (source):** Grilled sardines, seafood stew and red mullet plate are valid consumable foods. Purchases debit the wallet and add food inventory; consuming the foods uses the current player-needs API.
+- **TEST PENDING:** The dedicated seafood-market test and district integration assertions are wired into Godot 4.7 validation. Do not classify the change as TESTED until the current-head run passes.
+- **NOT VERIFIED:** Physical-device install, visual quality, FPS, RAM, heat, and touch response on Unisoc T606 / 4 GB.
+- All changes remain on Draft PR #31; `main` has not been modified.
