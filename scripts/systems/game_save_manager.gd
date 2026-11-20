@@ -84,7 +84,7 @@ func save_game() -> bool:
 		save_failed.emit("حدث خطأ أثناء كتابة ملف الحفظ.")
 		return false
 
-	var verify := FileAccess.open(SAVE_TEMP_PATH, FileAccess.READ)
+	var verify := FileAccess.open(active_temp_path, FileAccess.READ)
 	if verify == null:
 		save_failed.emit("تعذر قراءة ملف الحفظ للتحقق منه.")
 		return false
@@ -94,12 +94,12 @@ func save_game() -> bool:
 		save_failed.emit("فشل التحقق من بنية ملف الحفظ.")
 		return false
 
-	var final_abs := ProjectSettings.globalize_path(SAVE_PATH)
-	var temp_abs := ProjectSettings.globalize_path(SAVE_TEMP_PATH)
-	var backup_abs := ProjectSettings.globalize_path(SAVE_BACKUP_PATH)
-	if FileAccess.file_exists(SAVE_BACKUP_PATH):
+	var final_abs := ProjectSettings.globalize_path(active_save_path)
+	var temp_abs := ProjectSettings.globalize_path(active_temp_path)
+	var backup_abs := ProjectSettings.globalize_path(active_backup_path)
+	if FileAccess.file_exists(active_backup_path):
 		DirAccess.remove_absolute(backup_abs)
-	if FileAccess.file_exists(SAVE_PATH):
+	if FileAccess.file_exists(active_save_path):
 		var backup_error := DirAccess.rename_absolute(final_abs, backup_abs)
 		if backup_error != OK:
 			save_failed.emit("تعذر إنشاء نسخة احتياطية من الحفظ السابق.")
@@ -111,14 +111,14 @@ func save_game() -> bool:
 		save_failed.emit("تعذر اعتماد ملف الحفظ الجديد.")
 		return false
 
-	game_saved.emit(SAVE_PATH)
+	game_saved.emit(_active_save_path())
 	return true
 
 
 func load_game() -> bool:
-	if not FileAccess.file_exists(SAVE_PATH):
+	if not FileAccess.file_exists(_active_save_path()):
 		return false
-	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	var file := FileAccess.open(_active_save_path(), FileAccess.READ)
 	if file == null:
 		save_failed.emit("تعذر فتح ملف الحفظ الموحد.")
 		return false
@@ -141,16 +141,16 @@ func load_game() -> bool:
 	_restore_vehicles(parsed.get("vehicles", []))
 	_reload_legacy_components()
 	_restoring = false
-	game_loaded.emit(SAVE_PATH)
+	game_loaded.emit(_active_save_path())
 	return true
 
 
 func get_save_path() -> String:
-	return SAVE_PATH
+	return _active_save_path()
 
 
 func _load_existing_save() -> void:
-	if FileAccess.file_exists(SAVE_PATH):
+	if FileAccess.file_exists(_active_save_path()):
 		load_game()
 
 
@@ -334,3 +334,8 @@ func _array_to_vector3(value: Array, fallback: Vector3) -> Vector3:
 	if value.size() < 3:
 		return fallback
 	return Vector3(float(value[0]), float(value[1]), float(value[2]))
+
+
+func _active_save_path() -> String:
+	var override_path := save_path_override.strip_edges()
+	return override_path if not override_path.is_empty() else SAVE_PATH
