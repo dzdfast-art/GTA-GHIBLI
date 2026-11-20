@@ -88,6 +88,7 @@ func _build_harbor_city_block(district: Node3D) -> void:
 		for column in range(house_centers_x.size()):
 			var body := StaticBody3D.new()
 			body.name = "HarborHouseCollision_%02d_%02d" % [row, column]
+			body.add_to_group("radar_buildings")
 			body.position = Vector3(house_centers_x[column], 0.0, house_centers_z[row])
 			body.collision_layer = 1
 			body.collision_mask = 1
@@ -135,6 +136,7 @@ func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: 
 	for index in range(offsets.size()):
 		var building := StaticBody3D.new()
 		building.name = "DistrictBuilding_%02d" % (index + 1)
+		building.add_to_group("radar_buildings")
 		building.position = offsets[index]
 		building.collision_layer = 1
 		building.collision_mask = 1
