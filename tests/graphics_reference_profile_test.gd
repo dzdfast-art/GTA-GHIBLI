@@ -129,6 +129,17 @@ func _run() -> void:
 	if tree == null or tree.mesh == null or tree.mesh.get_surface_count() < 2:
 		_fail("The village must use the original multi-material low-poly willow tree.")
 		return
+	var lamp_resource := load("res://assets/environment/props/street_lamp_lowpoly.obj")
+	print("DIAG: street_lamp resource type=", "<null>" if lamp_resource == null else lamp_resource.get_class())
+	print("DIAG: street_lamp resource_is_mesh=", lamp_resource is Mesh)
+	var lamp_root := village.get_node_or_null("VillageStreetLamp_-1.0_0")
+	print("DIAG: expected lamp root exists=", lamp_root != null)
+	print("DIAG: village direct child count=", village.get_child_count())
+	for village_child in village.get_children():
+		if "Lamp" in str(village_child.name):
+			print("DIAG: lamp root name=", village_child.name, " path=", village_child.get_path(), " type=", village_child.get_class())
+			for lamp_child in village_child.get_children():
+				print("DIAG: lamp child name=", lamp_child.name, " type=", lamp_child.get_class(), " mesh=", (lamp_child as MeshInstance3D).mesh if lamp_child is MeshInstance3D else "not MeshInstance3D")
 	var lamp := village.get_node_or_null("VillageStreetLamp_-1.0_0/ImportedMesh") as MeshInstance3D
 	if lamp == null or lamp.mesh == null:
 		_fail("The street scene must use the original low-poly street lamp model.")
