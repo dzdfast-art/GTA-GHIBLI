@@ -73,7 +73,7 @@ jobs:
           test -n "$wasm_file"
           test -n "$pck_file"
           test -n "$js_file"
-          forbidden_file="$(find build/web -type f \\( -name '.env' -o -name '.env.*' -o -name '*.keystore' -o -name '*.jks' -o -name '*.p12' \\) -print -quit)"
+          forbidden_file="$(find build/web -type f \( -name '.env' -o -name '.env.*' -o -name '*.keystore' -o -name '*.jks' -o -name '*.p12' \) -print -quit)"
           if [ -n "$forbidden_file" ]; then
             echo "A secret or signing-key file was found in the Web export: $forbidden_file"
             exit 1
