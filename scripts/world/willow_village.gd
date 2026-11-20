@@ -70,6 +70,7 @@ func _add_house(house_name: String, origin: Vector3,
 		wall_color: Color, roof_color: Color) -> void:
 	var house := StaticBody3D.new()
 	house.name = house_name
+	house.add_to_group("radar_buildings")
 	house.position = origin
 	house.collision_layer = 1
 	house.collision_mask = 1
