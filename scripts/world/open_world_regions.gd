@@ -3,6 +3,8 @@ extends Node3D
 ## Procedural blockout for four explorable districts linked to Willow Village.
 ## Geometry is original, light-weight and assembled at runtime for mobile testing.
 const CIVILIAN_NPC_SCRIPT = preload("res://scripts/characters/world_npc_actor.gd")
+const HARBOR_HOUSES_MESH = preload("res://assets/environment/modular/village_house_collection.obj")
+const HARBOR_ROADS_MESH = preload("res://assets/environment/modular/road_street_collection.obj")
 
 var _region_ids: Array[String] = []
 var _population_count := 0
@@ -60,10 +62,51 @@ func _build_region(region_id: String, region_name: String, center: Vector3,
 	district.add_child(title)
 
 	_build_road(center)
-	_build_district_buildings(district, wall_color, roof_color)
+	if region_id == "harbor_city":
+		_build_harbor_city_block(district)
+	else:
+		_build_district_buildings(district, wall_color, roof_color)
 	_build_district_details(district, region_id, ground_color)
-	_build_district_navigation(district)
+	_build_district_navigation(district, region_id)
 	_build_civilians(district, region_id, npc_names)
+
+
+
+func _build_harbor_city_block(district: Node3D) -> void:
+	# Four-by-four original low-rise house set, scaled to the district parcel.
+	var houses := MeshInstance3D.new()
+	houses.name = "HarborResidentialMesh"
+	houses.mesh = HARBOR_HOUSES_MESH
+	houses.position = Vector3(-16.5, 0.025, -16.2)
+	houses.scale = Vector3.ONE * 0.5
+	district.add_child(houses)
+
+	# Keep collision envelopes aligned with the 4x4 house footprints.
+	var house_centers_x := [-14.0, -5.0, 4.0, 13.5]
+	var house_centers_z := [-14.0, -5.0, 4.0, 12.8]
+	for row in range(house_centers_z.size()):
+		for column in range(house_centers_x.size()):
+			var body := StaticBody3D.new()
+			body.name = "HarborHouseCollision_%02d_%02d" % [row, column]
+			body.position = Vector3(house_centers_x[column], 0.0, house_centers_z[row])
+			body.collision_layer = 1
+			body.collision_mask = 1
+			var shape := BoxShape3D.new()
+			shape.size = Vector3(5.5, 4.2, 4.7)
+			var collision := CollisionShape3D.new()
+			collision.shape = shape
+			collision.position.y = 2.1
+			body.add_child(collision)
+			district.add_child(body)
+			_building_count += 1
+
+	# This original road set supplies lanes, raised curbs, junction markings and sidewalks.
+	var roads := MeshInstance3D.new()
+	roads.name = "HarborStreetNetworkMesh"
+	roads.mesh = HARBOR_ROADS_MESH
+	roads.position = Vector3(-23.8, 0.055, -14.7)
+	roads.scale = Vector3.ONE * 0.335
+	district.add_child(roads)
 
 func _build_road(center: Vector3) -> void:
 	var flat_center := Vector2(center.x, center.z)
@@ -342,7 +385,7 @@ func _load_surface_texture(texture_path: String) -> Texture2D:
 
 ## Builds a small, authored low-poly walkable grid around the district's six
 ## building footprints. This avoids expensive run-time geometry baking on mobile.
-func _build_district_navigation(district: Node3D) -> void:
+func _build_district_navigation(district: Node3D, region_id: String) -> void:
 	var region := NavigationRegion3D.new()
 	region.name = "NavigationRegion3D"
 	var navigation_mesh := NavigationMesh.new()
@@ -366,7 +409,7 @@ func _build_district_navigation(district: Node3D) -> void:
 		for z_index in range(rows):
 			var top := minimum_z + float(z_index) * cell_size
 			var bottom := top + cell_size
-			if _navigation_cell_overlaps_building(left, right, top, bottom):
+			if _navigation_cell_overlaps_building(left, right, top, bottom, region_id):
 				continue
 			var base_index := vertices.size()
 			# Counter-clockwise when viewed from above, so each polygon faces +Y.
@@ -389,7 +432,18 @@ func _build_district_navigation(district: Node3D) -> void:
 		push_warning("No walkable navigation cells were created for " + district.name)
 
 
-func _navigation_cell_overlaps_building(left: float, right: float, top: float, bottom: float) -> bool:
+func _navigation_cell_overlaps_building(left: float, right: float,
+		top: float, bottom: float, region_id: String) -> bool:
+	if region_id == "harbor_city":
+		const HOUSE_HALF_WIDTH := 2.85
+		const HOUSE_HALF_DEPTH := 2.45
+		for center_x in [-14.0, -5.0, 4.0, 13.5]:
+			for center_z in [-14.0, -5.0, 4.0, 12.8]:
+				var overlaps_x := right > center_x - HOUSE_HALF_WIDTH and left < center_x + HOUSE_HALF_WIDTH
+				var overlaps_z := bottom > center_z - HOUSE_HALF_DEPTH and top < center_z + HOUSE_HALF_DEPTH
+				if overlaps_x and overlaps_z:
+					return true
+		return false
 	const BUILDING_HALF_WIDTH := 4.25
 	const BUILDING_HALF_DEPTH := 3.85
 	for center_x in [-12.0, 0.0, 12.0]:
