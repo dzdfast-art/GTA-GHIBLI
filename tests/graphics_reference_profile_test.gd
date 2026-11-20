@@ -14,6 +14,10 @@ func _run() -> void:
 		await process_frame
 		await physics_frame
 
+	var clock := game.get_node_or_null("WorldClock")
+	if clock == null or str(clock.call("get_clock_text")) != "06:51":
+		_fail("The opening scene should start at the reference morning time of 06:51.")
+		return
 	var player := game.get_node_or_null("Player") as CharacterBody3D
 	if player == null:
 		_fail("Reference-profile test cannot find the playable character.")
