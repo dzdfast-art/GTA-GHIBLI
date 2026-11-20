@@ -46,9 +46,9 @@ func get_locomotion_weight() -> float:
 
 func _build_humanoid() -> void:
 	var skin := _make_material(skin_tone, 0.92)
-	var shirt := _make_material(shirt_color, 0.94)
-	var pants := _make_material(pants_color, 0.94)
-	var shoes := _make_material(shoe_color, 0.96)
+	var shirt := _make_material(shirt_color, 0.94, "res://assets/characters/textures/white_tank_cloth.svg")
+	var pants := _make_material(pants_color, 0.94, "res://assets/characters/textures/blue_denim.svg")
+	var shoes := _make_material(shoe_color, 0.96, "res://assets/characters/textures/dark_sneaker.svg")
 	var hair := _make_material(hair_color, 0.88)
 	var eye_material := _make_material(Color(0.055, 0.04, 0.035), 0.72)
 	var denim_detail := _make_material(Color(0.17, 0.29, 0.55), 0.98)
@@ -164,10 +164,16 @@ func _add_sphere(parent: Node3D, node_name: String, at: Vector3,
 	return instance
 
 
-func _make_material(color: Color, roughness: float) -> StandardMaterial3D:
+func _make_material(color: Color, roughness: float,
+		texture_path: String = "") -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = roughness
+	if not texture_path.is_empty() and ResourceLoader.exists(texture_path):
+		var texture := load(texture_path) as Texture2D
+		if texture != null:
+			material.albedo_texture = texture
+			material.uv1_scale = Vector3(2.0, 2.0, 2.0)
 	return material
 
 func _add_box(parent: Node3D, node_name: String, at: Vector3,
