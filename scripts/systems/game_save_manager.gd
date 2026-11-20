@@ -23,6 +23,8 @@ const LEGACY_SAVE_PATHS := [
 	"user://gta_ghibli_settings.cfg"
 ]
 
+@export var save_path_override := ""
+
 var _autosave_elapsed := 0.0
 var _restoring := false
 
