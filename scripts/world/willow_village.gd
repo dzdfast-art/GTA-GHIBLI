@@ -306,7 +306,7 @@ func _add_mesh(parent: Node3D, node_name: String, mesh: Mesh,
 	instance.name = node_name
 	instance.mesh = mesh
 	instance.position = position
-	instance.material_override = _material(color)
+	instance.material_override = _material(color, _texture_for_node(node_name))
 	parent.add_child(instance)
 
 
