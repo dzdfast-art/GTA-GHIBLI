@@ -128,6 +128,17 @@ func _run_test() -> void:
 		if visual.scale.distance_to(expected_scale) > 0.001 or collision_body == null or collision_body.scale.distance_to(expected_scale) > 0.001:
 			_fail("High-detail terrain and collision must use the 222-unit source mesh scale to meet the 28-unit district grid: " + tile_name)
 			return
+		var footprint := visual.mesh.get_aabb().size * visual.scale
+		if absf(footprint.x - 27.972) > 0.1 or absf(footprint.z - 27.972) > 0.1:
+			_fail("High-detail terrain footprint does not match the district tile spacing: " + tile_name)
+			return
+		if visual.mesh.get_surface_count() < 2:
+			_fail("High-detail terrain must keep its regional material bands: " + tile_name)
+			return
+		var high_detail_shape := collision_body.get_node_or_null("TerrainCollisionShape") as CollisionShape3D
+		if high_detail_shape == null or not (high_detail_shape.shape is ConcavePolygonShape3D):
+			_fail("High-detail terrain is missing its trimesh collision shape: " + tile_name)
+			return
 
 	player.global_position = Vector3(10000.0, 0.0, 10000.0)
 	expansion.call("refresh_for_player", player)
