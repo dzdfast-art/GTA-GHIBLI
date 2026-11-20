@@ -175,9 +175,26 @@ func _build_trees() -> void:
 			1.0 + float(index % 3) * 0.12)
 
 
+func _add_imported_mesh(parent: Node3D, node_name: String, source_mesh: Resource,
+		at: Vector3, scale_factor: Vector3) -> Node3D:
+	var root := Node3D.new()
+	root.name = node_name
+	root.position = at
+	root.scale = scale_factor
+
+	var imported_mesh := MeshInstance3D.new()
+	imported_mesh.name = "ImportedMesh"
+	imported_mesh.mesh = source_mesh as Mesh
+	if imported_mesh.mesh == null:
+		push_error("Village imported mesh is not a valid Mesh resource: " + node_name)
+	root.add_child(imported_mesh)
+	parent.add_child(root)
+	return root
+
+
 func _add_tree(tree_name: String, origin: Vector3, scale_factor: float) -> void:
 	var scale_value := scale_factor * 1.12
-	var tree := _add_imported_mesh(self, tree_name, WILLOW_TREE_MESH,
+	var tree: Node3D = _add_imported_mesh(self, tree_name, WILLOW_TREE_MESH,
 		origin + Vector3(0.0, 1.1 * scale_value, 0.0), Vector3.ONE * scale_value)
 	var collision_body := StaticBody3D.new()
 	collision_body.name = "TreeTrunkCollision"
