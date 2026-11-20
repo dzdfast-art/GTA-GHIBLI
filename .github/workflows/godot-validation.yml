@@ -188,6 +188,9 @@ jobs:
       - name: Test four open-world districts
         run: godot --headless --path . --script res://tests/open_world_regions_test.gd
 
+      - name: Test GTA San Andreas Mobile visual reference profile
+        run: godot --headless --path . --script res://tests/graphics_reference_profile_test.gd
+
       - name: Test regional terrain expansion attachment
         run: godot --headless --path . --script res://tests/terrain_expansion_runtime_test.gd
 
