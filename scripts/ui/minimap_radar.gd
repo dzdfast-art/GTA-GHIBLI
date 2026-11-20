@@ -38,14 +38,15 @@ func _draw() -> void:
 	var radius := minf(minf(size.x, size.y) * 0.5 - 5.0, radar_radius)
 	if radius <= 8.0:
 		return
-	draw_circle(center, radius, Color(0.018, 0.026, 0.029, 0.90))
-	draw_arc(center, radius, 0.0, TAU, 72, Color(0.89, 0.84, 0.68, 0.95), 2.4, true)
-	draw_arc(center, radius * 0.62, 0.0, TAU, 64, Color(0.64, 0.72, 0.69, 0.20), 1.0, true)
-	draw_arc(center, radius * 0.30, 0.0, TAU, 64, Color(0.64, 0.72, 0.69, 0.16), 1.0, true)
-	draw_line(center + Vector2(-radius * 0.82, 0.0), center + Vector2(radius * 0.82, 0.0), Color(0.72, 0.78, 0.72, 0.24), 1.0)
+	draw_circle(center, radius, Color(0.82, 0.86, 0.79, 0.98))
+	draw_arc(center, radius, 0.0, TAU, 72, Color(0.035, 0.045, 0.04, 0.98), 3.0, true)
+	draw_arc(center, radius * 0.62, 0.0, TAU, 64, Color(0.25, 0.38, 0.27, 0.20), 1.0, true)
+	draw_arc(center, radius * 0.30, 0.0, TAU, 64, Color(0.25, 0.38, 0.27, 0.16), 1.0, true)
+	draw_line(center + Vector2(-radius * 0.82, 0.0), center + Vector2(radius * 0.82, 0.0), Color(0.18, 0.28, 0.18, 0.30), 1.0)
 	draw_line(center + Vector2(0.0, -radius * 0.82), center + Vector2(0.0, radius * 0.82), Color(0.72, 0.78, 0.72, 0.24), 1.0)
 	if _player != null and is_instance_valid(_player):
 		_draw_world_roads(center, radius)
+		_draw_world_buildings(center, radius)
 		_draw_world_markers(center, radius)
 		if _has_target:
 			_draw_target(center, radius)
@@ -137,7 +138,7 @@ func _draw_clipped_road(start: Vector2, finish: Vector2, center: Vector2,
 	var discriminant := b * b - 4.0 * a * c
 	if discriminant < 0.0:
 		if relative_start.length() <= clip_radius and (finish - center).length() <= clip_radius:
-			draw_line(start, finish, Color(0.72, 0.79, 0.79, 0.58), line_width, true)
+			draw_line(start, finish, Color(0.16, 0.18, 0.16, 0.92), line_width, true)
 		return
 	var root := sqrt(discriminant)
 	var entry := (-b - root) / (2.0 * a)
@@ -148,3 +149,36 @@ func _draw_clipped_road(start: Vector2, finish: Vector2, center: Vector2,
 		return
 	draw_line(start + delta * from_t, start + delta * to_t,
 		Color(0.72, 0.79, 0.79, 0.58), line_width, true)
+
+func _draw_world_buildings(center: Vector2, radius: float) -> void:
+	var clip_radius := radius - 4.0
+	var line_color := Color(0.20, 0.36, 0.22, 0.95)
+	var fill_color := Color(0.48, 0.60, 0.43, 0.38)
+	for candidate in get_tree().get_nodes_in_group("radar_buildings"):
+		var building := candidate as Node3D
+		if building == null or not is_instance_valid(building):
+			continue
+		var collision := building.find_child("CollisionShape3D", true, false) as CollisionShape3D
+		if collision == null:
+			continue
+		var box := collision.shape as BoxShape3D
+		if box == null:
+			continue
+		var half := box.size * 0.5
+		var corners := [
+			Vector3(-half.x, 0.0, -half.z),
+			Vector3(half.x, 0.0, -half.z),
+			Vector3(half.x, 0.0, half.z),
+			Vector3(-half.x, 0.0, half.z)
+		]
+		var polygon := PackedVector2Array()
+		for corner in corners:
+			polygon.append(_world_to_radar(collision.global_transform * corner, center, radius))
+		var center_point := _world_to_radar(collision.global_position, center, radius)
+		if center_point.distance_to(center) > clip_radius + maxf(box.size.x, box.size.z) * 0.8:
+			continue
+		var closed := polygon.duplicate()
+		closed.append(polygon[0])
+		draw_colored_polygon(polygon, fill_color)
+		draw_polyline(closed, line_color, 1.1, true)
+
