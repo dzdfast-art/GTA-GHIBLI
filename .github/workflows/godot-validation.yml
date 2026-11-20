@@ -136,6 +136,9 @@ jobs:
       - name: Test first vehicle enter-drive-exit flow
         run: godot --headless --path . --script res://tests/vehicle_controller_test.gd
 
+      - name: Test vehicle damage, repairs, and condition visuals
+        run: godot --headless --path . --script res://tests/vehicle_damage_repair_test.gd
+
       - name: Test bicycle mount, riding controls, and dismount
         run: godot --headless --path . --script res://tests/bicycle_controller_test.gd
 
