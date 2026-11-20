@@ -72,7 +72,10 @@ func save_game() -> bool:
 	}
 
 	var json_text := JSON.stringify(data, "\t")
-	var temporary := FileAccess.open(SAVE_TEMP_PATH, FileAccess.WRITE)
+	var active_save_path := _active_save_path()
+	var active_temp_path := active_save_path + ".tmp"
+	var active_backup_path := active_save_path + ".bak"
+	var temporary := FileAccess.open(active_temp_path, FileAccess.WRITE)
 	if temporary == null:
 		save_failed.emit("تعذر إنشاء ملف الحفظ المؤقت.")
 		return false
@@ -106,7 +109,7 @@ func save_game() -> bool:
 			return false
 	var rename_error := DirAccess.rename_absolute(temp_abs, final_abs)
 	if rename_error != OK:
-		if FileAccess.file_exists(SAVE_BACKUP_PATH):
+		if FileAccess.file_exists(active_backup_path):
 			DirAccess.rename_absolute(backup_abs, final_abs)
 		save_failed.emit("تعذر اعتماد ملف الحفظ الجديد.")
 		return false
