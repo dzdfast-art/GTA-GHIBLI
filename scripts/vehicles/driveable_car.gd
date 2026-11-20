@@ -131,16 +131,28 @@ func _set_hud_vehicle_mode(active: bool) -> void:
 		hud.call("set_vehicle_mode", active)
 
 func _build_vehicle_visuals() -> void:
-	_add_box("LowerBody", Vector3(1.9, 0.72, 3.9), Vector3(0.0, 0.86, 0.0), Color(0.22, 0.43, 0.35))
-	_add_box("Cabin", Vector3(1.55, 0.78, 1.9), Vector3(0.0, 1.58, 0.22), Color(0.25, 0.48, 0.48))
+	_add_box("LowerBody", Vector3(1.9, 0.72, 3.9), Vector3(0.0, 0.86, 0.0), Color(0.13, 0.29, 0.52))
+	_add_box("Cabin", Vector3(1.55, 0.78, 1.9), Vector3(0.0, 1.58, 0.22), Color(0.18, 0.36, 0.58))
 	_add_box("FrontGlass", Vector3(1.38, 0.48, 0.06), Vector3(0.0, 1.63, -0.76), Color(0.48, 0.70, 0.75))
 	_add_box("RearGlass", Vector3(1.35, 0.42, 0.06), Vector3(0.0, 1.62, 1.19), Color(0.42, 0.64, 0.70))
+	_add_box("LeftSideGlass", Vector3(0.06, 0.44, 1.36), Vector3(-0.79, 1.64, 0.18), Color(0.27, 0.50, 0.62))
+	_add_box("RightSideGlass", Vector3(0.06, 0.44, 1.36), Vector3(0.79, 1.64, 0.18), Color(0.27, 0.50, 0.62))
 	_add_box("FrontBumper", Vector3(1.95, 0.16, 0.16), Vector3(0.0, 0.48, -1.98), Color(0.16, 0.18, 0.17))
 	_add_box("RearBumper", Vector3(1.95, 0.16, 0.16), Vector3(0.0, 0.48, 1.98), Color(0.16, 0.18, 0.17))
 	_add_box("LeftHeadlight", Vector3(0.38, 0.22, 0.08), Vector3(-0.62, 0.91, -1.98), Color(1.0, 0.91, 0.66))
 	_add_box("RightHeadlight", Vector3(0.38, 0.22, 0.08), Vector3(0.62, 0.91, -1.98), Color(1.0, 0.91, 0.66))
 	_add_brake_light("LeftBrakeLight", Vector3(-0.62, 0.91, 1.98))
 	_add_brake_light("RightBrakeLight", Vector3(0.62, 0.91, 1.98))
+	_add_box("FrontGrille", Vector3(0.62, 0.20, 0.055), Vector3(0.0, 0.65, -1.99), Color(0.08, 0.09, 0.10))
+	_add_box("FrontPlate", Vector3(0.42, 0.12, 0.035), Vector3(0.0, 0.47, -2.04), Color(0.83, 0.83, 0.76))
+	_add_box("RearPlate", Vector3(0.42, 0.12, 0.035), Vector3(0.0, 0.47, 2.04), Color(0.83, 0.83, 0.76))
+	for side in [-1.0, 1.0]:
+		_add_box("SideDoorSeam_%s" % str(side), Vector3(0.035, 0.30, 1.18),
+			Vector3(side * 0.955, 0.86, 0.18), Color(0.07, 0.11, 0.16))
+		_add_box("DoorHandle_%s" % str(side), Vector3(0.045, 0.055, 0.22),
+			Vector3(side * 0.985, 1.02, 0.16), Color(0.68, 0.72, 0.75))
+		_add_box("SideMirror_%s" % str(side), Vector3(0.22, 0.11, 0.20),
+			Vector3(side * 1.02, 1.54, -0.70), Color(0.13, 0.26, 0.43))
 	_add_wheel("FrontLeftWheel", Vector3(-0.98, 0.43, -1.25))
 	_add_wheel("FrontRightWheel", Vector3(0.98, 0.43, -1.25))
 	_add_wheel("RearLeftWheel", Vector3(-0.98, 0.43, 1.25))
@@ -182,6 +194,22 @@ func _add_wheel(node_name: String, local_position: Vector3) -> void:
 	material.roughness = 1.0
 	wheel.material_override = material
 	add_child(wheel)
+	var hub := MeshInstance3D.new()
+	hub.name = node_name + "Hub"
+	var hub_mesh := CylinderMesh.new()
+	hub_mesh.top_radius = 0.16
+	hub_mesh.bottom_radius = 0.16
+	hub_mesh.height = 0.04
+	hub_mesh.radial_segments = 10
+	hub.mesh = hub_mesh
+	hub.position = local_position + Vector3(-0.15 if local_position.x < 0.0 else 0.15, 0.0, 0.0)
+	hub.rotation.z = PI * 0.5
+	var hub_material := StandardMaterial3D.new()
+	hub_material.albedo_color = Color(0.48, 0.50, 0.52)
+	hub_material.metallic = 0.62
+	hub_material.roughness = 0.38
+	hub.material_override = hub_material
+	add_child(hub)
 	_wheel_nodes.append(wheel)
 
 func _add_brake_light(node_name: String, local_position: Vector3) -> void:
