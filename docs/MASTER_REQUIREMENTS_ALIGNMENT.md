@@ -4,7 +4,7 @@
 **Primary source:** `GTA_GHIBLI_FULL_PROMPT.txt`  
 **Engine in the current prototype:** Godot 4.7 (headless CI validation)  
 **Target:** Android, with the Infinix SMART 8 / Unisoc T606 / 4 GB physical RAM as the baseline test device  
-**Content target:** approximately 4 GiB of genuine, useful assets; not a runtime RAM target
+**Content growth:** no fixed final size ceiling; every increase must be genuine, useful and compatible with the Android performance baseline (not a runtime RAM target)
 
 This document turns the supplied master prompt and the current repository evidence into one controlled implementation baseline. It does not claim that planned systems already exist.
 
@@ -46,7 +46,7 @@ Do not invent agreed ages, biographies, precise relationships beyond those state
 | Missions | One tutorial flow: square → Mira → garden | Main story, side missions, jobs, dynamic encounters and varied activities | Current mission is a small prototype, not the campaign |
 | Vehicles | First drivable road-car prototype added: enter/exit, forward/reverse, steering, braking and contextual mobile HUD; procedural placeholder art | Cars, motorcycles, bicycles, vans, trucks, heavy vehicles, boats, aircraft, helicopters and other suitable transport | Expand vehicle physics and category-specific classes; physical Android handling test remains outstanding |
 | Interaction | Mira proximity and TALK action | Reusable interactions with people, objects, buildings, food, nature and vehicles | General interaction framework remains to be implemented |
-| Save | Local persistence for the first mission flags | Versioned game-wide progress including missions, player, inventory, settings and relevant vehicle/world state | Current save is mission-only |
+| Save | Existing per-system local persistence on main | Candidate branch adds a versioned coordinator for player/world clock/components/missions/activities/NPC relationships/vehicle condition and allowlisted legacy files | PARTIALLY IMPLEMENTED; current regression covers player transform and legacy NPC-file restore safety, while full historical migration and all world entities remain unverified |
 | Platform | Godot headless CI | Android export, install, launch and physical-device testing | Not yet verified on device |
 
 The master prompt also says the final project should be a genuinely new project from an empty directory and should not depend on old B1–B16 prototypes. The current repository contains a working starter prototype. This is a production decision that must be handled explicitly: preserve the current work as a prototype/history, and establish a clean production project separately if required by the specification. Do not destructively overwrite the existing project or mislabel it as the final clean-start build.
@@ -135,7 +135,7 @@ This section records changes on `fix/comprehensive-stability-2026-11-20`. They a
 - The 72 existing terrain tile paths are retained, but the candidate replaces eager preload/attachment of all meshes with 72-unit load radius, 96-unit unload radius, six active-tile limit and at most two loads per 0.35-second refresh. Each loaded visual gets a matching trimesh collision.
 - An original SVG application icon is added and configured in `project.godot`.
 - Marsa Al-Noor is recorded as a proposed Harbor City waterfront landmark at local coordinate (14, 0, 10), world coordinate (-68, 0, -44). It is explicitly a candidate placement proposal, not a confirmed story/canon fact. A scene landmark, world-map marker and matching regression test are included.
-- The candidate does not claim a complete game-wide save manager, full NavMesh NPC navigation, expressive Arabic voice recordings, production-grade vehicle physics or physical Android validation.
+- The candidate includes a first-pass unified save coordinator and district NavigationAgent3D routing, both PARTIALLY IMPLEMENTED. It does not claim complete world persistence, connected world-wide NavMesh/obstacle avoidance, expressive Arabic voice recordings, production-grade vehicle physics or physical Android validation. The Android ARM64 Debug workflow has been restored and its current run is pending.
 
 The separate `web-preview` branch already completed the private Chromium smoke test on Ubuntu 24.04 (workflow run #14). This candidate branch does not publish Web content.
 
@@ -153,3 +153,12 @@ The separate `web-preview` branch already completed the private Chromium smoke t
 10. Expand unique assets and regions against the auditable 4 GiB content budget.
 
 A gate passes only when its implementation and tests exist. Keep **implemented**, **planned**, **blocked**, and **tested** statuses separate.
+
+
+## 6B. Save, navigation and Android workflow status — 2026-11-20
+
+- Unified save coordinator: PARTIALLY IMPLEMENTED on PR #31. It captures current player transform, world clock, health/wallet/needs/inventory snapshots, mission and side-activity snapshots, NPC relationship snapshots, vehicle condition and allowlisted legacy save files. It does not yet cover every spawned/destroyed world object, collectible, NPC transform or future subsystem.
+- Legacy restore safety: IMPLEMENTED in the candidate code; regression is PENDING. Restore is restricted to named legacy save paths and flat safe-ID NPC relationship JSON files. Unrelated user files and traversal paths are rejected; each restored legacy record is limited to 2 MiB.
+- NPC navigation: PARTIALLY IMPLEMENTED. Four prototype district grids and NavigationAgent3D path following exist; avoidance is disabled and the village, roads, interiors and all districts are not one continuous navigation surface.
+- Android: ARM64 Debug export workflow restored from `main`; current run is pending. A Debug artifact is not a signed production release and is not a physical-device test.
+- Content growth: no fixed numeric ceiling. Keep separate byte measurements for tracked unique blobs, raw APK, Web export and artifact ZIP. Only useful original/licensed content counts.

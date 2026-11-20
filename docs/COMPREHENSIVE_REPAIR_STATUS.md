@@ -20,7 +20,7 @@ Status: repair candidate; no changes to `main`, no public Web deployment.
 | NPC movement | NPC brains create NavigationAgent3D and use a live navigation map for wandering, schedules and fleeing; legacy direct movement remains a fallback only where no navigation region exists | Existing NPC tests plus district path-query checks; final branch run pending |
 | Vehicle condition | Vehicle health, collision-impact damage, disabled state, repairs, speed degradation and a serializable condition snapshot | New `vehicle_damage_repair_test.gd`; final branch run pending |
 | Vehicle visuals | Rear brake lights and animated wheel meshes | New vehicle visual regression; final branch run pending |
-| Unified local save | Versioned local save coordinator captures player transform, world clock, player components, mission snapshots, NPC relationships, vehicle state and copies existing per-system JSON/CFG save files into one compatibility section | New `game_save_manager_test.gd`; final branch run pending |
+| Unified local save | Versioned local save coordinator captures player transform, world clock, player components, mission snapshots, NPC relationships, vehicle state and allowlisted legacy JSON/CFG files | `game_save_manager_test.gd` checks a legacy NPC file round-trip and rejects unrelated/traversal restore paths; full-world persistence remains partial |
 | Save recovery | Writes a temporary file, validates its JSON/schema, preserves a previous backup and then replaces the active local save | Included in unified save manager; final branch run pending |
 | Web dialogue privacy | Prevents Mira and world NPC dialogue from requesting remote audio when running as a Web build; bundled and cached clips remain eligible | New `web_dialogue_privacy_audit.py`; final branch run pending |
 | Application icon | Adds an original SVG icon and connects it in project settings | Previous Godot import and APK build passed on earlier stable candidate commit |
@@ -46,8 +46,8 @@ https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/44633964747
 - NPC avoidance, obstacle-aware combat reactions, advanced car suspension/tire dynamics, complete damage model, broad traffic AI and remaining vehicle categories are not finished.
 - Unified saves now combine and snapshot the current major systems, but world object destruction/spawn state, every collectible, all NPC transforms and all future systems still need to adopt the snapshot contract before calling the entire world persistence complete.
 - Marsa Al-Noor remains a proposal requiring owner/story approval.
-- Delivery target has been switched to a single-threaded Godot Web build (WebAssembly + WebGL 2). Android APK export is no longer part of this branch's delivery workflow. The browser bundle must pass privacy checks and the private Chromium runtime smoke test before it is distributed. Public hosting remains a separate owner-controlled decision.
-- The 300 MB target has not been achieved by the latest confirmed APK. Add only original, licensed, useful content; do not pad the package.
+- The Android ARM64 Debug APK workflow was restored from `main` on this repair branch in this run; the latest Godot, Android, Web/Chromium and security runs are pending. Web export remains a private CI check only; no public hosting or bundle publishing is enabled.
+- Content growth has no fixed final size ceiling. Add only original or properly licensed, useful content and profile import time, APK size, memory and frame time against the 4 GB / Unisoc T606 baseline; never add padding.
 
 ## Release gate
 
@@ -58,3 +58,17 @@ Do not merge this Draft PR, label the game release-ready, publish a Web page or 
 Reference asset reviewed: user-supplied 127-second, 1280×644 video. The current graphics pass adds an original low-poly protagonist clothing silhouette, 5.8 m follow arm / 65° camera profile, a textured stone-walled starter alley, original willow/street props, 16 imported Harbor City houses and their original street mesh network, more detailed varied traffic sedans, warmer morning lighting and a 06:51 opening time.
 
 A dedicated visual regression now runs in Godot CI: `tests/graphics_reference_profile_test.gd`. This is a source/scene-level gate only; it does not prove exact visual parity. Review running screenshots and a physical Android device before accepting the final appearance. Details: [GRAPHICS_REFERENCE_PROFILE.md](GRAPHICS_REFERENCE_PROFILE.md).
+
+
+## Run update — 2026-11-20
+
+| Gate | Current classification | Evidence / limitation |
+|---|---|---|
+| Android ARM64 debug export workflow | IMPLEMENTED; TESTED only after its current run finishes | Workflow restored from the unchanged `main` version. Current run is linked from PR #31 Checks; its result is pending. |
+| Unified save coordinator | PARTIALLY IMPLEMENTED | Player transform, world clock, component snapshots, mission/activity snapshots, NPC relationship snapshots, vehicle conditions and legacy files are represented. Full-world persistence and all historical save migrations are not proven. |
+| Legacy restore path safety | IMPLEMENTED; TEST PENDING | Only explicit legacy save paths and flat `user://npc_relationships/<safe-id>.json` files are accepted; restore payloads are limited to 2 MiB per file. Regression covers allowlisted round-trip, unrelated-file preservation and traversal rejection. |
+| District NPC navigation | PARTIALLY IMPLEMENTED | Four prototype district navigation grids and NavigationAgent3D usage exist. Avoidance is disabled and unconnected/no-map areas retain direct-movement fallback. |
+| Expressive Arabic dialogue | BLOCKED / NOT VERIFIED | The 25 dialogue lines still need local, offline, expressive audio files and playback verification; TTS is not human acting. |
+| Physical Android performance | NOT VERIFIED | No authorized physical device session is available for install, touch feel, FPS, RAM, heat or speaker testing. |
+
+No asset files were added in this save-safety/CI repair commit. The asset register remains unchanged because there is no new asset provenance to record.

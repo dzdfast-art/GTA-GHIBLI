@@ -11,6 +11,8 @@ const SAVE_TEMP_PATH := "user://gta_ghibli_unified_save.tmp"
 const SAVE_BACKUP_PATH := "user://gta_ghibli_unified_save.bak"
 const SAVE_SCHEMA_VERSION := 1
 const AUTOSAVE_INTERVAL := 90.0
+const LEGACY_RELATIONSHIP_PREFIX := "user://npc_relationships/"
+const MAX_LEGACY_RESTORE_BYTES := 2097152
 const LEGACY_SAVE_PATHS := [
 	"user://gta_ghibli_save.json",
 	"user://gta_ghibli_mission_002.json",
@@ -282,17 +284,18 @@ func _restore_vehicles(snapshots: Array) -> void:
 func _capture_legacy_files() -> Dictionary:
 	var result: Dictionary = {}
 	for path in LEGACY_SAVE_PATHS:
-		if FileAccess.file_exists(path):
-			var file := FileAccess.open(path, FileAccess.READ)
-			if file != null:
-				result[path] = file.get_as_text()
-				file.close()
-	var relationship_dir := DirAccess.open("user://npc_relationships")
+		if not _is_allowed_legacy_restore_path(path) or not FileAccess.file_exists(path):
+			continue
+		var file := FileAccess.open(path, FileAccess.READ)
+		if file != null:
+			result[path] = file.get_as_text()
+			file.close()
+	var relationship_dir := DirAccess.open(LEGACY_RELATIONSHIP_PREFIX)
 	if relationship_dir != null:
 		for filename in relationship_dir.get_files():
-			if filename.get_extension().to_lower() != "json":
+			var path := LEGACY_RELATIONSHIP_PREFIX + filename
+			if not _is_allowed_legacy_restore_path(path):
 				continue
-			var path := "user://npc_relationships/" + filename
 			var file := FileAccess.open(path, FileAccess.READ)
 			if file != null:
 				result[path] = file.get_as_text()
@@ -305,7 +308,10 @@ func _restore_legacy_files(files: Variant) -> void:
 		return
 	for path_value in files.keys():
 		var path := str(path_value)
-		if not path.begins_with("user://") or path.contains(".."):
+		if not _is_allowed_legacy_restore_path(path):
+			continue
+		var content := str(files[path_value])
+		if content.to_utf8_buffer().size() > MAX_LEGACY_RESTORE_BYTES:
 			continue
 		var absolute_directory := ProjectSettings.globalize_path(path.get_base_dir())
 		var make_error := DirAccess.make_dir_recursive_absolute(absolute_directory)
@@ -314,9 +320,28 @@ func _restore_legacy_files(files: Variant) -> void:
 		var file := FileAccess.open(path, FileAccess.WRITE)
 		if file == null:
 			continue
-		file.store_string(str(files[path_value]))
+		file.store_string(content)
 		file.flush()
 		file.close()
+
+
+func _is_allowed_legacy_restore_path(path: String) -> bool:
+	if LEGACY_SAVE_PATHS.has(path):
+		return true
+	if not path.begins_with(LEGACY_RELATIONSHIP_PREFIX):
+		return false
+	var filename := path.trim_prefix(LEGACY_RELATIONSHIP_PREFIX)
+	if filename.is_empty() or filename.contains("/") or filename.contains("\\"):
+		return false
+	if filename.length() > 68 or filename.get_extension().to_lower() != "json":
+		return false
+	var stable_id := filename.get_basename()
+	if stable_id.is_empty():
+		return false
+	for character in stable_id:
+		if not character.is_valid_identifier() and character != "-":
+			return false
+	return true
 
 
 func _reload_legacy_components() -> void:

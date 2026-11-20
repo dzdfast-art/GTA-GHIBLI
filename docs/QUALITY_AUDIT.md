@@ -75,10 +75,22 @@ Verified separately on `web-preview`, not this candidate branch:
 Known blockers / limits that remain:
 - All 25 dialogue lines in `data/characters/world_dialogue_ar.json` remain marked as needing expressive voice retakes; no new actual performance recordings are included by this candidate.
 - No physical Android device is connected to this testing session; touchscreen feel, sustained FPS, RAM, temperature, audio audibility and install/launch on the target phone remain NOT VERIFIED.
-- NPC movement remains simple direct movement rather than a fully obstacle-aware NavMesh system.
-- Advanced car physics, all additional vehicle classes, broad damage integration, and a centralized game-wide save/migration system remain incomplete.
-- Asset provenance register still needs per-asset evidence review before a release.
+- NPCs use NavigationAgent3D when a live map exists in the four prototype districts; avoidance remains disabled, the village/road network is not one connected NavMesh, and direct movement remains the fallback where no map is available.
+- Advanced car physics and additional vehicle classes remain incomplete. A first-pass unified save coordinator exists on the candidate branch, but complete legacy-format migration and persistence of every world entity remain incomplete.
+- Asset provenance register still needs per-asset evidence review before a release. No new asset was added in the save-safety/CI repair run.
 - Android output is a debug ARM64 test build, not a signed production release.
 - `main` still contains the capsule player, old STATS/BRIEF placeholder and eager terrain loading; candidate branch changes must pass CI and owner review before any merge decision.
 
 No public Web deployment or Pages publishing was performed.
+
+
+## Repair branch follow-up — 2026-11-20
+
+- `main` remains at `c9fc82936a43b80af0e3c25eef41c9fee59e47b7`; all work remains isolated in Draft PR #31.
+- The branch's Android ARM64 Debug workflow had been removed in its earlier diff. It has now been restored from the exact current `main` workflow; the new Android run is pending, not yet a successful build.
+- The unified save restore routine now uses an explicit allowlist: the known legacy save paths plus one flat, safe-ID JSON file per NPC relationship. Unrelated `user://` paths, path traversal, and legacy records larger than 2 MiB are rejected.
+- `game_save_manager_test.gd` now verifies a real legacy NPC relationship file round-trip, keeps an unrelated sentinel file unchanged, and rejects a traversal write. The result is pending the current Godot CI run.
+- Four district navigation grids and NavigationAgent3D use are present, but avoidance is disabled and there is no continuous world-wide NavMesh. Classify this as PARTIALLY IMPLEMENTED, not complete.
+- All 25 expressive Arabic dialogue lines, physical-device testing, real FPS/RAM/thermal/audio measurements and release signing remain BLOCKED or NOT VERIFIED as applicable.
+- There is no fixed final content-size ceiling. Only original/licensed assets and meaningful playable systems qualify as growth; APK, Web export and tracked-source bytes must be measured separately.
+- Current Godot, Android, private Web/Chromium and security runs are pending. The earlier successful APK size must not be reused as the size of the current branch head.

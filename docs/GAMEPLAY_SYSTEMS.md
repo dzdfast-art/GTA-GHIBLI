@@ -72,9 +72,9 @@ Distinguish:
 
 Important characters need a distinct purpose, personality, visual identity, voice profile, relationships and authored dialogue. Generic pedestrians may use shared rigs/animations but should vary in appearance and behavior without creating duplicate named identities.
 
-**Expanded reactive-NPC prototype added:** `scripts/systems/npc_brain.gd` now tracks per-NPC trust and familiarity, changes reactions after positive or hostile player actions, supports configurable work/rest hours through `set_world_hour()`, moves alarmed NPCs away from danger, and propagates nearby alarm reactions to other registered NPC brains. Mira is the first integrated character and now attaches the brain during `_ready()`; talking to her increases familiarity and trust. The headless test now covers relationship changes and schedule transitions as well as perception. These are prototype systems: relationship memory is currently runtime-only, schedules require the game clock to call `set_world_hour()`, and movement is simple direct movement rather than NavMesh pathfinding.
+**Expanded reactive-NPC prototype added:** `scripts/systems/npc_brain.gd` tracks per-NPC trust and familiarity, reacts to positive or hostile player actions, supports work/rest hours through `set_world_hour()`, moves alarmed NPCs away from danger and propagates nearby alarms. On the comprehensive repair candidate, each brain creates a NavigationAgent3D and follows a live navigation map when one exists. Four prototype district grids are generated in the candidate branch. The NPC test covers perception, relationship changes, persistence of trust/familiarity and schedule transitions.
 
-**Still planned:** persistent save/load of relationships, authored routines and destinations for the full cast, social groups and coordinated assistance, police/witness response, obstacle-aware navigation, combat decisions, dynamic dialogue branches and integration across all named characters and pedestrians. Use distance-based simulation and population limits for mobile performance.
+**Current limits:** navigation is PARTIALLY IMPLEMENTED. Agent avoidance is disabled; the village, roads, interiors and four districts are not one continuous NavMesh; areas without a live navigation map still use direct-movement fallback. Full obstacle avoidance, no-path behavior across every district, saved daily schedule state and persistent NPC world transforms remain unverified or planned. Use distance-based simulation and population limits for mobile performance.
 
 **Arabic audio requirement:** important dialogue must be genuinely voiced in Arabic with expressive emotional performance, consistent character voices and synchronized subtitles. Text plus an empty audio path is not dubbing. Audio remains incomplete until a real audio asset is integrated and playback is tested.
 
@@ -159,9 +159,9 @@ Do not imply that every building is enterable. Document which category each loca
 
 ## 10. Save, progression and data
 
-**Implemented in prototype:** versioned local save for the first mission's three progress flags, separate mission-completion records, a local wallet file, player-needs data and inventory data. The repair candidate adds a schema-v2 wallet record with a reward-transaction ledger while preserving older balance-only wallet files.
+**Implemented in the repair candidate (PARTIALLY IMPLEMENTED):** `game_save_manager.gd` writes a versioned unified record containing player transform, world clock, health/wallet/needs/inventory snapshots, mission and side-activity snapshots, NPC relationship snapshots, vehicle-condition snapshots and allowlisted legacy JSON/CFG files. It validates a temporary JSON record and rotates a backup before replacing the active save. The wallet reward ledger also preserves one-time reward transaction IDs.
 
-**Still planned:** a centralized versioned save manager for player position/state, mission progress, inventory, currency, settings, unlocked regions and relevant vehicle/world state. Add cross-file migration, defaults, corruption recovery, atomic writes and restart/restore tests; the current separate files do not yet constitute a complete game-wide save.
+**Current save acceptance limits:** the regression now checks player transform restore and a legacy NPC relationship file round-trip while rejecting unrelated and traversal paths. Complete migration of every historical save format, corruption recovery on real device storage, all world object spawn/destruction/collectible states, every NPC transform and all future subsystem snapshots are still PARTIALLY IMPLEMENTED or NOT VERIFIED. Do not describe the whole world as fully persistent until each entity type has a tested snapshot contract.
 
 ## 11. Mobile performance and content budget
 
@@ -169,7 +169,7 @@ Target Android baseline: Infinix SMART 8, Unisoc T606, 4 GB physical RAM, 720 ×
 
 Use mobile renderer settings, LOD, instancing, culling, simplified collision, distance-based NPC/traffic updates, region streaming, compressed textures/audio and adjustable graphics.
 
-The approximately 4 GiB content goal is an auditable storage/content budget, not a runtime RAM goal. Track source assets, imported project size, download size, installed size and update size separately. Never add empty or duplicate files to inflate size.
+Content growth has no fixed final size ceiling and is not a runtime RAM goal. Track unique tracked source blobs, imported project size, raw APK, Web export, artifact ZIP, download size and installed size separately. Never add empty, duplicate or filler files; profile import time, memory and frame time on the target Android device.
 
 ## 12. Current verification
 
@@ -228,3 +228,13 @@ The data catalogue is `data/world/side_activities.json`; the headless regression
 ### حزمة الأصوات البيئية الأصلية
 
 أضيفت 12 مقطع WAV أصلياً مولّداً تركيبياً، موزعة على ست بيئات: الفجر، الغابة نهاراً، الليل، الساحل، المطر، والعاصفة. كل بيئة تتكون من مقطعين متتابعين مدة كل منهما 22.5 ثانية، ليشكلا دورة مدتها 45 ثانية. المواصفات 22,050 هرتز، ستيريو، PCM بدقة 16 بت. يختار `nature_ambience.gd` المجموعة وفق ساعة العالم والمنطقة والطقس، ويشغّل طبقة الصوت الجديدة بمستوى منخفض فوق المؤثرات الإجرائية الحالية. هذه أصوات مصنّعة للمشروع وليست تسجيلات طبيعية حقيقية؛ ولا تمثل بعد الدبلجة العربية التمثيلية المطلوبة للشخصيات. اختبار `nature_ambience_assets_test.gd` يتحقق من تحميل WAV وتبديل البيئات.
+
+
+## 13. Repair candidate verification status — 2026-11-20
+
+- The Android ARM64 Debug workflow is present again on PR #31, restored from the current `main` copy. Its new run is pending; do not quote an older APK size for the current head.
+- Unified save restore now accepts only the named legacy save paths and flat safe-ID NPC relationship JSON files. The new regression checks a legacy-file round-trip and rejects unrelated/traversal writes; CI is pending.
+- District NavigationAgent3D path following is PARTIALLY IMPLEMENTED. Avoidance remains disabled and there is no connected world-wide NavMesh.
+- Physical Android install/touch/FPS/RAM/thermal/audio acceptance remains NOT VERIFIED.
+- Arabic dialogue performance remains incomplete until local offline audio files are present and playback is tested; synthetic TTS must not be labelled human acting.
+- No new asset was added in the save-safety/CI repair commit, so the ownership/asset register has no new row to add.
