@@ -75,6 +75,7 @@ jobs:
             res://scripts/systems/consumable_inventory.gd \
             res://scripts/systems/player_wallet.gd \
             res://scripts/systems/player_health.gd \
+            res://scripts/systems/game_save_manager.gd \
             res://scripts/world/consumable_shop.gd \
             res://scripts/camera/third_person_camera.gd \
             res://scripts/ui/mobile_controls.gd \
@@ -111,6 +112,9 @@ jobs:
 
       - name: Test player wallet and currency
         run: godot --headless --path . --script res://tests/player_wallet_test.gd
+
+      - name: Test unified game save manager
+        run: godot --headless --path . --script res://tests/game_save_manager_test.gd
 
       - name: Test village shop purchases
         run: godot --headless --path . --script res://tests/consumable_shop_test.gd
