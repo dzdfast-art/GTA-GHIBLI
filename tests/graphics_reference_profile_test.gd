@@ -53,6 +53,35 @@ func _run() -> void:
 		_fail("The camera should return to the closer on-foot framing after dismount.")
 		return
 
+	var controls := game.get_node_or_null("MobileControls")
+	var controls_root := controls.get_node_or_null("HUD") as Control if controls != null else null
+	if controls_root == null:
+		_fail("The mobile HUD control layer is missing.")
+		return
+	var context_button := controls_root.get_node_or_null("ContextAction") as Button
+	var sprint_button := controls_root.get_node_or_null("Sprint") as Button
+	if context_button == null or sprint_button == null or context_button.icon == null or sprint_button.icon == null:
+		_fail("Reference-style bicycle and run action icons are missing.")
+		return
+	var button_style := context_button.get_theme_stylebox("normal") as StyleBoxFlat
+	if button_style == null or button_style.bg_color.r > 0.20 or button_style.bg_color.a > 0.85:
+		_fail("Mobile action buttons must use dark, translucent circular backgrounds.")
+		return
+	var joystick := controls_root.get_node_or_null("MovementJoystick") as Control
+	if joystick == null or joystick.size.x < 170.0:
+		_fail("The reference-sized analog joystick is missing.")
+		return
+	var gameplay_hud := controls.get_node_or_null("GameplayHUD") as Control
+	var radar := gameplay_hud.get_node_or_null("LiveRadar") as Control if gameplay_hud != null else null
+	var fist_icon := gameplay_hud.get_node_or_null("PlayerStatus/ClockRow/UnarmedFistIcon") as TextureRect if gameplay_hud != null else null
+	if radar == null or radar.custom_minimum_size.x < 175.0 or fist_icon == null or fist_icon.custom_minimum_size.x < 55.0:
+		_fail("The reference-sized circular minimap or fist HUD icon is missing.")
+		return
+	var clock_row := gameplay_hud.get_node("PlayerStatus/ClockRow") as HBoxContainer
+	if clock_row.get_child_count() < 2 or clock_row.get_child(clock_row.get_child_count() - 1) != fist_icon:
+		_fail("The fist icon should sit to the right of the in-game clock, as in the reference HUD.")
+		return
+
 	var village := game.get_node_or_null("WillowVillage")
 	if village == null:
 		_fail("The starting village is missing.")
