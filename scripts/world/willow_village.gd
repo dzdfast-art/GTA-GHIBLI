@@ -22,6 +22,7 @@ func _ready() -> void:
 	_build_house_portal()
 	_build_garden()
 	_build_trees()
+	_build_street_lamps()
 	_build_well()
 	_build_signpost()
 	_build_interactive_objects()
@@ -236,6 +237,14 @@ func _add_tree(tree_name: String, origin: Vector3, scale_factor: float) -> void:
 	collision_body.add_child(collision)
 	tree.add_child(collision_body)
 
+
+
+func _build_street_lamps() -> void:
+	# Restore the original low-poly street lamps along the residential alley.
+	_add_imported_mesh(self, "VillageStreetLamp_-1.0_0", STREET_LAMP_MESH,
+		Vector3(-4.45, 0.0, -31.0), Vector3.ONE)
+	_add_imported_mesh(self, "VillageStreetLamp_1.0_0", STREET_LAMP_MESH,
+		Vector3(4.45, 0.0, -31.0), Vector3.ONE)
 
 func _build_well() -> void:
 	var well := CylinderMesh.new()

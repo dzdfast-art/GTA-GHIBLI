@@ -60,7 +60,7 @@ jobs:
       - name: Export single-threaded WebAssembly build
         run: |
           mkdir -p build/web
-          godot --headless --path . --export-release "GTA GHIBLI Web" build/web/index.html
+          godot --headless --path . --export-release "Web Preview" build/web/index.html
 
       - name: Verify required browser files
         shell: bash

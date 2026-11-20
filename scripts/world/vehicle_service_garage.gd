@@ -53,7 +53,7 @@ func _find_service_vehicle() -> Node3D:
 		var vehicle := candidate as Node3D
 		if vehicle == null or not vehicle.has_method("repair_vehicle"):
 			continue
-		var is_driver := vehicle.get("driver") == _player
+		var is_driver: bool = vehicle.get("driver") == _player
 		var distance := _player.global_position.distance_to(vehicle.global_position)
 		if not is_driver and distance > VEHICLE_SERVICE_RADIUS:
 			continue
