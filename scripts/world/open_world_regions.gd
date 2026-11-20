@@ -358,6 +358,7 @@ func _build_district_navigation(district: Node3D) -> void:
 	var columns := 16
 	var rows := 12
 	var polygon_count := 0
+	var polygons: Array[PackedInt32Array] = []
 
 	for x_index in range(columns):
 		var left := minimum_x + float(x_index) * cell_size
@@ -373,12 +374,14 @@ func _build_district_navigation(district: Node3D) -> void:
 			vertices.append(Vector3(left, 0.08, bottom))
 			vertices.append(Vector3(right, 0.08, bottom))
 			vertices.append(Vector3(right, 0.08, top))
-			navigation_mesh.add_polygon(PackedInt32Array([
+			polygons.append(PackedInt32Array([
 				base_index, base_index + 1, base_index + 2, base_index + 3
 			]))
 			polygon_count += 1
 
 	navigation_mesh.set_vertices(vertices)
+	for polygon in polygons:
+		navigation_mesh.add_polygon(polygon)
 	region.navigation_mesh = navigation_mesh
 	region.add_to_group("world_navigation_regions")
 	district.add_child(region)
