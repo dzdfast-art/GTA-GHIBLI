@@ -52,3 +52,9 @@ https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/44633964747
 ## Release gate
 
 Do not merge this Draft PR, label the game release-ready, publish a Web page or produce a public Web bundle until the owner reviews the PR, the latest Godot/Android/security/Web tests pass, and device/release prerequisites are addressed.
+
+## Graphics focus — San Andreas Mobile reference
+
+Reference asset reviewed: user-supplied 127-second, 1280×644 video. The current graphics pass adds an original low-poly protagonist clothing silhouette, 5.8 m follow arm / 65° camera profile, a textured stone-walled starter alley, original willow/street props, 16 imported Harbor City houses and their original street mesh network, more detailed varied traffic sedans, warmer morning lighting and a 06:51 opening time.
+
+A dedicated visual regression now runs in Godot CI: `tests/graphics_reference_profile_test.gd`. This is a source/scene-level gate only; it does not prove exact visual parity. Review running screenshots and a physical Android device before accepting the final appearance. Details: [GRAPHICS_REFERENCE_PROFILE.md](GRAPHICS_REFERENCE_PROFILE.md).
