@@ -18,6 +18,14 @@ func _run() -> void:
 	if clock == null or str(clock.call("get_clock_text")) != "06:51":
 		_fail("The opening scene should start at the reference morning time of 06:51.")
 		return
+	var fresh_wallet := Node.new()
+	fresh_wallet.set_script(preload("res://scripts/systems/player_wallet.gd"))
+	fresh_wallet.set("persistence_enabled", false)
+	root.add_child(fresh_wallet)
+	if int(fresh_wallet.call("get_balance")) != 350:
+		_fail("A new game should start with the reference cash balance of $350.")
+		return
+
 	var player := game.get_node_or_null("Player") as CharacterBody3D
 	if player == null:
 		_fail("Reference-profile test cannot find the playable character.")

@@ -4,7 +4,7 @@ extends Node
 signal balance_changed(new_balance: int)
 const SAVE_PATH := "user://player_wallet.json"
 
-@export_range(0, 1000000, 1) var initial_balance := 250
+@export_range(0, 1000000, 1) var initial_balance := 350
 @export var persistence_enabled := true
 var balance := 0
 var _reward_transactions: Array[String] = []
