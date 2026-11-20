@@ -134,7 +134,7 @@ func _run_test() -> void:
 		_fail("A civilian could not calculate a path through its district navigation grid.")
 		return
 
-	print("PASS: Four world districts, 24 building shells, eight scheduled civilians and live NavMesh paths.")
+	print("PASS: Four world districts, 34 building shells, eight scheduled civilians and live NavMesh paths.")
 	quit(0)
 
 func _fail(message: String) -> void:

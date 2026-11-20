@@ -82,7 +82,7 @@ jobs:
             res://scripts/world/consumable_shop.gd \
             res://scripts/world/seafood_market.gd \
             res://scripts/world/public_drinking_fountain.gd \
-            res://scripts/world/vehicle_service_garage.gd
+            res://scripts/world/vehicle_service_garage.gd \
             res://scripts/world/coastal_lighthouse.gd \
             res://scripts/camera/third_person_camera.gd \
             res://scripts/ui/mobile_controls.gd \
@@ -93,7 +93,6 @@ jobs:
             res://scripts/ui/virtual_joystick.gd \
             res://scripts/world/willow_village.gd \
             res://scripts/characters/mira_npc.gd \
-            res://scripts/characters/world_npc_actor.gd \
             res://scripts/characters/world_npc_actor.gd \
             res://scripts/characters/story_character_director.gd \
             res://scripts/missions/mission_manager.gd \
