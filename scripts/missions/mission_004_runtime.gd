@@ -445,3 +445,70 @@ func _refresh_hud() -> void:
 		int(clampf(_escort_elapsed / ESCORT_DURATION, 0.0, 1.0) * 100.0),
 		int(maxf(0.0, MAX_MISSION_TIME - _mission_elapsed))
 	]
+
+func get_save_snapshot() -> Dictionary:
+	var alarm_visibility: Array = []
+	for marker in _alarm_markers:
+		alarm_visibility.append(marker.visible if is_instance_valid(marker) else false)
+	return {
+		"phase": int(_phase),
+		"alarms_disabled": _alarms_disabled,
+		"mission_elapsed": _mission_elapsed,
+		"escort_elapsed": _escort_elapsed,
+		"abandon_elapsed": _abandon_elapsed,
+		"route_choice": _route_choice,
+		"status_override": _status_override,
+		"train_position": _node_position_snapshot(_train),
+		"mia_position": _node_position_snapshot(_mia),
+		"mia_visible": _mia.visible if is_instance_valid(_mia) else true,
+		"alarm_visibility": alarm_visibility
+	}
+
+
+func apply_save_snapshot(snapshot: Dictionary) -> bool:
+	if not snapshot.has("phase"):
+		return false
+	_phase = clampi(int(snapshot.get("phase", int(Phase.LOCKED))), int(Phase.LOCKED), int(Phase.FAILED))
+	_alarms_disabled = clampi(int(snapshot.get("alarms_disabled", 0)), 0, ALARM_POSITIONS.size())
+	_mission_elapsed = clampf(float(snapshot.get("mission_elapsed", 0.0)), 0.0, MAX_MISSION_TIME)
+	_escort_elapsed = maxf(0.0, float(snapshot.get("escort_elapsed", 0.0)))
+	_abandon_elapsed = maxf(0.0, float(snapshot.get("abandon_elapsed", 0.0)))
+	_route_choice = str(snapshot.get("route_choice", ""))
+	_status_override = str(snapshot.get("status_override", ""))
+	if _phase != Phase.LOCKED and _phase != Phase.COMPLETE and _phase != Phase.FAILED and not _visuals_created:
+		_create_station_blockout()
+	_restore_node_position(_train, snapshot.get("train_position", []))
+	_restore_node_position(_mia, snapshot.get("mia_position", []))
+	if is_instance_valid(_mia):
+		_mia.visible = bool(snapshot.get("mia_visible", true))
+	var visibility = snapshot.get("alarm_visibility", [])
+	if visibility is Array:
+		for index in range(mini(visibility.size(), _alarm_markers.size())):
+			if is_instance_valid(_alarm_markers[index]):
+				_alarm_markers[index].visible = bool(visibility[index])
+	_refresh_hud()
+	return true
+
+
+func reload_saved_state() -> void:
+	if _is_completed():
+		_phase = Phase.COMPLETE
+		_award_completion_reward()
+	elif _mission_003_completed():
+		if not _visuals_created:
+			_start_mission()
+	else:
+		_phase = Phase.LOCKED
+	_refresh_hud()
+
+
+func _node_position_snapshot(node: Node3D) -> Array:
+	if not is_instance_valid(node):
+		return []
+	return [node.global_position.x, node.global_position.y, node.global_position.z]
+
+
+func _restore_node_position(node: Node3D, value: Variant) -> void:
+	if not is_instance_valid(node) or not value is Array or value.size() < 3:
+		return
+	node.global_position = Vector3(float(value[0]), float(value[1]), float(value[2]))
