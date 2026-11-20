@@ -286,10 +286,12 @@ func _relationship_save_path() -> String:
 	stable_id = stable_id.to_lower().strip_edges().replace(" ", "_")
 	var safe_id := ""
 	for character in stable_id:
-		if character.is_valid_identifier() or character == "-":
+		if character.is_valid_ascii_identifier() or character.is_valid_int() or character == "-":
 			safe_id += character
 	if safe_id.is_empty():
 		return ""
+	if not safe_id.replace("-", "_").is_valid_ascii_identifier():
+		safe_id = "npc_" + safe_id
 	return "user://npc_relationships/%s.json" % safe_id
 
 

@@ -9,6 +9,17 @@ func _initialize() -> void:
 
 
 func _run_test() -> void:
+	var numeric_id_brain := Node.new()
+	numeric_id_brain.set_script(BRAIN_SCRIPT)
+	numeric_id_brain.set("persistence_id", "npc_12")
+	if numeric_id_brain.call("_relationship_save_path") != "user://npc_relationships/npc_12.json":
+		_fail("NPC relationship IDs must preserve digits instead of collapsing to the same filename.")
+		return
+	numeric_id_brain.set("persistence_id", "12_npc")
+	if numeric_id_brain.call("_relationship_save_path") != "user://npc_relationships/npc_12_npc.json":
+		_fail("NPC relationship IDs beginning with digits must be normalized safely.")
+		return
+
 	var npc := Node3D.new()
 	npc.name = "TestNPC"
 	root.add_child(npc)
