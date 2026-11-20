@@ -1,0 +1,102 @@
+name: GTA GHIBLI Repair Branch Web + Chromium Validation
+
+on:
+  push:
+    branches:
+      - fix/comprehensive-stability-2026-11-20
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "project.godot"
+      - "export_presets.cfg"
+      - "assets/**"
+      - "audio/**"
+      - "data/**"
+      - "scenes/**"
+      - "scripts/**"
+      - "tests/**"
+      - "tools/**"
+      - ".github/workflows/web-repair-validation.yml"
+      - ".github/scripts/web_browser_smoke_test.cjs"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gta-ghibli-repair-web-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  private-web-chromium:
+    if: github.event_name == 'push' || github.event.pull_request.head.ref == 'fix/comprehensive-stability-2026-11-20'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repair candidate
+        uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # immutable checkout action commit
+        with:
+          persist-credentials: false
+          lfs: false
+
+      - name: Install Godot 4.7 and Web export templates
+        uses: SolarLabyrinth/Action-Setup-Godot@6ca948845e6489770ebb3be5fd1cc4589c65b8ad # immutable action commit
+        with:
+          version: 4.7-stable
+          export-templates: true
+
+      - name: Run privacy audits
+        run: |
+          python tools/privacy_audit.py
+          python tools/web_privacy_audit.py
+          python tools/web_dialogue_privacy_audit.py
+
+      - name: Import project resources
+        run: godot --headless --editor --path . --quit
+
+      - name: Test mobile controls and camera isolation
+        run: godot --headless --path . --script res://tests/mobile_controls_regression_test.gd
+
+      - name: Test vehicle damage and repair
+        run: godot --headless --path . --script res://tests/vehicle_damage_repair_test.gd
+
+      - name: Test unified local save manager
+        run: godot --headless --path . --script res://tests/game_save_manager_test.gd
+
+      - name: Export browser build locally on the temporary runner
+        run: |
+          mkdir -p build/web
+          godot --headless --path . --export-release "Web Preview" build/web/index.html
+
+      - name: Install pinned Chromium for private browser testing
+        run: |
+          mkdir -p /tmp/gta-ghibli-playwright
+          npm install --prefix /tmp/gta-ghibli-playwright playwright@1.55.0
+          /tmp/gta-ghibli-playwright/node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Run private Chromium Web runtime smoke test on localhost
+        env:
+          NODE_PATH: /tmp/gta-ghibli-playwright/node_modules
+        run: node .github/scripts/web_browser_smoke_test.cjs
+
+      - name: Verify private Web export contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s build/web/index.html
+          wasm_file="$(find build/web -type f -name '*.wasm' -print -quit)"
+          pck_file="$(find build/web -type f -name '*.pck' -print -quit)"
+          test -n "$wasm_file"
+          test -n "$pck_file"
+          forbidden_file="$(find build/web -type f \( -name '.env' -o -name '.env.*' -o -name '*.keystore' -o -name '*.jks' -o -name '*.p12' \) -print -quit)"
+          if [ -n "$forbidden_file" ]; then
+            echo "A secret or signing-key file was found in the Web export: $forbidden_file"
+            exit 1
+          fi
+          echo "Private Web build validated locally:"
+          find build/web -maxdepth 1 -type f -printf '%f %s bytes\n' | sort
+          du -sh build/web
+
+      # No artifact upload, Pages deployment, public URL or cross-job publishing.
