@@ -40,6 +40,19 @@ func _run() -> void:
 	if absf(spring_arm.spring_length - 3.6) > 0.01 or absf(camera.fov - 65.0) > 0.01:
 		_fail("The camera must use the reference-matched follow distance and field of view.")
 
+	player.set("is_driving", true)
+	for _frame in range(12):
+		await process_frame
+	if spring_arm.spring_length < 4.4:
+		_fail("The camera should pull back smoothly while riding a vehicle.")
+		return
+	player.set("is_driving", false)
+	for _frame in range(12):
+		await process_frame
+	if spring_arm.spring_length > 4.5:
+		_fail("The camera should return to the closer on-foot framing after dismount.")
+		return
+
 	var village := game.get_node_or_null("WillowVillage")
 	if village == null:
 		_fail("The starting village is missing.")
