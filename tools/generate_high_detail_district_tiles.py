@@ -26,14 +26,28 @@ def height_at(kind: str, x: float, z: float) -> float:
         return 1.8+terraces+0.05*x+drainage+wave*0.3
     return 0.95+6.2*gaussian(x,62,27)+4.7*gaussian(x,166,21)-1.5*gaussian(z,107,18)-1.1*gaussian(math.hypot(x-124,z-72),0,19)+0.48*math.sin(z*0.075)+wave*0.55
 
-def material_at(kind: str, y: float, slope: float, x: float, z: float) -> str:
-    if slope > (2.0 if kind == "pine" else 2.6): return "ground_rock"
-    if kind == "harbor": return "ground_water_edge" if y<0.75 else ("ground_sand" if y<1.7 else "ground_dirt")
-    if kind == "pine": return "ground_forest" if y<7.0 else "ground_rock"
+def row_material(kind: str, row: int) -> str:
+    """Use broad contiguous material bands to stay under the 256-surface import cap."""
+    z = row * 2.0
+    if kind == "harbor":
+        if 34.0 <= z <= 54.0:
+            return "ground_rock"
+        if 92.0 <= z <= 128.0:
+            return "ground_water_edge"
+        if z < 24.0 or z > 190.0:
+            return "ground_dirt"
+        return "ground_sand"
+    if kind == "pine":
+        return "ground_rock" if 36.0 <= z <= 82.0 else "ground_forest"
     if kind == "amber":
-        if abs(z-(82+8*math.sin(x*0.03)))<7 or abs(z-166)<6: return "ground_water_edge"
-        return "ground_crop" if x%44<35 else "ground_soil"
-    return "ground_water_edge" if y<1.6 else ("ground_rock" if y>5.4 else "ground_sand")
+        if 78.0 <= z <= 94.0 or 160.0 <= z <= 176.0:
+            return "ground_water_edge"
+        return "ground_crop" if int(z // 48) % 2 == 0 else "ground_soil"
+    if z < 28.0 or z > 190.0:
+        return "ground_rock"
+    if 88.0 <= z <= 126.0:
+        return "ground_water_edge"
+    return "ground_sand"
 
 def build_tile(kind: str, filename: str, label: str) -> None:
     heights=[[height_at(kind,col*2.0,row*2.0) for col in range(SIZE)] for row in range(SIZE)]
@@ -42,12 +56,15 @@ def build_tile(kind: str, filename: str, label: str) -> None:
         for col in range(SIZE): lines.append(f"v {col*2.0:.3f} {heights[row][col]:.3f} {row*2.0:.3f}")
     active=""
     for row in range(SIZE-1):
+        material=row_material(kind,row)
+        if material!=active:
+            lines.append(f"usemtl {material}")
+            active=material
         for col in range(SIZE-1):
-            y=heights[row][col]
-            slope=abs(heights[row][col+1]-y)+abs(heights[row+1][col]-y)
-            material=material_at(kind,y,slope,col*2.0,row*2.0)
-            if material!=active: lines.append(f"usemtl {material}"); active=material
-            a=row*SIZE+col+1; b=(row+1)*SIZE+col+1; c=row*SIZE+col+2; d=(row+1)*SIZE+col+2
+            a=row*SIZE+col+1
+            b=(row+1)*SIZE+col+1
+            c=row*SIZE+col+2
+            d=(row+1)*SIZE+col+2
             lines.extend((f"f {a} {b} {c}",f"f {c} {b} {d}"))
     (OUT/filename).write_text("\n".join(lines)+"\n",encoding="utf-8")
 
