@@ -1,6 +1,9 @@
 extends Node3D
 
 @export var travel_speed := 3.2
+@export var paint_color := Color(0.18, 0.34, 0.58)
+
+var _wheel_nodes: Array[MeshInstance3D] = []
 
 var _route_start := Vector3.ZERO
 var _route_end := Vector3.ZERO
@@ -34,6 +37,7 @@ func _process(delta: float) -> void:
 		return
 	_travel_phase = fposmod(_travel_phase + travel_speed * delta, _route_length * 2.0)
 	_update_route_position()
+	_update_wheels(delta)
 
 
 func get_speed() -> float:
@@ -59,7 +63,7 @@ func _update_route_position() -> void:
 
 
 func _build_car_visuals() -> void:
-	var paint := _material(Color(0.18, 0.34, 0.58), 0.56, 0.24)
+	var paint := _material(paint_color, 0.56, 0.24)
 	var glass := _material(Color(0.20, 0.42, 0.52), 0.28, 0.08)
 	var trim := _material(Color(0.11, 0.13, 0.14), 0.78)
 	var tire := _material(Color(0.035, 0.04, 0.045), 0.98)
@@ -113,11 +117,26 @@ func _build_car_visuals() -> void:
 			wheel_mesh.top_radius = 0.32
 			wheel_mesh.bottom_radius = 0.32
 			wheel_mesh.height = 0.18
+			wheel_mesh.radial_segments = 12
 			wheel.mesh = wheel_mesh
 			wheel.rotation.z = PI * 0.5
 			wheel.position = Vector3(side * 0.82, 0.34, axle_z * 1.0)
 			wheel.material_override = tire
 			add_child(wheel)
+			_wheel_nodes.append(wheel)
+
+			var hub := MeshInstance3D.new()
+			hub.name = "WheelHub_%s_%s" % [str(side), str(axle_z)]
+			var hub_mesh := CylinderMesh.new()
+			hub_mesh.top_radius = 0.145
+			hub_mesh.bottom_radius = 0.145
+			hub_mesh.height = 0.035
+			hub_mesh.radial_segments = 10
+			hub.mesh = hub_mesh
+			hub.rotation.z = PI * 0.5
+			hub.position = Vector3(side * 0.925, 0.34, axle_z * 1.0)
+			hub.material_override = trim
+			add_child(hub)
 
 		var headlight := MeshInstance3D.new()
 		headlight.name = "Headlight_%s" % str(side)
@@ -136,6 +155,60 @@ func _build_car_visuals() -> void:
 		tail_light.position = Vector3(side * 0.57, 0.69, 1.54)
 		tail_light.material_override = tail
 		add_child(tail_light)
+
+	# Brand-neutral details give the traffic cars clearer late-2000s compact-sedan shapes.
+	for side in [-1.0, 1.0]:
+		var side_trim := MeshInstance3D.new()
+		side_trim.name = "DoorSeam_%s" % str(side)
+		var seam_mesh := BoxMesh.new()
+		seam_mesh.size = Vector3(0.035, 0.28, 1.0)
+		side_trim.mesh = seam_mesh
+		side_trim.position = Vector3(side * 0.816, 0.60, 0.10)
+		side_trim.material_override = trim
+		add_child(side_trim)
+
+		var door_handle := MeshInstance3D.new()
+		door_handle.name = "DoorHandle_%s" % str(side)
+		var handle_mesh := BoxMesh.new()
+		handle_mesh.size = Vector3(0.035, 0.055, 0.24)
+		door_handle.mesh = handle_mesh
+		door_handle.position = Vector3(side * 0.835, 0.77, 0.14)
+		door_handle.material_override = trim
+		add_child(door_handle)
+
+		var mirror := MeshInstance3D.new()
+		mirror.name = "SideMirror_%s" % str(side)
+		var mirror_mesh := BoxMesh.new()
+		mirror_mesh.size = Vector3(0.18, 0.11, 0.18)
+		mirror.mesh = mirror_mesh
+		mirror.position = Vector3(side * 0.88, 1.01, -0.67)
+		mirror.material_override = paint
+		add_child(mirror)
+
+	var grille := MeshInstance3D.new()
+	grille.name = "FrontGrille"
+	var grille_mesh := BoxMesh.new()
+	grille_mesh.size = Vector3(0.58, 0.18, 0.055)
+	grille.mesh = grille_mesh
+	grille.position = Vector3(0.0, 0.61, -1.56)
+	grille.material_override = trim
+	add_child(grille)
+
+	var front_plate := MeshInstance3D.new()
+	front_plate.name = "FrontPlate"
+	var plate_mesh := BoxMesh.new()
+	plate_mesh.size = Vector3(0.40, 0.12, 0.035)
+	front_plate.mesh = plate_mesh
+	front_plate.position = Vector3(0.0, 0.43, -1.57)
+	front_plate.material_override = _material(Color(0.82, 0.82, 0.76), 0.92)
+	add_child(front_plate)
+
+	var rear_plate := MeshInstance3D.new()
+	rear_plate.name = "RearPlate"
+	rear_plate.mesh = plate_mesh
+	rear_plate.position = Vector3(0.0, 0.43, 1.57)
+	rear_plate.material_override = _material(Color(0.82, 0.82, 0.76), 0.92)
+	add_child(rear_plate)
 
 	var bumper := MeshInstance3D.new()
 	bumper.name = "Bumper"
@@ -158,6 +231,13 @@ func _add_glass(parent: Node3D, node_name: String, at: Vector3, dimensions: Vect
 	visual.rotation = tilt
 	visual.material_override = material
 	parent.add_child(visual)
+
+
+func _update_wheels(delta: float) -> void:
+	var rotation_step := -travel_speed * delta / 0.32
+	for wheel in _wheel_nodes:
+		if is_instance_valid(wheel):
+			wheel.rotate_object_local(Vector3.RIGHT, rotation_step)
 
 
 func _material(color: Color, roughness: float, metallic: float = 0.0) -> StandardMaterial3D:
