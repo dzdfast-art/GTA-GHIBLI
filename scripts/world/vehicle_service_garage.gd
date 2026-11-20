@@ -19,6 +19,7 @@ var _repair_button: Button
 
 
 func _ready() -> void:
+	_build_structure_collision()
 	_build_interaction_area()
 	_build_prompt()
 	_build_service_ui()
@@ -141,6 +142,30 @@ func _perform_repair() -> bool:
 func _set_status(message: String) -> void:
 	if _status_label != null:
 		_status_label.text = message
+
+
+func _build_structure_collision() -> void:
+	# Keep the workshop's front bay open so a car can enter the service lift.
+	var body := StaticBody3D.new()
+	body.name = "GarageCollision"
+	body.collision_layer = 1
+	body.collision_mask = 1
+	add_child(body)
+	_add_collision_box(body, "LeftWall", Vector3(-5.0, 2.1, 0.0), Vector3(0.28, 4.2, 7.4))
+	_add_collision_box(body, "RightWall", Vector3(5.0, 2.1, 0.0), Vector3(0.28, 4.2, 7.4))
+	_add_collision_box(body, "RearWall", Vector3(0.0, 2.25, 3.55), Vector3(10.0, 4.5, 0.3))
+	_add_collision_box(body, "LeftFrontPillar", Vector3(-4.85, 2.1, -3.55), Vector3(0.3, 4.2, 0.3))
+	_add_collision_box(body, "RightFrontPillar", Vector3(4.85, 2.1, -3.55), Vector3(0.3, 4.2, 0.3))
+
+
+func _add_collision_box(parent: StaticBody3D, node_name: String, local_position: Vector3, dimensions: Vector3) -> void:
+	var collision := CollisionShape3D.new()
+	collision.name = node_name
+	var shape := BoxShape3D.new()
+	shape.size = dimensions
+	collision.shape = shape
+	collision.position = local_position
+	parent.add_child(collision)
 
 
 func _build_interaction_area() -> void:

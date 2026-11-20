@@ -37,6 +37,10 @@ func _run_test() -> void:
 	if area == null or not area.is_in_group("interaction_areas"):
 		_fail("The workshop must register with the shared interaction-area group.")
 		return
+	var structure_collision := garage.get_node_or_null("GarageCollision") as StaticBody3D
+	if structure_collision == null or structure_collision.get_child_count() != 5:
+		_fail("The garage must block its side/rear walls while preserving the open vehicle entrance.")
+		return
 
 	garage.set("_player_nearby", true)
 	var repairs: Array = []
