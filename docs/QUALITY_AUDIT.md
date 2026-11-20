@@ -94,3 +94,12 @@ No public Web deployment or Pages publishing was performed.
 - All 25 expressive Arabic dialogue lines, physical-device testing, real FPS/RAM/thermal/audio measurements and release signing remain BLOCKED or NOT VERIFIED as applicable.
 - There is no fixed final content-size ceiling. Only original/licensed assets and meaningful playable systems qualify as growth; APK, Web export and tracked-source bytes must be measured separately.
 - Current Godot, Android, private Web/Chromium and security runs are pending. The earlier successful APK size must not be reused as the size of the current branch head.
+
+
+## Public drinking fountain integration — 2026-11-20
+
+- The repair branch now adds an original low-poly OBJ/MTL public drinking fountain to Harbor City's plaza. The scene is wired into `open_world_regions.gd`, uses the shared player interaction contract, and restores thirst through the existing `PlayerNeeds.drink()` API.
+- The standalone `tests/public_drinking_fountain_test.gd` checks imported model surfaces, proximity eligibility, restored thirst, cooldown and full-thirst handling. The district integration test also checks that Harbor City instantiates the fountain and registers its interaction area.
+- The new model is documented in `OWNERSHIP_AND_ASSET_REGISTER.md` as original project-authored geometry. It has not been externally sourced.
+- These tests are **implemented but not yet verified** until the current repair-branch Godot workflow completes. No Android device profiling has been performed for the fountain; frame time, memory and visual scale on Unisoc T606 remain NOT VERIFIED.
+- `main` remains unchanged; this work is on Draft PR #31 only.

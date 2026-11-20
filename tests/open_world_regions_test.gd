@@ -27,6 +27,18 @@ func _run_test() -> void:
 	if road_collection == null or road_collection.mesh == null or road_collection.mesh.get_surface_count() < 3:
 		_fail("Harbor City must load its original road, curb and sidewalk collection.")
 		return
+	var fountain := harbor.get_node_or_null("PublicDrinkingFountain") as Node3D
+	if fountain == null:
+		_fail("Harbor City must instantiate the public drinking fountain in its plaza.")
+		return
+	var fountain_visual := fountain.get_node_or_null("Visual") as MeshInstance3D
+	if fountain_visual == null or fountain_visual.mesh == null or fountain_visual.mesh.get_surface_count() < 3:
+		_fail("Harbor City must load all three original public fountain material surfaces.")
+		return
+	var fountain_area := fountain.get_node_or_null("InteractionArea") as Area3D
+	if fountain_area == null or not fountain_area.is_in_group("interaction_areas"):
+		_fail("The public fountain must register its shared proximity interaction area.")
+		return
 	if harbor.get_children().filter(func(node): return str(node.name).begins_with("HarborHouseCollision_")).size() != 16:
 		_fail("Harbor City must keep 16 collision footprints for its 16 houses.")
 		return

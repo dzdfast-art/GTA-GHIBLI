@@ -162,3 +162,12 @@ A gate passes only when its implementation and tests exist. Keep **implemented**
 - NPC navigation: PARTIALLY IMPLEMENTED. Four prototype district grids and NavigationAgent3D path following exist; avoidance is disabled and the village, roads, interiors and all districts are not one continuous navigation surface.
 - Android: ARM64 Debug export workflow restored from `main`; current run is pending. A Debug artifact is not a signed production release and is not a physical-device test.
 - Content growth: no fixed numeric ceiling. Keep separate byte measurements for tracked unique blobs, raw APK, Web export and artifact ZIP. Only useful original/licensed content counts.
+
+
+## 6C. Harbor City public water interaction — 2026-11-20
+
+- **Public drinking fountain:** IMPLEMENTED on `fix/comprehensive-stability-2026-11-20`. An original low-poly 3D model and material library are loaded by a reusable Godot scene placed in Harbor City's plaza.
+- **Gameplay contract:** PARTIALLY IMPLEMENTED pending current-head verification. The shared `interact()` action restores up to 30 thirst points through `PlayerNeeds`, with range, full-thirst and cooldown guards plus Arabic feedback.
+- **Regression coverage:** IMPLEMENTED, TEST PENDING. A dedicated fountain test checks the gameplay effects; the district test checks that the actual Harbor City world scene instantiates the fountain and exposes its interaction area.
+- **Performance / device acceptance:** NOT VERIFIED. The target 4 GB / Unisoc T606 Android device has not been used to inspect the model, measure RAM, FPS, load time or thermal impact.
+- This feature is a candidate-branch addition only. It has not changed `main` and requires PR #31 review and CI before it can be considered accepted.
