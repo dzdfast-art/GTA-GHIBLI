@@ -25,7 +25,7 @@ func _run_test() -> void:
 	await process_frame
 
 	if int(expansion.call("get_catalog_count")) != 76:
-		_fail("The complete 72-tile terrain catalog was not preserved.")
+		_fail("The complete 76-tile terrain catalog was not preserved.")
 		return
 	var missing: Array = expansion.call("get_missing_resource_paths")
 	if not missing.is_empty():
@@ -122,6 +122,11 @@ func _run_test() -> void:
 			return
 		if int(expansion.call("get_collision_count")) != int(expansion.call("get_attached_count")):
 			_fail("A high-detail terrain mesh was streamed without a matching collision body: " + tile_name)
+			return
+		var collision_body := target_district.get_node_or_null("ExpansionTerrainCollision_" + tile_name) as StaticBody3D
+		var expected_scale := Vector3(0.126, 0.10, 0.126)
+		if visual.scale.distance_to(expected_scale) > 0.001 or collision_body == null or collision_body.scale.distance_to(expected_scale) > 0.001:
+			_fail("High-detail terrain and collision must use the 222-unit source mesh scale to meet the 28-unit district grid: " + tile_name)
 			return
 
 	player.global_position = Vector3(10000.0, 0.0, 10000.0)

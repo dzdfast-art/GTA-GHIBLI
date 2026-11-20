@@ -75,10 +75,10 @@ const TERRAIN_TILES := [
 	{"district": "SapphireCoast", "tile": "seagrass_coastal_plain", "path": "res://assets/environment/terrain/expansion_300mb/seagrass_coastal_plain.obj", "offset": Vector3(196.0, 0.0, 28.0)},
 	{"district": "SapphireCoast", "tile": "whitecliff_staircase", "path": "res://assets/environment/terrain/expansion_300mb/whitecliff_staircase.obj", "offset": Vector3(224.0, 0.0, 28.0)},
 	{"district": "SapphireCoast", "tile": "red_bridge_ravine_east", "path": "res://assets/environment/terrain/expansion_300mb/red_bridge_ravine_east.obj", "offset": Vector3(252.0, 0.0, 28.0)},
-	{"district": "HarborCity", "tile": "harbor_breakwater_112", "path": "res://assets/environment/terrain/high_detail/harbor_breakwater_112.obj", "offset": Vector3(280.0, 0.0, 0.0)},
-	{"district": "PineHighlands", "tile": "pine_granite_spur_112", "path": "res://assets/environment/terrain/high_detail/pine_granite_spur_112.obj", "offset": Vector3(280.0, 0.0, 0.0)},
-	{"district": "AmberValley", "tile": "amber_vineyard_terraces_112", "path": "res://assets/environment/terrain/high_detail/amber_vineyard_terraces_112.obj", "offset": Vector3(280.0, 0.0, 0.0)},
-	{"district": "SapphireCoast", "tile": "sapphire_tidepool_rim_112", "path": "res://assets/environment/terrain/high_detail/sapphire_tidepool_rim_112.obj", "offset": Vector3(280.0, 0.0, 0.0)},
+	{"district": "HarborCity", "tile": "harbor_breakwater_112", "path": "res://assets/environment/terrain/high_detail/harbor_breakwater_112.obj", "offset": Vector3(280.0, 0.0, 0.0) , "scale": Vector3(0.126, 0.10, 0.126)},
+	{"district": "PineHighlands", "tile": "pine_granite_spur_112", "path": "res://assets/environment/terrain/high_detail/pine_granite_spur_112.obj", "offset": Vector3(280.0, 0.0, 0.0) , "scale": Vector3(0.126, 0.10, 0.126)},
+	{"district": "AmberValley", "tile": "amber_vineyard_terraces_112", "path": "res://assets/environment/terrain/high_detail/amber_vineyard_terraces_112.obj", "offset": Vector3(280.0, 0.0, 0.0) , "scale": Vector3(0.126, 0.10, 0.126)},
+	{"district": "SapphireCoast", "tile": "sapphire_tidepool_rim_112", "path": "res://assets/environment/terrain/high_detail/sapphire_tidepool_rim_112.obj", "offset": Vector3(280.0, 0.0, 0.0) , "scale": Vector3(0.126, 0.10, 0.126)},
 ]
  
 const LOAD_RADIUS := 72.0
@@ -185,7 +185,7 @@ func _load_tile(district: Node3D, tile_data: Dictionary) -> bool:
 	tile.name = "ExpansionTerrain_" + tile_name
 	tile.mesh = terrain_mesh
 	tile.position = tile_data.get("offset", Vector3.ZERO) + Vector3(0.0, 0.08, 0.0)
-	tile.scale = Vector3(0.18, 0.10, 0.18)
+	tile.scale = tile_data.get("scale", Vector3(0.18, 0.10, 0.18))
 	tile.visibility_range_end = 420.0
 	tile.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 	tile.add_to_group("world_terrain_chunks")
