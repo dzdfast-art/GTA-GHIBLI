@@ -60,24 +60,33 @@ for path in ROOT.rglob("*"):
                 f"{rel}: external voice request is not blocked before request(url) on Web"
             )
 
-web_workflow = ROOT / ".github" / "workflows" / "web-preview.yml"
-if not web_workflow.is_file():
-    errors.append(".github/workflows/web-preview.yml is missing")
-else:
-    workflow_text = web_workflow.read_text(encoding="utf-8", errors="replace")
-    forbidden_publish_features = (
-        "actions/upload-artifact",
-        "actions/upload-pages-artifact",
-        "actions/deploy-pages",
-        "pages: write",
-        "id-token: write",
-        "deploy_pages",
+web_workflow_candidates = [
+    ROOT / ".github" / "workflows" / "web-preview.yml",
+    ROOT / ".github" / "workflows" / "web-repair-validation.yml",
+]
+available_web_workflows = [path for path in web_workflow_candidates if path.is_file()]
+if not available_web_workflows:
+    errors.append(
+        "A private Web validation workflow is missing (expected web-preview.yml "
+        "or web-repair-validation.yml)"
     )
-    for feature in forbidden_publish_features:
-        if feature in workflow_text:
-            errors.append(
-                f".github/workflows/web-preview.yml: public artifact/deployment capability is enabled ({feature})"
-            )
+else:
+    for web_workflow in available_web_workflows:
+        workflow_text = web_workflow.read_text(encoding="utf-8", errors="replace")
+        forbidden_publish_features = (
+            "actions/upload-artifact",
+            "actions/upload-pages-artifact",
+            "actions/deploy-pages",
+            "pages: write",
+            "id-token: write",
+            "deploy_pages",
+        )
+        for feature in forbidden_publish_features:
+            if feature in workflow_text:
+                errors.append(
+                    f"{web_workflow.relative_to(ROOT).as_posix()}: "
+                    f"public artifact/deployment capability is enabled ({feature})"
+                )
 
 expected_master_guard = ROOT / "audio" / "ambience" / "source_master" / ".gdignore"
 if not expected_master_guard.is_file():
