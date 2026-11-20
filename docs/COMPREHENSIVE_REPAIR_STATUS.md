@@ -46,7 +46,7 @@ https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/44633964747
 - NPC avoidance, obstacle-aware combat reactions, advanced car suspension/tire dynamics, complete damage model, broad traffic AI and remaining vehicle categories are not finished.
 - Unified saves now combine and snapshot the current major systems, but world object destruction/spawn state, every collectible, all NPC transforms and all future systems still need to adopt the snapshot contract before calling the entire world persistence complete.
 - Marsa Al-Noor remains a proposal requiring owner/story approval.
-- Android output is Debug ARM64. A production release needs a separately protected signing key and device validation.
+- Delivery target has been switched to a single-threaded Godot Web build (WebAssembly + WebGL 2). Android APK export is no longer part of this branch's delivery workflow. The browser bundle must pass privacy checks and the private Chromium runtime smoke test before it is distributed. Public hosting remains a separate owner-controlled decision.
 - The 300 MB target has not been achieved by the latest confirmed APK. Add only original, licensed, useful content; do not pad the package.
 
 ## Release gate
