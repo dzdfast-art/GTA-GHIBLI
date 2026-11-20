@@ -17,6 +17,7 @@ func _ready() -> void:
 	_build_mira()
 	_build_square()
 	_build_paths()
+	_build_reference_alley()
 	_build_houses()
 	_build_house_portal()
 	_build_garden()
@@ -53,6 +54,34 @@ func _build_paths() -> void:
 		Vector3(18.0, 0.06, 3.2), Color(0.66, 0.57, 0.43), false)
 	_add_box(self, "WestPath", Vector3(-15.0, 0.025, 0.0),
 		Vector3(18.0, 0.06, 3.2), Color(0.66, 0.57, 0.43), false)
+
+
+func _build_reference_alley() -> void:
+	# Textured residential lane inspired by the supplied mobile gameplay reference.
+	# It continues north from the village paths without changing the player spawn.
+	var alley_center := Vector3(0.0, 0.0, -40.0)
+	var alley_length := 40.0
+
+	_add_box(self, "ReferenceAlleyAsphalt",
+		alley_center + Vector3(0.0, 0.035, 0.0),
+		Vector3(7.2, 0.07, alley_length), Color(0.30, 0.31, 0.30), true)
+	var asphalt := get_node("ReferenceAlleyAsphalt") as MeshInstance3D
+	asphalt.add_to_group("radar_roads")
+
+	for side in [-1.0, 1.0]:
+		var sidewalk_x: float = side * 4.25
+		_add_box(self, "ReferenceAlleySidewalk_%s" % str(side),
+			alley_center + Vector3(sidewalk_x, 0.09, 0.0),
+			Vector3(1.3, 0.18, alley_length), Color(0.65, 0.62, 0.54), false)
+		var curb_x: float = side * 3.62
+		_add_box(self, "ReferenceAlleyCurb_%s" % str(side),
+			alley_center + Vector3(curb_x, 0.16, 0.0),
+			Vector3(0.18, 0.32, alley_length), Color(0.52, 0.50, 0.45), true)
+
+		var wall_name := "ReferenceAlleyStoneWall" if side < 0.0 else "ReferenceAlleyStoneWallFar"
+		_add_box(self, wall_name,
+			alley_center + Vector3(side * 5.15, 1.45, 0.0),
+			Vector3(0.32, 2.9, alley_length), Color(0.72, 0.68, 0.58), true)
 
 
 func _build_houses() -> void:
