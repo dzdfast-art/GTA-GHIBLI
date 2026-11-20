@@ -218,3 +218,31 @@ func _refresh_hud() -> void:
 		var rewards: Dictionary = _mission_data.get("rewards", {})
 		var currency := int(rewards.get("currency", 25))
 		_status_label.text = "اكتملت المهمة! أضيفت مكافأة %d إلى رصيدك." % currency
+
+func get_save_snapshot() -> Dictionary:
+	return {
+		"save_version": SAVE_VERSION,
+		"square_reached": _square_reached,
+		"mira_spoken_to": _mira_spoken_to,
+		"garden_visited": _garden_visited,
+		"completion_reward_claimed": _completion_reward_claimed
+	}
+
+
+func apply_save_snapshot(snapshot: Dictionary) -> bool:
+	if not snapshot.has("square_reached"):
+		return false
+	_square_reached = bool(snapshot.get("square_reached", false))
+	_mira_spoken_to = bool(snapshot.get("mira_spoken_to", false))
+	_garden_visited = bool(snapshot.get("garden_visited", false))
+	_completion_reward_claimed = bool(snapshot.get("completion_reward_claimed", false))
+	_save_progress()
+	_claim_completion_reward_if_ready()
+	_refresh_hud()
+	return true
+
+
+func reload_saved_state() -> void:
+	_load_progress()
+	_claim_completion_reward_if_ready()
+	_refresh_hud()
