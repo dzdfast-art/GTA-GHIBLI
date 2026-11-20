@@ -5,6 +5,7 @@ extends Node3D
 const CIVILIAN_NPC_SCRIPT = preload("res://scripts/characters/world_npc_actor.gd")
 const HARBOR_HOUSES_MESH = preload("res://assets/environment/modular/village_house_collection.obj")
 const HARBOR_ROADS_MESH = preload("res://assets/environment/modular/road_street_collection.obj")
+const PUBLIC_DRINKING_FOUNTAIN_SCENE = preload("res://scenes/world/public_drinking_fountain.tscn")
 
 var _region_ids: Array[String] = []
 var _population_count := 0
@@ -188,6 +189,7 @@ func _build_district_details(district: Node3D, region_id: String, ground_color: 
 			_add_box(district, "LoadingDock", Vector3(0.0, 0.25, 15.0),
 				Vector3(30.0, 0.5, 4.0), Color(0.34, 0.36, 0.35))
 			_build_marsa_al_noor(district)
+			_build_public_drinking_fountain(district)
 		"pine_highlands":
 			for index in range(10):
 				var x := -18.0 + float(index % 5) * 9.0
@@ -217,6 +219,14 @@ func _build_district_details(district: Node3D, region_id: String, ground_color: 
 					Vector3(1.4, 1.0, 1.2), Color(0.58, 0.43, 0.28))
 		_:
 			pass
+
+
+func _build_public_drinking_fountain(district: Node3D) -> void:
+	# Original public drinking point in Harbor City's central plaza.
+	var fountain := PUBLIC_DRINKING_FOUNTAIN_SCENE.instantiate()
+	fountain.name = "PublicDrinkingFountain"
+	fountain.position = Vector3(0.0, 0.0, -9.0)
+	district.add_child(fountain)
 
 
 func _build_marsa_al_noor(district: Node3D) -> void:
@@ -437,6 +447,9 @@ func _build_district_navigation(district: Node3D, region_id: String) -> void:
 func _navigation_cell_overlaps_building(left: float, right: float,
 		top: float, bottom: float, region_id: String) -> bool:
 	if region_id == "harbor_city":
+		# Keep the central fountain footprint clear for NPC path queries.
+		if right > -1.5 and left < 1.5 and bottom > -10.5 and top < -7.5:
+			return true
 		const HOUSE_HALF_WIDTH := 2.85
 		const HOUSE_HALF_DEPTH := 2.45
 		for center_x in [-14.0, -5.0, 4.0, 13.5]:

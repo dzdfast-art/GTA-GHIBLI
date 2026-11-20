@@ -88,6 +88,10 @@ Planned interactions include:
 
 Avoid turning daily-life features into repetitive chores. Every activity should have a clear gameplay purpose, feedback and proportionate reward.
 
+
+
+**Implemented on the repair candidate:** Harbor City now has an original public drinking fountain scene and imported low-poly OBJ model with stone, copper and water material surfaces. It uses the shared `interact()` contract and the player's existing `PlayerNeeds.drink()` API; drinking restores up to 30 thirst points, shows an Arabic prompt/feedback, and applies a short use cooldown. The scene is instantiated once in the district plaza. Regression coverage checks model surface import, proximity eligibility, hydration amount, cooldown and full-thirst handling. This is source-integrated; current-head import and runtime verification remain pending until CI completes.
+
 ## 7. Vehicles and transportation
 
 A vehicle is complete only when it can be entered, controlled, exited and tested in gameplay. A static vehicle mesh does not count.

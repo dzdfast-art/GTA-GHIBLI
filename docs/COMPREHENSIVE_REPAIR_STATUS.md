@@ -18,6 +18,7 @@ Status: repair candidate; no changes to `main`, no public Web deployment.
 | Terrain streaming | Preserves the 72-mesh catalog; near-load radius 72, far-unload radius 96, up to six active tiles and two loads per 0.35-second refresh | Existing terrain lifecycle regression; final branch run pending |
 | District navigation | Four prototype districts receive lightweight authored navigation grids made from walkable cells around the six building footprints | New path-query checks in `open_world_regions_test.gd`; final branch run pending |
 | NPC movement | NPC brains create NavigationAgent3D and use a live navigation map for wandering, schedules and fleeing; legacy direct movement remains a fallback only where no navigation region exists | Existing NPC tests plus district path-query checks; final branch run pending |
+| Public drinking fountain | Original OBJ/MTL prop scene integrated into Harbor City plaza; shared interaction restores up to 30 thirst using PlayerNeeds, with cooldown and Arabic prompt/feedback | New `public_drinking_fountain_test.gd`; current-head CI pending |
 | Vehicle condition | Vehicle health, collision-impact damage, disabled state, repairs, speed degradation and a serializable condition snapshot | New `vehicle_damage_repair_test.gd`; final branch run pending |
 | Vehicle visuals | Rear brake lights and animated wheel meshes | New vehicle visual regression; final branch run pending |
 | Unified local save | Versioned local save coordinator captures player transform, world clock, player components, mission snapshots, NPC relationships, vehicle state and allowlisted legacy JSON/CFG files | `game_save_manager_test.gd` checks a legacy NPC file round-trip and rejects unrelated/traversal restore paths; full-world persistence remains partial |
@@ -72,3 +73,11 @@ A dedicated visual regression now runs in Godot CI: `tests/graphics_reference_pr
 | Physical Android performance | NOT VERIFIED | No authorized physical device session is available for install, touch feel, FPS, RAM, heat or speaker testing. |
 
 No asset files were added in this save-safety/CI repair commit. The asset register remains unchanged because there is no new asset provenance to record.
+
+
+## Content growth update — 2026-11-20
+
+- Added one original, usable Harbor City public drinking fountain (OBJ/MTL + Godot scene + interaction script) and a regression test. It is instantiated in the Harbor City plaza and uses the existing player needs API.
+- Model provenance is recorded in [OWNERSHIP_AND_ASSET_REGISTER.md](OWNERSHIP_AND_ASSET_REGISTER.md).
+- The new test is wired into the Godot 4.7 validation workflow. No imported audio or external runtime service is used.
+- Physical performance acceptance remains pending on the 4 GB / Unisoc T606 device; the prop uses one imported mesh, one static collision cylinder and one proximity area.
