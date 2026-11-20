@@ -46,7 +46,7 @@ jobs:
       - name: Test canonical world locations and Marsa Al-Noor
         run: godot --headless --path . --script res://tests/canonical_world_locations_test.gd
 
-      - name: Audit Android privacy permissions
+      - name: Audit project device-data privacy
         run: python tools/privacy_audit.py
 
       - name: Audit offline dialogue audio in Web builds
