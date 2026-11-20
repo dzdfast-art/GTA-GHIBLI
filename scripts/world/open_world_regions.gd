@@ -441,8 +441,8 @@ func _navigation_cell_overlaps_building(left: float, right: float,
 		const HOUSE_HALF_DEPTH := 2.45
 		for center_x in [-14.0, -5.0, 4.0, 13.5]:
 			for center_z in [-14.0, -5.0, 4.0, 12.8]:
-				var overlaps_x := right > center_x - HOUSE_HALF_WIDTH and left < center_x + HOUSE_HALF_WIDTH
-				var overlaps_z := bottom > center_z - HOUSE_HALF_DEPTH and top < center_z + HOUSE_HALF_DEPTH
+				var overlaps_x: bool = right > float(center_x) - HOUSE_HALF_WIDTH and left < float(center_x) + HOUSE_HALF_WIDTH
+				var overlaps_z: bool = bottom > float(center_z) - HOUSE_HALF_DEPTH and top < float(center_z) + HOUSE_HALF_DEPTH
 				if overlaps_x and overlaps_z:
 					return true
 		return false
@@ -450,8 +450,8 @@ func _navigation_cell_overlaps_building(left: float, right: float,
 	const BUILDING_HALF_DEPTH := 3.85
 	for center_x in [-12.0, 0.0, 12.0]:
 		for center_z in [-7.0, 8.0]:
-			var overlaps_x := right > center_x - BUILDING_HALF_WIDTH and left < center_x + BUILDING_HALF_WIDTH
-			var overlaps_z := bottom > center_z - BUILDING_HALF_DEPTH and top < center_z + BUILDING_HALF_DEPTH
+			var overlaps_x: bool = right > float(center_x) - BUILDING_HALF_WIDTH and left < float(center_x) + BUILDING_HALF_WIDTH
+			var overlaps_z: bool = bottom > float(center_z) - BUILDING_HALF_DEPTH and top < float(center_z) + BUILDING_HALF_DEPTH
 			if overlaps_x and overlaps_z:
 				return true
 	return false
