@@ -280,3 +280,25 @@ func _save_relationship() -> void:
 		"trust": trust,
 		"familiarity": familiarity
 	}, "\t"))
+
+func get_save_snapshot() -> Dictionary:
+	return {
+		"persistence_id": persistence_id,
+		"trust": trust,
+		"familiarity": familiarity
+	}
+
+
+func apply_save_snapshot(snapshot: Dictionary) -> bool:
+	if not snapshot.has("trust") or not snapshot.has("familiarity"):
+		return false
+	trust = clampf(float(snapshot.get("trust", trust)), -100.0, 100.0)
+	familiarity = clampf(float(snapshot.get("familiarity", familiarity)), 0.0, 100.0)
+	relationship_changed.emit(trust, familiarity)
+	_save_relationship()
+	return true
+
+
+func reload_saved_state() -> void:
+	_load_relationship()
+	relationship_changed.emit(trust, familiarity)
