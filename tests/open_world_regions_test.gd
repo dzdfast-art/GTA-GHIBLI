@@ -31,7 +31,38 @@ func _run_test() -> void:
 		if surface_material == null or surface_material.albedo_texture == null:
 			_fail("The SVG ground surface texture did not load for district: " + str(region_id))
 			return
-	print("PASS: Four world districts, 24 building shells and eight scheduled civilians.")
+	var navigation_regions := get_nodes_in_group("world_navigation_regions")
+	if navigation_regions.size() != 4:
+		_fail("Each district must own a navigation region.")
+		return
+	for region in navigation_regions:
+		var navigation_mesh := (region as NavigationRegion3D).navigation_mesh
+		if navigation_mesh == null or navigation_mesh.get_polygon_count() < 40:
+			_fail("District navigation mesh is missing its walkable cell polygons.")
+			return
+
+	for _frame in range(6):
+		await physics_frame
+	var npc_brains := get_nodes_in_group("npc_brains")
+	if npc_brains.size() < 8:
+		_fail("All eight district civilians must have navigation brains.")
+		return
+	for brain in npc_brains:
+		if not brain.call("has_navigation_agent") or not brain.call("has_navigation_map"):
+			_fail("A district civilian does not have a live NavigationAgent3D map.")
+			return
+	var sample_brain: Node = npc_brains[0]
+	var sample_actor := sample_brain.get_parent() as Node3D
+	var sample_agent := sample_brain.get_node("NavigationAgent3D") as NavigationAgent3D
+	var destination := sample_actor.global_position + Vector3(-2.0, 0.0, -2.0)
+	sample_agent.target_position = destination
+	for _frame in range(6):
+		await physics_frame
+	if sample_agent.get_current_navigation_path().size() < 2:
+		_fail("A civilian could not calculate a path through its district navigation grid.")
+		return
+
+	print("PASS: Four world districts, 24 building shells, eight scheduled civilians and live NavMesh paths.")
 	quit(0)
 
 func _fail(message: String) -> void:
