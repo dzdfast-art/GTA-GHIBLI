@@ -358,6 +358,7 @@ func _set_button_icon(button: Button, icon_path: String) -> void:
 func _make_action_button(caption: String, button_size: Vector2) -> Button:
 	var button := Button.new()
 	button.text = caption
+	button.tooltip_text = caption
 	button.custom_minimum_size = button_size
 	button.focus_mode = Control.FOCUS_NONE
 	button.add_theme_font_size_override("font_size", 17)
