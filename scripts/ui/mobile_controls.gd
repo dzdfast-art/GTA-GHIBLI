@@ -123,6 +123,7 @@ func _build_hud() -> void:
 	_mode_label.position = Vector2(22.0, 178.0)
 	_mode_label.add_theme_font_size_override("font_size", 15)
 	_mode_label.add_theme_color_override("font_color", Color(1.0, 0.96, 0.82, 0.92))
+	_mode_label.visible = false
 	root.add_child(_mode_label)
 
 	_joystick = JOYSTICK_SCRIPT.new() as Control
@@ -248,6 +249,7 @@ func _refresh_controls() -> void:
 	if _mode_label == null:
 		return
 	if _is_bicycle_mode:
+		_mode_label.visible = true
 		_mode_label.text = "CYCLING"
 		_context_button.tooltip_text = "EXIT BIKE"
 		_set_button_icon(_context_button, "res://assets/ui/hud/exit.svg")
@@ -259,6 +261,7 @@ func _refresh_controls() -> void:
 		_brake_button.visible = true
 		_sprint_button.visible = false
 	elif _is_car_mode:
+		_mode_label.visible = true
 		_mode_label.text = "DRIVING"
 		_context_button.tooltip_text = "EXIT"
 		_set_button_icon(_context_button, "res://assets/ui/hud/exit.svg")
@@ -270,6 +273,7 @@ func _refresh_controls() -> void:
 		_brake_button.visible = true
 		_sprint_button.visible = false
 	else:
+		_mode_label.visible = false
 		_mode_label.text = "ON FOOT"
 		_context_button.tooltip_text = "USE"
 		_set_button_icon(_context_button, "res://assets/ui/hud/bicycle.svg")
