@@ -31,6 +31,15 @@ func _run() -> void:
 			_fail("The protagonist is missing a reference silhouette detail: " + required_part)
 			return
 
+	var shirt_mesh := visual.get_node("Torso/Shirt") as MeshInstance3D
+	var jeans_mesh := visual.get_node("LeftLeg/Pants") as MeshInstance3D
+	var shoe_mesh := visual.get_node("LeftLeg/Shoe") as MeshInstance3D
+	for clothing_mesh in [shirt_mesh, jeans_mesh, shoe_mesh]:
+		var clothing_material := clothing_mesh.material_override as StandardMaterial3D if clothing_mesh != null else null
+		if clothing_material == null or clothing_material.albedo_texture == null:
+			_fail("The protagonist's white top, denim or shoes are missing their fabric texture.")
+			return
+
 	var camera_pivot := player.get_node_or_null("CameraPivot") as Node3D
 	var spring_arm := player.get_node_or_null("CameraPivot/SpringArm3D") as SpringArm3D
 	var camera := player.get_node_or_null("CameraPivot/SpringArm3D/Camera3D") as Camera3D
