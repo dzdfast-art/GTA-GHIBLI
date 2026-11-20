@@ -49,6 +49,9 @@ jobs:
       - name: Audit Android privacy permissions
         run: python tools/privacy_audit.py
 
+      - name: Audit offline dialogue audio in Web builds
+        run: python tools/web_dialogue_privacy_audit.py
+
       - name: Import project resources
         run: godot --headless --editor --path . --quit
 
