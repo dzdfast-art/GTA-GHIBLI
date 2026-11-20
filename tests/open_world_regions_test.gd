@@ -12,12 +12,25 @@ func _run_test() -> void:
 	if regions.call("get_region_ids").size() != 4:
 		_fail("The open-world region director did not create four districts.")
 		return
-	if int(regions.call("get_building_count")) != 24:
-		_fail("The four districts did not create the expected building blockout.")
+	if int(regions.call("get_building_count")) != 34:
+		_fail("The four districts did not create sixteen detailed Harbor City houses and eighteen other building shells.")
 		return
 	if int(regions.call("get_population_count")) != 8:
 		_fail("The four districts did not create their civilian population.")
 		return
+	var harbor := regions.get_node("HarborCity") as Node3D
+	var house_collection := harbor.get_node_or_null("HarborResidentialMesh") as MeshInstance3D
+	var road_collection := harbor.get_node_or_null("HarborStreetNetworkMesh") as MeshInstance3D
+	if house_collection == null or house_collection.mesh == null or house_collection.mesh.get_surface_count() < 4:
+		_fail("Harbor City must load its original multi-material low-rise house collection.")
+		return
+	if road_collection == null or road_collection.mesh == null or road_collection.mesh.get_surface_count() < 3:
+		_fail("Harbor City must load its original road, curb and sidewalk collection.")
+		return
+	if harbor.get_children().filter(func(node): return str(node.name).begins_with("HarborHouseCollision_")).size() != 16:
+		_fail("Harbor City must keep 16 collision footprints for its 16 houses.")
+		return
+
 	for region_id in ["harbor_city", "pine_highlands", "amber_valley", "sapphire_coast"]:
 		var district := regions.get_node_or_null(str(region_id).to_pascal_case()) as Node3D
 		if district == null:
