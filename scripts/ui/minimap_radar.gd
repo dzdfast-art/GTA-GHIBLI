@@ -1,7 +1,7 @@
 extends Control
 
 @export_range(20.0, 300.0, 5.0) var world_radius := 85.0
-@export_range(45.0, 100.0, 1.0) var radar_radius := 68.0
+@export_range(45.0, 100.0, 1.0) var radar_radius := 82.0
 
 var _player: Node3D
 var _target_position := Vector3.ZERO
@@ -11,7 +11,7 @@ var _redraw_timer := 0.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	custom_minimum_size = Vector2(156.0, 156.0)
+	custom_minimum_size = Vector2(180.0, 180.0)
 	queue_redraw()
 
 
