@@ -26,6 +26,7 @@ const AMBIENT_TRAFFIC_DIRECTOR_SCRIPT = preload("res://scripts/world/ambient_tra
 const WILDLIFE_DIRECTOR_SCRIPT = preload("res://scripts/world/wildlife_director.gd")
 const STORY_CHARACTER_DIRECTOR_SCRIPT = preload("res://scripts/characters/story_character_director.gd")
 const WORLD_WEATHER_SCRIPT = preload("res://scripts/world/world_weather.gd")
+const GAME_SAVE_MANAGER_SCRIPT = preload("res://scripts/systems/game_save_manager.gd")
 
 func _ready() -> void:
 	_create_world()
@@ -51,6 +52,7 @@ func _ready() -> void:
 	_create_world_weather()
 	_create_side_activity_director()
 	_create_video_reference_tutorial()
+	_create_game_save_manager()
 
 func _create_world() -> void:
 	var world_environment := WorldEnvironment.new()
@@ -280,3 +282,9 @@ func _create_ambient_traffic() -> void:
 	var traffic: Node3D = AMBIENT_TRAFFIC_DIRECTOR_SCRIPT.new()
 	traffic.name = "AmbientTrafficDirector"
 	add_child(traffic)
+
+
+func _create_game_save_manager() -> void:
+	var save_manager: Node = GAME_SAVE_MANAGER_SCRIPT.new()
+	save_manager.name = "GameSaveManager"
+	add_child(save_manager)
