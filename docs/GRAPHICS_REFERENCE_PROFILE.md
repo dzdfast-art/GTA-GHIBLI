@@ -12,6 +12,8 @@ This is an original, mobile-friendly recreation of the reference's broad visual 
 - narrow residential asphalt lane, raised sidewalks/curbs, stone/plaster boundary walls and warm street lamps;
 - low-rise stucco houses with terracotta roofs, blue/gray windows, original OBJ material groups and street mesh details;
 - original willow trees, street props and varied blue/gray/red/dark sedans with body trim, wheel hubs and rotating wheels;
+- icon-only mobile actions on dark translucent circular buttons, a larger analog joystick, a light circular minimap with dark roads and building outlines, and a filled white fist glyph beside the clock;
+- HUD placement and scale adapted to the 1280×644 landscape reference while preserving live Android touch actions.
 - opening time starts at 06:51 to echo the morning scene in the reference clip.
 
 ## Implemented on the repair branch
@@ -24,7 +26,9 @@ This is an original, mobile-friendly recreation of the reference's broad visual 
 - `scripts/vehicles/driveable_car.gd`: starter sedan receives blue paint, side glass, mirrors, grille, plates, door details and hubs.
 - `main.gd`: warmer outdoor lighting and bloom disabled.
 - `scripts/world/world_clock.gd`: opening clock 06:51.
-- `tests/graphics_reference_profile_test.gd`: checks the opening visual baseline, imported meshes, camera values and dynamic camera transition, texture usage, traffic parts, lighting and starting time.
+- `scripts/ui/mobile_controls.gd` and `assets/ui/hud/*.svg`: dark circular action buttons with white bike/run/brake/pedal/interaction/exit/car symbols; mode label hidden while on foot.
+- `scripts/ui/game_hud.gd` and `scripts/ui/minimap_radar.gd`: larger circular radar, building footprint outlines, darker road strokes and right-aligned fist/clock grouping.
+- `tests/graphics_reference_profile_test.gd`: checks the opening visual baseline, imported meshes, camera values and dynamic camera transition, texture usage, traffic parts, icon-only touch controls, minimap size/building registration, lighting and starting time.
 - `tests/open_world_regions_test.gd`: checks 16 Harbor houses and the original road/sidewalk collection in addition to district/navmesh tests.
 
 ## Acceptance gate
