@@ -51,6 +51,18 @@ func _run_test() -> void:
 	if seafood_area == null or not seafood_area.is_in_group("interaction_areas"):
 		_fail("The seafood market must register with the shared interaction system.")
 		return
+	var service_garage := regions.get_node_or_null("AmberValley/VehicleServiceGarage") as Node3D
+	if service_garage == null:
+		_fail("Amber Valley must instantiate its functional vehicle service garage.")
+		return
+	var garage_visual := service_garage.get_node_or_null("GarageVisual") as MeshInstance3D
+	if garage_visual == null or garage_visual.mesh == null or garage_visual.mesh.get_surface_count() < 6:
+		_fail("The original six-material workshop model must load in Amber Valley.")
+		return
+	var garage_area := service_garage.get_node_or_null("InteractionArea") as Area3D
+	if garage_area == null or not garage_area.is_in_group("interaction_areas"):
+		_fail("The mechanic workshop must register with the shared interaction system.")
+		return
 	if harbor.get_children().filter(func(node): return str(node.name).begins_with("HarborHouseCollision_")).size() != 16:
 		_fail("Harbor City must keep 16 collision footprints for its 16 houses.")
 		return

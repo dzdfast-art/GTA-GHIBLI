@@ -7,6 +7,7 @@ const HARBOR_HOUSES_MESH = preload("res://assets/environment/modular/village_hou
 const HARBOR_ROADS_MESH = preload("res://assets/environment/modular/road_street_collection.obj")
 const PUBLIC_DRINKING_FOUNTAIN_SCENE = preload("res://scenes/world/public_drinking_fountain.tscn")
 const SEAFOOD_MARKET_SCENE = preload("res://scenes/world/seafood_market.tscn")
+const VEHICLE_SERVICE_GARAGE_SCENE = preload("res://scenes/world/vehicle_service_garage.tscn")
 
 var _region_ids: Array[String] = []
 var _population_count := 0
@@ -201,6 +202,7 @@ func _build_district_details(district: Node3D, region_id: String, ground_color: 
 				_add_box(district, "CropRow_%02d" % row, Vector3(-15.0 + float(row) * 10.0, 0.22, 14.0),
 					Vector3(2.8, 0.4, 11.0), Color(0.34, 0.48 + float(row % 2) * 0.12, 0.24))
 			_add_box(district, "WaterSilo", Vector3(16.0, 2.8, 13.0), Vector3(3.4, 5.6, 3.4), Color(0.58, 0.61, 0.63))
+			_build_vehicle_service_garage(district)
 		"sapphire_coast":
 			var water := MeshInstance3D.new()
 			water.name = "CoastalWater"
@@ -237,6 +239,14 @@ func _build_seafood_market(district: Node3D) -> void:
 	market.name = "SeafoodMarket"
 	market.position = Vector3(17.0, 0.0, 14.0)
 	district.add_child(market)
+
+
+func _build_vehicle_service_garage(district: Node3D) -> void:
+	# Original repair workshop on the Amber Valley service road.
+	var garage := VEHICLE_SERVICE_GARAGE_SCENE.instantiate()
+	garage.name = "VehicleServiceGarage"
+	garage.position = Vector3(17.0, 0.0, -13.2)
+	district.add_child(garage)
 
 
 func _build_marsa_al_noor(district: Node3D) -> void:

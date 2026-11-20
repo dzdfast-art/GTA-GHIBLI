@@ -19,6 +19,7 @@ Add one row for every externally sourced, commissioned, generated, or contributo
 | Example: `assets/characters/hero.glb` | 3D model | Project creator / named artist | YYYY-MM-DD | Original / contract / licence name | Commit, source file, contract reference | No |
 | `assets/ui/gta_ghibli_icon.svg` | Application icon (SVG) | Original project-authored vector artwork | 2026-11-20 | Original project asset | Repair branch commit `9d14c8119c01d04e83cf6094fa942d073267ddc1` | Pending final release review |
 | `assets/environment/props/public_drinking_fountain.obj` + `.mtl` | Original low-poly 3D world prop | Project-authored geometry and material definitions | 2026-11-20 | Original project asset; no external source | Commit on `fix/comprehensive-stability-2026-11-20`; instantiated in Harbor City and covered by `tests/public_drinking_fountain_test.gd` | Pending final release review |
+| `assets/environment/props/vehicle_service_garage.obj` + `.mtl` | Original six-material low-poly automotive workshop with service lift and tool equipment | Project-authored geometry and material definitions | 2026-11-20 | Original project asset; no external source | Loaded by `scenes/world/vehicle_service_garage.tscn` in Amber Valley; covered by `tests/vehicle_service_garage_test.gd` and world-region integration checks | Pending final release review |
 
 ## Evidence to preserve
 

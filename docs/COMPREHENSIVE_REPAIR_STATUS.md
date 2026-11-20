@@ -19,6 +19,7 @@ Status: repair candidate; no changes to `main`, no public Web deployment.
 | District navigation | Four prototype districts receive lightweight authored navigation grids made from walkable cells around the six building footprints | New path-query checks in `open_world_regions_test.gd`; final branch run pending |
 | NPC movement | NPC brains create NavigationAgent3D and use a live navigation map for wandering, schedules and fleeing; legacy direct movement remains a fallback only where no navigation region exists | Existing NPC tests plus district path-query checks; final branch run pending |
 | Sapphire Coast seafood market | Functional Arabic vendor in Sapphire Coast; reuses the existing original stall model and adds a six-material fish/ice display, three edible catalogue items, wallet/inventory transactions and refund-on-delivery-failure | New `seafood_market_test.gd` and district integration assertions; current-head CI pending |
+| Amber Valley vehicle service garage | Original six-material workshop OBJ/MTL, repair-lift and tool details, Arabic service UI, stopped-vehicle lookup, health-based full-repair quote, wallet charge/refund and shared interaction registration | New `vehicle_service_garage_test.gd` plus four-district integration assertions; current-head CI pending |
 | Public drinking fountain | Original OBJ/MTL prop scene integrated into Harbor City plaza; shared interaction restores up to 30 thirst using PlayerNeeds, with cooldown and Arabic prompt/feedback | New `public_drinking_fountain_test.gd`; current-head CI pending |
 | Vehicle condition | Vehicle health, collision-impact damage, disabled state, repairs, speed degradation and a serializable condition snapshot | New `vehicle_damage_repair_test.gd`; final branch run pending |
 | Vehicle visuals | Rear brake lights and animated wheel meshes | New vehicle visual regression; final branch run pending |
@@ -90,3 +91,11 @@ No asset files were added in this save-safety/CI repair commit. The asset regist
 - Added grilled sardines, seafood stew and red mullet plate to the validated consumables catalogue. They are edible and use the existing PlayerNeeds/ConsumableInventory flow.
 - Added vendor purchase handling, transaction rollback, a dedicated regression test and world district integration assertions. Godot CI is pending for this head.
 - Physical Unisoc T606 / 4 GB frame-time, memory, thermal and touch acceptance remains NOT VERIFIED.
+
+## Amber Valley garage content update — 2026-11-20
+
+- Added an original six-material repair workshop OBJ/MTL with a roof frame, shutter details, hydraulic lift, floor safety markings, tool cabinets, workbench, compressor, tires, drums and service equipment.
+- Added a functional Arabic vehicle-service panel in Amber Valley. It identifies a nearby parked vehicle, computes the repair quote from missing vehicle health, debits the existing wallet, restores vehicle health through the shared vehicle API and refunds the payment if repair does not complete.
+- The service rejects out-of-range use, moving vehicles, already healthy cars and insufficient balance. A disabled vehicle can be recovered after the player has enough currency.
+- Added `tests/vehicle_service_garage_test.gd`, expanded `tests/open_world_regions_test.gd`, and registered script parsing, the dedicated service test and four-district integration assertions in the Godot validation workflow.
+- This is source-level integration; current-head Godot/Android workflow results and physical-device FPS, RAM, temperature and touch acceptance remain pending.

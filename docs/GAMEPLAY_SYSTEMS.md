@@ -116,6 +116,8 @@ Do not show aircraft controls while driving a car. The HUD must transition corre
 
 **Planned first vehicle gate:** one original drivable car with entry/exit, collision, camera, handling and a mobile driving HUD, followed by an automated test and a real-device test.
 
+**Functional vehicle service added on the repair candidate:** `scenes/world/vehicle_service_garage.tscn` places an original six-material repair workshop in Amber Valley. The Arabic service panel finds a nearby stopped vehicle, quotes the full repair from its missing health, charges the existing player wallet, and calls the vehicle health/repair API. It rejects moving vehicles, out-of-range interactions and insufficient balances; failed repair delivery refunds the charge. `tests/vehicle_service_garage_test.gd` covers those paths. Current-head Godot import and runtime results remain pending until CI finishes; real Android touch/performance acceptance is not claimed.
+
 ## 8. Mission framework and content variety
 
 Missions are data-driven. Each mission should define:
