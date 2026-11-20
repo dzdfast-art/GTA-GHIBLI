@@ -61,3 +61,20 @@ func is_alive() -> bool:
 
 func _emit_health() -> void:
 	health_changed.emit(current_health, maximum_health)
+
+func get_save_snapshot() -> Dictionary:
+	return {
+		"maximum_health": maximum_health,
+		"current_health": current_health,
+		"is_dead": _is_dead
+	}
+
+
+func apply_save_snapshot(snapshot: Dictionary) -> bool:
+	if not snapshot.has("current_health"):
+		return false
+	maximum_health = maxf(1.0, float(snapshot.get("maximum_health", maximum_health)))
+	current_health = clampf(float(snapshot.get("current_health", current_health)), 0.0, maximum_health)
+	_is_dead = bool(snapshot.get("is_dead", current_health <= 0.0))
+	_emit_health()
+	return true
