@@ -1,0 +1,43 @@
+name: GDScript quality check
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - "**/*.gd"
+      - ".github/workflows/gdscript-lint.yml"
+  pull_request:
+    paths:
+      - "**/*.gd"
+      - ".github/workflows/gdscript-lint.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gdlint:
+    name: Check GDScript style
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install GDScript Toolkit
+        run: python -m pip install --upgrade gdtoolkit
+
+      - name: Run gdlint
+        shell: bash
+        run: |
+          mapfile -d '' scripts < <(git ls-files -z '*.gd')
+          if [ "${#scripts[@]}" -eq 0 ]; then
+            echo "No tracked GDScript files found."
+            exit 0
+          fi
+          gdlint "${scripts[@]}"
