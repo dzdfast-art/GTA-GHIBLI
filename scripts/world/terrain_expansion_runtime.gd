@@ -1,7 +1,7 @@
 extends Node
 
-## Streams seventy-two original terrain tiles into the four open-world districts.
-## Each district receives twelve adjacent terrain tiles with static collision.
+## Streams seventy-six original terrain tiles into the four open-world districts.
+## High-detail source tiles join the proximity catalog and receive matching static collision.
 const TERRAIN_TILES := [
 	{"district": "HarborCity", "tile": "harbor_rail_yards", "path": "res://assets/environment/terrain/expansion_150mb/harbor_rail_yards.obj", "offset": Vector3.ZERO},
 	{"district": "HarborCity", "tile": "harbor_tidal_marsh", "path": "res://assets/environment/terrain/expansion_300mb/harbor_tidal_marsh.obj", "offset": Vector3(28.0, 0.0, 0.0)},
@@ -75,6 +75,10 @@ const TERRAIN_TILES := [
 	{"district": "SapphireCoast", "tile": "seagrass_coastal_plain", "path": "res://assets/environment/terrain/expansion_300mb/seagrass_coastal_plain.obj", "offset": Vector3(196.0, 0.0, 28.0)},
 	{"district": "SapphireCoast", "tile": "whitecliff_staircase", "path": "res://assets/environment/terrain/expansion_300mb/whitecliff_staircase.obj", "offset": Vector3(224.0, 0.0, 28.0)},
 	{"district": "SapphireCoast", "tile": "red_bridge_ravine_east", "path": "res://assets/environment/terrain/expansion_300mb/red_bridge_ravine_east.obj", "offset": Vector3(252.0, 0.0, 28.0)},
+	{"district": "HarborCity", "tile": "harbor_breakwater_112", "path": "res://assets/environment/terrain/high_detail/harbor_breakwater_112.obj", "offset": Vector3(280.0, 0.0, 0.0)},
+	{"district": "PineHighlands", "tile": "pine_granite_spur_112", "path": "res://assets/environment/terrain/high_detail/pine_granite_spur_112.obj", "offset": Vector3(280.0, 0.0, 0.0)},
+	{"district": "AmberValley", "tile": "amber_vineyard_terraces_112", "path": "res://assets/environment/terrain/high_detail/amber_vineyard_terraces_112.obj", "offset": Vector3(280.0, 0.0, 0.0)},
+	{"district": "SapphireCoast", "tile": "sapphire_tidepool_rim_112", "path": "res://assets/environment/terrain/high_detail/sapphire_tidepool_rim_112.obj", "offset": Vector3(280.0, 0.0, 0.0)},
 ]
  
 const LOAD_RADIUS := 72.0

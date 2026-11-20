@@ -24,7 +24,7 @@ func _run_test() -> void:
 	world.add_child(expansion)
 	await process_frame
 
-	if int(expansion.call("get_catalog_count")) != 72:
+	if int(expansion.call("get_catalog_count")) != 76:
 		_fail("The complete 72-tile terrain catalog was not preserved.")
 		return
 	var missing: Array = expansion.call("get_missing_resource_paths")
@@ -100,11 +100,39 @@ func _run_test() -> void:
 	expansion.call("refresh_for_player", player)
 	await process_frame
 	await process_frame
+	var high_detail_tiles := [
+		{"district": "HarborCity", "tile": "harbor_breakwater_112"},
+		{"district": "PineHighlands", "tile": "pine_granite_spur_112"},
+		{"district": "AmberValley", "tile": "amber_vineyard_terraces_112"},
+		{"district": "SapphireCoast", "tile": "sapphire_tidepool_rim_112"}
+	]
+	for tile_data in high_detail_tiles:
+		var target_district := regions.get_node_or_null(str(tile_data["district"])) as Node3D
+		if target_district == null:
+			_fail("A district for the new high-detail terrain tile is missing: " + str(tile_data["district"]))
+			return
+		player.global_position = target_district.to_global(Vector3(280.0, 0.0, 0.0))
+		expansion.call("refresh_for_player", player)
+		await process_frame
+		var tile_name := str(tile_data["tile"])
+		var streamed_names: Array = expansion.call("get_active_tile_names")
+		var visual := target_district.get_node_or_null("ExpansionTerrain_" + tile_name) as MeshInstance3D
+		if not streamed_names.has(tile_name) or visual == null or visual.mesh == null or visual.mesh.get_surface_count() == 0:
+			_fail("The new high-detail district terrain did not stream a valid visible mesh: " + tile_name)
+			return
+		if int(expansion.call("get_collision_count")) != int(expansion.call("get_attached_count")):
+			_fail("A high-detail terrain mesh was streamed without a matching collision body: " + tile_name)
+			return
+
+	player.global_position = Vector3(10000.0, 0.0, 10000.0)
+	expansion.call("refresh_for_player", player)
+	await process_frame
+	await process_frame
 	if int(expansion.call("get_attached_count")) != 0:
 		_fail("The test retained streamed terrain resources at shutdown.")
 		return
 
-	print("PASS: 72 terrain resources preserved; nearby loading, collision, distance unloading, and district reload work.")
+	print("PASS: 76 terrain resources preserved; four district-specific high-detail meshes stream with collision and unload outside the active radius.")
 	quit(0)
 
 
