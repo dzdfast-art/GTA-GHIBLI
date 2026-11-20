@@ -62,8 +62,8 @@ func _build_interface() -> void:
 	_radar.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	_radar.offset_left = 16.0
 	_radar.offset_top = 16.0
-	_radar.offset_right = 172.0
-	_radar.offset_bottom = 172.0
+	_radar.offset_right = 196.0
+	_radar.offset_bottom = 196.0
 	add_child(_radar)
 
 	var status := VBoxContainer.new()
@@ -88,20 +88,20 @@ func _build_interface() -> void:
 	var fist := TextureRect.new()
 	fist.name = "UnarmedFistIcon"
 	fist.texture = load("res://assets/ui/hud/fist.svg")
-	fist.custom_minimum_size = Vector2(30.0, 30.0)
+	fist.custom_minimum_size = Vector2(58.0, 58.0)
 	fist.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	fist.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	clock_row.add_child(fist)
 
 	_clock_label = Label.new()
 	_clock_label.name = "WorldClock"
 	_clock_label.text = "05:00"
-	_clock_label.add_theme_font_size_override("font_size", 20)
+	_clock_label.add_theme_font_size_override("font_size", 22)
 	_clock_label.add_theme_color_override("font_color", Color(1.0, 0.94, 0.78, 1.0))
 	_clock_label.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.95))
 	_clock_label.add_theme_constant_override("shadow_offset_x", 2)
 	_clock_label.add_theme_constant_override("shadow_offset_y", 2)
 	clock_row.add_child(_clock_label)
+	clock_row.add_child(fist)
 
 	_cash_label = Label.new()
 	_cash_label.name = "CashBalance"
@@ -128,7 +128,7 @@ func _build_interface() -> void:
 
 	_health_bar = ProgressBar.new()
 	_health_bar.name = "PlayerHealthBar"
-	_health_bar.custom_minimum_size = Vector2(132.0, 14.0)
+	_health_bar.custom_minimum_size = Vector2(118.0, 14.0)
 	_health_bar.min_value = 0.0
 	_health_bar.max_value = 100.0
 	_health_bar.value = 100.0
