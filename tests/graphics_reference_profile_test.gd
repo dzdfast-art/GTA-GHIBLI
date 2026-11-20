@@ -34,6 +34,16 @@ func _run() -> void:
 	if visual == null:
 		_fail("The player must expose the original humanoid visual.")
 		return
+	player.velocity = Vector3(0.0, 0.0, -5.0)
+	visual.call("_process", 0.12)
+	if float(visual.call("get_locomotion_weight")) < 0.1:
+		_fail("The protagonist's gait must react to real movement velocity, including touch-driven movement.")
+		return
+	player.velocity = Vector3.ZERO
+	visual.call("_process", 0.12)
+	if float(visual.call("get_locomotion_weight")) >= 0.9:
+		_fail("The protagonist's gait must ease back toward idle when movement stops.")
+		return
 	for required_part in ["Head", "Torso", "LeftArm", "RightArm", "LeftLeg", "RightLeg", "BackPocketLeft", "BackPocketRight", "BeltBuckle", "LeftShoeSole", "RightShoeSole"]:
 		if visual.get_node_or_null(required_part) == null:
 			_fail("The protagonist is missing a reference silhouette detail: " + required_part)
