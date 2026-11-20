@@ -18,6 +18,12 @@ func _build_village_traffic() -> void:
 	var horizontal_end := Vector3(21.0, 0.0, 0.0)
 	var vertical_start := Vector3(0.0, 0.0, -21.0)
 	var vertical_end := Vector3(0.0, 0.0, 21.0)
+	var paint_colors := [
+		Color(0.13, 0.28, 0.52),
+		Color(0.78, 0.78, 0.72),
+		Color(0.55, 0.20, 0.16),
+		Color(0.22, 0.25, 0.28)
+	]
 	var definitions := [
 		{"start": horizontal_start, "end": horizontal_end, "lane": Vector3(0.0, 0.0, -0.82), "speed": 3.1, "distance": 5.0, "reverse": false},
 		{"start": horizontal_start, "end": horizontal_end, "lane": Vector3(0.0, 0.0, 0.82), "speed": 2.8, "distance": 26.0, "reverse": true},
@@ -29,6 +35,7 @@ func _build_village_traffic() -> void:
 		var vehicle := Node3D.new()
 		vehicle.name = "AmbientTraffic_%02d" % (index + 1)
 		vehicle.set_script(TRAFFIC_CAR_SCRIPT)
+		vehicle.set("paint_color", paint_colors[index % paint_colors.size()])
 		vehicle.call("configure", data.start, data.end, data.speed,
 			data.lane, data.distance, data.reverse)
 		add_child(vehicle)
