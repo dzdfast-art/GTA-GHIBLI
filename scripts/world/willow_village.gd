@@ -4,6 +4,13 @@ extends Node3D
 ## All geometry is procedural and intentionally lightweight for mobile.
 
 const GROUND_Y := 0.03
+const WILLOW_TREE_MESH = preload("res://assets/environment/props/tree_willow_lowpoly.obj")
+const STREET_LAMP_MESH = preload("res://assets/environment/props/street_lamp_lowpoly.obj")
+const MARKET_STALL_MESH = preload("res://assets/environment/props/market_stall_lowpoly.obj")
+const PARK_BENCH_MESH = preload("res://assets/environment/props/park_bench_lowpoly.obj")
+const BARREL_MESH = preload("res://assets/environment/props/barrel_lowpoly.obj")
+const WOOD_CRATE_MESH = preload("res://assets/environment/props/wood_crate_lowpoly.obj")
+const DIRECTION_SIGN_MESH = preload("res://assets/environment/props/direction_sign_lowpoly.obj")
 
 
 func _ready() -> void:
@@ -168,32 +175,19 @@ func _build_trees() -> void:
 
 
 func _add_tree(tree_name: String, origin: Vector3, scale_factor: float) -> void:
-	var tree := Node3D.new()
-	tree.name = tree_name
-	tree.position = origin
-	tree.scale = Vector3.ONE * scale_factor
-	add_child(tree)
-
-	var trunk := CylinderMesh.new()
-	trunk.top_radius = 0.24
-	trunk.bottom_radius = 0.38
-	trunk.height = 2.8
-	_add_mesh(tree, "Trunk", trunk, Vector3(0.0, 1.4, 0.0),
-		Color(0.34, 0.23, 0.15))
-
-	var crown := SphereMesh.new()
-	crown.radius = 1.65
-	crown.height = 3.0
-	_add_mesh(tree, "Canopy", crown, Vector3(0.0, 3.2, 0.0),
-		Color(0.30, 0.52, 0.29))
-	var canopy_colors := [Color(0.34, 0.58, 0.32), Color(0.26, 0.47, 0.28)]
-	for index in range(2):
-		var cluster := SphereMesh.new()
-		cluster.radius = 1.05
-		cluster.height = 1.85
-		var offset := Vector3(-0.82 if index == 0 else 0.82, 3.05, 0.18)
-		_add_mesh(tree, "CanopyCluster_%d" % index, cluster, offset,
-			canopy_colors[index])
+	var scale_value := scale_factor * 1.12
+	var tree := _add_imported_mesh(self, tree_name, WILLOW_TREE_MESH,
+		origin + Vector3(0.0, 1.1 * scale_value, 0.0), Vector3.ONE * scale_value)
+	var collision_body := StaticBody3D.new()
+	collision_body.name = "TreeTrunkCollision"
+	var collision := CollisionShape3D.new()
+	var shape := CylinderShape3D.new()
+	shape.radius = 0.28
+	shape.height = 2.4
+	collision.shape = shape
+	collision.position.y = -0.0
+	collision_body.add_child(collision)
+	tree.add_child(collision_body)
 
 
 func _build_well() -> void:
@@ -291,7 +285,7 @@ func _add_box(parent: Node3D, node_name: String, position: Vector3,
 	instance.name = node_name
 	instance.mesh = mesh
 	instance.position = position
-	instance.material_override = _material(color)
+	instance.material_override = _material(color, _texture_for_node(node_name))
 	if node_name.ends_with("Path"):
 		instance.add_to_group("radar_roads")
 	parent.add_child(instance)
@@ -323,10 +317,27 @@ func _add_collision(parent: Node3D, shape: Shape3D, position: Vector3) -> void:
 	parent.add_child(collision)
 
 
-func _material(color: Color) -> StandardMaterial3D:
+func _texture_for_node(node_name: String) -> String:
+	if "Asphalt" in node_name:
+		return "res://assets/environment/materials/hd_district_asphalt.svg"
+	if "Sidewalk" in node_name or "Curb" in node_name or "Square" in node_name:
+		return "res://assets/environment/materials/hd_harbor_paving.svg"
+	if "StoneWall" in node_name or "Pillar" in node_name or node_name == "Walls":
+		return "res://assets/environment/materials/hd_village_plaster_wall.svg"
+	if node_name == "Roof":
+		return "res://assets/environment/materials/hd_terracotta_roof.svg"
+	return ""
+
+
+func _material(color: Color, texture_path: String = "") -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = 0.92
+	if not texture_path.is_empty() and ResourceLoader.exists(texture_path):
+		var texture := load(texture_path) as Texture2D
+		if texture != null:
+			material.albedo_texture = texture
+			material.uv1_scale = Vector3(2.2, 2.2, 2.2)
 	return material
 
 
