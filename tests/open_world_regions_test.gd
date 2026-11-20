@@ -63,6 +63,29 @@ func _run_test() -> void:
 	if garage_area == null or not garage_area.is_in_group("interaction_areas"):
 		_fail("The mechanic workshop must register with the shared interaction system.")
 		return
+	var lighthouse := regions.get_node_or_null("SapphireCoast/CoastalLighthouse") as Node3D
+	if lighthouse == null:
+		_fail("Sapphire Coast must instantiate its original coastal lighthouse landmark.")
+		return
+	var lighthouse_visual := lighthouse.get_node_or_null("LighthouseMesh") as MeshInstance3D
+	if lighthouse_visual == null or lighthouse_visual.mesh == null or lighthouse_visual.mesh.get_surface_count() < 7:
+		_fail("The coastal lighthouse must import all seven original material surfaces.")
+		return
+	var lighthouse_beam := lighthouse.get_node_or_null("BeaconSweep/RotatingBeam") as SpotLight3D
+	if lighthouse_beam == null or lighthouse_beam.shadow_enabled:
+		_fail("The rotating lighthouse beacon must exist without expensive real-time shadows.")
+		return
+	lighthouse.call("set_day_phase", "night")
+	if not bool(lighthouse.call("is_beacon_active")) or not lighthouse_beam.visible:
+		_fail("The lighthouse beacon must switch on at night.")
+		return
+	lighthouse.call("set_day_phase", "day")
+	if bool(lighthouse.call("is_beacon_active")) or lighthouse_beam.visible:
+		_fail("The lighthouse beacon must switch off during the day.")
+		return
+	if lighthouse.get_node_or_null("LighthouseCollision") == null or lighthouse.get_node_or_null("InteractionArea") == null:
+		_fail("The lighthouse must include solid collision and a shared interaction area.")
+		return
 	if harbor.get_children().filter(func(node): return str(node.name).begins_with("HarborHouseCollision_")).size() != 16:
 		_fail("Harbor City must keep 16 collision footprints for its 16 houses.")
 		return

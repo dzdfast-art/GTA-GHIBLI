@@ -8,6 +8,7 @@ const HARBOR_ROADS_MESH = preload("res://assets/environment/modular/road_street_
 const PUBLIC_DRINKING_FOUNTAIN_SCENE = preload("res://scenes/world/public_drinking_fountain.tscn")
 const SEAFOOD_MARKET_SCENE = preload("res://scenes/world/seafood_market.tscn")
 const VEHICLE_SERVICE_GARAGE_SCENE = preload("res://scenes/world/vehicle_service_garage.tscn")
+const COASTAL_LIGHTHOUSE_SCENE = preload("res://scenes/world/coastal_lighthouse.tscn")
 
 var _region_ids: Array[String] = []
 var _population_count := 0
@@ -221,6 +222,7 @@ func _build_district_details(district: Node3D, region_id: String, ground_color: 
 				_add_box(district, "FishCrate_%02d" % index, Vector3(-12.0 + float(index) * 5.0, 0.5, 4.0),
 					Vector3(1.4, 1.0, 1.2), Color(0.58, 0.43, 0.28))
 			_build_seafood_market(district)
+			_build_coastal_lighthouse(district)
 		_:
 			pass
 
@@ -247,6 +249,14 @@ func _build_vehicle_service_garage(district: Node3D) -> void:
 	garage.name = "VehicleServiceGarage"
 	garage.position = Vector3(17.0, 0.0, -13.2)
 	district.add_child(garage)
+
+
+func _build_coastal_lighthouse(district: Node3D) -> void:
+	# Tall Sapphire Coast landmark with a rotating dusk/night beacon.
+	var lighthouse := COASTAL_LIGHTHOUSE_SCENE.instantiate()
+	lighthouse.name = "CoastalLighthouse"
+	lighthouse.position = Vector3(-17.0, 0.0, 0.0)
+	district.add_child(lighthouse)
 
 
 func _build_marsa_al_noor(district: Node3D) -> void:
@@ -487,4 +497,6 @@ func _navigation_cell_overlaps_building(left: float, right: float,
 			var overlaps_z: bool = bottom > float(center_z) - BUILDING_HALF_DEPTH and top < float(center_z) + BUILDING_HALF_DEPTH
 			if overlaps_x and overlaps_z:
 				return true
+	if region_id == "sapphire_coast" and right > -20.5 and left < -13.5 and bottom > -3.5 and top < 3.5:
+		return true
 	return false

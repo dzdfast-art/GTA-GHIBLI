@@ -82,7 +82,8 @@ jobs:
             res://scripts/world/consumable_shop.gd \
             res://scripts/world/seafood_market.gd \
             res://scripts/world/public_drinking_fountain.gd \
-            res://scripts/world/vehicle_service_garage.gd \
+            res://scripts/world/vehicle_service_garage.gd
+            res://scripts/world/coastal_lighthouse.gd \
             res://scripts/camera/third_person_camera.gd \
             res://scripts/ui/mobile_controls.gd \
             res://scripts/ui/game_hud.gd \
@@ -133,6 +134,9 @@ jobs:
 
       - name: Test Amber Valley vehicle service garage
         run: godot --headless --path . --script res://tests/vehicle_service_garage_test.gd
+
+      - name: Test Sapphire Coast lighthouse beacon and interaction
+        run: godot --headless --path . --script res://tests/coastal_lighthouse_test.gd
 
       - name: Test food and drink inventory
         run: godot --headless --path . --script res://tests/consumable_inventory_test.gd
