@@ -16,9 +16,9 @@ func _run() -> void:
 	var player := game.get_node_or_null("Player") as CharacterBody3D
 	var bicycle := game.get_node_or_null("StarterBicycle") as CharacterBody3D
 	var tutorial := game.get_node_or_null("VideoReferenceTutorial")
-	var bridge := get_first_node_in_group("world_landmarks") as Node3D
+	var bridge := get_first_node_in_group("red_bridge_landmarks") as Node3D
 	var portal := game.get_node_or_null("WillowVillage/CaretakerHousePortal")
-	if player == null or bicycle == null or tutorial == null or bridge == null or portal == null:
+	if player == null or bicycle == null or tutorial == null or bridge == null or bridge.name != "RedBridgeLandmark" or portal == null:
 		_fail("The tutorial must bind the live player, bicycle, red bridge and caretaker house.")
 		return
 
