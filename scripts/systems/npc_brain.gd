@@ -224,6 +224,13 @@ func _setup_navigation_agent() -> void:
 	_navigation_agent.avoidance_enabled = false
 	_navigation_agent.navigation_layers = 1
 	add_child(_navigation_agent)
+	# Bind explicitly to the actor's World3D map. This keeps runtime-created
+	# agents aligned with the NavigationRegion3D nodes in the same world.
+	var actor := get_parent() as Node3D
+	if actor != null:
+		var world := actor.get_world_3d()
+		if world != null:
+			_navigation_agent.set_navigation_map(world.get_navigation_map())
 
 
 func _has_live_navigation_map() -> bool:
