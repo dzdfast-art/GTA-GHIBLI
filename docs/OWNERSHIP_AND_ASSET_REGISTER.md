@@ -50,3 +50,8 @@ This register is an internal evidence-management aid, not proof of ownership by 
 ## 2026-11-21 asset-register review
 
 No new binary, model, texture, sound or other game asset was added in this save/navigation/Web reliability pass. The changes are scripts and regression tests only, so no new asset provenance row is required. Existing assets remain subject to the release-clearance review above; no licence or ownership status is upgraded by this code-only change.
+
+
+## Verification note — 2026-11-21
+
+The latest code-only reliability changes add no assets. Godot validation #798 and Android Debug APK #561 passed on code head ab9e707; the later 1c8da7 change is documentation-only. Existing asset rows remain pending final release review, and no new asset licence/ownership clearance is implied.

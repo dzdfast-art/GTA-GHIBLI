@@ -190,3 +190,8 @@ A gate passes only when its implementation and tests exist. Keep **implemented**
 - **Build evidence:** The last measured Debug APK is 254,227,979 bytes on commit 9005973; current-head Android build #561 is in progress. No physical Android device test is claimed.
 - **Performance:** Four district navigation grids and lightweight NPC path queries are CI prototype coverage, not proof of continuous open-world routing or 4 GB device performance.
 - **Voice:** The 25 Arabic dialogue lines still require genuine expressive recordings or explicitly labelled AI-generated TTS; no completed human dubbing is claimed.
+
+
+## Latest CI evidence — 2026-11-21
+
+The NPC navigation lifecycle and save-migration code passed Godot validation #798 on game-code head ab9e707abed1863141418a8a17caa77cf9a1fe66. Android Debug APK #561 also passed on that code head at 254,232,075 raw bytes (254.232 MB / 242.455 MiB). The later 1c8da7 documentation commit changes documentation only. Security audit #743 passed. Current Web Build #94 and private Chromium #192 remain pending/in progress in the latest recorded state. No physical T606/4 GB device test has been performed.

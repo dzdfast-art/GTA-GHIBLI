@@ -127,3 +127,8 @@ Audited head: ab9e707abed1863141418a8a17caa77cf9a1fe66 on fix/comprehensive-stab
 - **Voice — BLOCKED.** No claim of completed human Arabic dubbing is made. AI TTS and human-performed clips must remain separately catalogued.
 
 The Godot test suite's earlier successful run #797 still printed runtime errors before the current correction; a green workflow conclusion alone is not treated as proof of a clean log. Review #798's complete log before promoting navigation status beyond PARTIALLY IMPLEMENTED.
+
+
+## Verification correction — 2026-11-21
+
+Godot validation #798 and Android Debug APK #561 passed on game-code head ab9e707abed1863141418a8a17caa77cf9a1fe66. The later documentation head 1c8da7dddc07a707dc5b6a0518922bfd1c934135 changes only five documentation files. The Godot log no longer shows the previous NavigationAgent3D get_world_3d callback error, the busy-parent add_child error, or the root-viewport null-scenario error. It still contains non-fatal OBJ ambient-light warnings and ObjectDB/resource teardown warnings from several headless test scripts. Android raw APK size on the verified game-code head is 254,232,075 bytes (254.232 MB / 242.455 MiB); the artifact ZIP is 252,475,148 bytes (252.475 MB / 240.780 MiB). Security audit #743 passed on the documentation head. Web Build #94 and private Chromium #192 were still in progress at the time of this update.

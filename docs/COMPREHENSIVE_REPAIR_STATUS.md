@@ -158,3 +158,18 @@ The GitHub Git-tree blob sum (tracked repository files, not Git internals or exp
 - PR #32 and PR #34 add lint/tooling documentation/workflow work on separate bases. They remain separate and unmerged pending independent review.
 - PRs #27, #26, #21, #12, #10, #23 and #24 contain distinct crane, bicycle-audio, boat, architecture or surface/terrain candidates. They were not imported into this repair branch in this run because their assets/code require current-head regression, provenance and Android performance checks first.
 - No open issue result requiring an immediate fix was returned by the repository issue search.
+
+
+## Verification correction — 2026-11-21 (after Godot/Android completion)
+
+The current documentation head is 1c8da7dddc07a707dc5b6a0518922bfd1c934135. The only changes after game-code head ab9e707abed1863141418a8a17caa77cf9a1fe66 are documentation files; GitHub compare confirms no script, scene, asset or project-setting changes in that final docs commit.
+
+- Godot validation #798: **success** on game-code head ab9e707. The first-launch migration test, NPC brain test, four-district NavMesh path test, world-clock test, canonical-world test, parser and main-scene smoke all passed.
+- Android Debug APK #561: **success** on game-code head ab9e707. Raw APK: **254,232,075 bytes** (254.232 MB / 242.455 MiB). Android artifact ZIP: **252,475,148 bytes** (252.475 MB / 240.780 MiB).
+- Compared with the previous comparable raw APK of 250,819,279 bytes, this is +3,412,796 bytes (3.413 MB / 3.255 MiB). Compared with the previous candidate build of 254,227,979 bytes, it is +4,096 bytes (0.004 MB / 0.004 MiB).
+- Repository security audit #743: **success** on documentation head 1c8da7.
+- Android run #562, Web Build #94, private Web + Chromium #192, and push Web/Chromium runs #93/#191 were still running when this correction was recorded. The previous Web/Chromium success on commit 900597 remains evidence for the coordinate-based browser input change, not a completed current-head Web export.
+
+The #798 Godot log no longer contains the earlier NavigationAgent3D get_world_3d script errors, the parent-busy add_child error, or the root-viewport null-scenario error. Non-fatal OBJ ambient-light import warnings and test-process ObjectDB/resource teardown warnings remain; the workflow passed, but the log is not completely warning-free.
+
+The Git-tree measurement on docs head 1c8da7 is 350,461,886 bytes (350.462 MB / 334.226 MiB), 397 tracked blobs. Main remains 346,596,568 bytes (346.597 MB / 330.540 MiB), 329 tracked blobs. Difference: 3,865,318 bytes (3.865 MB / 3.686 MiB). No new game assets were added in this pass.

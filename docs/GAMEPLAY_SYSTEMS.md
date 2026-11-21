@@ -269,3 +269,8 @@ Regression coverage: first-launch migration, wallet balance and reward transacti
 NPCBrain now defers creation of its NavigationAgent3D sibling until the owning Node3D has completed its child setup. The agent's navigation map is resolved through the owning Node3D when the agent enters the tree; the brain frees the sibling agent when it exits. Tests cover actors whose brains are attached before the actor enters the SceneTree and world-clock schedule integration.
 
 The Godot 4.7 test run #797 passed the individual navigation tests but its log exposed a wrong get_world_3d call on NavigationAgent3D and a headless root-viewport scenario warning. The current head corrects the world lookup through the owner and gives the district test its own SubViewport World3D. Run #798 is the pending verification. Continuous region/road connectivity, avoidance and physical NPC behavior remain planned/partial.
+
+
+## Latest verification — 2026-11-21
+
+The save migration and deferred NPC navigation-agent lifecycle passed the Godot 4.7 validation workflow #798 on game-code commit ab9e707. The Android Debug APK build #561 passed on that same code commit at 254,232,075 bytes raw. The subsequent 1c8da7 commit changes documentation only. The latest Web export and private Chromium reruns (#94 and #192) were still in progress when this record was written. Navigation remains partial: district grids and test path queries are not yet proof of continuous road links, obstacle avoidance, no-path recovery or physical-device NPC performance.
