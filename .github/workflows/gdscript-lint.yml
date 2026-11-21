@@ -1,0 +1,65 @@
+name: GDScript changed-files quality check
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - "**/*.gd"
+      - ".github/workflows/gdscript-lint.yml"
+  pull_request:
+    paths:
+      - "**/*.gd"
+      - ".github/workflows/gdscript-lint.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gdlint:
+    name: Lint changed GDScript files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install GDScript Toolkit
+        run: python -m pip install --upgrade gdtoolkit
+
+      - name: Lint only changed GDScript files
+        shell: bash
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "${PR_BASE_SHA}" ]; then
+            base_sha="${PR_BASE_SHA}"
+          elif [ -n "${PUSH_BEFORE_SHA}" ] && \
+               [ "${PUSH_BEFORE_SHA}" != "0000000000000000000000000000000000000000" ]; then
+            base_sha="${PUSH_BEFORE_SHA}"
+          else
+            base_sha="$(git rev-parse HEAD^ 2>/dev/null || git rev-list --max-parents=0 HEAD)"
+          fi
+
+          mapfile -t scripts < <(
+            git diff --name-only --diff-filter=ACMR "${base_sha}" "${GITHUB_SHA}" -- '*.gd'
+          )
+
+          if [ "${#scripts[@]}" -eq 0 ]; then
+            echo "No changed GDScript files in this change set; lint is not applicable."
+            exit 0
+          fi
+
+          printf 'Linting %s changed GDScript file(s):\n' "${#scripts[@]}"
+          printf ' - %s\n' "${scripts[@]}"
+          gdlint "${scripts[@]}"
