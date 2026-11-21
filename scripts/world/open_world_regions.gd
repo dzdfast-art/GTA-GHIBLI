@@ -1,5 +1,18 @@
 extends Node3D
 
+# Static references ensure Godot's export pipeline includes these textures in
+# Web and Android packages even though district selection is data-driven.
+const SURFACE_TEXTURES := {
+	"res://assets/environment/materials/hd_harbor_paving.svg": preload("res://assets/environment/materials/hd_harbor_paving.svg"),
+	"res://assets/environment/materials/hd_pine_forest_floor.svg": preload("res://assets/environment/materials/hd_pine_forest_floor.svg"),
+	"res://assets/environment/materials/hd_amber_orchard_soil.svg": preload("res://assets/environment/materials/hd_amber_orchard_soil.svg"),
+	"res://assets/environment/materials/hd_sapphire_coastal_sand.svg": preload("res://assets/environment/materials/hd_sapphire_coastal_sand.svg"),
+	"res://assets/environment/materials/hd_weathered_dock_timber.svg": preload("res://assets/environment/materials/hd_weathered_dock_timber.svg"),
+	"res://assets/environment/materials/hd_terracotta_roof.svg": preload("res://assets/environment/materials/hd_terracotta_roof.svg"),
+	"res://assets/environment/materials/hd_village_plaster_wall.svg": preload("res://assets/environment/materials/hd_village_plaster_wall.svg"),
+	"res://assets/environment/materials/hd_district_asphalt.svg": preload("res://assets/environment/materials/hd_district_asphalt.svg"),
+}
+
 ## Procedural blockout for four explorable districts linked to Willow Village.
 ## Geometry is original, light-weight and assembled at runtime for mobile testing.
 const CIVILIAN_NPC_SCRIPT = preload("res://scripts/characters/world_npc_actor.gd")
@@ -406,21 +419,9 @@ func _material(tint: Color, texture_path: String = "") -> StandardMaterial3D:
 func _load_surface_texture(texture_path: String) -> Texture2D:
 	if _surface_texture_cache.has(texture_path):
 		return _surface_texture_cache[texture_path] as Texture2D
-	if not FileAccess.file_exists(texture_path):
-		push_warning("District surface texture does not exist: " + texture_path)
-		return null
-	var svg_text := FileAccess.get_file_as_string(texture_path)
-	if svg_text.is_empty():
-		push_warning("District surface SVG is empty: " + texture_path)
-		return null
-	var image := Image.new()
-	var image_error := image.load_svg_from_string(svg_text, 0.5)
-	if image_error != OK or image.is_empty():
-		push_warning("Could not rasterize district surface SVG: " + texture_path)
-		return null
-	var texture := ImageTexture.create_from_image(image)
+	var texture := SURFACE_TEXTURES.get(texture_path) as Texture2D
 	if texture == null:
-		push_warning("Could not create district surface texture: " + texture_path)
+		push_warning("Unknown district surface texture: " + texture_path)
 		return null
 	_surface_texture_cache[texture_path] = texture
 	return texture
