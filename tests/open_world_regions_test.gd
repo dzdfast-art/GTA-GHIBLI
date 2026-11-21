@@ -135,7 +135,8 @@ func _run_test() -> void:
 	if not navigation_ready:
 		var diagnostics := PackedStringArray()
 		for brain in npc_brains:
-			var agent := brain.get_node_or_null("NavigationAgent3D") as NavigationAgent3D
+			var actor := brain.get_parent() as Node3D
+			var agent := actor.get_node_or_null("NavigationAgent3D") as NavigationAgent3D if actor != null else null
 			if agent == null:
 				diagnostics.append("agent=missing")
 			else:
@@ -147,7 +148,7 @@ func _run_test() -> void:
 	var sample_brain: Node = npc_brains[0]
 	sample_brain.set_process(false)
 	var sample_actor := sample_brain.get_parent() as Node3D
-	var sample_agent := sample_brain.get_node("NavigationAgent3D") as NavigationAgent3D
+	var sample_agent := sample_actor.get_node("NavigationAgent3D") as NavigationAgent3D
 	var destination := sample_actor.global_position + Vector3(-2.0, 0.0, -2.0)
 	sample_agent.target_position = destination
 	var path_ready := false
