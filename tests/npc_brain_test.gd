@@ -26,6 +26,10 @@ func _run_test() -> void:
 	var brain := Node.new()
 	brain.set_script(BRAIN_SCRIPT)
 	npc.add_child(brain)
+	await process_frame
+	if not brain.call("has_navigation_agent") or npc.get_node_or_null("NavigationAgent3D") == null:
+		_fail("A navigation agent must be attached to its Node3D owner after deferred setup.")
+		return
 
 	var player := CharacterBody3D.new()
 	player.name = "Player"
@@ -57,6 +61,10 @@ func _run_test() -> void:
 	returning_brain.set("persistence_id", "npc_brain_test_persistent")
 	returning_npc.add_child(returning_brain)
 	root.add_child(returning_npc)
+	await process_frame
+	if returning_npc.get_node_or_null("NavigationAgent3D") == null:
+		_fail("An NPC whose brain is added before its actor enters the tree must still receive its deferred navigation agent.")
+		return
 	if not is_equal_approx(float(returning_brain.get("trust")), float(brain.get("trust"))) or not is_equal_approx(float(returning_brain.get("familiarity")), float(brain.get("familiarity"))):
 		_fail("NPC trust and familiarity were not restored in a new session instance.")
 		return
@@ -101,6 +109,10 @@ func _run_test() -> void:
 	var schedule_brain := Node.new()
 	schedule_brain.set_script(BRAIN_SCRIPT)
 	npc.add_child(schedule_brain)
+	await process_frame
+	if npc.get_node_or_null("NavigationAgent3D") == null or not schedule_brain.call("has_navigation_agent"):
+		_fail("A second NPC brain must attach its own navigation agent without replacing the first.")
+		return
 	schedule_brain.set("schedule_enabled", true)
 	schedule_brain.call("set_world_hour", 10)
 	if schedule_brain.get("state_id") != "working":

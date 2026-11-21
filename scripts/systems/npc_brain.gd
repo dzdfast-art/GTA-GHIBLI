@@ -217,24 +217,34 @@ func _move_toward(actor: Node3D, destination: Vector3, speed: float, delta: floa
 func _setup_navigation_agent() -> void:
 	if not use_navigation_agent:
 		return
+	# NPCBrain is a plain Node, so its NavigationAgent3D belongs to the
+	# owning Node3D. Defer insertion because the actor may still be adding
+	# its children when this brain receives _ready().
+	var actor := get_parent() as Node3D
+	if actor == null:
+		return
 	_navigation_agent = NavigationAgent3D.new()
 	_navigation_agent.name = "NavigationAgent3D"
 	_navigation_agent.path_desired_distance = 0.45
 	_navigation_agent.target_desired_distance = 0.70
 	_navigation_agent.avoidance_enabled = false
 	_navigation_agent.navigation_layers = 1
-	# NavigationAgent3D must be parented to a Node3D. NPCBrain is a plain Node,
-	# so attach the agent as a sibling under its owning world actor instead.
-	var actor := get_parent() as Node3D
-	if actor == null:
-		_navigation_agent = null
+	_navigation_agent.tree_entered.connect(_on_navigation_agent_tree_entered, CONNECT_ONE_SHOT)
+	actor.add_child.call_deferred(_navigation_agent)
+
+
+func _on_navigation_agent_tree_entered() -> void:
+	if _navigation_agent == null or not is_instance_valid(_navigation_agent):
 		return
-	actor.add_child(_navigation_agent)
-	# Keep runtime-created agents aligned with the NavigationRegion3D nodes
-	# in the actor's World3D.
-	var world := actor.get_world_3d()
+	var world := _navigation_agent.get_world_3d()
 	if world != null:
 		_navigation_agent.set_navigation_map(world.get_navigation_map())
+
+
+func _exit_tree() -> void:
+	if _navigation_agent != null and is_instance_valid(_navigation_agent):
+		_navigation_agent.queue_free()
+	_navigation_agent = null
 
 
 func _has_live_navigation_map() -> bool:
