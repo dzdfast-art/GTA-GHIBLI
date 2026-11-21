@@ -236,7 +236,10 @@ func _setup_navigation_agent() -> void:
 func _on_navigation_agent_tree_entered() -> void:
 	if _navigation_agent == null or not is_instance_valid(_navigation_agent):
 		return
-	var world: World3D = _navigation_agent.get_world_3d()
+	var actor := _navigation_agent.get_parent() as Node3D
+	if actor == null:
+		return
+	var world: World3D = actor.get_world_3d()
 	if world != null:
 		_navigation_agent.set_navigation_map(world.get_navigation_map())
 

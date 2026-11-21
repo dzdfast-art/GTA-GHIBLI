@@ -6,15 +6,15 @@ func _initialize() -> void:
 	call_deferred("_run_test")
 
 func _run_test() -> void:
-	# SceneTree script tests need an explicit 3D world so NavigationRegion3D
-	# and NavigationAgent3D share a real default navigation map.
-	var viewport := root as Viewport
-	if viewport != null:
-		viewport.world_3d = World3D.new()
-		await process_frame
+	# Give this headless test its own world before it enters the SceneTree.
+	# Replacing the root Viewport world after startup causes a null renderer scenario.
+	var viewport := SubViewport.new()
+	viewport.world_3d = World3D.new()
+	root.add_child(viewport)
+	await process_frame
 	var regions := Node3D.new()
 	regions.set_script(REGIONS_SCRIPT)
-	root.add_child(regions)
+	viewport.add_child(regions)
 	if regions.call("get_region_ids").size() != 4:
 		_fail("The open-world region director did not create four districts.")
 		return
@@ -163,7 +163,7 @@ func _run_test() -> void:
 		_fail("A civilian could not calculate a path through its district navigation grid after the map synchronized.")
 		return
 
-	regions.queue_free()
+	viewport.queue_free()
 	await process_frame
 	print("PASS: Four world districts, 34 building shells, eight scheduled civilians and live NavMesh paths.")
 	quit(0)
