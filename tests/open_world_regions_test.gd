@@ -113,25 +113,38 @@ func _run_test() -> void:
 			_fail("District navigation mesh is missing its walkable cell polygons.")
 			return
 
-	for _frame in range(6):
-		await physics_frame
 	var npc_brains := get_nodes_in_group("npc_brains")
 	if npc_brains.size() < 8:
 		_fail("All eight district civilians must have navigation brains.")
 		return
-	for brain in npc_brains:
-		if not brain.call("has_navigation_agent") or not brain.call("has_navigation_map"):
-			_fail("A district civilian does not have a live NavigationAgent3D map.")
-			return
+	var navigation_ready := false
+	for _frame in range(120):
+		await physics_frame
+		navigation_ready = true
+		for brain in npc_brains:
+			if not brain.call("has_navigation_agent") or not brain.call("has_navigation_map"):
+				navigation_ready = false
+				break
+		if navigation_ready:
+			break
+	if not navigation_ready:
+		_fail("District NavigationServer maps did not synchronize for all eight civilians within 120 physics frames.")
+		return
 	var sample_brain: Node = npc_brains[0]
+	sample_brain.set_process(false)
 	var sample_actor := sample_brain.get_parent() as Node3D
 	var sample_agent := sample_brain.get_node("NavigationAgent3D") as NavigationAgent3D
 	var destination := sample_actor.global_position + Vector3(-2.0, 0.0, -2.0)
 	sample_agent.target_position = destination
-	for _frame in range(6):
+	var path_ready := false
+	for _frame in range(60):
 		await physics_frame
-	if sample_agent.get_current_navigation_path().size() < 2:
-		_fail("A civilian could not calculate a path through its district navigation grid.")
+		sample_agent.get_next_path_position()
+		if sample_agent.get_current_navigation_path().size() >= 2:
+			path_ready = true
+			break
+	if not path_ready:
+		_fail("A civilian could not calculate a path through its district navigation grid after the map synchronized.")
 		return
 
 	print("PASS: Four world districts, 34 building shells, eight scheduled civilians and live NavMesh paths.")
