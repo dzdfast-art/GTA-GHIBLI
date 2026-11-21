@@ -11,6 +11,7 @@ func _run_test() -> void:
 	var viewport := root as Viewport
 	if viewport != null:
 		viewport.world_3d = World3D.new()
+		await process_frame
 	var regions := Node3D.new()
 	regions.set_script(REGIONS_SCRIPT)
 	root.add_child(regions)
@@ -162,6 +163,8 @@ func _run_test() -> void:
 		_fail("A civilian could not calculate a path through its district navigation grid after the map synchronized.")
 		return
 
+	regions.queue_free()
+	await process_frame
 	print("PASS: Four world districts, 34 building shells, eight scheduled civilians and live NavMesh paths.")
 	quit(0)
 

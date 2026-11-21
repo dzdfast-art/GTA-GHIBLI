@@ -191,9 +191,11 @@ func _run() -> void:
 
 	_remove_test_files()
 	_restore_preserved_files()
-	print("PASS: first-launch legacy migration, authoritative wallet/needs snapshots, player transform restore, NPC legacy migration and traversal protection.")
 	manager.queue_free()
 	scene.queue_free()
+	await process_frame
+	_restore_preserved_files()
+	print("PASS: first-launch legacy migration, authoritative wallet/needs snapshots, player transform restore, NPC legacy migration and traversal protection.")
 	quit(0)
 
 

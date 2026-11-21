@@ -56,7 +56,9 @@ func _run_test() -> void:
 	if float(sun.light_energy) <= 0.0:
 		_fail("Sunlight was not updated.")
 		return
-	print("PASS: Shared world clock, day phases and sun updates.")
+	world.queue_free()
+	await process_frame
+	print("PASS: Shared world clock, day phases, sun updates and deferred NPC navigation-agent attachment.")
 	quit(0)
 
 func _fail(message: String) -> void:

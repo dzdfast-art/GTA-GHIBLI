@@ -37,6 +37,8 @@ func _run_test() -> void:
 	# Build only Harbor City here. The separate open-world regression test covers
 	# all four districts and their surface textures, avoiding duplicate heavy SVG rasterization.
 	var world := REGIONS_SCRIPT.new() as Node3D
+	root.add_child(world)
+	await process_frame
 	world.call("_build_region", "harbor_city", "مدينة الميناء",
 		Vector3(-82.0, 0.0, -54.0),
 		Color(0.48, 0.57, 0.63), Color(0.30, 0.39, 0.48), Color(0.66, 0.72, 0.73),
@@ -72,6 +74,8 @@ func _run_test() -> void:
 	if landmark.get_node_or_null("BeaconLantern") == null or landmark.get_node_or_null("LocationSign") == null:
 		_fail("Marsa Al-Noor landmark visuals are incomplete.")
 		return
+	world.queue_free()
+	await process_frame
 	print("PASS: Marsa Al-Noor canonical data, Harbor City scene, landmark groups, and world-map coordinates match.")
 	quit(0)
 

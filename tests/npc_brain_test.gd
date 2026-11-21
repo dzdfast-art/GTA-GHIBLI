@@ -123,7 +123,11 @@ func _run_test() -> void:
 		_fail("NPC did not enter its configured rest schedule.")
 		return
 
-	print("PASS: NPC perception, trust, familiarity, aggression and daily schedule checks.")
+	npc.queue_free()
+	player.queue_free()
+	returning_npc.queue_free()
+	await process_frame
+	print("PASS: NPC perception, trust, familiarity, aggression, daily schedule and deferred navigation-agent attachment checks.")
 	quit(0)
 
 
