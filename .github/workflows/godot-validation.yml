@@ -10,6 +10,7 @@ jobs:
   validate:
     name: Import, parse, privacy-audit, and smoke-test
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -43,8 +44,6 @@ jobs:
       - name: Validate OBJ material library references
         run: python tools/validate_obj_material_references.py
 
-      - name: Test canonical world locations and Marsa Al-Noor
-        run: godot --headless --path . --script res://tests/canonical_world_locations_test.gd
 
       - name: Audit project device-data privacy
         run: python tools/privacy_audit.py
@@ -53,7 +52,10 @@ jobs:
         run: python tools/web_dialogue_privacy_audit.py
 
       - name: Import project resources
-        run: godot --headless --editor --path . --quit
+        run: timeout 300 godot --headless --editor --path . --quit
+
+      - name: Test canonical world locations and Marsa Al-Noor
+        run: timeout 300 godot --headless --path . --script res://tests/canonical_world_locations_test.gd
 
       - name: Parse gameplay scripts
         shell: bash
@@ -110,122 +112,122 @@ jobs:
             res://scripts/missions/cinematic_director.gd
           do
             echo "Checking $script"
-            godot --headless --path . --check-only --script "$script"
+            timeout 300 godot --headless --path . --check-only --script "$script"
           done
 
       - name: Test pause menu and saved settings
-        run: godot --headless --path . --script res://tests/pause_settings_menu_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/pause_settings_menu_test.gd
 
       - name: Test player wallet and currency
-        run: godot --headless --path . --script res://tests/player_wallet_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/player_wallet_test.gd
 
       - name: Test unified game save manager
-        run: godot --headless --path . --script res://tests/game_save_manager_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/game_save_manager_test.gd
 
       - name: Test village shop purchases
-        run: godot --headless --path . --script res://tests/consumable_shop_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/consumable_shop_test.gd
 
       - name: Test public drinking fountain interaction
-        run: godot --headless --path . --script res://tests/public_drinking_fountain_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/public_drinking_fountain_test.gd
 
       - name: Test Sapphire Coast seafood market purchases
-        run: godot --headless --path . --script res://tests/seafood_market_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/seafood_market_test.gd
 
       - name: Test Amber Valley vehicle service garage
-        run: godot --headless --path . --script res://tests/vehicle_service_garage_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/vehicle_service_garage_test.gd
 
       - name: Test Sapphire Coast lighthouse beacon and interaction
-        run: godot --headless --path . --script res://tests/coastal_lighthouse_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/coastal_lighthouse_test.gd
 
       - name: Test food and drink inventory
-        run: godot --headless --path . --script res://tests/consumable_inventory_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/consumable_inventory_test.gd
 
       - name: Test player hunger, thirst and rest
-        run: godot --headless --path . --script res://tests/player_needs_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/player_needs_test.gd
 
       - name: Test NPC perception and reactions
-        run: godot --headless --path . --script res://tests/npc_brain_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/npc_brain_test.gd
 
       - name: Test named Arabic character population and interaction
-        run: godot --headless --path . --script res://tests/character_population_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/character_population_test.gd
 
       - name: Test shared interaction contract
-        run: godot --headless --path . --script res://tests/interaction_system_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/interaction_system_test.gd
 
       - name: Test interactive objects
-        run: godot --headless --path . --script res://tests/interactable_objects_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/interactable_objects_test.gd
 
       - name: Test first vehicle enter-drive-exit flow
-        run: godot --headless --path . --script res://tests/vehicle_controller_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/vehicle_controller_test.gd
 
       - name: Test vehicle damage, repairs, and condition visuals
-        run: godot --headless --path . --script res://tests/vehicle_damage_repair_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/vehicle_damage_repair_test.gd
 
       - name: Test bicycle mount, riding controls, and dismount
-        run: godot --headless --path . --script res://tests/bicycle_controller_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/bicycle_controller_test.gd
 
       - name: Test house interior entry and exit
-        run: godot --headless --path . --script res://tests/house_interior_portal_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/house_interior_portal_test.gd
 
       - name: Test video-reference bicycle, house, and red bridge world integration
-        run: godot --headless --path . --script res://tests/video_reference_world_flow_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/video_reference_world_flow_test.gd
 
       - name: Test mobile joystick, player movement, and camera touch isolation
-        run: godot --headless --path . --script res://tests/mobile_controls_regression_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/mobile_controls_regression_test.gd
 
       - name: Test first mission objective flow
-        run: godot --headless --path . --script res://tests/mission_manager_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/mission_manager_test.gd
 
       - name: Test rescue mission 002 progression and escape
-        run: godot --headless --path . --script res://tests/mission_002_runtime_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/mission_002_runtime_test.gd
 
       - name: Test harbor stealth investigation mission 003
-        run: godot --headless --path . --script res://tests/mission_003_runtime_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/mission_003_runtime_test.gd
 
       - name: Test last train escort mission 004
-        run: godot --headless --path . --script res://tests/mission_004_runtime_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/mission_004_runtime_test.gd
 
       - name: Test original ambience audio assets
-        run: godot --headless --path . --script res://tests/nature_ambience_assets_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/nature_ambience_assets_test.gd
 
       - name: Test Arabic voice emotion and acting directions
-        run: godot --headless --path . --script res://tests/voice_performance_data_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/voice_performance_data_test.gd
 
       - name: Test named audio buses and routing
-        run: godot --headless --path . --script res://tests/audio_bus_layout_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/audio_bus_layout_test.gd
 
       - name: Test global weather transitions
-        run: godot --headless --path . --script res://tests/world_weather_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/world_weather_test.gd
 
       - name: Test wildlife habitat population and feeding
-        run: godot --headless --path . --script res://tests/wildlife_director_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/wildlife_director_test.gd
 
       - name: Test four open-world districts
-        run: godot --headless --path . --script res://tests/open_world_regions_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/open_world_regions_test.gd
 
       - name: Test GTA San Andreas Mobile visual reference profile
-        run: godot --headless --path . --script res://tests/graphics_reference_profile_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/graphics_reference_profile_test.gd
 
       - name: Test regional terrain expansion attachment
-        run: godot --headless --path . --script res://tests/terrain_expansion_runtime_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/terrain_expansion_runtime_test.gd
 
       - name: Test world clock and day-night phases
-        run: godot --headless --path . --script res://tests/world_clock_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/world_clock_test.gd
 
       - name: Test optional world side activities and wallet rewards
-        run: godot --headless --path . --script res://tests/side_activity_director_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/side_activity_director_test.gd
 
       - name: Test video-reference gameplay HUD overlay
-        run: godot --headless --path . --script res://tests/gameplay_hud_overlay_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/gameplay_hud_overlay_test.gd
 
       - name: Test continuous video-reference bicycle and house tutorial
-        run: godot --headless --path . --script res://tests/video_reference_tutorial_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/video_reference_tutorial_test.gd
 
       - name: Test original humanoid player visual
-        run: godot --headless --path . --script res://tests/player_humanoid_visual_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/player_humanoid_visual_test.gd
 
       - name: Test moving ambient traffic on village roads
-        run: godot --headless --path . --script res://tests/ambient_traffic_test.gd
+        run: timeout 300 godot --headless --path . --script res://tests/ambient_traffic_test.gd
 
       - name: Run main scene smoke test
-        run: godot --headless --path . --quit-after 180
+        run: timeout 300 godot --headless --path . --quit-after 180
