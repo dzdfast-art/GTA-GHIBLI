@@ -16,6 +16,10 @@ func _run_test() -> void:
 	brain.set("schedule_enabled", true)
 	npc.add_child(brain)
 	world.add_child(npc)
+	await process_frame
+	if npc.get_node_or_null("NavigationAgent3D") == null or not brain.call("has_navigation_agent"):
+		_fail("The scheduled NPC must attach its navigation agent after entering the world tree.")
+		return
 	var sun := DirectionalLight3D.new()
 	sun.name = "Sun"
 	world.add_child(sun)
@@ -52,7 +56,9 @@ func _run_test() -> void:
 	if float(sun.light_energy) <= 0.0:
 		_fail("Sunlight was not updated.")
 		return
-	print("PASS: Shared world clock, day phases and sun updates.")
+	world.queue_free()
+	await process_frame
+	print("PASS: Shared world clock, day phases, sun updates and deferred NPC navigation-agent attachment.")
 	quit(0)
 
 func _fail(message: String) -> void:

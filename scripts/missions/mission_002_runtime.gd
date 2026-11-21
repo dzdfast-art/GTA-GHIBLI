@@ -55,6 +55,8 @@ func _ready() -> void:
 func setup(player: CharacterBody3D, vehicle: CharacterBody3D) -> void:
 	_player = player
 	_vehicle = vehicle
+	if _phase == Phase.COMPLETE:
+		_award_completion_reward()
 
 
 func _process(delta: float) -> void:
@@ -182,6 +184,7 @@ func _rescue_witness() -> void:
 func _complete_mission() -> void:
 	_phase = Phase.COMPLETE
 	_save_completion()
+	_award_completion_reward()
 	if _pursuer != null and is_instance_valid(_pursuer):
 		_pursuer.visible = false
 	if _backup_pursuer != null and is_instance_valid(_backup_pursuer):
@@ -190,6 +193,30 @@ func _complete_mission() -> void:
 	if _retry_button != null:
 		_retry_button.visible = false
 
+
+
+func get_hud_snapshot() -> Dictionary:
+	var is_complete := _phase == Phase.COMPLETE
+	var is_active := _phase != Phase.LOCKED and not is_complete
+	var status_text := _status_label.text if _status_label != null else _status_override
+	var objective_text := _objective_label.text if _objective_label != null else status_text
+	return {
+		"active": is_active,
+		"priority": 1,
+		"title": str(_mission_data.get("title", "المهمة")),
+		"objective": objective_text,
+		"status": status_text,
+		"completed": is_complete
+}
+
+
+func _award_completion_reward() -> void:
+	if _player == null:
+		return
+	var wallet := _player.get_node_or_null("PlayerWallet")
+	if wallet == null or not wallet.has_method("add_money_once"):
+		return
+	wallet.call("add_money_once", "mission_002_completion", int(_mission_data.get("rewards", {}).get("currency", 180)))
 
 func _fail_mission(reason: String) -> void:
 	_phase = Phase.FAILED
@@ -396,6 +423,7 @@ func _build_hud() -> void:
 	_panel.anchor_right = 0.58
 	_panel.anchor_bottom = 0.57
 	add_child(_panel)
+	add_to_group("mission_hud_sources")
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override("separation", 4)
 	_panel.add_child(content)
@@ -466,3 +494,59 @@ func _refresh_hud() -> void:
 		_damage_label.text = "سلامة السيارة: %d%%" % _vehicle_health
 	if not _status_override.is_empty() and _phase != Phase.FAILED:
 		_status_label.text = _status_override
+
+func get_save_snapshot() -> Dictionary:
+	return {
+		"phase": int(_phase),
+		"escape_time_left": _escape_time_left,
+		"vehicle_health": _vehicle_health,
+		"impact_cooldown": _impact_cooldown,
+		"status_override": _status_override,
+		"pursuer_position": _node_position_snapshot(_pursuer),
+		"backup_pursuer_position": _node_position_snapshot(_backup_pursuer),
+		"witness_position": _node_position_snapshot(_witness),
+		"witness_visible": _witness.visible if is_instance_valid(_witness) else false
+	}
+
+
+func apply_save_snapshot(snapshot: Dictionary) -> bool:
+	if not snapshot.has("phase"):
+		return false
+	_phase = clampi(int(snapshot.get("phase", int(Phase.LOCKED))), int(Phase.LOCKED), int(Phase.FAILED))
+	_escape_time_left = clampf(float(snapshot.get("escape_time_left", ESCAPE_TIME_LIMIT)), 0.0, ESCAPE_TIME_LIMIT)
+	_vehicle_health = clampi(int(snapshot.get("vehicle_health", 100)), 0, 100)
+	_impact_cooldown = maxf(0.0, float(snapshot.get("impact_cooldown", 0.0)))
+	_status_override = str(snapshot.get("status_override", ""))
+	if _phase != Phase.LOCKED and _phase != Phase.COMPLETE and _phase != Phase.FAILED and not _visuals_created:
+		_create_route_visuals()
+	_restore_node_position(_pursuer, snapshot.get("pursuer_position", []))
+	_restore_node_position(_backup_pursuer, snapshot.get("backup_pursuer_position", []))
+	_restore_node_position(_witness, snapshot.get("witness_position", []))
+	if is_instance_valid(_witness):
+		_witness.visible = bool(snapshot.get("witness_visible", true))
+	_refresh_hud()
+	return true
+
+
+func reload_saved_state() -> void:
+	if _is_mission_completed():
+		_phase = Phase.COMPLETE
+		_award_completion_reward()
+	elif _is_first_mission_complete():
+		if not _visuals_created:
+			_start_mission()
+	else:
+		_phase = Phase.LOCKED
+	_refresh_hud()
+
+
+func _node_position_snapshot(node: Node3D) -> Array:
+	if not is_instance_valid(node):
+		return []
+	return [node.global_position.x, node.global_position.y, node.global_position.z]
+
+
+func _restore_node_position(node: Node3D, value: Variant) -> void:
+	if not is_instance_valid(node) or not value is Array or value.size() < 3:
+		return
+	node.global_position = Vector3(float(value[0]), float(value[1]), float(value[2]))

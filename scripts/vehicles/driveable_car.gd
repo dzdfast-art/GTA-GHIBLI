@@ -7,34 +7,52 @@ extends CharacterBody3D
 @export var direction_change_rate := 36.0
 @export var steering_rate := 1.65
 @export var gravity := 18.0
+@export_range(1.0, 1000.0, 1.0) var max_vehicle_health := 100.0
+@export_range(1.0, 30.0, 0.5) var collision_damage_threshold := 6.0
+@export_range(0.1, 5.0, 0.1) var collision_damage_multiplier := 1.2
+@export_range(0.1, 5.0, 0.1) var collision_damage_cooldown := 0.9
+
+signal vehicle_health_changed(current: float, maximum: float)
+signal vehicle_disabled(source_id: StringName)
 
 var driver: CharacterBody3D
+var vehicle_health := 100.0
 var _speed := 0.0
 var _saved_collision_layer := 1
 var _saved_collision_mask := 1
+var _collision_cooldown := 0.0
+var _wheel_nodes: Array[MeshInstance3D] = []
+var _brake_light_materials: Array[StandardMaterial3D] = []
 
 func _ready() -> void:
 	add_to_group("vehicles")
 	collision_layer = 1
 	collision_mask = 1
+	vehicle_health = clampf(vehicle_health, 0.0, max_vehicle_health)
 	_build_vehicle_visuals()
 	_build_interaction_area()
 	if not InputMap.has_action("vehicle_brake"):
 		InputMap.add_action("vehicle_brake")
 
 func _physics_process(delta: float) -> void:
+	_collision_cooldown = maxf(0.0, _collision_cooldown - delta)
 	if driver == null or not is_instance_valid(driver):
+		_set_brake_lights(false)
 		return
 	var input_vector := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	var throttle := -input_vector.y
-	var target_speed := throttle * (max_forward_speed if throttle >= 0.0 else max_reverse_speed)
-	if Input.is_action_pressed("vehicle_brake"):
+	var condition_ratio := get_vehicle_health_ratio()
+	var handling_ratio := lerpf(0.55, 1.0, condition_ratio)
+	var target_speed := throttle * (max_forward_speed if throttle >= 0.0 else max_reverse_speed) * handling_ratio
+	var braking := Input.is_action_pressed("vehicle_brake")
+	if braking:
 		_speed = move_toward(_speed, 0.0, braking_force * delta)
 	else:
-		var speed_response := acceleration
+		var speed_response := acceleration * handling_ratio
 		if absf(target_speed) > 0.1 and absf(_speed) > 0.1 and signf(target_speed) != signf(_speed):
 			speed_response = maxf(braking_force, direction_change_rate)
 		_speed = move_toward(_speed, target_speed, speed_response * delta)
+	_set_brake_lights(braking or (absf(_speed) > 0.1 and absf(target_speed) < 0.1))
 	if absf(_speed) > 0.15:
 		var steering_strength := clampf(absf(_speed) / 3.0, 0.25, 1.0)
 		rotation.y -= input_vector.x * steering_rate * steering_strength * delta
@@ -45,7 +63,10 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0.0
 	else:
 		velocity.y -= gravity * delta
+	var velocity_before_move := velocity
 	move_and_slide()
+	_apply_collision_damage(velocity_before_move)
+	_update_wheels(delta)
 	_sync_driver_pose()
 
 func interact() -> void:
@@ -57,7 +78,7 @@ func interact() -> void:
 		_enter_vehicle(player)
 
 func _enter_vehicle(player: CharacterBody3D) -> void:
-	if driver != null:
+	if driver != null or not is_vehicle_operational():
 		return
 	driver = player
 	_saved_collision_layer = player.collision_layer
@@ -110,14 +131,28 @@ func _set_hud_vehicle_mode(active: bool) -> void:
 		hud.call("set_vehicle_mode", active)
 
 func _build_vehicle_visuals() -> void:
-	_add_box("LowerBody", Vector3(1.9, 0.72, 3.9), Vector3(0.0, 0.86, 0.0), Color(0.22, 0.43, 0.35))
-	_add_box("Cabin", Vector3(1.55, 0.78, 1.9), Vector3(0.0, 1.58, 0.22), Color(0.25, 0.48, 0.48))
+	_add_box("LowerBody", Vector3(1.9, 0.72, 3.9), Vector3(0.0, 0.86, 0.0), Color(0.13, 0.29, 0.52))
+	_add_box("Cabin", Vector3(1.55, 0.78, 1.9), Vector3(0.0, 1.58, 0.22), Color(0.18, 0.36, 0.58))
 	_add_box("FrontGlass", Vector3(1.38, 0.48, 0.06), Vector3(0.0, 1.63, -0.76), Color(0.48, 0.70, 0.75))
 	_add_box("RearGlass", Vector3(1.35, 0.42, 0.06), Vector3(0.0, 1.62, 1.19), Color(0.42, 0.64, 0.70))
+	_add_box("LeftSideGlass", Vector3(0.06, 0.44, 1.36), Vector3(-0.79, 1.64, 0.18), Color(0.27, 0.50, 0.62))
+	_add_box("RightSideGlass", Vector3(0.06, 0.44, 1.36), Vector3(0.79, 1.64, 0.18), Color(0.27, 0.50, 0.62))
 	_add_box("FrontBumper", Vector3(1.95, 0.16, 0.16), Vector3(0.0, 0.48, -1.98), Color(0.16, 0.18, 0.17))
 	_add_box("RearBumper", Vector3(1.95, 0.16, 0.16), Vector3(0.0, 0.48, 1.98), Color(0.16, 0.18, 0.17))
 	_add_box("LeftHeadlight", Vector3(0.38, 0.22, 0.08), Vector3(-0.62, 0.91, -1.98), Color(1.0, 0.91, 0.66))
 	_add_box("RightHeadlight", Vector3(0.38, 0.22, 0.08), Vector3(0.62, 0.91, -1.98), Color(1.0, 0.91, 0.66))
+	_add_brake_light("LeftBrakeLight", Vector3(-0.62, 0.91, 1.98))
+	_add_brake_light("RightBrakeLight", Vector3(0.62, 0.91, 1.98))
+	_add_box("FrontGrille", Vector3(0.62, 0.20, 0.055), Vector3(0.0, 0.65, -1.99), Color(0.08, 0.09, 0.10))
+	_add_box("FrontPlate", Vector3(0.42, 0.12, 0.035), Vector3(0.0, 0.47, -2.04), Color(0.83, 0.83, 0.76))
+	_add_box("RearPlate", Vector3(0.42, 0.12, 0.035), Vector3(0.0, 0.47, 2.04), Color(0.83, 0.83, 0.76))
+	for side in [-1.0, 1.0]:
+		_add_box("SideDoorSeam_%s" % str(side), Vector3(0.035, 0.30, 1.18),
+			Vector3(side * 0.955, 0.86, 0.18), Color(0.07, 0.11, 0.16))
+		_add_box("DoorHandle_%s" % str(side), Vector3(0.045, 0.055, 0.22),
+			Vector3(side * 0.985, 1.02, 0.16), Color(0.68, 0.72, 0.75))
+		_add_box("SideMirror_%s" % str(side), Vector3(0.22, 0.11, 0.20),
+			Vector3(side * 1.02, 1.54, -0.70), Color(0.13, 0.26, 0.43))
 	_add_wheel("FrontLeftWheel", Vector3(-0.98, 0.43, -1.25))
 	_add_wheel("FrontRightWheel", Vector3(0.98, 0.43, -1.25))
 	_add_wheel("RearLeftWheel", Vector3(-0.98, 0.43, 1.25))
@@ -159,6 +194,112 @@ func _add_wheel(node_name: String, local_position: Vector3) -> void:
 	material.roughness = 1.0
 	wheel.material_override = material
 	add_child(wheel)
+	var hub := MeshInstance3D.new()
+	hub.name = node_name + "Hub"
+	var hub_mesh := CylinderMesh.new()
+	hub_mesh.top_radius = 0.16
+	hub_mesh.bottom_radius = 0.16
+	hub_mesh.height = 0.04
+	hub_mesh.radial_segments = 10
+	hub.mesh = hub_mesh
+	hub.position = local_position + Vector3(-0.15 if local_position.x < 0.0 else 0.15, 0.0, 0.0)
+	hub.rotation.z = PI * 0.5
+	var hub_material := StandardMaterial3D.new()
+	hub_material.albedo_color = Color(0.48, 0.50, 0.52)
+	hub_material.metallic = 0.62
+	hub_material.roughness = 0.38
+	hub.material_override = hub_material
+	add_child(hub)
+	_wheel_nodes.append(wheel)
+
+func _add_brake_light(node_name: String, local_position: Vector3) -> void:
+	var light := MeshInstance3D.new()
+	light.name = node_name
+	var mesh := BoxMesh.new()
+	mesh.size = Vector3(0.38, 0.20, 0.055)
+	light.mesh = mesh
+	light.position = local_position
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color(0.20, 0.025, 0.02)
+	material.emission_enabled = true
+	material.emission = Color(0.035, 0.003, 0.002)
+	material.emission_energy_multiplier = 0.2
+	light.material_override = material
+	_brake_light_materials.append(material)
+	add_child(light)
+
+func _set_brake_lights(enabled: bool) -> void:
+	for material in _brake_light_materials:
+		material.albedo_color = Color(1.0, 0.055, 0.025) if enabled else Color(0.20, 0.025, 0.02)
+		material.emission = Color(1.0, 0.035, 0.012) if enabled else Color(0.035, 0.003, 0.002)
+		material.emission_energy_multiplier = 1.1 if enabled else 0.2
+
+func _update_wheels(delta: float) -> void:
+	var rotation_step := -_speed * delta / 0.42
+	for wheel in _wheel_nodes:
+		if is_instance_valid(wheel):
+			wheel.rotate_object_local(Vector3.RIGHT, rotation_step)
+
+func _apply_collision_damage(velocity_before_move: Vector3) -> void:
+	if _collision_cooldown > 0.0 or get_slide_collision_count() <= 0:
+		return
+	for index in range(get_slide_collision_count()):
+		var collision := get_slide_collision(index)
+		if absf(collision.get_normal().y) > 0.65:
+			continue
+		var relative_velocity := velocity_before_move - collision.get_collider_velocity()
+		var impact_speed := Vector2(relative_velocity.x, relative_velocity.z).length()
+		if impact_speed > collision_damage_threshold:
+			var damage := (impact_speed - collision_damage_threshold) * collision_damage_multiplier
+			apply_damage(damage, &"collision")
+			_collision_cooldown = collision_damage_cooldown
+			return
+
+func apply_damage(amount: float, source_id: StringName = &"unknown") -> bool:
+	if amount <= 0.0 or vehicle_health <= 0.0:
+		return false
+	var before := vehicle_health
+	vehicle_health = maxf(0.0, vehicle_health - amount)
+	if is_equal_approx(before, vehicle_health):
+		return false
+	vehicle_health_changed.emit(vehicle_health, max_vehicle_health)
+	if vehicle_health <= 0.0:
+		_speed = 0.0
+		velocity.x = 0.0
+		velocity.z = 0.0
+		vehicle_disabled.emit(source_id)
+		if driver != null and is_instance_valid(driver):
+			_exit_vehicle()
+	return true
+
+func repair_vehicle(amount: float = -1.0) -> bool:
+	if amount == 0.0 or vehicle_health >= max_vehicle_health:
+		return false
+	var repair_amount := max_vehicle_health if amount < 0.0 else amount
+	var before := vehicle_health
+	vehicle_health = minf(max_vehicle_health, vehicle_health + repair_amount)
+	if is_equal_approx(before, vehicle_health):
+		return false
+	vehicle_health_changed.emit(vehicle_health, max_vehicle_health)
+	return true
+
+func get_vehicle_health_ratio() -> float:
+	return clampf(vehicle_health / maxf(1.0, max_vehicle_health), 0.0, 1.0)
+
+func is_vehicle_operational() -> bool:
+	return vehicle_health > 0.0
+
+func get_vehicle_save_snapshot() -> Dictionary:
+	return {"health": vehicle_health, "max_health": max_vehicle_health}
+
+func apply_vehicle_save_snapshot(snapshot: Dictionary) -> bool:
+	if not snapshot.has("health"):
+		return false
+	vehicle_health = clampf(float(snapshot.get("health", max_vehicle_health)), 0.0, max_vehicle_health)
+	_speed = 0.0
+	velocity = Vector3.ZERO
+	vehicle_health_changed.emit(vehicle_health, max_vehicle_health)
+	return true
 
 func _build_interaction_area() -> void:
 	var area := Area3D.new()

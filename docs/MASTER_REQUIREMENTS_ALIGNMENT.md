@@ -4,7 +4,7 @@
 **Primary source:** `GTA_GHIBLI_FULL_PROMPT.txt`  
 **Engine in the current prototype:** Godot 4.7 (headless CI validation)  
 **Target:** Android, with the Infinix SMART 8 / Unisoc T606 / 4 GB physical RAM as the baseline test device  
-**Content target:** approximately 4 GiB of genuine, useful assets; not a runtime RAM target
+**Content growth:** no fixed final size ceiling; every increase must be genuine, useful and compatible with the Android performance baseline (not a runtime RAM target)
 
 This document turns the supplied master prompt and the current repository evidence into one controlled implementation baseline. It does not claim that planned systems already exist.
 
@@ -46,7 +46,7 @@ Do not invent agreed ages, biographies, precise relationships beyond those state
 | Missions | One tutorial flow: square → Mira → garden | Main story, side missions, jobs, dynamic encounters and varied activities | Current mission is a small prototype, not the campaign |
 | Vehicles | First drivable road-car prototype added: enter/exit, forward/reverse, steering, braking and contextual mobile HUD; procedural placeholder art | Cars, motorcycles, bicycles, vans, trucks, heavy vehicles, boats, aircraft, helicopters and other suitable transport | Expand vehicle physics and category-specific classes; physical Android handling test remains outstanding |
 | Interaction | Mira proximity and TALK action | Reusable interactions with people, objects, buildings, food, nature and vehicles | General interaction framework remains to be implemented |
-| Save | Local persistence for the first mission flags | Versioned game-wide progress including missions, player, inventory, settings and relevant vehicle/world state | Current save is mission-only |
+| Save | Existing per-system local persistence on main | Candidate branch adds a versioned coordinator for player/world clock/components/missions/activities/NPC relationships/vehicle condition and allowlisted legacy files | PARTIALLY IMPLEMENTED; current regression covers player transform and legacy NPC-file restore safety, while full historical migration and all world entities remain unverified |
 | Platform | Godot headless CI | Android export, install, launch and physical-device testing | Not yet verified on device |
 
 The master prompt also says the final project should be a genuinely new project from an empty directory and should not depend on old B1–B16 prototypes. The current repository contains a working starter prototype. This is a production decision that must be handled explicitly: preserve the current work as a prototype/history, and establish a clean production project separately if required by the specification. Do not destructively overwrite the existing project or mislabel it as the final clean-start build.
@@ -122,6 +122,23 @@ Repository inspection confirms:
 
 GitHub Actions run **43513899542** completed successfully: JSON validation, Godot 4.7 import, gameplay-script parsing, first-mission flow test and 180-frame main-scene smoke test all passed. This is a headless CI result, not Android/device validation.
 
+## 6A. Comprehensive repair candidate branch — 2026-11-20
+
+This section records changes on `fix/comprehensive-stability-2026-11-20`. They are **not merged into `main`**. Their new tests are pending the draft pull request's CI run until a run URL and conclusion are recorded.
+
+- The tested gameplay HUD/player/traffic/bicycle tutorial work from PR #30 was copied onto this isolated branch as a parent commit; the PR itself was not merged.
+- On-foot RUN now multiplies base movement speed by a configurable sprint multiplier (default 1.6) while the sprint action is held. A regression assertion was added.
+- The local wallet now stores one-time reward transaction IDs with its balance (schema version 2, reads old balance-only files). Mission 001–004 completion paths use unique transaction IDs to prevent duplicate reward payments.
+- STATS now reads the live wallet, health when present, player needs, world clock, district and population counts, mission completion count and saved side-activity completions.
+- BRIEF now reads mission JSON titles/descriptions, saved progress and the active mission HUD snapshot.
+- The pause menu test now checks the required seven-item order and live STATS/BRIEF data.
+- The 72 existing terrain tile paths are retained, but the candidate replaces eager preload/attachment of all meshes with 72-unit load radius, 96-unit unload radius, six active-tile limit and at most two loads per 0.35-second refresh. Each loaded visual gets a matching trimesh collision.
+- An original SVG application icon is added and configured in `project.godot`.
+- Marsa Al-Noor is recorded as a proposed Harbor City waterfront landmark at local coordinate (14, 0, 10), world coordinate (-68, 0, -44). It is explicitly a candidate placement proposal, not a confirmed story/canon fact. A scene landmark, world-map marker and matching regression test are included.
+- The candidate includes a first-pass unified save coordinator and district NavigationAgent3D routing, both PARTIALLY IMPLEMENTED. It does not claim complete world persistence, connected world-wide NavMesh/obstacle avoidance, expressive Arabic voice recordings, production-grade vehicle physics or physical Android validation. The Android ARM64 Debug workflow has been restored and its current run is pending.
+
+The separate `web-preview` branch already completed the private Chromium smoke test on Ubuntu 24.04 (workflow run #14). This candidate branch does not publish Web content.
+
 ## 7. Production order and acceptance gates
 
 1. Resolve the clean-production-project versus existing-prototype boundary without losing history.
@@ -136,3 +153,45 @@ GitHub Actions run **43513899542** completed successfully: JSON validation, Godo
 10. Expand unique assets and regions against the auditable 4 GiB content budget.
 
 A gate passes only when its implementation and tests exist. Keep **implemented**, **planned**, **blocked**, and **tested** statuses separate.
+
+
+## 6B. Save, navigation and Android workflow status — 2026-11-20
+
+- Unified save coordinator: PARTIALLY IMPLEMENTED on PR #31. It captures current player transform, world clock, health/wallet/needs/inventory snapshots, mission and side-activity snapshots, NPC relationship snapshots, vehicle condition and allowlisted legacy save files. It does not yet cover every spawned/destroyed world object, collectible, NPC transform or future subsystem.
+- Legacy restore safety: IMPLEMENTED in the candidate code; regression is PENDING. Restore is restricted to named legacy save paths and flat safe-ID NPC relationship JSON files. Unrelated user files and traversal paths are rejected; each restored legacy record is limited to 2 MiB.
+- NPC navigation: PARTIALLY IMPLEMENTED. Four prototype district grids and NavigationAgent3D path following exist; avoidance is disabled and the village, roads, interiors and all districts are not one continuous navigation surface.
+- Android: ARM64 Debug export workflow restored from `main`; current run is pending. A Debug artifact is not a signed production release and is not a physical-device test.
+- Content growth: no fixed numeric ceiling. Keep separate byte measurements for tracked unique blobs, raw APK, Web export and artifact ZIP. Only useful original/licensed content counts.
+
+
+## 6C. Harbor City public water interaction — 2026-11-20
+
+- **Public drinking fountain:** IMPLEMENTED on `fix/comprehensive-stability-2026-11-20`. An original low-poly 3D model and material library are loaded by a reusable Godot scene placed in Harbor City's plaza.
+- **Gameplay contract:** PARTIALLY IMPLEMENTED pending current-head verification. The shared `interact()` action restores up to 30 thirst points through `PlayerNeeds`, with range, full-thirst and cooldown guards plus Arabic feedback.
+- **Regression coverage:** IMPLEMENTED, TEST PENDING. A dedicated fountain test checks the gameplay effects; the district test checks that the actual Harbor City world scene instantiates the fountain and exposes its interaction area.
+- **Performance / device acceptance:** NOT VERIFIED. The target 4 GB / Unisoc T606 Android device has not been used to inspect the model, measure RAM, FPS, load time or thermal impact.
+- This feature is a candidate-branch addition only. It has not changed `main` and requires PR #31 review and CI before it can be considered accepted.
+
+
+## 6D. Sapphire Coast seafood market — 2026-11-20
+
+- **World content:** IMPLEMENTED on the repair candidate. A working fishmonger stand is placed along the Sapphire Coast, reusing the existing market-stall asset and adding an original fish/ice display mesh with six material groups.
+- **Food catalogue:** IMPLEMENTED in source. Grilled sardines, seafood stew and red mullet plate are edible consumables with nutrition, hydration and energy values.
+- **Wallet and inventory:** IMPLEMENTED in source. The vendor checks range and balance, grants products to inventory and refunds money if delivery fails. Items use the shared food-consumption contract.
+- **Regression:** IMPLEMENTED, TEST PENDING. The new test checks mesh import, products, purchase signals, wallet, inventory, food effects, unknown products, insufficient funds and range rejection. The four-district test checks actual Sapphire Coast placement and interaction registration.
+- **Android acceptance:** NOT VERIFIED. No physical target-device profiling was performed.
+- This remains a Draft PR #31 candidate. It is not included in `main` until owner review and an explicit merge.
+
+
+## 2026-11-21 implementation evidence update
+
+- **Save:** The repair candidate now creates the unified versioned save on first launch when allowlisted legacy subsystem files exist and no unified save is present. Compatibility files are restored/reloaded first; versioned snapshots are applied last. The test verifies wallet balance, reward transaction IDs, hunger/thirst, stale legacy precedence, player transform and NPC relationship path safety. This is still **PARTIALLY IMPLEMENTED** because full mission, activity, world-object, vehicle and NPC-schedule restart coverage is not complete.
+- **NPC navigation:** Agent attachment is deferred until the owning Node3D finishes child setup, and the navigation map is resolved from that Node3D owner. Regression coverage includes the pre-parented actor case and world-clock scheduling. The latest Godot validation #798 is still in progress at this update; do not mark this fully tested until its log is clean.
+- **Build evidence:** The last measured Debug APK is 254,227,979 bytes on commit 9005973; current-head Android build #561 is in progress. No physical Android device test is claimed.
+- **Performance:** Four district navigation grids and lightweight NPC path queries are CI prototype coverage, not proof of continuous open-world routing or 4 GB device performance.
+- **Voice:** The 25 Arabic dialogue lines still require genuine expressive recordings or explicitly labelled AI-generated TTS; no completed human dubbing is claimed.
+
+
+## Latest CI evidence — 2026-11-21
+
+The NPC navigation lifecycle and save-migration code passed Godot validation #798 on game-code head ab9e707abed1863141418a8a17caa77cf9a1fe66. Android Debug APK #561 also passed on that code head at 254,232,075 raw bytes (254.232 MB / 242.455 MiB). The later 1c8da7 documentation commit changes documentation only. Security audit #743 passed. Current Web Build #94 and private Chromium #192 remain pending/in progress in the latest recorded state. No physical T606/4 GB device test has been performed.

@@ -4,16 +4,34 @@ extends Node3D
 ## All geometry is procedural and intentionally lightweight for mobile.
 
 const GROUND_Y := 0.03
+const WILLOW_TREE_MESH = preload("res://assets/environment/props/tree_willow_lowpoly.obj")
+const STREET_LAMP_MESH = preload("res://assets/environment/props/street_lamp_lowpoly.obj")
+const MARKET_STALL_MESH = preload("res://assets/environment/props/market_stall_lowpoly.obj")
+const PARK_BENCH_MESH = preload("res://assets/environment/props/park_bench_lowpoly.obj")
+const BARREL_MESH = preload("res://assets/environment/props/barrel_lowpoly.obj")
+const WOOD_CRATE_MESH = preload("res://assets/environment/props/wood_crate_lowpoly.obj")
+
+# Static texture references are required because runtime path strings alone
+# are not guaranteed to be gathered into exported Web and Android packages.
+const SURFACE_TEXTURES := {
+	"res://assets/environment/materials/hd_district_asphalt.svg": preload("res://assets/environment/materials/hd_district_asphalt.svg"),
+	"res://assets/environment/materials/hd_harbor_paving.svg": preload("res://assets/environment/materials/hd_harbor_paving.svg"),
+	"res://assets/environment/materials/hd_village_plaster_wall.svg": preload("res://assets/environment/materials/hd_village_plaster_wall.svg"),
+	"res://assets/environment/materials/hd_terracotta_roof.svg": preload("res://assets/environment/materials/hd_terracotta_roof.svg"),
+}
+const DIRECTION_SIGN_MESH = preload("res://assets/environment/props/direction_sign_lowpoly.obj")
 
 
 func _ready() -> void:
 	_build_mira()
 	_build_square()
 	_build_paths()
+	_build_reference_alley()
 	_build_houses()
 	_build_house_portal()
 	_build_garden()
 	_build_trees()
+	_build_street_lamps()
 	_build_well()
 	_build_signpost()
 	_build_interactive_objects()
@@ -48,6 +66,34 @@ func _build_paths() -> void:
 		Vector3(18.0, 0.06, 3.2), Color(0.66, 0.57, 0.43), false)
 
 
+func _build_reference_alley() -> void:
+	# Textured residential lane inspired by the supplied mobile gameplay reference.
+	# It continues north from the village paths without changing the player spawn.
+	var alley_center := Vector3(0.0, 0.0, -40.0)
+	var alley_length := 40.0
+
+	_add_box(self, "ReferenceAlleyAsphalt",
+		alley_center + Vector3(0.0, 0.035, 0.0),
+		Vector3(7.2, 0.07, alley_length), Color(0.30, 0.31, 0.30), true)
+	var asphalt := get_node("ReferenceAlleyAsphalt") as MeshInstance3D
+	asphalt.add_to_group("radar_roads")
+
+	for side in [-1.0, 1.0]:
+		var sidewalk_x: float = side * 4.25
+		_add_box(self, "ReferenceAlleySidewalk_%s" % str(side),
+			alley_center + Vector3(sidewalk_x, 0.09, 0.0),
+			Vector3(1.3, 0.18, alley_length), Color(0.65, 0.62, 0.54), false)
+		var curb_x: float = side * 3.62
+		_add_box(self, "ReferenceAlleyCurb_%s" % str(side),
+			alley_center + Vector3(curb_x, 0.16, 0.0),
+			Vector3(0.18, 0.32, alley_length), Color(0.52, 0.50, 0.45), true)
+
+		var wall_name := "ReferenceAlleyStoneWall" if side < 0.0 else "ReferenceAlleyStoneWallFar"
+		_add_box(self, wall_name,
+			alley_center + Vector3(side * 5.15, 1.45, 0.0),
+			Vector3(0.32, 2.9, alley_length), Color(0.72, 0.68, 0.58), true)
+
+
 func _build_houses() -> void:
 	_add_house("BakerHouse", Vector3(-11.0, 0.0, -10.0),
 		Color(0.88, 0.75, 0.58), Color(0.55, 0.25, 0.20))
@@ -63,6 +109,7 @@ func _add_house(house_name: String, origin: Vector3,
 		wall_color: Color, roof_color: Color) -> void:
 	var house := StaticBody3D.new()
 	house.name = house_name
+	house.add_to_group("radar_buildings")
 	house.position = origin
 	house.collision_layer = 1
 	house.collision_mask = 1
@@ -167,34 +214,46 @@ func _build_trees() -> void:
 			1.0 + float(index % 3) * 0.12)
 
 
+func _add_imported_mesh(parent: Node3D, node_name: String, source_mesh: Resource,
+		at: Vector3, scale_factor: Vector3) -> Node3D:
+	var root := Node3D.new()
+	root.name = node_name
+	root.position = at
+	root.scale = scale_factor
+
+	var imported_mesh := MeshInstance3D.new()
+	imported_mesh.name = "ImportedMesh"
+	imported_mesh.mesh = source_mesh as Mesh
+	if imported_mesh.mesh == null:
+		push_error("Village imported mesh is not a valid Mesh resource: " + node_name)
+	root.add_child(imported_mesh)
+	parent.add_child(root)
+	return root
+
+
 func _add_tree(tree_name: String, origin: Vector3, scale_factor: float) -> void:
-	var tree := Node3D.new()
-	tree.name = tree_name
-	tree.position = origin
-	tree.scale = Vector3.ONE * scale_factor
-	add_child(tree)
+	var scale_value := scale_factor * 1.12
+	var tree: Node3D = _add_imported_mesh(self, tree_name, WILLOW_TREE_MESH,
+		origin + Vector3(0.0, 1.1 * scale_value, 0.0), Vector3.ONE * scale_value)
+	var collision_body := StaticBody3D.new()
+	collision_body.name = "TreeTrunkCollision"
+	var collision := CollisionShape3D.new()
+	var shape := CylinderShape3D.new()
+	shape.radius = 0.28
+	shape.height = 2.4
+	collision.shape = shape
+	collision.position.y = -0.0
+	collision_body.add_child(collision)
+	tree.add_child(collision_body)
 
-	var trunk := CylinderMesh.new()
-	trunk.top_radius = 0.24
-	trunk.bottom_radius = 0.38
-	trunk.height = 2.8
-	_add_mesh(tree, "Trunk", trunk, Vector3(0.0, 1.4, 0.0),
-		Color(0.34, 0.23, 0.15))
 
-	var crown := SphereMesh.new()
-	crown.radius = 1.65
-	crown.height = 3.0
-	_add_mesh(tree, "Canopy", crown, Vector3(0.0, 3.2, 0.0),
-		Color(0.30, 0.52, 0.29))
-	var canopy_colors := [Color(0.34, 0.58, 0.32), Color(0.26, 0.47, 0.28)]
-	for index in range(2):
-		var cluster := SphereMesh.new()
-		cluster.radius = 1.05
-		cluster.height = 1.85
-		var offset := Vector3(-0.82 if index == 0 else 0.82, 3.05, 0.18)
-		_add_mesh(tree, "CanopyCluster_%d" % index, cluster, offset,
-			canopy_colors[index])
 
+func _build_street_lamps() -> void:
+	# Restore the original low-poly street lamps along the residential alley.
+	_add_imported_mesh(self, "VillageStreetLamp_-1.0_0", STREET_LAMP_MESH,
+		Vector3(-4.45, 0.0, -31.0), Vector3.ONE)
+	_add_imported_mesh(self, "VillageStreetLamp_1.0_0", STREET_LAMP_MESH,
+		Vector3(4.45, 0.0, -31.0), Vector3.ONE)
 
 func _build_well() -> void:
 	var well := CylinderMesh.new()
@@ -291,7 +350,9 @@ func _add_box(parent: Node3D, node_name: String, position: Vector3,
 	instance.name = node_name
 	instance.mesh = mesh
 	instance.position = position
-	instance.material_override = _material(color)
+	instance.material_override = _material(color, _texture_for_node(node_name))
+	if node_name.ends_with("Path"):
+		instance.add_to_group("radar_roads")
 	parent.add_child(instance)
 
 	if with_collision:
@@ -310,7 +371,7 @@ func _add_mesh(parent: Node3D, node_name: String, mesh: Mesh,
 	instance.name = node_name
 	instance.mesh = mesh
 	instance.position = position
-	instance.material_override = _material(color)
+	instance.material_override = _material(color, _texture_for_node(node_name))
 	parent.add_child(instance)
 
 
@@ -321,10 +382,27 @@ func _add_collision(parent: Node3D, shape: Shape3D, position: Vector3) -> void:
 	parent.add_child(collision)
 
 
-func _material(color: Color) -> StandardMaterial3D:
+func _texture_for_node(node_name: String) -> String:
+	if "Asphalt" in node_name:
+		return "res://assets/environment/materials/hd_district_asphalt.svg"
+	if "Sidewalk" in node_name or "Curb" in node_name or "Square" in node_name:
+		return "res://assets/environment/materials/hd_harbor_paving.svg"
+	if "StoneWall" in node_name or "Pillar" in node_name or node_name == "Walls":
+		return "res://assets/environment/materials/hd_village_plaster_wall.svg"
+	if node_name == "Roof":
+		return "res://assets/environment/materials/hd_terracotta_roof.svg"
+	return ""
+
+
+func _material(color: Color, texture_path: String = "") -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = 0.92
+	if not texture_path.is_empty():
+		var texture := SURFACE_TEXTURES.get(texture_path) as Texture2D
+		if texture != null:
+			material.albedo_texture = texture
+			material.uv1_scale = Vector3(2.2, 2.2, 2.2)
 	return material
 
 

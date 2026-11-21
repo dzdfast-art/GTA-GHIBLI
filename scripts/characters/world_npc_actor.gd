@@ -89,6 +89,9 @@ func _play_line_audio(line: Dictionary) -> void:
 	var url := str(line.get("audio_url",""))
 	if url.is_empty():
 		return
+	# Browser preview must stay offline; Web uses bundled or cached voice assets only.
+	if OS.has_feature("web"):
+		return
 	if _voice_request.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
 		_voice_request.cancel_request()
 	_pending_cache_path = cache_path

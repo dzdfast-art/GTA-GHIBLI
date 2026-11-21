@@ -4,9 +4,9 @@ extends Node
 signal time_changed(hour: int, minute: int, day: int, phase: String)
 signal hour_changed(hour: int, day: int)
 
-@export_range(60.0, 7200.0, 30.0) var seconds_per_game_day := 900.0
-@export_range(0, 23, 1) var start_hour := 5
-@export_range(0, 59, 1) var start_minute := 0
+@export_range(60.0, 7200.0, 30.0) var seconds_per_game_day := 1970.0
+@export_range(0, 23, 1) var start_hour := 6
+@export_range(0, 59, 1) var start_minute := 51
 @export var drive_sun_light := true
 
 var elapsed_game_seconds := 0.0

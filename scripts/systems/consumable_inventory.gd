@@ -129,3 +129,29 @@ func _save_inventory() -> void:
 		push_warning("Could not save player inventory.")
 		return
 	file.store_string(JSON.stringify({"schema_version": 1, "items": _inventory}, "\t"))
+
+func get_save_snapshot() -> Dictionary:
+	return {
+		"schema_version": 1,
+		"items": _inventory.duplicate(true)
+	}
+
+
+func apply_save_snapshot(snapshot: Dictionary) -> bool:
+	var saved = snapshot.get("items", {})
+	if not saved is Dictionary:
+		return false
+	_inventory.clear()
+	for item_id in saved.keys():
+		var key := str(item_id)
+		var amount := int(saved[item_id])
+		if _catalog.has(key) and amount > 0:
+			_inventory[key] = amount
+	_save_inventory()
+	for item_id in _catalog.keys():
+		inventory_changed.emit(str(item_id), get_item_count(str(item_id)))
+	return true
+
+
+func reload_saved_state() -> void:
+	_load_inventory()

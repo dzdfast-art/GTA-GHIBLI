@@ -1,12 +1,32 @@
 extends Node3D
 
+# Static references ensure Godot's export pipeline includes these textures in
+# Web and Android packages even though district selection is data-driven.
+const SURFACE_TEXTURES := {
+	"res://assets/environment/materials/hd_harbor_paving.svg": preload("res://assets/environment/materials/hd_harbor_paving.svg"),
+	"res://assets/environment/materials/hd_pine_forest_floor.svg": preload("res://assets/environment/materials/hd_pine_forest_floor.svg"),
+	"res://assets/environment/materials/hd_amber_orchard_soil.svg": preload("res://assets/environment/materials/hd_amber_orchard_soil.svg"),
+	"res://assets/environment/materials/hd_sapphire_coastal_sand.svg": preload("res://assets/environment/materials/hd_sapphire_coastal_sand.svg"),
+	"res://assets/environment/materials/hd_weathered_dock_timber.svg": preload("res://assets/environment/materials/hd_weathered_dock_timber.svg"),
+	"res://assets/environment/materials/hd_terracotta_roof.svg": preload("res://assets/environment/materials/hd_terracotta_roof.svg"),
+	"res://assets/environment/materials/hd_village_plaster_wall.svg": preload("res://assets/environment/materials/hd_village_plaster_wall.svg"),
+	"res://assets/environment/materials/hd_district_asphalt.svg": preload("res://assets/environment/materials/hd_district_asphalt.svg"),
+}
+
 ## Procedural blockout for four explorable districts linked to Willow Village.
 ## Geometry is original, light-weight and assembled at runtime for mobile testing.
 const CIVILIAN_NPC_SCRIPT = preload("res://scripts/characters/world_npc_actor.gd")
+const HARBOR_HOUSES_MESH = preload("res://assets/environment/modular/village_house_collection.obj")
+const HARBOR_ROADS_MESH = preload("res://assets/environment/modular/road_street_collection.obj")
+const PUBLIC_DRINKING_FOUNTAIN_SCENE = preload("res://scenes/world/public_drinking_fountain.tscn")
+const SEAFOOD_MARKET_SCENE = preload("res://scenes/world/seafood_market.tscn")
+const VEHICLE_SERVICE_GARAGE_SCENE = preload("res://scenes/world/vehicle_service_garage.tscn")
+const COASTAL_LIGHTHOUSE_SCENE = preload("res://scenes/world/coastal_lighthouse.tscn")
 
 var _region_ids: Array[String] = []
 var _population_count := 0
 var _building_count := 0
+var _surface_texture_cache: Dictionary = {}
 
 func _ready() -> void:
 	_build_region("harbor_city", "مدينة الميناء", Vector3(-82.0, 0.0, -54.0),
@@ -59,9 +79,52 @@ func _build_region(region_id: String, region_name: String, center: Vector3,
 	district.add_child(title)
 
 	_build_road(center)
-	_build_district_buildings(district, wall_color, roof_color)
+	if region_id == "harbor_city":
+		_build_harbor_city_block(district)
+	else:
+		_build_district_buildings(district, wall_color, roof_color)
 	_build_district_details(district, region_id, ground_color)
+	_build_district_navigation(district, region_id)
 	_build_civilians(district, region_id, npc_names)
+
+
+
+func _build_harbor_city_block(district: Node3D) -> void:
+	# Four-by-four original low-rise house set, scaled to the district parcel.
+	var houses := MeshInstance3D.new()
+	houses.name = "HarborResidentialMesh"
+	houses.mesh = HARBOR_HOUSES_MESH
+	houses.position = Vector3(-16.5, 0.025, -16.2)
+	houses.scale = Vector3.ONE * 0.5
+	district.add_child(houses)
+
+	# Keep collision envelopes aligned with the 4x4 house footprints.
+	var house_centers_x := [-14.0, -5.0, 4.0, 13.5]
+	var house_centers_z := [-14.0, -5.0, 4.0, 12.8]
+	for row in range(house_centers_z.size()):
+		for column in range(house_centers_x.size()):
+			var body := StaticBody3D.new()
+			body.name = "HarborHouseCollision_%02d_%02d" % [row, column]
+			body.add_to_group("radar_buildings")
+			body.position = Vector3(house_centers_x[column], 0.0, house_centers_z[row])
+			body.collision_layer = 1
+			body.collision_mask = 1
+			var shape := BoxShape3D.new()
+			shape.size = Vector3(5.5, 4.2, 4.7)
+			var collision := CollisionShape3D.new()
+			collision.shape = shape
+			collision.position.y = 2.1
+			body.add_child(collision)
+			district.add_child(body)
+			_building_count += 1
+
+	# This original road set supplies lanes, raised curbs, junction markings and sidewalks.
+	var roads := MeshInstance3D.new()
+	roads.name = "HarborStreetNetworkMesh"
+	roads.mesh = HARBOR_ROADS_MESH
+	roads.position = Vector3(-23.8, 0.055, -14.7)
+	roads.scale = Vector3.ONE * 0.335
+	district.add_child(roads)
 
 func _build_road(center: Vector3) -> void:
 	var flat_center := Vector2(center.x, center.z)
@@ -69,6 +132,7 @@ func _build_road(center: Vector3) -> void:
 	var midpoint := Vector3(center.x * 0.5, 0.08, center.z * 0.5)
 	var road := MeshInstance3D.new()
 	road.name = "RoadTo_" + str(_region_ids.back())
+	road.add_to_group("radar_roads")
 	var road_mesh := BoxMesh.new()
 	road_mesh.size = Vector3(5.2, 0.12, length)
 	road.mesh = road_mesh
@@ -89,6 +153,7 @@ func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: 
 	for index in range(offsets.size()):
 		var building := StaticBody3D.new()
 		building.name = "DistrictBuilding_%02d" % (index + 1)
+		building.add_to_group("radar_buildings")
 		building.position = offsets[index]
 		building.collision_layer = 1
 		building.collision_mask = 1
@@ -139,6 +204,8 @@ func _build_district_details(district: Node3D, region_id: String, ground_color: 
 					Vector3(6.5, 2.0, 2.7), Color(0.42 + float(index % 2) * 0.12, 0.34, 0.25))
 			_add_box(district, "LoadingDock", Vector3(0.0, 0.25, 15.0),
 				Vector3(30.0, 0.5, 4.0), Color(0.34, 0.36, 0.35))
+			_build_marsa_al_noor(district)
+			_build_public_drinking_fountain(district)
 		"pine_highlands":
 			for index in range(10):
 				var x := -18.0 + float(index % 5) * 9.0
@@ -149,6 +216,7 @@ func _build_district_details(district: Node3D, region_id: String, ground_color: 
 				_add_box(district, "CropRow_%02d" % row, Vector3(-15.0 + float(row) * 10.0, 0.22, 14.0),
 					Vector3(2.8, 0.4, 11.0), Color(0.34, 0.48 + float(row % 2) * 0.12, 0.24))
 			_add_box(district, "WaterSilo", Vector3(16.0, 2.8, 13.0), Vector3(3.4, 5.6, 3.4), Color(0.58, 0.61, 0.63))
+			_build_vehicle_service_garage(district)
 		"sapphire_coast":
 			var water := MeshInstance3D.new()
 			water.name = "CoastalWater"
@@ -166,11 +234,107 @@ func _build_district_details(district: Node3D, region_id: String, ground_color: 
 			for index in range(5):
 				_add_box(district, "FishCrate_%02d" % index, Vector3(-12.0 + float(index) * 5.0, 0.5, 4.0),
 					Vector3(1.4, 1.0, 1.2), Color(0.58, 0.43, 0.28))
+			_build_seafood_market(district)
+			_build_coastal_lighthouse(district)
 		_:
 			pass
 
+
+func _build_public_drinking_fountain(district: Node3D) -> void:
+	# Original public drinking point in Harbor City's central plaza.
+	var fountain := PUBLIC_DRINKING_FOUNTAIN_SCENE.instantiate()
+	fountain.name = "PublicDrinkingFountain"
+	fountain.position = Vector3(0.0, 0.0, -9.0)
+	district.add_child(fountain)
+
+
+func _build_seafood_market(district: Node3D) -> void:
+	# Reuses the existing market stall and adds a functional seafood display.
+	var market := SEAFOOD_MARKET_SCENE.instantiate()
+	market.name = "SeafoodMarket"
+	market.position = Vector3(17.0, 0.0, 14.0)
+	district.add_child(market)
+
+
+func _build_vehicle_service_garage(district: Node3D) -> void:
+	# Original repair workshop on the Amber Valley service road.
+	var garage := VEHICLE_SERVICE_GARAGE_SCENE.instantiate()
+	garage.name = "VehicleServiceGarage"
+	garage.position = Vector3(17.0, 0.0, -13.2)
+	district.add_child(garage)
+
+
+func _build_coastal_lighthouse(district: Node3D) -> void:
+	# Tall Sapphire Coast landmark with a rotating dusk/night beacon.
+	var lighthouse := COASTAL_LIGHTHOUSE_SCENE.instantiate()
+	lighthouse.name = "CoastalLighthouse"
+	lighthouse.position = Vector3(-17.0, 0.0, 0.0)
+	district.add_child(lighthouse)
+
+
+func _build_marsa_al_noor(district: Node3D) -> void:
+	# Initial canonical landmark placement: Harbor City local (14, 0, 10).
+	var landmark := StaticBody3D.new()
+	landmark.name = "MarsaAlNoor"
+	landmark.position = Vector3(14.0, 0.0, 10.0)
+	landmark.add_to_group("world_landmarks")
+	landmark.add_to_group("marsa_al_noor")
+	landmark.set_meta("location_id", "marsa_al_noor")
+	landmark.collision_layer = 1
+	landmark.collision_mask = 1
+
+	var base := MeshInstance3D.new()
+	base.name = "BeaconBase"
+	var base_mesh := CylinderMesh.new()
+	base_mesh.top_radius = 1.05
+	base_mesh.bottom_radius = 1.25
+	base_mesh.height = 0.36
+	base.mesh = base_mesh
+	base.position.y = 0.18
+	base.material_override = _material(Color(0.34, 0.37, 0.35))
+	landmark.add_child(base)
+
+	var beacon := MeshInstance3D.new()
+	beacon.name = "HarborBeacon"
+	var beacon_mesh := CylinderMesh.new()
+	beacon_mesh.top_radius = 0.34
+	beacon_mesh.bottom_radius = 0.48
+	beacon_mesh.height = 2.8
+	beacon.mesh = beacon_mesh
+	beacon.position.y = 1.76
+	beacon.material_override = _material(Color(0.78, 0.60, 0.27))
+	landmark.add_child(beacon)
+
+	var lantern := OmniLight3D.new()
+	lantern.name = "BeaconLantern"
+	lantern.position.y = 3.35
+	lantern.light_color = Color(1.0, 0.78, 0.39)
+	lantern.light_energy = 0.7
+	lantern.omni_range = 8.0
+	landmark.add_child(lantern)
+
+	var sign := Label3D.new()
+	sign.name = "LocationSign"
+	sign.text = "مرسى النور\nMARSA AL-NOOR"
+	sign.position = Vector3(0.0, 4.25, 0.0)
+	sign.font_size = 30
+	sign.outline_size = 7
+	sign.modulate = Color(1.0, 0.90, 0.67)
+	landmark.add_child(sign)
+
+	var collision := CollisionShape3D.new()
+	collision.name = "BeaconCollision"
+	var shape := CylinderShape3D.new()
+	shape.radius = 1.25
+	shape.height = 3.2
+	collision.shape = shape
+	collision.position.y = 1.6
+	landmark.add_child(collision)
+
+	district.add_child(landmark)
+
 func _build_civilians(district: Node3D, region_id: String, npc_names: Array) -> void:
-	var positions := [Vector3(-5.0,0.0,2.0),Vector3(7.0,0.0,1.0)]
+	var positions := [Vector3(-8.0, 0.0, 0.0), Vector3(8.0, 0.0, 0.0)]
 	var ids := {
 		"harbor_city":["nader_harbor","salma_harbor"],
 		"pine_highlands":["rami_pines","hala_pines"],
@@ -245,8 +409,98 @@ func _material(tint: Color, texture_path: String = "") -> StandardMaterial3D:
 	material.albedo_color = tint
 	material.roughness = 0.88
 	if not texture_path.is_empty():
-		var texture := load(texture_path) as Texture2D
+		var texture := _load_surface_texture(texture_path)
 		if texture != null:
 			material.albedo_texture = texture
 			material.uv1_scale = Vector3(3.0, 3.0, 3.0)
 	return material
+
+
+func _load_surface_texture(texture_path: String) -> Texture2D:
+	if _surface_texture_cache.has(texture_path):
+		return _surface_texture_cache[texture_path] as Texture2D
+	var texture := SURFACE_TEXTURES.get(texture_path) as Texture2D
+	if texture == null:
+		push_warning("Unknown district surface texture: " + texture_path)
+		return null
+	_surface_texture_cache[texture_path] = texture
+	return texture
+
+## Builds a small, authored low-poly walkable grid around the district's six
+## building footprints. This avoids expensive run-time geometry baking on mobile.
+func _build_district_navigation(district: Node3D, region_id: String) -> void:
+	var region := NavigationRegion3D.new()
+	region.name = "NavigationRegion3D"
+	var navigation_mesh := NavigationMesh.new()
+	navigation_mesh.agent_radius = 0.35
+	navigation_mesh.agent_height = 1.7
+	navigation_mesh.cell_size = 0.25
+	navigation_mesh.cell_height = 0.2
+
+	var vertices := PackedVector3Array()
+	var cell_size := 2.5
+	var minimum_x := -20.0
+	var minimum_z := -16.0
+	var columns := 16
+	var rows := 12
+	var polygon_count := 0
+	var polygons: Array[PackedInt32Array] = []
+
+	for x_index in range(columns):
+		var left := minimum_x + float(x_index) * cell_size
+		var right := left + cell_size
+		for z_index in range(rows):
+			var top := minimum_z + float(z_index) * cell_size
+			var bottom := top + cell_size
+			if _navigation_cell_overlaps_building(left, right, top, bottom, region_id):
+				continue
+			var base_index := vertices.size()
+			# Counter-clockwise when viewed from above, so each polygon faces +Y.
+			vertices.append(Vector3(left, 0.08, top))
+			vertices.append(Vector3(left, 0.08, bottom))
+			vertices.append(Vector3(right, 0.08, bottom))
+			vertices.append(Vector3(right, 0.08, top))
+			polygons.append(PackedInt32Array([
+				base_index, base_index + 1, base_index + 2, base_index + 3
+			]))
+			polygon_count += 1
+
+	navigation_mesh.set_vertices(vertices)
+	for polygon in polygons:
+		navigation_mesh.add_polygon(polygon)
+	region.navigation_mesh = navigation_mesh
+	region.add_to_group("world_navigation_regions")
+	district.add_child(region)
+	var world := district.get_world_3d()
+	if world != null:
+		region.set_navigation_map(world.get_navigation_map())
+	if polygon_count == 0:
+		push_warning("No walkable navigation cells were created for " + district.name)
+
+
+func _navigation_cell_overlaps_building(left: float, right: float,
+		top: float, bottom: float, region_id: String) -> bool:
+	if region_id == "harbor_city":
+		# Keep the central fountain footprint clear for NPC path queries.
+		if right > -1.5 and left < 1.5 and bottom > -10.5 and top < -7.5:
+			return true
+		const HOUSE_HALF_WIDTH := 2.85
+		const HOUSE_HALF_DEPTH := 2.45
+		for center_x in [-14.0, -5.0, 4.0, 13.5]:
+			for center_z in [-14.0, -5.0, 4.0, 12.8]:
+				var overlaps_x: bool = right > float(center_x) - HOUSE_HALF_WIDTH and left < float(center_x) + HOUSE_HALF_WIDTH
+				var overlaps_z: bool = bottom > float(center_z) - HOUSE_HALF_DEPTH and top < float(center_z) + HOUSE_HALF_DEPTH
+				if overlaps_x and overlaps_z:
+					return true
+		return false
+	const BUILDING_HALF_WIDTH := 4.25
+	const BUILDING_HALF_DEPTH := 3.85
+	for center_x in [-12.0, 0.0, 12.0]:
+		for center_z in [-7.0, 8.0]:
+			var overlaps_x: bool = right > float(center_x) - BUILDING_HALF_WIDTH and left < float(center_x) + BUILDING_HALF_WIDTH
+			var overlaps_z: bool = bottom > float(center_z) - BUILDING_HALF_DEPTH and top < float(center_z) + BUILDING_HALF_DEPTH
+			if overlaps_x and overlaps_z:
+				return true
+	if region_id == "sapphire_coast" and right > -20.5 and left < -13.5 and bottom > -3.5 and top < 3.5:
+		return true
+	return false

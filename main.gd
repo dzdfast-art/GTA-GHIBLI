@@ -20,9 +20,13 @@ const TERRAIN_EXPANSION_SCRIPT = preload("res://scripts/world/terrain_expansion_
 const PLAYER_NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
 const CONSUMABLE_INVENTORY_SCRIPT = preload("res://scripts/systems/consumable_inventory.gd")
 const PLAYER_WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
+const PLAYER_HEALTH_SCRIPT = preload("res://scripts/systems/player_health.gd")
+const VIDEO_REFERENCE_TUTORIAL_SCRIPT = preload("res://scripts/missions/video_reference_tutorial.gd")
+const AMBIENT_TRAFFIC_DIRECTOR_SCRIPT = preload("res://scripts/world/ambient_traffic_director.gd")
 const WILDLIFE_DIRECTOR_SCRIPT = preload("res://scripts/world/wildlife_director.gd")
 const STORY_CHARACTER_DIRECTOR_SCRIPT = preload("res://scripts/characters/story_character_director.gd")
 const WORLD_WEATHER_SCRIPT = preload("res://scripts/world/world_weather.gd")
+const GAME_SAVE_MANAGER_SCRIPT = preload("res://scripts/systems/game_save_manager.gd")
 
 func _ready() -> void:
 	_create_world()
@@ -36,6 +40,7 @@ func _ready() -> void:
 	_create_player_needs()
 	_create_starter_car()
 	_create_starter_bicycle()
+	_create_ambient_traffic()
 	_create_mobile_controls()
 	_create_pause_settings_menu()
 	_create_mission_manager()
@@ -46,20 +51,22 @@ func _ready() -> void:
 	_create_nature_ambience()
 	_create_world_weather()
 	_create_side_activity_director()
+	_create_video_reference_tutorial()
+	_create_game_save_manager()
 
 func _create_world() -> void:
 	var world_environment := WorldEnvironment.new()
 	var environment := Environment.new()
 	environment.background_mode = Environment.BG_SKY
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	environment.ambient_light_color = Color(0.78, 0.84, 0.92)
-	environment.ambient_light_energy = 0.82
+	environment.ambient_light_color = Color(0.86, 0.79, 0.68)
+	environment.ambient_light_energy = 0.78
 	environment.ambient_light_sky_contribution = 0.72
 	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	environment.adjustment_enabled = true
-	environment.adjustment_brightness = 1.04
-	environment.adjustment_contrast = 1.08
-	environment.adjustment_saturation = 1.12
+	environment.adjustment_brightness = 1.02
+	environment.adjustment_contrast = 1.10
+	environment.adjustment_saturation = 1.06
 	environment.fog_enabled = true
 	environment.fog_light_color = Color(0.70, 0.79, 0.82)
 	environment.fog_density = 0.0025
@@ -72,7 +79,7 @@ func _create_world() -> void:
 	sky_material.ground_horizon_color = Color(0.58, 0.63, 0.60)
 	sky.sky_material = sky_material
 	environment.sky = sky
-	environment.glow_enabled = true
+	environment.glow_enabled = false
 	environment.glow_intensity = 0.28
 	environment.glow_strength = 0.35
 	world_environment.environment = environment
@@ -81,7 +88,8 @@ func _create_world() -> void:
 	var sun := DirectionalLight3D.new()
 	sun.name = "Sun"
 	sun.rotation_degrees = Vector3(-48.0, -32.0, 0.0)
-	sun.light_energy = 1.0
+	sun.light_energy = 0.94
+	sun.light_color = Color(1.0, 0.91, 0.78)
 	sun.shadow_enabled = true
 	sun.directional_shadow_max_distance = 55.0
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
@@ -122,6 +130,9 @@ func _create_player() -> void:
 	var player: CharacterBody3D = PLAYER_SCENE.instantiate() as CharacterBody3D
 	player.name = "Player"
 	player.add_to_group("player")
+	var health: Node = PLAYER_HEALTH_SCRIPT.new()
+	health.name = "PlayerHealth"
+	player.add_child(health)
 	player.position = Vector3(0.0, 0.95, -18.0)
 	player.rotation.y = PI
 	add_child(player)
@@ -143,6 +154,7 @@ func _create_mobile_controls() -> void:
 	var mobile_controls: CanvasLayer = MOBILE_CONTROLS_SCRIPT.new() as CanvasLayer
 	mobile_controls.name = "MobileControls"
 	add_child(mobile_controls)
+	mobile_controls.call_deferred("bind_player", get_node_or_null("Player") as Node3D)
 
 func _create_mission_manager() -> void:
 	var player := get_node_or_null("Player") as Node3D
@@ -259,3 +271,21 @@ func _create_pause_settings_menu() -> void:
 	var pause_menu: CanvasLayer = PAUSE_SETTINGS_MENU_SCRIPT.new() as CanvasLayer
 	pause_menu.name = "PauseSettingsMenu"
 	add_child(pause_menu)
+
+
+func _create_video_reference_tutorial() -> void:
+	var tutorial: Node = VIDEO_REFERENCE_TUTORIAL_SCRIPT.new()
+	tutorial.name = "VideoReferenceTutorial"
+	add_child(tutorial)
+
+
+func _create_ambient_traffic() -> void:
+	var traffic: Node3D = AMBIENT_TRAFFIC_DIRECTOR_SCRIPT.new()
+	traffic.name = "AmbientTrafficDirector"
+	add_child(traffic)
+
+
+func _create_game_save_manager() -> void:
+	var save_manager: Node = GAME_SAVE_MANAGER_SCRIPT.new()
+	save_manager.name = "GameSaveManager"
+	add_child(save_manager)

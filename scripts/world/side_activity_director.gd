@@ -309,3 +309,39 @@ func _refresh_hud() -> void:
 		_completed_ids.size(),
 		_total_rewards
 	]
+
+func get_save_snapshot() -> Dictionary:
+	return {
+		"completed_ids": _completed_ids.duplicate(),
+		"active_id": _active_id,
+		"targets_found": _targets_found,
+		"total_rewards": _total_rewards,
+		"status_override": _status_override
+	}
+
+
+func apply_save_snapshot(snapshot: Dictionary) -> bool:
+	var completed = snapshot.get("completed_ids", [])
+	if not completed is Array:
+		return false
+	_completed_ids.clear()
+	for value in completed:
+		var activity_id := str(value)
+		if not activity_id.is_empty() and not _completed_ids.has(activity_id):
+			_completed_ids.append(activity_id)
+	_active_id = str(snapshot.get("active_id", ""))
+	_targets_found = maxi(0, int(snapshot.get("targets_found", 0)))
+	_total_rewards = maxi(0, int(snapshot.get("total_rewards", 0)))
+	_status_override = str(snapshot.get("status_override", ""))
+	_save_progress()
+	for activity_id in _start_nodes.keys():
+		var marker = _start_nodes[activity_id]
+		if is_instance_valid(marker):
+			marker.visible = not _completed_ids.has(str(activity_id))
+	_refresh_hud()
+	return true
+
+
+func reload_saved_state() -> void:
+	_load_progress()
+	_refresh_hud()

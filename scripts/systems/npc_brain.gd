@@ -16,6 +16,8 @@ signal relationship_changed(trust: float, familiarity: float)
 @export var flee_speed := 2.2
 @export var relationship_memory_enabled := true
 @export var relationship_persistence_enabled := true
+@export var use_navigation_agent := true
+@export_range(0.1, 5.0, 0.1) var navigation_target_update_distance := 0.75
 @export var persistence_id := ""
 @export_range(-100.0, 100.0, 1.0) var starting_trust := 0.0
 @export_range(0.0, 100.0, 1.0) var starting_familiarity := 0.0
@@ -37,6 +39,8 @@ var _update_timer := 0.0
 var _wander_timer := 0.0
 var _alarm_timer := 0.0
 var _rng := RandomNumberGenerator.new()
+var _navigation_agent: NavigationAgent3D
+var _navigation_target := Vector3(1e20, 1e20, 1e20)
 
 
 func _ready() -> void:
@@ -53,6 +57,7 @@ func _ready() -> void:
 	if work_position == Vector3.ZERO:
 		work_position = _home_position
 	_load_relationship()
+	_setup_navigation_agent()
 
 
 func _process(delta: float) -> void:
@@ -190,8 +195,74 @@ func _follow_schedule_or_wander(actor: Node3D, delta: float) -> void:
 func _move_toward(actor: Node3D, destination: Vector3, speed: float, delta: float) -> void:
 	var direction := destination - actor.global_position
 	direction.y = 0.0
-	if direction.length_squared() > 0.04:
+	if direction.length_squared() <= 0.04:
+		return
+	if _has_live_navigation_map():
+		if _navigation_target.distance_to(destination) > navigation_target_update_distance:
+			_navigation_target = destination
+			_navigation_agent.target_position = destination
+		if _navigation_agent.is_navigation_finished():
+			return
+		var next_position := _navigation_agent.get_next_path_position()
+		direction = next_position - actor.global_position
+		direction.y = 0.0
+		if direction.length_squared() <= 0.0025:
+			return
 		actor.global_position += direction.normalized() * speed * delta
+		return
+	# Fallback for prototype areas that do not yet contain a NavigationRegion3D.
+	actor.global_position += direction.normalized() * speed * delta
+
+
+func _setup_navigation_agent() -> void:
+	if not use_navigation_agent:
+		return
+	# NPCBrain is a plain Node, so its NavigationAgent3D belongs to the
+	# owning Node3D. Defer insertion because the actor may still be adding
+	# its children when this brain receives _ready().
+	var actor := get_parent() as Node3D
+	if actor == null:
+		return
+	_navigation_agent = NavigationAgent3D.new()
+	_navigation_agent.name = "NavigationAgent3D"
+	_navigation_agent.path_desired_distance = 0.45
+	_navigation_agent.target_desired_distance = 0.70
+	_navigation_agent.avoidance_enabled = false
+	_navigation_agent.navigation_layers = 1
+	_navigation_agent.tree_entered.connect(_on_navigation_agent_tree_entered, CONNECT_ONE_SHOT)
+	actor.add_child.call_deferred(_navigation_agent)
+
+
+func _on_navigation_agent_tree_entered() -> void:
+	if _navigation_agent == null or not is_instance_valid(_navigation_agent):
+		return
+	var actor := _navigation_agent.get_parent() as Node3D
+	if actor == null:
+		return
+	var world: World3D = actor.get_world_3d()
+	if world != null:
+		_navigation_agent.set_navigation_map(world.get_navigation_map())
+
+
+func _exit_tree() -> void:
+	if _navigation_agent != null and is_instance_valid(_navigation_agent):
+		_navigation_agent.queue_free()
+	_navigation_agent = null
+
+
+func _has_live_navigation_map() -> bool:
+	if _navigation_agent == null or not is_instance_valid(_navigation_agent):
+		return false
+	var map := _navigation_agent.get_navigation_map()
+	return map.is_valid() and NavigationServer3D.map_get_iteration_id(map) > 0
+
+
+func has_navigation_agent() -> bool:
+	return _navigation_agent != null and is_instance_valid(_navigation_agent)
+
+
+func has_navigation_map() -> bool:
+	return _has_live_navigation_map()
 
 
 func _flee_from_player(actor: Node3D, delta: float) -> void:
@@ -200,7 +271,8 @@ func _flee_from_player(actor: Node3D, delta: float) -> void:
 	var away := actor.global_position - _player.global_position
 	away.y = 0.0
 	if away.length_squared() > 0.001:
-		actor.global_position += away.normalized() * flee_speed * delta
+		var flee_target := actor.global_position + away.normalized() * detection_range
+		_move_toward(actor, flee_target, flee_speed, delta)
 
 
 func _update_facing(actor: Node3D, delta: float) -> void:
@@ -238,10 +310,12 @@ func _relationship_save_path() -> String:
 	stable_id = stable_id.to_lower().strip_edges().replace(" ", "_")
 	var safe_id := ""
 	for character in stable_id:
-		if character.is_valid_identifier() or character == "-":
+		if character.is_valid_ascii_identifier() or character.is_valid_int() or character == "-":
 			safe_id += character
 	if safe_id.is_empty():
 		return ""
+	if not safe_id.replace("-", "_").is_valid_ascii_identifier():
+		safe_id = "npc_" + safe_id
 	return "user://npc_relationships/%s.json" % safe_id
 
 
@@ -280,3 +354,25 @@ func _save_relationship() -> void:
 		"trust": trust,
 		"familiarity": familiarity
 	}, "\t"))
+
+func get_save_snapshot() -> Dictionary:
+	return {
+		"persistence_id": persistence_id,
+		"trust": trust,
+		"familiarity": familiarity
+	}
+
+
+func apply_save_snapshot(snapshot: Dictionary) -> bool:
+	if not snapshot.has("trust") or not snapshot.has("familiarity"):
+		return false
+	trust = clampf(float(snapshot.get("trust", trust)), -100.0, 100.0)
+	familiarity = clampf(float(snapshot.get("familiarity", familiarity)), 0.0, 100.0)
+	relationship_changed.emit(trust, familiarity)
+	_save_relationship()
+	return true
+
+
+func reload_saved_state() -> void:
+	_load_relationship()
+	relationship_changed.emit(trust, familiarity)

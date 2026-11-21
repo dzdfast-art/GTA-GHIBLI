@@ -97,3 +97,27 @@ func _load_state() -> void:
 		hunger = clampf(float(parsed.get("hunger", hunger)), 0.0, 100.0)
 		thirst = clampf(float(parsed.get("thirst", thirst)), 0.0, 100.0)
 		energy = clampf(float(parsed.get("energy", energy)), 0.0, 100.0)
+
+func get_save_snapshot() -> Dictionary:
+	return {
+		"schema_version": 1,
+		"hunger": hunger,
+		"thirst": thirst,
+		"energy": energy
+	}
+
+
+func apply_save_snapshot(snapshot: Dictionary) -> bool:
+	if not snapshot.has("hunger") or not snapshot.has("thirst") or not snapshot.has("energy"):
+		return false
+	hunger = clampf(float(snapshot.get("hunger", hunger)), 0.0, 100.0)
+	thirst = clampf(float(snapshot.get("thirst", thirst)), 0.0, 100.0)
+	energy = clampf(float(snapshot.get("energy", energy)), 0.0, 100.0)
+	_emit_state()
+	_save_state()
+	return true
+
+
+func reload_saved_state() -> void:
+	_load_state()
+	_emit_state()
