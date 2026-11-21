@@ -471,6 +471,9 @@ func _build_district_navigation(district: Node3D, region_id: String) -> void:
 	region.navigation_mesh = navigation_mesh
 	region.add_to_group("world_navigation_regions")
 	district.add_child(region)
+	var world := district.get_world_3d()
+	if world != null:
+		region.set_navigation_map(world.get_navigation_map())
 	if polygon_count == 0:
 		push_warning("No walkable navigation cells were created for " + district.name)
 
