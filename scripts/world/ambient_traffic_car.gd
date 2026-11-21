@@ -126,7 +126,7 @@ func _build_car_visuals() -> void:
 			_wheel_nodes.append(wheel)
 
 			var hub := MeshInstance3D.new()
-			hub.name = "WheelHub_%s_%s" % [str(side), str(axle_z)]
+			hub.name = "WheelHub_%d_%d" % [int(side), int(axle_z)]
 			var hub_mesh := CylinderMesh.new()
 			hub_mesh.top_radius = 0.145
 			hub_mesh.bottom_radius = 0.145
@@ -168,7 +168,7 @@ func _build_car_visuals() -> void:
 		add_child(side_trim)
 
 		var door_handle := MeshInstance3D.new()
-		door_handle.name = "DoorHandle_%s" % str(side)
+		door_handle.name = "DoorHandle_%d" % int(side)
 		var handle_mesh := BoxMesh.new()
 		handle_mesh.size = Vector3(0.035, 0.055, 0.24)
 		door_handle.mesh = handle_mesh
