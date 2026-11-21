@@ -140,13 +140,15 @@ func load_game() -> bool:
 
 	_restoring = true
 	_restore_legacy_files(parsed.get("legacy_files", {}))
+	# Legacy files are restored for compatibility, then their loaders run.
+	# The versioned snapshots below are authoritative and must be applied last.
+	_reload_legacy_components()
 	_restore_player(parsed.get("player", {}))
 	_restore_world_clock(parsed.get("world_clock", {}))
 	_restore_player_components(parsed.get("components", {}))
 	_restore_named_snapshots(parsed.get("missions", {}))
 	_restore_npc_snapshots(parsed.get("npc_relationships", {}))
 	_restore_vehicles(parsed.get("vehicles", []))
-	_reload_legacy_components()
 	_restoring = false
 	game_loaded.emit(_active_save_path())
 	return true
@@ -159,6 +161,15 @@ func get_save_path() -> String:
 func _load_existing_save() -> void:
 	if FileAccess.file_exists(_active_save_path()):
 		load_game()
+		return
+	if not _has_legacy_save_files():
+		return
+
+	# Older releases wrote one file per subsystem. Load those files first, then
+	# create the unified record so an upgrade does not silently reset progress.
+	_reload_legacy_components()
+	if save_game():
+		print("Migrated existing GTA GHIBLI legacy saves into the unified save.")
 
 
 func _capture_player() -> Dictionary:
@@ -339,6 +350,19 @@ func _is_allowed_legacy_restore_path(path: String) -> bool:
 	if stable_id.is_empty():
 		return false
 	return stable_id.replace("-", "_").is_valid_ascii_identifier()
+
+
+func _has_legacy_save_files() -> bool:
+	for path in LEGACY_SAVE_PATHS:
+		if FileAccess.file_exists(path):
+			return true
+	var relationship_dir := DirAccess.open(LEGACY_RELATIONSHIP_PREFIX)
+	if relationship_dir == null:
+		return false
+	for filename in relationship_dir.get_files():
+		if _is_allowed_legacy_restore_path(LEGACY_RELATIONSHIP_PREFIX + filename):
+			return true
+	return false
 
 
 func _reload_legacy_components() -> void:
