@@ -334,7 +334,7 @@ func _build_marsa_al_noor(district: Node3D) -> void:
 	district.add_child(landmark)
 
 func _build_civilians(district: Node3D, region_id: String, npc_names: Array) -> void:
-	var positions := [Vector3(-5.0,0.0,2.0),Vector3(7.0,0.0,1.0)]
+	var positions := [Vector3(-8.0, 0.0, 0.0), Vector3(8.0, 0.0, 0.0)]
 	var ids := {
 		"harbor_city":["nader_harbor","salma_harbor"],
 		"pine_highlands":["rami_pines","hala_pines"],
