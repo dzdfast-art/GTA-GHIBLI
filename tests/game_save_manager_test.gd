@@ -190,7 +190,6 @@ func _run() -> void:
 		return
 
 	_remove_test_files()
-	_restore_preserved_files()
 	manager.queue_free()
 	scene.queue_free()
 	await process_frame
