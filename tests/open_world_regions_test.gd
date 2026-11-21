@@ -6,6 +6,11 @@ func _initialize() -> void:
 	call_deferred("_run_test")
 
 func _run_test() -> void:
+	# SceneTree script tests need an explicit 3D world so NavigationRegion3D
+	# and NavigationAgent3D share a real default navigation map.
+	var viewport := root as Viewport
+	if viewport != null and viewport.world_3d == null:
+		viewport.world_3d = World3D.new()
 	var regions := Node3D.new()
 	regions.set_script(REGIONS_SCRIPT)
 	root.add_child(regions)
