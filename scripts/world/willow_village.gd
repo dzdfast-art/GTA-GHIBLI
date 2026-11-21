@@ -10,6 +10,15 @@ const MARKET_STALL_MESH = preload("res://assets/environment/props/market_stall_l
 const PARK_BENCH_MESH = preload("res://assets/environment/props/park_bench_lowpoly.obj")
 const BARREL_MESH = preload("res://assets/environment/props/barrel_lowpoly.obj")
 const WOOD_CRATE_MESH = preload("res://assets/environment/props/wood_crate_lowpoly.obj")
+
+# Static texture references are required because runtime path strings alone
+# are not guaranteed to be gathered into exported Web and Android packages.
+const SURFACE_TEXTURES := {
+	"res://assets/environment/materials/hd_district_asphalt.svg": preload("res://assets/environment/materials/hd_district_asphalt.svg"),
+	"res://assets/environment/materials/hd_harbor_paving.svg": preload("res://assets/environment/materials/hd_harbor_paving.svg"),
+	"res://assets/environment/materials/hd_village_plaster_wall.svg": preload("res://assets/environment/materials/hd_village_plaster_wall.svg"),
+	"res://assets/environment/materials/hd_terracotta_roof.svg": preload("res://assets/environment/materials/hd_terracotta_roof.svg"),
+}
 const DIRECTION_SIGN_MESH = preload("res://assets/environment/props/direction_sign_lowpoly.obj")
 
 
@@ -389,8 +398,8 @@ func _material(color: Color, texture_path: String = "") -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = 0.92
-	if not texture_path.is_empty() and ResourceLoader.exists(texture_path):
-		var texture := load(texture_path) as Texture2D
+	if not texture_path.is_empty():
+		var texture := SURFACE_TEXTURES.get(texture_path) as Texture2D
 		if texture != null:
 			material.albedo_texture = texture
 			material.uv1_scale = Vector3(2.2, 2.2, 2.2)
