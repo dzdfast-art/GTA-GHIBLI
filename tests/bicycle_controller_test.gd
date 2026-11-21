@@ -48,8 +48,9 @@ func _run_test() -> void:
 	if not (controls.get_node("HUD/BikePedal") as Control).visible:
 		_fail("The bicycle pedal control was not shown.")
 		return
-	if controls.get_node("HUD/ContextAction").text != "EXIT BIKE":
-		_fail("The contextual exit-bike action was not shown.")
+	var context_action := controls.get_node("HUD/ContextAction") as Button
+	if context_action == null or not context_action.visible or context_action.tooltip_text != "EXIT BIKE" or context_action.icon == null:
+		_fail("The contextual exit-bike icon and action label were not shown.")
 		return
 
 	var start_z: float = bicycle.global_position.z
