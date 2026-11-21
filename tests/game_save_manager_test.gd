@@ -1,11 +1,18 @@
 extends SceneTree
 
 const SAVE_MANAGER_SCRIPT = preload("res://scripts/systems/game_save_manager.gd")
+const WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
+const NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
 const TEST_SAVE_PATH := "user://gta_ghibli_save_manager_regression.json"
 const TEST_RELATIONSHIP_PATH := "user://npc_relationships/save_manager_test_migration.json"
 const TEST_UNRELATED_PATH := "user://gta_ghibli_save_manager_unrelated.txt"
 const TEST_ESCAPE_PATH := "user://save_manager_escape.json"
+const LEGACY_WALLET_PATH := "user://player_wallet.json"
+const LEGACY_NEEDS_PATH := "user://player_needs.json"
 const ORIGINAL_RELATIONSHIP := "{\"persistence_id\":\"save_manager_test_migration\",\"trust\":17.0,\"familiarity\":42.0}"
+
+var _preserved_files: Dictionary = {}
+var _preserved_existed: Dictionary = {}
 
 
 func _initialize() -> void:
@@ -13,7 +20,24 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	_preserve_file(LEGACY_WALLET_PATH)
+	_preserve_file(LEGACY_NEEDS_PATH)
 	_remove_test_files()
+	if not _write_text(LEGACY_WALLET_PATH, JSON.stringify({
+		"schema_version": 2,
+		"balance": 123,
+		"reward_transactions": ["legacy_delivery_001"]
+	})):
+		_fail("Could not create the legacy wallet migration fixture.")
+		return
+	if not _write_text(LEGACY_NEEDS_PATH, JSON.stringify({
+		"schema_version": 1,
+		"hunger": 61.0,
+		"thirst": 52.0,
+		"energy": 74.0
+	})):
+		_fail("Could not create the legacy player-needs migration fixture.")
+		return
 	if not _write_text(TEST_RELATIONSHIP_PATH, ORIGINAL_RELATIONSHIP):
 		_fail("Could not create an isolated legacy NPC relationship fixture.")
 		return
@@ -30,11 +54,44 @@ func _run() -> void:
 	player.global_position = Vector3(12.5, 1.0, -27.0)
 	player.rotation = Vector3(0.0, 0.75, 0.0)
 
+	var wallet := WALLET_SCRIPT.new()
+	wallet.name = "PlayerWallet"
+	player.add_child(wallet)
+	var needs := NEEDS_SCRIPT.new()
+	needs.name = "PlayerNeeds"
+	player.add_child(needs)
+
 	var manager := SAVE_MANAGER_SCRIPT.new()
 	manager.name = "GameSaveManagerTest"
 	manager.set("save_path_override", TEST_SAVE_PATH)
 	scene.add_child(manager)
 	await process_frame
+	await process_frame
+
+	if not FileAccess.file_exists(TEST_SAVE_PATH):
+		_fail("Existing legacy subsystem files must migrate into a unified save on first launch.")
+		return
+	var migrated_file := FileAccess.open(TEST_SAVE_PATH, FileAccess.READ)
+	if migrated_file == null:
+		_fail("The migrated unified save must be readable.")
+		return
+	var migrated = JSON.parse_string(migrated_file.get_as_text())
+	migrated_file.close()
+	if not migrated is Dictionary:
+		_fail("The legacy migration must produce a valid JSON record.")
+		return
+	var migrated_components: Dictionary = migrated.get("components", {})
+	var migrated_wallet: Dictionary = migrated_components.get("PlayerWallet", {})
+	var migrated_needs: Dictionary = migrated_components.get("PlayerNeeds", {})
+	if int(migrated_wallet.get("balance", -1)) != 123:
+		_fail("First-launch migration must retain the legacy wallet balance.")
+		return
+	if int(migrated_needs.get("hunger", -1)) != 61 or int(migrated_needs.get("thirst", -1)) != 52:
+		_fail("First-launch migration must retain legacy hunger and thirst values.")
+		return
+	if not migrated_wallet.get("reward_transactions", []).has("legacy_delivery_001"):
+		_fail("First-launch migration must retain the legacy reward transaction ledger.")
+		return
 
 	if not manager.call("_is_allowed_legacy_restore_path", "user://player_wallet.json"):
 		_fail("A documented legacy save path must remain eligible for migration.")
@@ -52,8 +109,27 @@ func _run() -> void:
 		_fail("A traversal path must not be accepted as a legacy save.")
 		return
 
+	# Save a newer unified snapshot while leaving the legacy files stale.
+	# Loading must apply the canonical snapshot after reloading compatibility files.
+	wallet.set("balance", 275)
+	needs.set("hunger", 82.0)
+	needs.set("thirst", 73.0)
+	needs.set("energy", 64.0)
 	if not manager.call("save_game"):
 		_fail("The unified save manager must save a valid local game state.")
+		return
+	wallet.set("balance", 5)
+	needs.set("hunger", 1.0)
+	needs.set("thirst", 2.0)
+	needs.set("energy", 3.0)
+	if not manager.call("load_game"):
+		_fail("The unified save manager must load a valid saved game.")
+		return
+	if int(wallet.call("get_balance")) != 275:
+		_fail("The unified wallet snapshot must override a stale legacy wallet file.")
+		return
+	if int(needs.get("hunger")) != 82 or int(needs.get("thirst")) != 73 or int(needs.get("energy")) != 64:
+		_fail("The unified needs snapshot must override stale legacy needs files.")
 		return
 	if not FileAccess.file_exists(TEST_SAVE_PATH):
 		_fail("The save manager must create its versioned save file.")
@@ -114,7 +190,8 @@ func _run() -> void:
 		return
 
 	_remove_test_files()
-	print("PASS: unified save, player transform restore, legacy NPC migration, allowlisted paths and traversal protection.")
+	_restore_preserved_files()
+	print("PASS: first-launch legacy migration, authoritative wallet/needs snapshots, player transform restore, NPC legacy migration and traversal protection.")
 	manager.queue_free()
 	scene.queue_free()
 	quit(0)
@@ -157,7 +234,23 @@ func _remove_test_files() -> void:
 			DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 
 
+func _preserve_file(path: String) -> void:
+	_preserved_existed[path] = FileAccess.file_exists(path)
+	if bool(_preserved_existed[path]):
+		_preserved_files[path] = _read_text(path)
+
+
+func _restore_preserved_files() -> void:
+	for path_value in _preserved_existed.keys():
+		var path := str(path_value)
+		if bool(_preserved_existed[path]):
+			_write_text(path, str(_preserved_files.get(path, "")))
+		elif FileAccess.file_exists(path):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+
+
 func _fail(message: String) -> void:
 	push_error("FAIL: " + message)
 	_remove_test_files()
+	_restore_preserved_files()
 	quit(1)
