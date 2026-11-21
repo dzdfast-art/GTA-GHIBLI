@@ -87,11 +87,7 @@ func _bind_world_nodes() -> void:
 	_player = get_parent().get_node_or_null("Player") as CharacterBody3D
 	_bicycle = get_parent().get_node_or_null("StarterBicycle") as CharacterBody3D
 	_house_portal = get_parent().get_node_or_null("WillowVillage/CaretakerHousePortal") as Node3D
-	_bridge = null
-	for landmark in get_tree().get_nodes_in_group("world_landmarks"):
-		if landmark is Node3D:
-			_bridge = landmark as Node3D
-			break
+	_bridge = get_tree().get_first_node_in_group("red_bridge_landmarks") as Node3D
 	_hud = get_tree().get_first_node_in_group("gameplay_hud")
 
 
