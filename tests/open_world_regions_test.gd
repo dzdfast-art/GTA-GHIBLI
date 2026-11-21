@@ -9,7 +9,7 @@ func _run_test() -> void:
 	# SceneTree script tests need an explicit 3D world so NavigationRegion3D
 	# and NavigationAgent3D share a real default navigation map.
 	var viewport := root as Viewport
-	if viewport != null and viewport.world_3d == null:
+	if viewport != null:
 		viewport.world_3d = World3D.new()
 	var regions := Node3D.new()
 	regions.set_script(REGIONS_SCRIPT)
@@ -133,7 +133,16 @@ func _run_test() -> void:
 		if navigation_ready:
 			break
 	if not navigation_ready:
-		_fail("District NavigationServer maps did not synchronize for all eight civilians within 120 physics frames.")
+		var diagnostics := PackedStringArray()
+		for brain in npc_brains:
+			var agent := brain.get_node_or_null("NavigationAgent3D") as NavigationAgent3D
+			if agent == null:
+				diagnostics.append("agent=missing")
+			else:
+				var map := agent.get_navigation_map()
+				var iteration := NavigationServer3D.map_get_iteration_id(map) if map.is_valid() else -1
+				diagnostics.append("map_valid=%s iteration=%d" % [str(map.is_valid()), iteration])
+		_fail("District NavigationServer maps did not synchronize for all eight civilians within 120 physics frames: %s" % "; ".join(diagnostics))
 		return
 	var sample_brain: Node = npc_brains[0]
 	sample_brain.set_process(false)
