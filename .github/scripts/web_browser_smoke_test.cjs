@@ -136,8 +136,10 @@ async function main() {
     assert.ok(state.width > 0 && state.height > 0, "Godot canvas has zero dimensions");
     assert.ok(state.webgl2, "WebGL 2 context is unavailable");
 
-    // Send a real browser input event and ensure the runtime remains alive.
-    await page.locator("canvas").click({ position: { x: 640, y: 360 } });
+    // Use viewport coordinates for the real pointer event. Playwright's
+    // locator actionability/stability wait can time out on an actively rendered
+    // WebGL canvas even when the canvas is visible and the game is responsive.
+    await page.mouse.click(640, 360);
     await page.keyboard.press("w");
     await page.waitForTimeout(1000);
 
