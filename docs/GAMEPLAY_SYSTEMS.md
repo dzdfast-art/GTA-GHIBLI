@@ -254,3 +254,18 @@ The district instantiates a functional Arabic fishmonger stall using the existin
 ## 6A. Sapphire Coast lighthouse landmark
 
 **Implemented on the repair candidate:** `scenes/world/coastal_lighthouse.tscn` adds an original 19.8 m coastal tower to Sapphire Coast. Its seven-material OBJ model includes dressed stone courses, tapered plaster masonry, framed glass windows, a brass balcony rail, a lantern room, copper roof and timber entry. The MTL references two project-authored tiled SVG surface textures. `scripts/world/coastal_lighthouse.gd` adds solid tower collision, a shared proximity interaction prompt in Arabic, and a rotating SpotLight3D beacon that activates at dawn, dusk and night and switches off during daytime. Real-time shadows are disabled for mobile cost control. `tests/coastal_lighthouse_test.gd` checks model import, collision, interaction, time-of-day state and rotation; world integration is also checked in `tests/open_world_regions_test.gd`. This is source integration only until current-head Godot import and CI tests pass; physical-device rendering/performance is not claimed.
+
+
+## 2026-11-21 reliability implementation addendum
+
+### Unified save migration
+
+When the configured unified save does not exist, GameSaveManager now checks its allowlisted legacy save paths. If legacy data exists, it reloads the compatible subsystem state and writes a versioned unified snapshot rather than starting from defaults. During restore, legacy files are restored and reloaded first; authoritative versioned snapshots are applied afterwards so stale compatibility files cannot overwrite newer wallet/needs state.
+
+Regression coverage: first-launch migration, wallet balance and reward transaction ledger, hunger/thirst/energy, canonical snapshot precedence over deliberately stale legacy files, player transform, NPC relationship round-trip and traversal rejection. **Status: PARTIALLY IMPLEMENTED** until every mission 001–004, side activity, world entity, NPC schedule and vehicle condition is verified across a full restart.
+
+### NPC navigation-agent lifecycle
+
+NPCBrain now defers creation of its NavigationAgent3D sibling until the owning Node3D has completed its child setup. The agent's navigation map is resolved through the owning Node3D when the agent enters the tree; the brain frees the sibling agent when it exits. Tests cover actors whose brains are attached before the actor enters the SceneTree and world-clock schedule integration.
+
+The Godot 4.7 test run #797 passed the individual navigation tests but its log exposed a wrong get_world_3d call on NavigationAgent3D and a headless root-viewport scenario warning. The current head corrects the world lookup through the owner and gives the district test its own SubViewport World3D. Run #798 is the pending verification. Continuous region/road connectivity, avoidance and physical NPC behavior remain planned/partial.

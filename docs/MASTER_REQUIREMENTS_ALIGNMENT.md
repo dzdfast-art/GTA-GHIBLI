@@ -181,3 +181,12 @@ A gate passes only when its implementation and tests exist. Keep **implemented**
 - **Regression:** IMPLEMENTED, TEST PENDING. The new test checks mesh import, products, purchase signals, wallet, inventory, food effects, unknown products, insufficient funds and range rejection. The four-district test checks actual Sapphire Coast placement and interaction registration.
 - **Android acceptance:** NOT VERIFIED. No physical target-device profiling was performed.
 - This remains a Draft PR #31 candidate. It is not included in `main` until owner review and an explicit merge.
+
+
+## 2026-11-21 implementation evidence update
+
+- **Save:** The repair candidate now creates the unified versioned save on first launch when allowlisted legacy subsystem files exist and no unified save is present. Compatibility files are restored/reloaded first; versioned snapshots are applied last. The test verifies wallet balance, reward transaction IDs, hunger/thirst, stale legacy precedence, player transform and NPC relationship path safety. This is still **PARTIALLY IMPLEMENTED** because full mission, activity, world-object, vehicle and NPC-schedule restart coverage is not complete.
+- **NPC navigation:** Agent attachment is deferred until the owning Node3D finishes child setup, and the navigation map is resolved from that Node3D owner. Regression coverage includes the pre-parented actor case and world-clock scheduling. The latest Godot validation #798 is still in progress at this update; do not mark this fully tested until its log is clean.
+- **Build evidence:** The last measured Debug APK is 254,227,979 bytes on commit 9005973; current-head Android build #561 is in progress. No physical Android device test is claimed.
+- **Performance:** Four district navigation grids and lightweight NPC path queries are CI prototype coverage, not proof of continuous open-world routing or 4 GB device performance.
+- **Voice:** The 25 Arabic dialogue lines still require genuine expressive recordings or explicitly labelled AI-generated TTS; no completed human dubbing is claimed.

@@ -1,6 +1,6 @@
 # GTA GHIBLI — Comprehensive Repair Candidate
 
-Date: 2026-11-20
+Date: 2026-11-21 (latest verified candidate head recorded below)
 Repository: `dzdfast-art/GTA-GHIBLI`
 Base commit: `c9fc82936a43b80af0e3c25eef41c9fee59e47b7`
 Branch: `fix/comprehensive-stability-2026-11-20`
@@ -99,3 +99,62 @@ No asset files were added in this save-safety/CI repair commit. The asset regist
 - The service rejects out-of-range use, moving vehicles, already healthy cars and insufficient balance. A disabled vehicle can be recovered after the player has enough currency.
 - Added `tests/vehicle_service_garage_test.gd`, expanded `tests/open_world_regions_test.gd`, and registered script parsing, the dedicated service test and four-district integration assertions in the Godot validation workflow.
 - This is source-level integration; current-head Godot/Android workflow results and physical-device FPS, RAM, temperature and touch acceptance remain pending.
+
+
+## Daily verification — 2026-11-21
+
+**Current candidate:** fix/comprehensive-stability-2026-11-20 at ab9e707abed1863141418a8a17caa77cf9a1fe66  
+**Base/main:** c9fc82936a43b80af0e3c25eef41c9fee59e47b7 (unchanged)  
+**PR:** [#31](https://github.com/dzdfast-art/GTA-GHIBLI/pull/31), Draft and open; no merge or public deployment.
+
+### Changes made in this run
+
+- Added first-launch migration when no unified save exists but allowlisted legacy subsystem save files do. The old wallet/needs/NPC data is loaded before a new versioned unified save is written.
+- Changed restore ordering: compatibility files load first, then versioned player/component/mission/NPC/vehicle snapshots apply last. This prevents stale legacy JSON from overwriting a newer canonical snapshot.
+- Expanded game_save_manager_test.gd to cover first-launch wallet/needs migration, reward transaction ledger preservation, stale-legacy-vs-current-snapshot precedence, NPC relationship file safety, player transform restore, and traversal rejection.
+- Fixed NPC navigation-agent creation during actor child setup by deferring sibling attachment to the owning Node3D; the navigation map is resolved through that owner when the agent enters the tree, and the agent is cleaned up when its brain exits.
+- Added regression checks for NPCs whose brain is attached before the actor enters the tree, plus scheduled NPCs and world-clock integration.
+- Corrected the headless district test to use its own SubViewport World3D rather than replacing the already-running root viewport world. The canonical-location test now uses the real region director in the SceneTree and frees its test scene.
+- Replaced the flaky Playwright canvas locator click with a real viewport-coordinate mouse click. The prior same-commit Web/Chromium push validation passed this input path.
+
+### CI status for the current head
+
+- Repository security audit #742: **success**.
+- Godot validation #798: **in progress** at the time this document was updated.
+- Android ARM64 Debug APK #561: **in progress**.
+- Web Build #92: **in progress**.
+- Private Web + Chromium #190: **in progress**.
+- Push Web Build #91 and private Chromium #189: **in progress**.
+
+An intermediate Godot run #795 failed because the new callback inferred an untyped World3D variable. That parser issue was corrected before the current head. Run #797 then passed its test steps but exposed two runtime test-log errors (calling get_world_3d on NavigationAgent3D and replacing the root viewport world). Both were corrected in the current head; #798 is the verification run for those corrections. Do not describe #798 as passed until GitHub reports its completed conclusion.
+
+### Last measured build evidence (not the current head)
+
+The latest fully measured APK available during this run is from commit 9005973907dbe56392d2571f6bf4fe8ef84e8aca, not the current ab9e707 head:
+
+| Measurement | Exact bytes | Decimal MB | MiB |
+|---|---:|---:|---:|
+| Raw Android Debug APK | 254,227,979 | 254.228 | 242.451 |
+| Android artifact ZIP | 252,474,278 | 252.474 | 240.779 |
+| Web export folder | 378,778,637 | 378.779 | 361.231 |
+| Web bundle ZIP inside export | 237,926,349 | 237.926 | 226.904 |
+| Web Actions artifact ZIP | 236,469,268 | 236.469 | 225.515 |
+
+Compared with the previous comparable raw APK of 250,819,279 bytes, the measured increase was **3,408,700 bytes** (3.409 MB / 3.251 MiB). The current head's Android build is still running, so these figures must not be labelled as the current-head APK measurement.
+
+The GitHub Git-tree blob sum (tracked repository files, not Git internals or expanded LFS payloads) is 350,450,243 bytes (350.450 MB / 334.215 MiB) on the current candidate, versus 346,596,568 bytes (346.597 MB / 330.540 MiB) on main: +3,853,675 bytes (3.854 MB / 3.675 MiB). This run added code/tests only; it added no new asset files.
+
+### Open gates
+
+- Full save coverage for every mission, side activity, world entity, NPC schedule and vehicle is not yet proven; unified save remains **PARTIALLY IMPLEMENTED**.
+- The four prototype district navigation meshes and NPC agent attachment are present, but continuous cross-district/road links, obstacle avoidance, no-path behavior and persisted life schedules remain **PARTIALLY IMPLEMENTED / NOT VERIFIED**.
+- No physical Unisoc T606 / 4 GB device was connected. FPS, RAM, heat, touch feel, install/launch and offline audio remain **NOT VERIFIED**.
+- The 25 Arabic dialogue lines are not confirmed as human-performed voice acting; voice-over remains **BLOCKED / NOT VERIFIED** until real bundled clips are present and tested.
+- No new asset was added in this reliability pass; no size increase is being claimed as new gameplay content.
+
+### Other open pull requests reviewed
+
+- PR #33 overlaps files already changed on #31; its relevant graphics/pause-menu changes are present on the repair candidate, so it is not merged.
+- PR #32 and PR #34 add lint/tooling documentation/workflow work on separate bases. They remain separate and unmerged pending independent review.
+- PRs #27, #26, #21, #12, #10, #23 and #24 contain distinct crane, bicycle-audio, boat, architecture or surface/terrain candidates. They were not imported into this repair branch in this run because their assets/code require current-head regression, provenance and Android performance checks first.
+- No open issue result requiring an immediate fix was returned by the repository issue search.

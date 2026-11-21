@@ -112,3 +112,18 @@ No public Web deployment or Pages publishing was performed.
 - **TEST PENDING:** The dedicated seafood-market test and district integration assertions are wired into Godot 4.7 validation. Do not classify the change as TESTED until the current-head run passes.
 - **NOT VERIFIED:** Physical-device install, visual quality, FPS, RAM, heat, and touch response on Unisoc T606 / 4 GB.
 - All changes remain on Draft PR #31; `main` has not been modified.
+
+
+## Repair-candidate quality audit — 2026-11-21
+
+Audited head: ab9e707abed1863141418a8a17caa77cf9a1fe66 on fix/comprehensive-stability-2026-11-20; base main remains c9fc82936a43b80af0e3c25eef41c9fee59e47b7.
+
+- **Unified save migration — PARTIALLY IMPLEMENTED.** First-launch migration of allowlisted legacy wallet/needs/NPC records is implemented. The regression verifies reward ledger preservation and that current versioned snapshots override stale legacy files. Mission 001–004, every side activity, all world entities and all vehicle conditions still need complete restore/restart coverage.
+- **NPC navigation attachment — IMPLEMENTED; latest clean runtime verification pending.** NavigationAgent3D attachment is deferred until the owning Node3D has finished adding children; the navigation map is resolved through that Node3D owner. Regression coverage now includes pre-parented NPCs, multiple brains in a test actor and world-clock schedules. The latest head's Godot run #798 is in progress; earlier run #797 passed the test steps but exposed callback/test-world errors that the current head corrects.
+- **Private Web input — TESTED on prior candidate commit.** The viewport-coordinate mouse input passed Chromium input checks and the preview emitted no external network requests on commit 9005973907dbe56392d2571f6bf4fe8ef84e8aca; current-head rerun #190 is in progress.
+- **Security — TESTED.** Repository security audit #742 passed on the current head. This does not replace a physical-device or production-signing audit.
+- **Build size — NOT CURRENT-HEAD VERIFIED.** The last raw APK measurement is 254,227,979 bytes on commit 9005973; current-head Android run #561 is in progress. Git-tree blob totals are 350,450,243 bytes for the candidate and 346,596,568 bytes for main.
+- **Physical performance — NOT VERIFIED.** No target phone/cloud device was attached. No FPS, peak RAM, thermal, touch, battery or device audio measurements are claimed.
+- **Voice — BLOCKED.** No claim of completed human Arabic dubbing is made. AI TTS and human-performed clips must remain separately catalogued.
+
+The Godot test suite's earlier successful run #797 still printed runtime errors before the current correction; a green workflow conclusion alone is not treated as proof of a clean log. Review #798's complete log before promoting navigation status beyond PARTIALLY IMPLEMENTED.

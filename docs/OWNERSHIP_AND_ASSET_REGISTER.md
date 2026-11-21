@@ -45,3 +45,8 @@ This register is an internal evidence-management aid, not proof of ownership by 
 
 | `assets/environment/props/seafood_display.obj` + `.mtl` | Original low-poly fish, ice, trays and weighing-scale display mesh | Project-authored geometry and material definitions | 2026-11-20 | Original project asset; no external source | Loaded by `scenes/world/seafood_market.tscn` in Sapphire Coast; tested by `tests/seafood_market_test.gd` | Pending final release review |
 | `assets/environment/props/coastal_lighthouse.obj` + `.mtl` + two local SVG maps | Original 19.8 m seven-material lighthouse with brass lantern, balcony and copper roof | Project-authored geometry, materials and vector textures | 2026-11-20 | Original project asset; no external source | Loaded by `scenes/world/coastal_lighthouse.tscn` in Sapphire Coast; tested by `tests/coastal_lighthouse_test.gd` and `tests/open_world_regions_test.gd` | Pending final release review |
+
+
+## 2026-11-21 asset-register review
+
+No new binary, model, texture, sound or other game asset was added in this save/navigation/Web reliability pass. The changes are scripts and regression tests only, so no new asset provenance row is required. Existing assets remain subject to the release-clearance review above; no licence or ownership status is upgraded by this code-only change.
