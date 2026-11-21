@@ -129,7 +129,8 @@ func _run() -> void:
 	if tree == null or tree.mesh == null or tree.mesh.get_surface_count() < 2:
 		_fail("The village must use the original multi-material low-poly willow tree.")
 		return
-	var lamp := village.get_node_or_null("VillageStreetLamp_-1.0_0/ImportedMesh") as MeshInstance3D
+	# Node.set_name() normalizes the decimal point in generated names to an underscore.
+	var lamp := village.get_node_or_null("VillageStreetLamp_-1_0_0/ImportedMesh") as MeshInstance3D
 	if lamp == null or lamp.mesh == null:
 		_fail("The street scene must use the original low-poly street lamp model.")
 		return
