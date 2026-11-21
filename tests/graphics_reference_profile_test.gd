@@ -151,10 +151,10 @@ func _run() -> void:
 		_fail("Reference-style street traffic must contain at least four cars.")
 		return
 	for vehicle in traffic:
-		if vehicle.get_node_or_null("DoorHandle_-1.0") == null or vehicle.get_node_or_null("FrontGrille") == null:
+		if vehicle.get_node_or_null("DoorHandle_%s" % str(-1.0)) == null or vehicle.get_node_or_null("FrontGrille") == null:
 			_fail("An ambient sedan is missing body details.")
 			return
-		if vehicle.get_node_or_null("WheelHub_-1.0_-1.0") == null:
+		if vehicle.get_node_or_null("WheelHub_%s_%s" % [str(-1.0), str(-1.0)]) == null:
 			_fail("An ambient sedan is missing its wheel hubs.")
 			return
 
