@@ -1,0 +1,123 @@
+name: GTA GHIBLI Fresh Web Edition CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - web/standalone-from-empty-2026-11-22
+    paths:
+      - "web-edition/**"
+      - ".github/workflows/web-edition-ci.yml"
+      - ".github/scripts/web-edition-browser-smoke.cjs"
+      - "docs/WEB_EDITION_*.md"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "web-edition/**"
+      - ".github/workflows/web-edition-ci.yml"
+      - ".github/scripts/web-edition-browser-smoke.cjs"
+      - "docs/WEB_EDITION_*.md"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gta-ghibli-fresh-web-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-and-export:
+    name: Godot 4.7 Web export and Chromium validation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out standalone Web project
+        uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
+        with:
+          persist-credentials: false
+          lfs: false
+
+      - name: Install Godot 4.7 and Web export templates
+        uses: SolarLabyrinth/Action-Setup-Godot@6ca948845e6489770ebb3be5fd1cc4589c65b8ad
+        with:
+          version: 4.7-stable
+          export-templates: true
+
+      - name: Validate project JSON data
+        run: |
+          python3 -m json.tool web-edition/data/world/regions.json >/dev/null
+          python3 -m json.tool web-edition/data/missions/mission_001.json >/dev/null
+          python3 -m json.tool web-edition/data/story/cast.json >/dev/null
+
+      - name: Validate research registry and helper tools
+        run: |
+          python3 -m json.tool docs/research/gtasa_registry.json >/dev/null
+          python3 -m py_compile web-edition/tools/research_helper.py
+          python3 -m unittest discover -s web-edition/tests -p 'test_*.py' -v
+
+      - name: Import the new standalone Godot project
+        run: godot --headless --editor --path web-edition --quit
+
+      - name: Run gameplay foundation regression test
+        run: godot --headless --path web-edition --script res://tests/web_foundation_test.gd
+
+      - name: Export WebAssembly game
+        run: |
+          mkdir -p web-edition/build/web
+          godot --headless --path web-edition --export-release "Web" build/web/index.html
+
+      - name: Verify Web export files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s web-edition/build/web/index.html
+          wasm_file="$(find web-edition/build/web -maxdepth 1 -type f -name '*.wasm' -print -quit)"
+          pck_file="$(find web-edition/build/web -maxdepth 1 -type f -name '*.pck' -print -quit)"
+          js_file="$(find web-edition/build/web -maxdepth 1 -type f -name '*.js' -print -quit)"
+          test -n "$wasm_file"
+          test -n "$pck_file"
+          test -n "$js_file"
+          echo "HTML, JavaScript, WebAssembly and PCK are present."
+
+      - name: Install pinned Chromium
+        run: |
+          mkdir -p /tmp/gta-ghibli-playwright
+          npm install --prefix /tmp/gta-ghibli-playwright playwright@1.55.0
+          /tmp/gta-ghibli-playwright/node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Test Web runtime in Chromium on localhost
+        env:
+          NODE_PATH: /tmp/gta-ghibli-playwright/node_modules
+        run: node .github/scripts/web-edition-browser-smoke.cjs
+
+      - name: Record actual Web package size and hash, then delete it
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p web-edition/build
+          (cd web-edition/build/web && zip -q -r ../GTA-GHIBLI-Web.zip .)
+          bytes="$(stat -c%s web-edition/build/GTA-GHIBLI-Web.zip)"
+          python3 - "$bytes" <<'PY' > web-edition/build/web-size.txt
+          import hashlib
+          import os
+          import sys
+          size = int(sys.argv[1])
+          print(f"WEB_ZIP_BYTES={size}")
+          print(f"WEB_ZIP_MB_DECIMAL={size / 1_000_000:.3f}")
+          print(f"WEB_ZIP_MIB={size / 1_048_576:.3f}")
+          with open("web-edition/build/GTA-GHIBLI-Web.zip", "rb") as handle:
+              print(f"WEB_ZIP_SHA256={hashlib.sha256(handle.read()).hexdigest()}")
+          total = 0
+          files = 0
+          for root, _, names in os.walk("web-edition/build/web"):
+              for name in names:
+                  total += os.path.getsize(os.path.join(root, name))
+                  files += 1
+          print(f"WEB_EXPORT_FILES={files}")
+          print(f"WEB_EXPORT_BYTES={total}")
+          print(f"WEB_EXPORT_MIB={total / 1_048_576:.3f}")
+          PY
+          cat web-edition/build/web-size.txt
+          rm -rf web-edition/build/web web-edition/build/GTA-GHIBLI-Web.zip
+          echo "Temporary Web export and ZIP deleted. No artifact was uploaded."

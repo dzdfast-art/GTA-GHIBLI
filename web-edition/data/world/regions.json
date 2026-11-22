@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "coordinate_system": "Godot world X/Z, meters; origin at (0, 0, 0)",
+  "regions": [
+    {"id": "harbor_city", "name": "Harbor City", "center_x": -96, "center_z": 0, "status": "blockout"},
+    {"id": "sapphire_coast", "name": "Sapphire Coast", "center_x": -32, "center_z": 0, "status": "blockout"},
+    {"id": "pine_highlands", "name": "Pine Highlands", "center_x": 32, "center_z": 0, "status": "blockout"},
+    {"id": "amber_valley", "name": "Amber Valley", "center_x": 96, "center_z": 0, "status": "blockout"}
+  ],
+  "landmarks": [
+    {
+      "id": "marsa_al_noor",
+      "name": "Marsa Al-Noor",
+      "region_id": "harbor_city",
+      "position": [-79, 0, 17],
+      "status": "provisional_story_location",
+      "note": "Initial location proposal for the Web foundation; final geography and story role remain to be designed."
+    }
+  ],
+  "connectivity": {
+    "status": "prototype_corridor",
+    "description": "One continuous ground strip and east-west road corridor join the four blockout districts; this is not yet a complete road/path network."
+  }
+}

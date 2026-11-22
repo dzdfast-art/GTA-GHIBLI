@@ -4,6 +4,17 @@ on:
   push:
     branches: [main]
   pull_request:
+    paths:
+      - "main.gd"
+      - "project.godot"
+      - "export_presets.cfg"
+      - "assets/**"
+      - "audio/**"
+      - "data/**"
+      - "scenes/**"
+      - "scripts/**"
+      - "tests/**"
+      - "tools/**"
   workflow_dispatch:
 
 jobs:

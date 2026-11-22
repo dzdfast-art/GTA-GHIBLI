@@ -1,0 +1,2491 @@
+{
+  "schema_version": 1,
+  "title": "GTA San Andreas historical research registry and GTA GHIBLI Web implementation ledger",
+  "baseline": {
+    "game": "Grand Theft Auto: San Andreas",
+    "platform": "PlayStation 2",
+    "period": "2004",
+    "manual_scope": "NTSC U/C manual used for controller and feature evidence",
+    "rule": "Do not transfer PC, Xbox, mobile or Definitive Edition behavior into PS2 baseline without an explicit comparison record."
+  },
+  "required_counts": {
+    "core_parent_details": 50,
+    "core_elements": 2250,
+    "graphics_parent_details": 50,
+    "graphics_elements": 2250,
+    "overlooked_details": 100,
+    "overlooked_elements": 100
+  },
+  "actual_counts": {
+    "core_parent_details": 50,
+    "core_elements": 50,
+    "graphics_parent_details": 50,
+    "graphics_elements": 50,
+    "overlooked_details": 20,
+    "overlooked_elements": 20,
+    "physics_records": 19,
+    "character_records": 4,
+    "overflow_records": 0
+  },
+  "parents": {
+    "core": [
+      {
+        "id": "CORE-01",
+        "topic": "Creative direction, themes, and design pillars",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-02",
+        "topic": "Studio organization, credits, and production roles",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-03",
+        "topic": "Engine, middleware, and runtime architecture",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-04",
+        "topic": "Build tools, asset pipeline, and runtime data",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-05",
+        "topic": "Whole-world geography, progression gates, and spatial hierarchy",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-06",
+        "topic": "Los Santos: districts, landmarks, routes, and gameplay identity",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-07",
+        "topic": "San Fierro: districts, landmarks, routes, and gameplay identity",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-08",
+        "topic": "Las Venturas: districts, landmarks, routes, and gameplay identity",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-09",
+        "topic": "Countryside, desert, water, and transitional spaces",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-10",
+        "topic": "Roads, intersections, paths, lanes, and traversal networks",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-11",
+        "topic": "Interiors, access rules, portals, and transitions",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-12",
+        "topic": "World sectors, asset streaming, loading, and residency",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-13",
+        "topic": "Population zones, spawns, density, and despawns",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-14",
+        "topic": "Civilian movement, perception, and reactions",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-15",
+        "topic": "Gangs, faction relationships, and territorial control",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-16",
+        "topic": "Fictional law enforcement, wanted levels, and escalation",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-17",
+        "topic": "Player controls, locomotion, traversal, and interaction",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-18",
+        "topic": "Camera behavior, aiming, framing, and obstruction handling",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-19",
+        "topic": "Health, armor, recovery, and failure states",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-20",
+        "topic": "Player attributes, skills, body changes, and progression",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-21",
+        "topic": "Melee as fictional gameplay, animation, and feedback",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-22",
+        "topic": "Ranged combat as fictional gameplay, balancing, and feedback",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-23",
+        "topic": "Inventory, fictional weapon classes, pickups, and switching",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-24",
+        "topic": "Cars, motorcycles, bicycles, and other ground transport",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-25",
+        "topic": "Aircraft, boats, trains, and other special transport",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-26",
+        "topic": "Entering, exiting, customizing, damaging, and repairing vehicles",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-27",
+        "topic": "Ambient traffic, lane behavior, navigation, and driver reactions",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-28",
+        "topic": "Mission scripting, trigger logic, objectives, and state transitions",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-29",
+        "topic": "Story structure, unlocks, progression, and persistent world changes",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-30",
+        "topic": "Main missions, dependencies, pacing, difficulty, and failure paths",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-31",
+        "topic": "Side missions, services, races, and optional challenges",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-32",
+        "topic": "Collectibles, statistics, and completion tracking",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-33",
+        "topic": "Money, rewards, shop transactions, and property income",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-34",
+        "topic": "Outfits, hair, tattoos, and appearance customization",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-35",
+        "topic": "Safehouses, properties, businesses, and indoor services",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-36",
+        "topic": "Game clock, day cycles, weather, and environmental state",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-37",
+        "topic": "Minigames, interactions, scoring, and rewards",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-38",
+        "topic": "HUD, minimap, map symbols, and objective communication",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-39",
+        "topic": "Menus, settings, tutorials, accessibility, and usability",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-40",
+        "topic": "Input, controller mapping, and platform behavior",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-41",
+        "topic": "Saves, restarts, checkpoints, and state restoration",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-42",
+        "topic": "Dialogue, subtitles, voice triggers, and localization",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-43",
+        "topic": "Radio stations, programming, playback, and vehicle context",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-44",
+        "topic": "World ambience, sound effects, Foley, and audio mixing",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-45",
+        "topic": "Cinematics: staging, camera, transitions, and synchronization",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-46",
+        "topic": "Secrets, cheats, glitches, and emergent interactions",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-47",
+        "topic": "Runtime performance, hardware constraints, and stress cases",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-48",
+        "topic": "QA, regressions, version-dependent bugs, and validation",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-49",
+        "topic": "Release history, ports, and explicitly scoped comparisons",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "CORE-50",
+        "topic": "Cross-system dependencies, player freedom, and design trade-offs",
+        "required_elements": 45,
+        "actual_elements": 1
+      }
+    ],
+    "graphics": [
+      {
+        "id": "GFX-01",
+        "topic": "Art direction, visual reference, and composition",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-02",
+        "topic": "Rendering architecture and frame composition",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-03",
+        "topic": "PS2 hardware constraints and version-specific evidence",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-04",
+        "topic": "Resolution, aspect ratio, display, and output behavior",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-05",
+        "topic": "Coordinate spaces, transforms, and scene hierarchy",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-06",
+        "topic": "Spatial partitioning, scene queries, and visibility sets",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-07",
+        "topic": "Frustum culling, occlusion, and visibility errors",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-08",
+        "topic": "Mesh LOD, distant representations, transitions, and pop-in",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-09",
+        "topic": "Draw distance, depth cues, haze, and distance fog",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-10",
+        "topic": "Regional palettes, atmosphere, contrast, and visual identity",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-11",
+        "topic": "Urban world meshes, modular kits, silhouettes, and density",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-12",
+        "topic": "Terrain geometry, material transitions, seams, and horizons",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-13",
+        "topic": "Roads, intersections, curbs, surfaces, and markings",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-14",
+        "topic": "Building exteriors, facades, rooftops, and distant silhouettes",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-15",
+        "topic": "Interiors, room kits, entrances, and visual transitions",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-16",
+        "topic": "Landmarks, signage, decals, and environmental storytelling",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-17",
+        "topic": "Vegetation assets, placement, motion, density, and distance behavior",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-18",
+        "topic": "Water surfaces, shoreline transitions, and underwater rendering",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-19",
+        "topic": "Sky, clouds, horizon, sun, and moon",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-20",
+        "topic": "Time-of-day curves, color changes, and lighting transitions",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-21",
+        "topic": "Weather appearance, precipitation, and atmospheric visibility",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-22",
+        "topic": "Texture authoring, UVs, texel density, tiling, and reuse",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-23",
+        "topic": "Texture packing, compression, mip levels, filtering, and artifacts",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-24",
+        "topic": "Materials, render states, batching, and state changes",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-25",
+        "topic": "Vertex colors, prelit assets, baked appearance, and evidence limits",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-26",
+        "topic": "Ambient, directional, and local lighting",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-27",
+        "topic": "Shadows, grounding, and contact cues",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-28",
+        "topic": "Reflections, highlights, glass, transparency, and sorting",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-29",
+        "topic": "Character geometry, silhouette, proportions, and model variation",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-30",
+        "topic": "Facial geometry, rigging, skinning, and deformation",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-31",
+        "topic": "Clothes, layering, visual variants, and clipping",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-32",
+        "topic": "Pedestrian visual archetypes, model reuse, and population variety",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-33",
+        "topic": "Vehicles: bodies, wheels, paint, trim, and interchangeable parts",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-34",
+        "topic": "Vehicle damage graphics, deformation appearance, and detached components",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-35",
+        "topic": "Skid marks, surface decals, footprints if supported, and transient marks",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-36",
+        "topic": "Animation presentation, blending, pose continuity, and clipping",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-37",
+        "topic": "Facial animation, lip synchronization, and dialogue staging",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-38",
+        "topic": "Particles, smoke, sparks, dust, and debris rendering",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-39",
+        "topic": "Fire, explosions, flashes, and stylized impacts",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-40",
+        "topic": "Rain splashes, wet surfaces, and weather effects",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-41",
+        "topic": "Wakes, foam, ripples, and underwater particles",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-42",
+        "topic": "Night streets, signals, lamps, emissives, and vehicle lights",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-43",
+        "topic": "Screen overlays, camera effects, and post-processing",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-44",
+        "topic": "HUD rendering, text, fonts, icons, and minimap visuals",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-45",
+        "topic": "Cutscene staging, framing, lighting, and visual continuity",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-46",
+        "topic": "Asset streaming, texture residency, uploads, and visible failure modes",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-47",
+        "topic": "Art tools, export rules, asset naming, and import validation",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-48",
+        "topic": "Profiling, pixel cost, geometry cost, draw calls, and memory",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-49",
+        "topic": "Rendering comparisons across explicitly named versions",
+        "required_elements": 45,
+        "actual_elements": 1
+      },
+      {
+        "id": "GFX-50",
+        "topic": "Recreating the visual design principles with modern tools",
+        "required_elements": 45,
+        "actual_elements": 1
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "SRC-001",
+      "title": "Rockstar Games Announces Grand Theft Auto: San Andreas",
+      "author": "Take-Two Interactive / Rockstar Games",
+      "date": "2004-03-01",
+      "url": "https://ir.take2games.com/static-files/3d864ed2-44c4-4f22-b88e-d5c8aa5aea73",
+      "type": "official press release",
+      "access": "opened",
+      "notes": "Announces PS2 exclusivity and forecast street dates; those dates are forecasts, not proof of actual release."
+    },
+    {
+      "id": "SRC-002",
+      "title": "Grand Theft Auto: San Andreas — official game page",
+      "author": "Rockstar Games",
+      "date": "date not stated on page",
+      "url": "https://www.rockstargames.com/games/sanandreas",
+      "type": "official product page",
+      "access": "search result inspected; page fetch had no readable lines",
+      "notes": "Search result exposes official synopsis, developer and listed release date; direct page text could not be extracted in the opened page."
+    },
+    {
+      "id": "SRC-003",
+      "title": "Grand Theft Auto: San Andreas PS2 manual (NTSC U/C)",
+      "author": "Rockstar Games",
+      "date": "print date not verified; hosted manual asset",
+      "url": "https://media-rockstargames-com.akamaized.net/rockstargames-newsite/img/manuals/en_us/GTATrilogy_GTASA_PS2_Manual_M01.pdf",
+      "type": "official PS2 manual PDF",
+      "access": "text extracted; screenshot attempt failed due PDF size",
+      "notes": "Manual states NTSC U/C disc scope and lists controller modes, map waypoint/radar behavior, activities and services. PDF screenshot extraction failed due 14.7 MB size limit."
+    },
+    {
+      "id": "SRC-004",
+      "title": "Grand Theft Auto: San Andreas Q&A — Under the Hood",
+      "author": "GameSpot staff interviewing Obbe Vermeij and John Whyte",
+      "date": "2006-05-17",
+      "url": "https://www.gamespot.com/articles/grand-theft-auto-san-andreas-qanda-under-the-hood/1100-6126774/",
+      "type": "developer Q&A",
+      "access": "opened",
+      "notes": "Q&A is framed around the PC version; answers discuss San Andreas world streaming/section limits/map scale. Use version caveat."
+    },
+    {
+      "id": "SRC-005",
+      "title": "Interview with Obbe Vermeij, ex Technical Director at Rockstar North",
+      "author": "Liam / GTABase",
+      "date": "2024-04-06",
+      "url": "https://www.gtabase.com/articles/interview-with-obbe-vermeij-ex-technical-director-at-rockstar-north",
+      "type": "attributable developer interview",
+      "access": "opened",
+      "notes": "Vermeij says GTA III, Vice City and San Andreas used RenderWare; discusses engine transition and a Bigfoot anecdote."
+    },
+    {
+      "id": "SRC-006",
+      "title": "On its 20th anniversary, GTA San Andreas veteran shares the open-world was originally split into three maps",
+      "author": "Kaan Serin / GamesRadar+",
+      "date": "2024-10-25",
+      "url": "https://www.gamesradar.com/games/grand-theft-auto/on-its-20th-anniversary-gta-san-andreas-veteran-shares-the-open-world-was-originally-split-into-three-maps-memory-was-very-tight-on-the-ps2/",
+      "type": "secondary report quoting developer social post",
+      "access": "opened",
+      "notes": "Reports Obbe Vermeij's retrospective account of the discarded separate-city maps proposal; not final shipped architecture proof."
+    },
+    {
+      "id": "SRC-007",
+      "title": "Rockstar Announces San Andreas for Xbox; PC and Xbox Street Dates",
+      "author": "Take-Two Interactive / Rockstar Games",
+      "date": "2004-12-16",
+      "url": "https://ir.take2games.com/static-files/326b6ec0-a7ce-49eb-b79f-20ead29792a6",
+      "type": "official press release",
+      "access": "opened",
+      "notes": "Announces PC/Xbox North American and European June 2005 dates."
+    },
+    {
+      "id": "SRC-008",
+      "title": "Game Credits — Grand Theft Auto: San Andreas",
+      "author": "GTA-SanAndreas.com transcription; MobyGames PS2 credits page cross-check",
+      "date": "2004 game credits; webpage date not stated",
+      "url": "https://www.gta-sanandreas.com/credits/",
+      "type": "secondary transcription of end credits",
+      "access": "search result inspected; MobyGames page returned 403",
+      "notes": "Use role names cautiously; exact completeness and transcription correctness have not been independently checked against the entire end-credit roll."
+    },
+    {
+      "id": "SRC-009",
+      "title": "San Andreas — vehicles, map, missions and more",
+      "author": "GTADb.io",
+      "date": "live database accessed 2026-11-22",
+      "url": "https://gtadb.io/gta-san-andreas",
+      "type": "community database",
+      "access": "opened",
+      "notes": "Provides mixed-platform aggregate catalog figures; this pass deliberately does not treat them as PS2-only verified content counts."
+    }
+  ],
+  "registries": {
+    "core": [
+      {
+        "id": "CORE-01.01",
+        "parent_id": "CORE-01",
+        "topic": "Creative direction, themes, and design pillars",
+        "finding": "[CONFIRMED] Rockstar's official synopsis frames the game around CJ returning to Los Santos, family crisis, gang trouble and a journey across San Andreas.",
+        "implementation_or_verification": "Use a distinct original protagonist, family stakes and district-spanning escalation; test that each chapter changes location, cast or world-state.",
+        "evidence_refs": [
+          "SRC-002"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-02.01",
+        "parent_id": "CORE-02",
+        "topic": "Studio organization, credits, and production roles",
+        "finding": "[SECONDARY] The PS2 credit transcription attributes producer, art direction, technical direction, city art leads, animation, audio and QA roles to named staff; credit lists are role evidence, not a complete org chart.",
+        "implementation_or_verification": "Keep separate accountable owners for world art, characters, animation, vehicles, missions, audio, tools and QA. Do not infer reporting lines from credit order.",
+        "evidence_refs": [
+          "SRC-008"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-03.01",
+        "parent_id": "CORE-03",
+        "topic": "Engine, middleware, and runtime architecture",
+        "finding": "[CONFIRMED] Former technical director Obbe Vermeij states that GTA III, Vice City and San Andreas ran on RenderWare; he also says the post-SA transition to RAGE required new shader work.",
+        "implementation_or_verification": "Do not clone RenderWare. The Web project uses Godot 4.7 Compatibility/WebGL2; validate render features against the browser target.",
+        "evidence_refs": [
+          "SRC-005"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-04.01",
+        "parent_id": "CORE-04",
+        "topic": "Build tools, asset pipeline, and runtime data",
+        "finding": "[UNKNOWN] The inspected public sources do not establish the full proprietary source-asset conversion chain, exact build tooling or data schema used for the 2004 PS2 build.",
+        "implementation_or_verification": "Adopt an explicit original pipeline: DCC source → licensed export → import validation → runtime data → packaged Web chunks; store provenance and hashes.",
+        "evidence_refs": [],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-05.01",
+        "parent_id": "CORE-05",
+        "topic": "Whole-world geography, progression gates, and spatial hierarchy",
+        "finding": "[CONFIRMED] Rockstar's synopsis and developer Q&A describe a continuous state-scale experience spanning three cities and countryside; the 2006 developer answer gives a 6 km × 6 km outside-map estimate, with interiors excluded.",
+        "implementation_or_verification": "Build the original world as streamed sectors, not one giant always-resident scene; measure sector residency and transition hitches.",
+        "evidence_refs": [
+          "SRC-002",
+          "SRC-004"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-06.01",
+        "parent_id": "CORE-06",
+        "topic": "Los Santos: districts, landmarks, routes, and gameplay identity",
+        "finding": "[CONFIRMED] Los Santos is the opening/home city in Rockstar's official synopsis; its role is tied to CJ's return and family/gang conflict.",
+        "implementation_or_verification": "Give Harbor City an authored opening loop with a safe learning route, landmark chain and mission-critical home district.",
+        "evidence_refs": [
+          "SRC-002"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-07.01",
+        "parent_id": "CORE-07",
+        "topic": "San Fierro: districts, landmarks, routes, and gameplay identity",
+        "finding": "[CONFIRMED] San Fierro is one of the three named cities in the secondary database's baseline summary; exact PS2 district inventory is not established in the sources inspected here.",
+        "implementation_or_verification": "Give Sapphire Coast a different road topology and silhouette language; require region-specific landmarks and route tests.",
+        "evidence_refs": [
+          "SRC-009"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-08.01",
+        "parent_id": "CORE-08",
+        "topic": "Las Venturas: districts, landmarks, routes, and gameplay identity",
+        "finding": "[CONFIRMED] Las Venturas is named as one of the three cities in the database summary; a PS2-only full venue inventory was not checked.",
+        "implementation_or_verification": "Give Amber Valley a distinct night/economy identity, but do not borrow GTA map geometry or business names.",
+        "evidence_refs": [
+          "SRC-009"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-09.01",
+        "parent_id": "CORE-09",
+        "topic": "Countryside, desert, water, and transitional spaces",
+        "finding": "[CONFIRMED] The 2006 developer answer says the player can travel beyond populated areas by boat or plane; it excludes interiors from the 6×6 km outside-map figure.",
+        "implementation_or_verification": "Model coast, rural space, desert-like open space and air/water traversal as separate traversal domains with their own boundaries and streaming tests.",
+        "evidence_refs": [
+          "SRC-004"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-10.01",
+        "parent_id": "CORE-10",
+        "topic": "Roads, intersections, paths, lanes, and traversal networks",
+        "finding": "[CONFIRMED] The developer Q&A describes map sections with object-count ceilings that constrained density; it does not provide a complete road graph.",
+        "implementation_or_verification": "Represent streets as a navigable graph with lane direction, speed class and junction rules; profile actor density per sector.",
+        "evidence_refs": [
+          "SRC-004"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-11.01",
+        "parent_id": "CORE-11",
+        "topic": "Interiors, access rules, portals, and transitions",
+        "finding": "[CONFIRMED] The same developer answer says the outside-map measurement excludes many interior locations; exact portal implementation is not disclosed.",
+        "implementation_or_verification": "Use explicit interior scene IDs, entry/exit transforms and save-safe transition transactions; verify no duplicate player or NPC after transition.",
+        "evidence_refs": [
+          "SRC-004"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-12.01",
+        "parent_id": "CORE-12",
+        "topic": "World sectors, asset streaming, loading, and residency",
+        "finding": "[CONFIRMED] A developer describes shared low-detail building models loaded as the player moves, replacing a previous island-transition-style load pattern.",
+        "implementation_or_verification": "Build per-sector visual proxies/LOD groups and stream them around the camera; assert bounded resident mesh/texture counts during a long drive.",
+        "evidence_refs": [
+          "SRC-004"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-13.01",
+        "parent_id": "CORE-13",
+        "topic": "Population zones, spawns, density, and despawns",
+        "finding": "[UNKNOWN] No reliable PS2-build spawn radius, population cap or despawn rule was established from inspected sources.",
+        "implementation_or_verification": "Use spawn volumes keyed by district and distance bands; record spawn/despawn reasons and test deterministic actor budgets.",
+        "evidence_refs": [],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-14.01",
+        "parent_id": "CORE-14",
+        "topic": "Civilian movement, perception, and reactions",
+        "finding": "[UNKNOWN] The inspected primary materials do not define civilian perception cones, reaction tables or pedestrian pathfinding algorithms.",
+        "implementation_or_verification": "Build civilian state machines with explicit idle/walk/avoid/flee/talk states; test obstacle avoidance, reaction cooldowns and actor cleanup.",
+        "evidence_refs": [],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-15.01",
+        "parent_id": "CORE-15",
+        "topic": "Gangs, faction relationships, and territorial control",
+        "finding": "[CONFIRMED] The official synopsis explicitly references gang trouble; the PS2 manual lists a gang active/passive control mode and a map legend including territory.",
+        "implementation_or_verification": "Implement faction relationship data and zone-control state separate from individual NPC AI; test territory changes against mission state.",
+        "evidence_refs": [
+          "SRC-002",
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-16.01",
+        "parent_id": "CORE-16",
+        "topic": "Fictional law enforcement, wanted levels, and escalation",
+        "finding": "[UNKNOWN] A precise wanted-level escalation algorithm for the specified PS2 regional build was not established here.",
+        "implementation_or_verification": "Implement an original heat score with witness/visibility decay, dispatch stages and safe-state reset; test line-of-sight loss and zone transitions.",
+        "evidence_refs": [],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-17.01",
+        "parent_id": "CORE-17",
+        "topic": "Player controls, locomotion, traversal, and interaction",
+        "finding": "[CONFIRMED] The PS2 manual separates on-foot, bicycle, car, first-person shooting, swimming, helicopter and plane controls; movement and actions are context-dependent.",
+        "implementation_or_verification": "Use a player control-state router; only the active locomotion/vehicle mode may consume mutually exclusive actions.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-18.01",
+        "parent_id": "CORE-18",
+        "topic": "Camera behavior, aiming, framing, and obstruction handling",
+        "finding": "[CONFIRMED] The manual assigns camera center, camera modes, look-behind and right-analog camera movement to distinct actions.",
+        "implementation_or_verification": "Implement camera orbit/aim/look-back as explicit modes; test obstruction sweeps and ensure camera motion never feeds back into locomotion unintentionally.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-19.01",
+        "parent_id": "CORE-19",
+        "topic": "Health, armor, recovery, and failure states",
+        "finding": "[CONFIRMED] The PS2 guide references hospital recovery after street failure, but no exact health/armor formula was measured in this research pass.",
+        "implementation_or_verification": "Define downed/dead/recovery states and preserve mission-critical world state across recovery; test restart and reward duplication.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-20.01",
+        "parent_id": "CORE-20",
+        "topic": "Player attributes, skills, body changes, and progression",
+        "finding": "[UNKNOWN] Exact attribute progression, body-change thresholds and statistical formulas for the 2004 PS2 build were not audited.",
+        "implementation_or_verification": "Store skills as versioned player stats with bounded curves and explicit save migration; test that UI, gameplay and save values agree.",
+        "evidence_refs": [],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-21.01",
+        "parent_id": "CORE-21",
+        "topic": "Melee as fictional gameplay, animation, and feedback",
+        "finding": "[CONFIRMED] The manual exposes secondary attack and block/climb controls, but not the internal melee animation/state implementation.",
+        "implementation_or_verification": "Use authored combo windows, stamina/cooldowns and hit-confirm events; test hitbox activation only during designated animation frames.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-22.01",
+        "parent_id": "CORE-22",
+        "topic": "Ranged combat as fictional gameplay, balancing, and feedback",
+        "finding": "[CONFIRMED] The manual describes a first-person aiming mode for sniper rifle/rocket launcher equipment and separate target/shoot controls.",
+        "implementation_or_verification": "Implement aim mode as a weapon-specific camera/input state; test zoom, cancellation, target loss and input priority.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-23.01",
+        "parent_id": "CORE-23",
+        "topic": "Inventory, fictional weapon classes, pickups, and switching",
+        "finding": "[CONFIRMED] The manual documents weapon cycling controls and pickup/secondary interaction actions; it does not reveal the inventory data model.",
+        "implementation_or_verification": "Use item definitions with category, ammo, animation set and HUD icon; test switching during reload and vehicle entry.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-24.01",
+        "parent_id": "CORE-24",
+        "topic": "Cars, motorcycles, bicycles, and other ground transport",
+        "finding": "[CONFIRMED] The manual has separate vehicle controls for cars and bicycles; it also names special vehicle categories.",
+        "implementation_or_verification": "Build ground classes with distinct controller tuning and a shared enter/exit interface; do not count a displayed mesh as a drivable vehicle.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-25.01",
+        "parent_id": "CORE-25",
+        "topic": "Aircraft, boats, trains, and other special transport",
+        "finding": "[CONFIRMED] The manual documents aircraft controls separately for helicopter and plane, and describes water traversal controls elsewhere in the manual.",
+        "implementation_or_verification": "Create separate flight and marine controllers; test take-off/landing or buoyancy modes independently from the car controller.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-26.01",
+        "parent_id": "CORE-26",
+        "topic": "Entering, exiting, customizing, damaging, and repairing vehicles",
+        "finding": "[CONFIRMED] The manual assigns enter/exit to a context action and separates in-vehicle controls from on-foot controls.",
+        "implementation_or_verification": "Implement a two-phase handoff: reserve seat/exit point → validate clearance → transfer input/camera → commit; rollback if blocked.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-27.01",
+        "parent_id": "CORE-27",
+        "topic": "Ambient traffic, lane behavior, navigation, and driver reactions",
+        "finding": "[UNKNOWN] Detailed ambient traffic lane-selection, follow-distance and collision-avoidance algorithms are not established by the sources inspected.",
+        "implementation_or_verification": "Use lane splines plus junction reservation and deterministic right-of-way; test opposing traffic and blocked intersections.",
+        "evidence_refs": [],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-28.01",
+        "parent_id": "CORE-28",
+        "topic": "Mission scripting, trigger logic, objectives, and state transitions",
+        "finding": "[INFERRED] The number of contextual control sets in the manual implies multiple action maps tied to state, not one universal movement set.",
+        "implementation_or_verification": "Use state-scoped input maps and mission triggers with idempotent event IDs; test event ordering and duplicate activation.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-29.01",
+        "parent_id": "CORE-29",
+        "topic": "Story structure, unlocks, progression, and persistent world changes",
+        "finding": "[CONFIRMED] Rockstar's synopsis describes a story that starts with the protagonist's return and expands across the state; detailed unlock flags were not reconstructed here.",
+        "implementation_or_verification": "Use a directed mission graph with prerequisite predicates, persistent unlocks and one authoritative progression owner.",
+        "evidence_refs": [
+          "SRC-002"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-30.01",
+        "parent_id": "CORE-30",
+        "topic": "Main missions, dependencies, pacing, difficulty, and failure paths",
+        "finding": "[UNKNOWN] A complete 2004 PS2 mission dependency table and all mission fail branches were not independently audited.",
+        "implementation_or_verification": "Store each mission's prerequisites, objective graph, actor locks, failure reasons and reward transaction; validate acyclic dependencies.",
+        "evidence_refs": [],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-31.01",
+        "parent_id": "CORE-31",
+        "topic": "Side missions, services, races, and optional challenges",
+        "finding": "[CONFIRMED] The manual advertises swimming, weights, boxing, martial arts and basketball as available activities/services.",
+        "implementation_or_verification": "Represent optional activities as independent short-loop state machines with start, score, exit and payout tests.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-32.01",
+        "parent_id": "CORE-32",
+        "topic": "Collectibles, statistics, and completion tracking",
+        "finding": "[SECONDARY] A current fan database lists 220 collectibles and 100 gang tags, but it aggregates the title across several releases and is not accepted as a PS2-only verified count.",
+        "implementation_or_verification": "Track collectible IDs and completion categories independently; never import the current aggregate as the 2004 PS2 count without version verification.",
+        "evidence_refs": [
+          "SRC-009"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-33.01",
+        "parent_id": "CORE-33",
+        "topic": "Money, rewards, shop transactions, and property income",
+        "finding": "[CONFIRMED] The PS2 manual dedicates sections to money, shopping, gambling and services, establishing economy as part of the player-facing world.",
+        "implementation_or_verification": "Use atomic purchase transactions: validate funds/stock → deduct → grant item → persist; rollback on any failure.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-34.01",
+        "parent_id": "CORE-34",
+        "topic": "Outfits, hair, tattoos, and appearance customization",
+        "finding": "[CONFIRMED] The manual includes personal grooming services and explicitly describes changing CJ's appearance; exact option count is not established here.",
+        "implementation_or_verification": "Build layered outfit/hair customization with slot compatibility and saveable appearance presets; test collision and animation clipping.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-35.01",
+        "parent_id": "CORE-35",
+        "topic": "Safehouses, properties, businesses, and indoor services",
+        "finding": "[CONFIRMED] The manual lists accommodation and services, but this pass did not confirm every property or business system by build.",
+        "implementation_or_verification": "Make safehouse/business ownership separate from entry/interior services and use persisted ownership IDs; test income idempotency.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-36.01",
+        "parent_id": "CORE-36",
+        "topic": "Game clock, day cycles, weather, and environmental state",
+        "finding": "[SECONDARY] A former technical director recalled that separate city maps would have simplified different weather and emergency vehicles, but that was a discarded early proposal.",
+        "implementation_or_verification": "Treat weather as region/sector data while keeping global time authoritative; test transition continuity rather than attributing this discarded concept to shipped behavior.",
+        "evidence_refs": [
+          "SRC-006"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-37.01",
+        "parent_id": "CORE-37",
+        "topic": "Minigames, interactions, scoring, and rewards",
+        "finding": "[CONFIRMED] The manual describes multiple activities, while the full mini-game inventory was not audited in this pass.",
+        "implementation_or_verification": "Use minigame adapters that pause/open context safely and return reward/result events to the main progression system.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-38.01",
+        "parent_id": "CORE-38",
+        "topic": "HUD, minimap, map symbols, and objective communication",
+        "finding": "[CONFIRMED] The manual gives a map legend toggle, zoom, pan/target and a navigational waypoint that appears on the radar; it also mentions territory and mission/contact map layers.",
+        "implementation_or_verification": "Build full map + minimap from the same spatial metadata and route graph; test destination marker, route recalculation and save/load.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-39.01",
+        "parent_id": "CORE-39",
+        "topic": "Menus, settings, tutorials, accessibility, and usability",
+        "finding": "[CONFIRMED] The manual documents the Start button pause menu and menu-based map access; it also supplies help through contextual controls.",
+        "implementation_or_verification": "Use pause layers that freeze world simulation but keep menu input active; test audio pause and mission-save boundary behavior.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-40.01",
+        "parent_id": "CORE-40",
+        "topic": "Input, controller mapping, and platform behavior",
+        "finding": "[CONFIRMED] The manual's NTSC-U/C PS2 edition maps locomotion and vehicle actions to the DualShock 2 sticks/buttons; this differs from keyboard/mouse.",
+        "implementation_or_verification": "Create remappable Web keyboard/mouse bindings and state-specific action hints; do not copy PS2 key semantics literally.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-41.01",
+        "parent_id": "CORE-41",
+        "topic": "Saves, restarts, checkpoints, and state restoration",
+        "finding": "[UNKNOWN] This research pass did not inspect save-card binary formats or fully enumerate safehouse save rules in the baseline build.",
+        "implementation_or_verification": "Use versioned JSON/ConfigFile save snapshots with checksum, temp-write/rename and recovery from truncated data.",
+        "evidence_refs": [],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-42.01",
+        "parent_id": "CORE-42",
+        "topic": "Dialogue, subtitles, voice triggers, and localization",
+        "finding": "[CONFIRMED] The manual includes positive/negative talk responses; the credit transcription includes voice-over production and dialogue-edit roles.",
+        "implementation_or_verification": "Use dialogue events with speaker, line, subtitle, voice asset, emotion tag and localization key; test missing audio fallback explicitly.",
+        "evidence_refs": [
+          "SRC-003",
+          "SRC-008"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-43.01",
+        "parent_id": "CORE-43",
+        "topic": "Radio stations, programming, playback, and vehicle context",
+        "finding": "[CONFIRMED] The manual's radio listings expose station-specific programming/playlist presentation; credits identify music production and audio roles.",
+        "implementation_or_verification": "Use original fictional radio stations and licensed/original audio bundles; test vehicle-context changes and seek/resume deterministically.",
+        "evidence_refs": [
+          "SRC-003",
+          "SRC-008"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-44.01",
+        "parent_id": "CORE-44",
+        "topic": "World ambience, sound effects, Foley, and audio mixing",
+        "finding": "[CONFIRMED] The PS2 credits list audio design and audio programming roles; the exact sound middleware and mixer graph are not established here.",
+        "implementation_or_verification": "Build local Web audio buses by world/UI/voice/music/vehicle and apply distance/occlusion envelopes; profile concurrent voices.",
+        "evidence_refs": [
+          "SRC-008"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-45.01",
+        "parent_id": "CORE-45",
+        "topic": "Cinematics: staging, camera, transitions, and synchronization",
+        "finding": "[CONFIRMED] The credit transcription lists cut-scene animation, audio direction and motion-capture direction roles; this documents production specialties, not the runtime cutscene toolchain.",
+        "implementation_or_verification": "Use timeline-driven original cinematics with deterministic player/vehicle lock and skip recovery; test save requests during playback.",
+        "evidence_refs": [
+          "SRC-008"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-46.01",
+        "parent_id": "CORE-46",
+        "topic": "Secrets, cheats, glitches, and emergent interactions",
+        "finding": "[SECONDARY] Developer recollection ties a persistent Bigfoot rumor to a mistaken interpretation of CJ's stomach-rumble sound; this is a retrospective anecdote, not a verified hidden creature.",
+        "implementation_or_verification": "Keep easter eggs data-driven and distinguish ambient audio from world actor evidence; test that hints do not spawn undocumented entities.",
+        "evidence_refs": [
+          "SRC-005"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-47.01",
+        "parent_id": "CORE-47",
+        "topic": "Runtime performance, hardware constraints, and stress cases",
+        "finding": "[CONFIRMED] Former technical director says PS2 memory was tight; the developer Q&A also describes object-count limits per map section and 8-bit indexing in some structures.",
+        "implementation_or_verification": "Use memory budgets by sector, capped populations, compressed assets and explicit overflow diagnostics; never infer the original's exact budgets.",
+        "evidence_refs": [
+          "SRC-005",
+          "SRC-004"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-48.01",
+        "parent_id": "CORE-48",
+        "topic": "QA, regressions, version-dependent bugs, and validation",
+        "finding": "[CONFIRMED] PS2 credits list a QA manager, test analysts, QA tools, standards testing and test/tool support roles.",
+        "implementation_or_verification": "Automate deterministic scene tests and maintain separate manual visual/audio acceptance for areas automation cannot judge.",
+        "evidence_refs": [
+          "SRC-008"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-49.01",
+        "parent_id": "CORE-49",
+        "topic": "Release history, ports, and explicitly scoped comparisons",
+        "finding": "[CONFIRMED] Rockstar announced the original PS2 version as exclusive in March 2004, then announced PC and Xbox releases for June 2005.",
+        "implementation_or_verification": "Keep PC/Xbox and later remasters in separate comparison records; do not back-port their renderer or input behavior into PS2 claims.",
+        "evidence_refs": [
+          "SRC-001",
+          "SRC-007"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "CORE-50.01",
+        "parent_id": "CORE-50",
+        "topic": "Cross-system dependencies, player freedom, and design trade-offs",
+        "finding": "[INFERRED] Context-specific controls, waypoint/radar, mission contacts and vehicle radio controls create strong dependencies between world, mission, input and HUD state.",
+        "implementation_or_verification": "Use explicit state owners and event contracts; test a mission completion while driving, map updates after load and HUD refresh after a state swap.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 2004 baseline; source-specific platform caveats retained",
+        "entry_kind": "historical finding or evidence-limited inference"
+      }
+    ],
+    "graphics": [
+      {
+        "id": "GFX-01.01",
+        "parent_id": "GFX-01",
+        "topic": "Art direction, visual reference, and composition",
+        "finding": "[PROPOSED] Use an original painterly 3D direction with readable silhouettes, controlled value hierarchy and regional color scripts; test readability at gameplay camera distance.",
+        "implementation_or_verification": "Create greybox-to-final art gates and review the same camera path in all four regions.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-02.01",
+        "parent_id": "GFX-02",
+        "topic": "Rendering architecture and frame composition",
+        "finding": "[CONFIRMED] A former technical director identifies RenderWare as the engine for San Andreas; the inspected evidence does not disclose its complete frame graph or PS2 render passes.",
+        "implementation_or_verification": "Use Godot's Compatibility renderer and WebGL2; capture browser frames and profile material/overdraw costs instead of assuming parity.",
+        "evidence_refs": [
+          "SRC-005"
+        ],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-03.01",
+        "parent_id": "GFX-03",
+        "topic": "PS2 hardware constraints and version-specific evidence",
+        "finding": "[CONFIRMED] Developer testimony describes tight PS2 memory and per-section object ceilings; exact VRAM/EE/GS budgets are not given in the sources used.",
+        "implementation_or_verification": "Set measured Web sector budgets for resident mesh, texture and NPC counts; add hard-budget CI stress tests.",
+        "evidence_refs": [
+          "SRC-004",
+          "SRC-005"
+        ],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-04.01",
+        "parent_id": "GFX-04",
+        "topic": "Resolution, aspect ratio, display, and output behavior",
+        "finding": "[UNKNOWN] Exact PS2 output resolution, aspect-ratio handling and region-specific display settings were not checked against a named retail disc/build.",
+        "implementation_or_verification": "Treat output resolution as a tested export preset; capture at 1280×720 and 1920×1080 and verify HUD anchoring.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-05.01",
+        "parent_id": "GFX-05",
+        "topic": "Coordinate spaces, transforms, and scene hierarchy",
+        "finding": "[PROPOSED] Keep world transforms in meters, Y-up, and separate world, camera, local and UI coordinate spaces.",
+        "implementation_or_verification": "Assert transform ownership and test world-to-map round trips at sector corners.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-06.01",
+        "parent_id": "GFX-06",
+        "topic": "Spatial partitioning, scene queries, and visibility sets",
+        "finding": "[CONFIRMED] Developer Q&A says object limits applied to map sections and influenced density; the exact partition structure is not public in these sources.",
+        "implementation_or_verification": "Use spatial-hash sectors with explicit visibility lists and per-sector asset manifests; test boundary overlap.",
+        "evidence_refs": [
+          "SRC-004"
+        ],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-07.01",
+        "parent_id": "GFX-07",
+        "topic": "Frustum culling, occlusion, and visibility errors",
+        "finding": "[UNKNOWN] No direct PS2 occlusion-culling algorithm or exact visibility error case was established.",
+        "implementation_or_verification": "Use frustum culling plus conservative occlusion/occluder proxies; test thin walls, tunnels and skyline visibility from fixed camera samples.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-08.01",
+        "parent_id": "GFX-08",
+        "topic": "Mesh LOD, distant representations, transitions, and pop-in",
+        "finding": "[CONFIRMED] The developer describes building groups sharing one low-detail model that is loaded as the player moves through the map.",
+        "implementation_or_verification": "Use authored LODGroup resources with crossfade or distance hysteresis; measure popping and resident node counts during a full loop.",
+        "evidence_refs": [
+          "SRC-004"
+        ],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-09.01",
+        "parent_id": "GFX-09",
+        "topic": "Draw distance, depth cues, haze, and distance fog",
+        "finding": "[SECONDARY] A retrospective report mentions fog layers making the world appear larger, but it is not a render-pass specification.",
+        "implementation_or_verification": "Use distance haze as art direction only; compare landmark contrast and silhouettes at measured distances in Web captures.",
+        "evidence_refs": [
+          "SRC-006"
+        ],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-10.01",
+        "parent_id": "GFX-10",
+        "topic": "Regional palettes, atmosphere, contrast, and visual identity",
+        "finding": "[PROPOSED] Assign a color script per region while preserving shared material response and consistent exposure.",
+        "implementation_or_verification": "Make region palette swatches and automated screenshot reference points; never let color alone carry navigation.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-11.01",
+        "parent_id": "GFX-11",
+        "topic": "Urban world meshes, modular kits, silhouettes, and density",
+        "finding": "[PROPOSED] Build urban density from modular facade/roof/street kits with hero landmarks at route decision points.",
+        "implementation_or_verification": "Test district identity from three camera heights and at least two approach routes.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-12.01",
+        "parent_id": "GFX-12",
+        "topic": "Terrain geometry, material transitions, seams, and horizons",
+        "finding": "[PROPOSED] Use height-field or authored mesh terrain chunks with explicit seam skirts and collision simplification.",
+        "implementation_or_verification": "Run a seam traversal test at every chunk edge and compare render/collision height.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-13.01",
+        "parent_id": "GFX-13",
+        "topic": "Roads, intersections, curbs, surfaces, and markings",
+        "finding": "[PROPOSED] Store road surface material, lane marking and collision profile together in a RoadSegment resource.",
+        "implementation_or_verification": "Test braking distance and visible road-mark alignment on every surface class.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-14.01",
+        "parent_id": "GFX-14",
+        "topic": "Building exteriors, facades, rooftops, and distant silhouettes",
+        "finding": "[PROPOSED] Combine near facade geometry with simplified skyline silhouettes and per-building LOD thresholds.",
+        "implementation_or_verification": "Test skyline continuity across chunk unload/reload.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-15.01",
+        "parent_id": "GFX-15",
+        "topic": "Interiors, room kits, entrances, and visual transitions",
+        "finding": "[UNKNOWN] The exact interior mesh kit, portal renderer and room residency rules are not established from the public materials inspected.",
+        "implementation_or_verification": "Build reusable room modules and explicit InteriorPortal nodes; test transitions with moving NPCs and save requests.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-16.01",
+        "parent_id": "GFX-16",
+        "topic": "Landmarks, signage, decals, and environmental storytelling",
+        "finding": "[PROPOSED] Landmarks need high-contrast silhouettes, unique signs and persistent map identifiers.",
+        "implementation_or_verification": "Assert every mission landmark resolves to one map icon and one collision/interaction object.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-17.01",
+        "parent_id": "GFX-17",
+        "topic": "Vegetation assets, placement, motion, density, and distance behavior",
+        "finding": "[PROPOSED] Vegetation instances should use species profiles, wind parameters, seasonal tint and distance tiers.",
+        "implementation_or_verification": "Stress-test a dense forest sector for draw calls and Web memory.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-18.01",
+        "parent_id": "GFX-18",
+        "topic": "Water surfaces, shoreline transitions, and underwater rendering",
+        "finding": "[UNKNOWN] Specific PS2 water shader equations and reflection passes were not proven by sources inspected here.",
+        "implementation_or_verification": "Use a low-cost stylized water shader with shoreline masks; test water/land transition and boat wake layers.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-19.01",
+        "parent_id": "GFX-19",
+        "topic": "Sky, clouds, horizon, sun, and moon",
+        "finding": "[PROPOSED] Use sky and horizon gradients with a stable sun/moon direction model.",
+        "implementation_or_verification": "Capture sunrise, noon, dusk and night at four fixed test viewpoints.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-20.01",
+        "parent_id": "GFX-20",
+        "topic": "Time-of-day curves, color changes, and lighting transitions",
+        "finding": "[PROPOSED] Drive sky color, directional-light energy and ambient color from one time-of-day curve.",
+        "implementation_or_verification": "Test no visible discontinuity at time wrap and save/reload of time state.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-21.01",
+        "parent_id": "GFX-21",
+        "topic": "Weather appearance, precipitation, and atmospheric visibility",
+        "finding": "[PROPOSED] Weather visuals must be coupled to audio, visibility and wetness state rather than particles alone.",
+        "implementation_or_verification": "Test rain start/stop and indoor/outdoor transitions in Chromium.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-22.01",
+        "parent_id": "GFX-22",
+        "topic": "Texture authoring, UVs, texel density, tiling, and reuse",
+        "finding": "[PROPOSED] Standardize texel density and UV padding on authored Web assets.",
+        "implementation_or_verification": "Run import validation for missing UVs, overlapping lightmap UVs where used, and texture dimension caps.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-23.01",
+        "parent_id": "GFX-23",
+        "topic": "Texture packing, compression, mip levels, filtering, and artifacts",
+        "finding": "[PROPOSED] Use GPU-friendly compressed textures supported by the target browser and verify fallback import variants.",
+        "implementation_or_verification": "Inspect exported Web package formats and browser console for decoder failures.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-24.01",
+        "parent_id": "GFX-24",
+        "topic": "Materials, render states, batching, and state changes",
+        "finding": "[PROPOSED] Batch repeated props with MultiMesh and shared materials while preserving per-instance IDs where needed.",
+        "implementation_or_verification": "Profile draw calls before/after batching and test selection/interaction hit proxies.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-25.01",
+        "parent_id": "GFX-25",
+        "topic": "Vertex colors, prelit assets, baked appearance, and evidence limits",
+        "finding": "[UNKNOWN] Public sources inspected do not establish whether particular PS2 assets depended on prelit vertex color, baked lighting or a specific lightmap workflow.",
+        "implementation_or_verification": "Choose per-asset lighting policy and document it in metadata; compare asset under neutral and target lighting.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-26.01",
+        "parent_id": "GFX-26",
+        "topic": "Ambient, directional, and local lighting",
+        "finding": "[PROPOSED] Use one key directional light and low-cost ambient fill; add local lights only where gameplay readability needs them.",
+        "implementation_or_verification": "Cap local light count per chunk and test night routes in WebGL2.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-27.01",
+        "parent_id": "GFX-27",
+        "topic": "Shadows, grounding, and contact cues",
+        "finding": "[PROPOSED] Prefer baked contact cues/AO-like gradients for static objects and simple dynamic shadows for actors.",
+        "implementation_or_verification": "Test foot grounding while walking over slopes and beside vehicles.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-28.01",
+        "parent_id": "GFX-28",
+        "topic": "Reflections, highlights, glass, transparency, and sorting",
+        "finding": "[PROPOSED] Use screen-space or probe approximations only where transparent sorting and Web cost are controlled.",
+        "implementation_or_verification": "Test glass intersections, alpha sorting and overlapping effects in Chromium.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-29.01",
+        "parent_id": "GFX-29",
+        "topic": "Character geometry, silhouette, proportions, and model variation",
+        "finding": "[PROPOSED] Character models need silhouette, proportion, palette and animation readability before fine facial detail.",
+        "implementation_or_verification": "Test recognition in daylight/night lighting at typical chase-camera distance.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-30.01",
+        "parent_id": "GFX-30",
+        "topic": "Facial geometry, rigging, skinning, and deformation",
+        "finding": "[UNKNOWN] PS2 face-rig and skinning implementation were not identified from the inspected sources.",
+        "implementation_or_verification": "Use a small blend-shape/rig budget with fallback facial poses; validate deformation at extreme joint poses.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-31.01",
+        "parent_id": "GFX-31",
+        "topic": "Clothes, layering, visual variants, and clipping",
+        "finding": "[PROPOSED] Clothing pieces need compatible skeleton and collision masks to avoid clipping during vehicle entry.",
+        "implementation_or_verification": "Run pose matrix tests on walk, sprint, crouch and sit/drive animations.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-32.01",
+        "parent_id": "GFX-32",
+        "topic": "Pedestrian visual archetypes, model reuse, and population variety",
+        "finding": "[PROPOSED] Pedestrian archetypes should be assembled from licensed mesh/texture variants with weighted spawn rules.",
+        "implementation_or_verification": "Check visible variety over a fixed 10-minute route and ensure no duplicate asset identity assumptions.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-33.01",
+        "parent_id": "GFX-33",
+        "topic": "Vehicles: bodies, wheels, paint, trim, and interchangeable parts",
+        "finding": "[PROPOSED] Vehicle body, wheel, glass, lights and trim should be separate material zones with shared class-level shader settings.",
+        "implementation_or_verification": "Test day/night headlamp readability and wheel spin alignment.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-34.01",
+        "parent_id": "GFX-34",
+        "topic": "Vehicle damage graphics, deformation appearance, and detached components",
+        "finding": "[PROPOSED] Represent vehicle damage with deterministic deformation states and detachable low-poly pieces only when supported by collision tests.",
+        "implementation_or_verification": "Test damage persistence and cleanup without leaving orphan rigid bodies.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-35.01",
+        "parent_id": "GFX-35",
+        "topic": "Skid marks, surface decals, footprints if supported, and transient marks",
+        "finding": "[PROPOSED] Keep skid marks and footprints as bounded transient decals with TTL and sector ownership.",
+        "implementation_or_verification": "Test cleanup on sector unload and save/load.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-36.01",
+        "parent_id": "GFX-36",
+        "topic": "Animation presentation, blending, pose continuity, and clipping",
+        "finding": "[PROPOSED] Blend animation transitions by locomotion state and speed to avoid abrupt pose changes.",
+        "implementation_or_verification": "Test start/stop, 90-degree turns, jump landing and enter/exit handoffs.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-37.01",
+        "parent_id": "GFX-37",
+        "topic": "Facial animation, lip synchronization, and dialogue staging",
+        "finding": "[UNKNOWN] No exact facial lip-sync system or PS2 dialogue staging runtime was confirmed.",
+        "implementation_or_verification": "Use timed viseme/pose events for original dialogue; test subtitle/audio timing and silent-mode fallback.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-38.01",
+        "parent_id": "GFX-38",
+        "topic": "Particles, smoke, sparks, dust, and debris rendering",
+        "finding": "[PROPOSED] Use pooled particles for dust, smoke and small impacts; cap per emitter and per sector.",
+        "implementation_or_verification": "Stress-test repeated collisions and verify pools return to zero after cleanup.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-39.01",
+        "parent_id": "GFX-39",
+        "topic": "Fire, explosions, flashes, and stylized impacts",
+        "finding": "[PROPOSED] Fire and explosions need separate light, particle, sound and damage events with a shared lifetime.",
+        "implementation_or_verification": "Test overlapping effects and Web frame-time spikes.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-40.01",
+        "parent_id": "GFX-40",
+        "topic": "Rain splashes, wet surfaces, and weather effects",
+        "finding": "[PROPOSED] Rain splashes/wetness should be distance-bounded and disabled indoors.",
+        "implementation_or_verification": "Capture same road before/during rain; test reflection cost and weather re-entry.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-41.01",
+        "parent_id": "GFX-41",
+        "topic": "Wakes, foam, ripples, and underwater particles",
+        "finding": "[PROPOSED] Water wakes and foam are transient effects attached to the boat movement vector.",
+        "implementation_or_verification": "Test stationary water, slow boat and sharp turn cases.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-42.01",
+        "parent_id": "GFX-42",
+        "topic": "Night streets, signals, lamps, emissives, and vehicle lights",
+        "finding": "[PROPOSED] Night lighting should use selective emissive windows, street lamps and vehicle lights with distance budgets.",
+        "implementation_or_verification": "Test visibility and exposure at dark intersections without overbright clipping.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-43.01",
+        "parent_id": "GFX-43",
+        "topic": "Screen overlays, camera effects, and post-processing",
+        "finding": "[PROPOSED] Screen effects should be restrained and state-driven, with reduced-motion and no-flash settings.",
+        "implementation_or_verification": "Test menu pause, low-health feedback and user accessibility options.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-44.01",
+        "parent_id": "GFX-44",
+        "topic": "HUD rendering, text, fonts, icons, and minimap visuals",
+        "finding": "[CONFIRMED] Manual maps and radars use map symbols, legend, zoom and waypoint controls; exact HUD rendering code is unknown.",
+        "implementation_or_verification": "Draw minimap, route and player marker from one map coordinate service; test orientation and screen scaling.",
+        "evidence_refs": [
+          "SRC-003"
+        ],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-45.01",
+        "parent_id": "GFX-45",
+        "topic": "Cutscene staging, framing, lighting, and visual continuity",
+        "finding": "[CONFIRMED] PS2 credit transcription identifies cutscene animation and audio-direction roles, but not the exact scene renderer.",
+        "implementation_or_verification": "Use deterministic cinematic cameras and lighting groups; test transition in/out without camera jumps.",
+        "evidence_refs": [
+          "SRC-008"
+        ],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-46.01",
+        "parent_id": "GFX-46",
+        "topic": "Asset streaming, texture residency, uploads, and visible failure modes",
+        "finding": "[CONFIRMED] Developer describes LOD streaming as the player moves; the exact texture residency implementation remains unknown.",
+        "implementation_or_verification": "Stream mesh and texture bundles independently with placeholder proxy fallback; assert no visible missing material during travel.",
+        "evidence_refs": [
+          "SRC-004"
+        ],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-47.01",
+        "parent_id": "GFX-47",
+        "topic": "Art tools, export rules, asset naming, and import validation",
+        "finding": "[PROPOSED] Name source files by asset GUID and store platform import settings in manifests.",
+        "implementation_or_verification": "CI rejects missing source IDs, duplicate GUIDs and unlicensed assets.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-48.01",
+        "parent_id": "GFX-48",
+        "topic": "Profiling, pixel cost, geometry cost, draw calls, and memory",
+        "finding": "[PROPOSED] Profile CPU, GPU-like frame timing, draw calls, active nodes, texture memory and shader compile time in browser.",
+        "implementation_or_verification": "Keep fixed capture scenes and compare median/p95 rather than one peak frame.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      },
+      {
+        "id": "GFX-49.01",
+        "parent_id": "GFX-49",
+        "topic": "Rendering comparisons across explicitly named versions",
+        "finding": "[UNKNOWN] No like-for-like comparison of specific PS2 and PC captures was performed in this pass.",
+        "implementation_or_verification": "Build a named-build comparison protocol recording region, camera, weather, time, output and capture device.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "historical finding or evidence-limited inference"
+      },
+      {
+        "id": "GFX-50.01",
+        "parent_id": "GFX-50",
+        "topic": "Recreating the visual design principles with modern tools",
+        "finding": "[PROPOSED] Convert principles into an original visual target: painterly terrain, expressive lighting, unique districts and stable Web rendering.",
+        "implementation_or_verification": "Run art acceptance at a fixed 1280×720 Chromium capture plus manual review at 100% and reduced viewport widths.",
+        "evidence_refs": [],
+        "scope": "PS2 source evidence where cited; original Web rendering choices are PROPOSED",
+        "entry_kind": "original-game implementation decision"
+      }
+    ],
+    "overlooked_details": [
+      {
+        "id": "EXTRA-D-001",
+        "topic": "Manual control sets change by locomotion context; the same physical input concept has different meanings while walking, cycling, swimming, flying or driving.",
+        "classification": "[CONFIRMED]",
+        "claim": "Manual control sets change by locomotion context; the same physical input concept has different meanings while walking, cycling, swimming, flying or driving.",
+        "source_refs": [
+          "SRC-003"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "Manual control sets change by locomotion context; the same physical input concept has different meanings while walking, cycling, swimming, flying or driving.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "Manual control sets change by locomotion context; the same physical input concept has different meanings while walking, cycling, swimming, flying or driving."
+      },
+      {
+        "id": "EXTRA-D-002",
+        "topic": "A waypoint selected on the full map is intended to appear on the radar, linking long-range planning to the in-world navigation display.",
+        "classification": "[CONFIRMED]",
+        "claim": "A waypoint selected on the full map is intended to appear on the radar, linking long-range planning to the in-world navigation display.",
+        "source_refs": [
+          "SRC-003"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "A waypoint selected on the full map is intended to appear on the radar, linking long-range planning to the in-world navigation display.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "A waypoint selected on the full map is intended to appear on the radar, linking long-range planning to the in-world navigation display."
+      },
+      {
+        "id": "EXTRA-D-003",
+        "topic": "The map legend can be hidden and map layers such as territory, mission locations and contacts can be toggled; map readability is therefore user-configurable.",
+        "classification": "[CONFIRMED]",
+        "claim": "The map legend can be hidden and map layers such as territory, mission locations and contacts can be toggled; map readability is therefore user-configurable.",
+        "source_refs": [
+          "SRC-003"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The map legend can be hidden and map layers such as territory, mission locations and contacts can be toggled; map readability is therefore user-configurable.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The map legend can be hidden and map layers such as territory, mission locations and contacts can be toggled; map readability is therefore user-configurable."
+      },
+      {
+        "id": "EXTRA-D-004",
+        "topic": "The vehicle control page includes trip-skip, horn and radio cycling in addition to steering and acceleration, so vehicle mode is also a media/utility context.",
+        "classification": "[CONFIRMED]",
+        "claim": "The vehicle control page includes trip-skip, horn and radio cycling in addition to steering and acceleration, so vehicle mode is also a media/utility context.",
+        "source_refs": [
+          "SRC-003"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The vehicle control page includes trip-skip, horn and radio cycling in addition to steering and acceleration, so vehicle mode is also a media/utility context.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The vehicle control page includes trip-skip, horn and radio cycling in addition to steering and acceleration, so vehicle mode is also a media/utility context."
+      },
+      {
+        "id": "EXTRA-D-005",
+        "topic": "The manual treats underwater movement as a distinct control mode, not as ordinary walking with a water visual effect.",
+        "classification": "[CONFIRMED]",
+        "claim": "The manual treats underwater movement as a distinct control mode, not as ordinary walking with a water visual effect.",
+        "source_refs": [
+          "SRC-003"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The manual treats underwater movement as a distinct control mode, not as ordinary walking with a water visual effect.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The manual treats underwater movement as a distinct control mode, not as ordinary walking with a water visual effect."
+      },
+      {
+        "id": "EXTRA-D-006",
+        "topic": "The helicopter and plane manual pages assign distinct vertical, pitch/roll and rudder actions; aircraft should not be implemented as cars with a flight animation.",
+        "classification": "[CONFIRMED]",
+        "claim": "The helicopter and plane manual pages assign distinct vertical, pitch/roll and rudder actions; aircraft should not be implemented as cars with a flight animation.",
+        "source_refs": [
+          "SRC-003"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The helicopter and plane manual pages assign distinct vertical, pitch/roll and rudder actions; aircraft should not be implemented as cars with a flight animation.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The helicopter and plane manual pages assign distinct vertical, pitch/roll and rudder actions; aircraft should not be implemented as cars with a flight animation."
+      },
+      {
+        "id": "EXTRA-D-007",
+        "topic": "The developer's low-detail model explanation concerns shared building representations loaded as travel proceeds, not simply reducing every mesh independently.",
+        "classification": "[CONFIRMED]",
+        "claim": "The developer's low-detail model explanation concerns shared building representations loaded as travel proceeds, not simply reducing every mesh independently.",
+        "source_refs": [
+          "SRC-004"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The developer's low-detail model explanation concerns shared building representations loaded as travel proceeds, not simply reducing every mesh independently.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The developer's low-detail model explanation concerns shared building representations loaded as travel proceeds, not simply reducing every mesh independently."
+      },
+      {
+        "id": "EXTRA-D-008",
+        "topic": "The developer Q&A says some city sections had reached the game's object-count limit, connecting density directly to partition capacity.",
+        "classification": "[CONFIRMED]",
+        "claim": "The developer Q&A says some city sections had reached the game's object-count limit, connecting density directly to partition capacity.",
+        "source_refs": [
+          "SRC-004"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The developer Q&A says some city sections had reached the game's object-count limit, connecting density directly to partition capacity.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The developer Q&A says some city sections had reached the game's object-count limit, connecting density directly to partition capacity."
+      },
+      {
+        "id": "EXTRA-D-009",
+        "topic": "The 6×6 km figure explicitly excludes interiors; quoting it as the complete traversable content size would undercount the game.",
+        "classification": "[CONFIRMED]",
+        "claim": "The 6×6 km figure explicitly excludes interiors; quoting it as the complete traversable content size would undercount the game.",
+        "source_refs": [
+          "SRC-004"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The 6×6 km figure explicitly excludes interiors; quoting it as the complete traversable content size would undercount the game.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The 6×6 km figure explicitly excludes interiors; quoting it as the complete traversable content size would undercount the game."
+      },
+      {
+        "id": "EXTRA-D-010",
+        "topic": "The early three-map proposal would have separated emergency vehicle and weather sets by city, but this was a discarded plan rather than shipped behavior.",
+        "classification": "[SECONDARY]",
+        "claim": "The early three-map proposal would have separated emergency vehicle and weather sets by city, but this was a discarded plan rather than shipped behavior.",
+        "source_refs": [
+          "SRC-006"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The early three-map proposal would have separated emergency vehicle and weather sets by city, but this was a discarded plan rather than shipped behavior.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The early three-map proposal would have separated emergency vehicle and weather sets by city, but this was a discarded plan rather than shipped behavior."
+      },
+      {
+        "id": "EXTRA-D-011",
+        "topic": "A later developer retrospective says the separate-city proposal was abandoned after a meeting before artists began full work on those maps.",
+        "classification": "[SECONDARY]",
+        "claim": "A later developer retrospective says the separate-city proposal was abandoned after a meeting before artists began full work on those maps.",
+        "source_refs": [
+          "SRC-006"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "A later developer retrospective says the separate-city proposal was abandoned after a meeting before artists began full work on those maps.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "A later developer retrospective says the separate-city proposal was abandoned after a meeting before artists began full work on those maps."
+      },
+      {
+        "id": "EXTRA-D-012",
+        "topic": "The PS2 manual identifies its disc as NTSC U/C; manual-derived control claims in this registry must not automatically be generalized to PAL manuals or later ports.",
+        "classification": "[CONFIRMED]",
+        "claim": "The PS2 manual identifies its disc as NTSC U/C; manual-derived control claims in this registry must not automatically be generalized to PAL manuals or later ports.",
+        "source_refs": [
+          "SRC-003"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The PS2 manual identifies its disc as NTSC U/C; manual-derived control claims in this registry must not automatically be generalized to PAL manuals or later ports.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The PS2 manual identifies its disc as NTSC U/C; manual-derived control claims in this registry must not automatically be generalized to PAL manuals or later ports."
+      },
+      {
+        "id": "EXTRA-D-013",
+        "topic": "The initial March 2004 press release gives forecast dates, while the current Rockstar page displays October 26; forecast dates must not be recorded as actual launch dates.",
+        "classification": "[CONFIRMED]",
+        "claim": "The initial March 2004 press release gives forecast dates, while the current Rockstar page displays October 26; forecast dates must not be recorded as actual launch dates.",
+        "source_refs": [
+          "SRC-001",
+          "SRC-002"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The initial March 2004 press release gives forecast dates, while the current Rockstar page displays October 26; forecast dates must not be recorded as actual launch dates.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The initial March 2004 press release gives forecast dates, while the current Rockstar page displays October 26; forecast dates must not be recorded as actual launch dates."
+      },
+      {
+        "id": "EXTRA-D-014",
+        "topic": "The official December 2004 announcement schedules PC and Xbox for June 2005, establishing that those ports were not the March 2004 PS2 baseline.",
+        "classification": "[CONFIRMED]",
+        "claim": "The official December 2004 announcement schedules PC and Xbox for June 2005, establishing that those ports were not the March 2004 PS2 baseline.",
+        "source_refs": [
+          "SRC-007"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The official December 2004 announcement schedules PC and Xbox for June 2005, establishing that those ports were not the March 2004 PS2 baseline.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The official December 2004 announcement schedules PC and Xbox for June 2005, establishing that those ports were not the March 2004 PS2 baseline."
+      },
+      {
+        "id": "EXTRA-D-015",
+        "topic": "Obbe Vermeij describes RenderWare as the engine used for San Andreas, but does not disclose the game's complete custom gameplay framework in that interview.",
+        "classification": "[CONFIRMED]",
+        "claim": "Obbe Vermeij describes RenderWare as the engine used for San Andreas, but does not disclose the game's complete custom gameplay framework in that interview.",
+        "source_refs": [
+          "SRC-005"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "Obbe Vermeij describes RenderWare as the engine used for San Andreas, but does not disclose the game's complete custom gameplay framework in that interview.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "Obbe Vermeij describes RenderWare as the engine used for San Andreas, but does not disclose the game's complete custom gameplay framework in that interview."
+      },
+      {
+        "id": "EXTRA-D-016",
+        "topic": "The manual presents the map as both a travel aid and an information filter: it supports waypoint placement while optional layers can be hidden.",
+        "classification": "[INFERRED]",
+        "claim": "The manual presents the map as both a travel aid and an information filter: it supports waypoint placement while optional layers can be hidden.",
+        "source_refs": [
+          "SRC-003"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The manual presents the map as both a travel aid and an information filter: it supports waypoint placement while optional layers can be hidden.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The manual presents the map as both a travel aid and an information filter: it supports waypoint placement while optional layers can be hidden."
+      },
+      {
+        "id": "EXTRA-D-017",
+        "topic": "The controls manual includes positive and negative conversation responses, suggesting that dialogue interaction can include player choice at the input level; it does not prove branching narrative outcomes.",
+        "classification": "[CONFIRMED]",
+        "claim": "The controls manual includes positive and negative conversation responses, suggesting that dialogue interaction can include player choice at the input level; it does not prove branching narrative outcomes.",
+        "source_refs": [
+          "SRC-003"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The controls manual includes positive and negative conversation responses, suggesting that dialogue interaction can include player choice at the input level; it does not prove branching narrative outcomes.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The controls manual includes positive and negative conversation responses, suggesting that dialogue interaction can include player choice at the input level; it does not prove branching narrative outcomes."
+      },
+      {
+        "id": "EXTRA-D-018",
+        "topic": "The current GTADb catalogue combines multiple platforms in its platform list; its aggregate mission, vehicle and collectible figures are not accepted as PS2-only counts here.",
+        "classification": "[SECONDARY]",
+        "claim": "The current GTADb catalogue combines multiple platforms in its platform list; its aggregate mission, vehicle and collectible figures are not accepted as PS2-only counts here.",
+        "source_refs": [
+          "SRC-009"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The current GTADb catalogue combines multiple platforms in its platform list; its aggregate mission, vehicle and collectible figures are not accepted as PS2-only counts here.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The current GTADb catalogue combines multiple platforms in its platform list; its aggregate mission, vehicle and collectible figures are not accepted as PS2-only counts here."
+      },
+      {
+        "id": "EXTRA-D-019",
+        "topic": "The public credits transcription separates Rockstar North production roles from New York publishing/production/QA roles; studio location and credited responsibility should remain separate fields.",
+        "classification": "[SECONDARY]",
+        "claim": "The public credits transcription separates Rockstar North production roles from New York publishing/production/QA roles; studio location and credited responsibility should remain separate fields.",
+        "source_refs": [
+          "SRC-008"
+        ],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The public credits transcription separates Rockstar North production roles from New York publishing/production/QA roles; studio location and credited responsibility should remain separate fields.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The public credits transcription separates Rockstar North production roles from New York publishing/production/QA roles; studio location and credited responsibility should remain separate fields."
+      },
+      {
+        "id": "EXTRA-D-020",
+        "topic": "The available public evidence in this research pass does not settle the exact PS2 build number, source-control product or per-sector memory budget.",
+        "classification": "[UNKNOWN]",
+        "claim": "The available public evidence in this research pass does not settle the exact PS2 build number, source-control product or per-sector memory budget.",
+        "source_refs": [],
+        "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
+        "status": "RESEARCHED — scope caveat retained",
+        "condition_implication_verification": "The available public evidence in this research pass does not settle the exact PS2 build number, source-control product or per-sector memory budget.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The available public evidence in this research pass does not settle the exact PS2 build number, source-control product or per-sector memory budget."
+      }
+    ],
+    "overlooked_elements": [
+      {
+        "id": "EXTRA-E-001",
+        "component": "InputContext enum with ON_FOOT, BICYCLE, CAR, SWIM, HELICOPTER, AIRPLANE and AIM states.",
+        "breakage_if_missing": "Without it, two controllers may consume the same key simultaneously",
+        "verification": " verify with automated action-routing tests."
+      },
+      {
+        "id": "EXTRA-E-002",
+        "component": "VehicleExitReservation record containing candidate transform, capsule clearance result, door side and rollback status.",
+        "breakage_if_missing": "Without it, exit can place the player inside walls or another actor",
+        "verification": " test left/right blocked doors."
+      },
+      {
+        "id": "EXTRA-E-003",
+        "component": "RoadEdge record with from_node, to_node, lane_count, direction, surface_id, speed_limit and sector_id.",
+        "breakage_if_missing": "Without it, GPS and traffic cannot share an authoritative route graph",
+        "verification": " verify graph connectivity."
+      },
+      {
+        "id": "EXTRA-E-004",
+        "component": "RoadJunction record with priority rules, stop lines and conflict groups.",
+        "breakage_if_missing": "Without it, traffic paths can cross simultaneously",
+        "verification": " run a four-way intersection conflict test."
+      },
+      {
+        "id": "EXTRA-E-005",
+        "component": "SectorBudget telemetry for active meshes, textures, NPCs, traffic vehicles, physics bodies and audio voices.",
+        "breakage_if_missing": "Without it, streaming pressure is invisible",
+        "verification": " assert budget alarms in a high-density test."
+      },
+      {
+        "id": "EXTRA-E-006",
+        "component": "LODGroup manifest mapping source mesh, near/mid/far representations, switch distances and shared proxy ID.",
+        "breakage_if_missing": "Without it, shared low-detail assets cannot be audited",
+        "verification": " verify load/unload around a sector boundary."
+      },
+      {
+        "id": "EXTRA-E-007",
+        "component": "MissionRewardReceipt with mission_instance_id and reward_transaction_id.",
+        "breakage_if_missing": "Without it, retry or duplicate triggers may pay twice",
+        "verification": " replay completion event and assert one receipt."
+      },
+      {
+        "id": "EXTRA-E-008",
+        "component": "MissionActorLease identifying actors temporarily owned by a mission and the ambient state to restore.",
+        "breakage_if_missing": "Without it, mission cleanup can delete or permanently lock ambient NPCs",
+        "verification": " test lease release."
+      },
+      {
+        "id": "EXTRA-E-009",
+        "component": "Save schema_version plus migration table and checksum field.",
+        "breakage_if_missing": "Without it, new releases can misread old progress",
+        "verification": " test migration from each supported schema."
+      },
+      {
+        "id": "EXTRA-E-010",
+        "component": "InteriorTransitionTicket with origin sector, destination interior, return transform and resume token.",
+        "breakage_if_missing": "Without it, interrupted transitions can strand the player",
+        "verification": " simulate save/reload during load."
+      },
+      {
+        "id": "EXTRA-E-011",
+        "component": "Audio provenance record with performer/source, rights, language, emotion, loudness target and loop points.",
+        "breakage_if_missing": "Without it, Web audio licensing and localization become untraceable",
+        "verification": " verify asset manifest completeness."
+      },
+      {
+        "id": "EXTRA-E-012",
+        "component": "DialogueLine record with subtitle key, voice file, speaker ID, emotion tag, duration and fallback policy.",
+        "breakage_if_missing": "Without it, captions and speech can desynchronize",
+        "verification": " test voice absent and Arabic text fallback."
+      },
+      {
+        "id": "EXTRA-E-013",
+        "component": "CharacterIdentity record separate from reusable CharacterArchetype.",
+        "breakage_if_missing": "Without it, repeated ambient meshes may be miscounted as one named story person",
+        "verification": " test census export."
+      },
+      {
+        "id": "EXTRA-E-014",
+        "component": "BuildScope record containing platform, region code, executable/disc hash, date and capture configuration.",
+        "breakage_if_missing": "Without it, later-port findings can leak into PS2 baseline",
+        "verification": " validate every observed claim has a scope."
+      },
+      {
+        "id": "EXTRA-E-015",
+        "component": "EvidenceAccess field: OPENED, SEARCH_SNIPPET, CITED_SECONDARY, INACCESSIBLE or USER_SUPPLIED.",
+        "breakage_if_missing": "Without it, a source merely listed in search can be misreported as inspected",
+        "verification": " run source audit."
+      },
+      {
+        "id": "EXTRA-E-016",
+        "component": "WaypointTarget record with world position, source marker ID, route graph revision and snap node.",
+        "breakage_if_missing": "Without it, minimap can show a target that GPS cannot route to",
+        "verification": " test unreachable target behavior."
+      },
+      {
+        "id": "EXTRA-E-017",
+        "component": "WorldStateTransaction for mission completion, reward, unlocks and save commit.",
+        "breakage_if_missing": "Without it, partial completion may persist inconsistent state",
+        "verification": " inject save failure between stages."
+      },
+      {
+        "id": "EXTRA-E-018",
+        "component": "NPCSpawnTicket carrying sector, spawn archetype, nav target, owner (ambient or mission) and deterministic seed.",
+        "breakage_if_missing": "Without it, reload and streaming can duplicate population",
+        "verification": " replay the same sector entry twice."
+      },
+      {
+        "id": "EXTRA-E-019",
+        "component": "AssetLicenseManifest with asset GUID, source URL, license, author, attribution text and modification history.",
+        "breakage_if_missing": "Without it, redistributable rights cannot be reviewed",
+        "verification": " CI rejects missing provenance."
+      },
+      {
+        "id": "EXTRA-E-020",
+        "component": "BrowserPerfSample recording browser/version, viewport, frame-time percentiles, memory estimate and scene hash.",
+        "breakage_if_missing": "Without it, Web performance comparisons are not reproducible",
+        "verification": " capture a fixed route over multiple runs."
+      }
+    ],
+    "physics": [
+      {
+        "id": "PHY-TIME-001",
+        "system": "Fixed simulation step",
+        "summary": "Run authoritative physics at 60 Hz; accumulate render delta and process zero or more fixed ticks. Never scale physical forces directly by render-frame count.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-TIME-002",
+        "system": "Interpolation",
+        "summary": "Render transforms by alpha = accumulator / fixed_dt between previous and current physics states; do not feed interpolated transforms back into simulation.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-BODY-001",
+        "system": "Body state",
+        "summary": "Store position (m), orientation (unit quaternion), linear velocity (m/s), angular velocity (rad/s), mass (kg), center of mass (m) and inertia (kg·m²).",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-INTEGRATION-001",
+        "system": "Semi-implicit Euler",
+        "summary": "v += a*dt; x += v*dt. Apply forces before integration and collision correction after prediction; clamp dt by fixed-step policy.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-COLLISION-001",
+        "system": "Broad phase",
+        "summary": "Use spatial hashing/AABB sweep to shortlist potentially overlapping shapes before narrow-phase contact generation.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-COLLISION-002",
+        "system": "Contact resolution",
+        "summary": "For each contact compute normal impulse with relative normal speed, inverse masses and restitution; then apply bounded positional correction to remove penetration.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-FRICTION-001",
+        "system": "Coulomb friction",
+        "summary": "Limit tangential impulse magnitude to μ times normal impulse; use separate static and dynamic friction coefficients.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-CHAR-001",
+        "system": "Pedestrian ground motion",
+        "summary": "CharacterBody3D owns velocity; accelerate toward camera-relative desired velocity, apply gravity only when not grounded, then move_and_slide.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-CHAR-002",
+        "system": "Jump and landing",
+        "summary": "Apply jump impulse only from a grounded state; use floor snap and coyote-time policy explicitly; test stair edges and moving platforms separately.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-VEHICLE-001",
+        "system": "Arcade bicycle model",
+        "summary": "For a first Web sedan use longitudinal acceleration/braking and yaw_rate = speed / wheelbase * tan(steer_angle), bounded by a grip factor.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-VEHICLE-002",
+        "system": "Weight transfer approximation",
+        "summary": "Estimate longitudinal transfer ΔF = mass * acceleration * center_of_mass_height / wheelbase; use it to bias front/rear grip and brake response.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-VEHICLE-003",
+        "system": "Suspension spring",
+        "summary": "For each wheel use F_spring = clamp(k*compression - c*damper_velocity, 0, F_max); integrate chassis motion with fixed dt.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-VEHICLE-004",
+        "system": "Tire slip",
+        "summary": "Estimate longitudinal slip from wheel surface speed versus ground speed; reduce available lateral grip as combined slip approaches the friction circle.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-WATER-001",
+        "system": "Buoyancy",
+        "summary": "Approximate buoyancy per submerged volume as F_b = ρ_water*g*V_submerged; apply drag opposing relative water velocity.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-AIR-001",
+        "system": "Aircraft lift",
+        "summary": "Use lift = 0.5*ρ_air*v²*S*C_L(α), with bounded angle-of-attack and stall fallback; treat as a deliberate arcade approximation.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-RAIL-001",
+        "system": "Rail constraint",
+        "summary": "Project vehicle position onto the nearest rail spline and constrain lateral displacement; blend into/out of rail mode through validated transitions.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-INTERACT-001",
+        "system": "Impact event",
+        "summary": "Generate an impact record with contact point, normal impulse, surface, involved entity IDs and cooldown; damage system consumes records once.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-STREAM-001",
+        "system": "Offscreen simulation",
+        "summary": "Reduce update rate for distant actors but keep mission-authoritative actors pinned; persist only stable logical state, not transient physics contacts.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      },
+      {
+        "id": "PHY-TEST-001",
+        "system": "Deterministic regression",
+        "summary": "Replay fixed input streams with fixed random seeds and compare bounded position/velocity error; record engine version and browser for each run.",
+        "status": "PROPOSED",
+        "unit_and_update_note": "Godot Y-up world in meters; authoritative state advances in fixed physics ticks.",
+        "test": "Create a minimal isolated test scene, replay a fixed input sequence, record state at fixed tick numbers and assert a numeric tolerance.",
+        "evidence": "Not asserted as San Andreas internal constants or code; this is a proposed original-game model."
+      }
+    ],
+    "characters": [
+      {
+        "id": "CHAR-PROTAGONIST-001",
+        "canonical_name": "Carl Johnson",
+        "aliases": [
+          "CJ"
+        ],
+        "class": "named character depicted and described in official PS2 manual",
+        "manual_evidence": "The manual's character panel labels CJ as Carl Johnson and says he has just arrived from Liberty City and is known to change appearance.",
+        "version_scope": "Rockstar-hosted PS2 manual marked NTSC U/C",
+        "source_refs": [
+          "SRC-003"
+        ],
+        "spoiler": "story premise"
+      },
+      {
+        "id": "CHAR-GANG-ROLE-001",
+        "canonical_name": "Lance Wilson",
+        "aliases": [
+          "Ryder"
+        ],
+        "class": "named character depicted and described in official PS2 manual",
+        "manual_evidence": "The same panel lists Ryder as Lance Wilson and gives a short personality cue.",
+        "version_scope": "Rockstar-hosted PS2 manual marked NTSC U/C",
+        "source_refs": [
+          "SRC-003"
+        ],
+        "spoiler": "minor character description"
+      },
+      {
+        "id": "CHAR-GANG-ROLE-002",
+        "canonical_name": "Melvin Harris",
+        "aliases": [
+          "Big Smoke"
+        ],
+        "class": "named character depicted and described in official PS2 manual",
+        "manual_evidence": "The manual lists Big Smoke as Melvin Harris with a short personality cue.",
+        "version_scope": "Rockstar-hosted PS2 manual marked NTSC U/C",
+        "source_refs": [
+          "SRC-003"
+        ],
+        "spoiler": "minor character description"
+      },
+      {
+        "id": "CHAR-GANG-ROLE-003",
+        "canonical_name": "Sean Johnson",
+        "aliases": [
+          "Sweet"
+        ],
+        "class": "named character depicted and described in official PS2 manual",
+        "manual_evidence": "The manual lists Sweet as Sean Johnson and identifies him as leader of the Grove Family.",
+        "version_scope": "Rockstar-hosted PS2 manual marked NTSC U/C",
+        "source_refs": [
+          "SRC-003"
+        ],
+        "spoiler": "minor character description"
+      }
+    ],
+    "overflow": []
+  },
+  "notes": [
+    "The first 50 CORE IDs and first 50 GFX IDs establish one researched/proposed element for every requested parent; the other 44 per parent are not delivered.",
+    "The first 20 extra details/elements are distinct substantive entries; IDs 021–100 in each registry are not delivered.",
+    "Physics records are proposed models for the original Web game, not claims about Rockstar's internal implementation.",
+    "Character census is a starter subset, not a complete census."
+  ],
+  "audit": {
+    "required_total_main_and_extra": 4700,
+    "actual_total_main_and_extra": 140,
+    "missing_core_elements": 2200,
+    "missing_graphics_elements": 2200,
+    "missing_overlooked_details": 80,
+    "missing_overlooked_elements": 80,
+    "semantic_duplicate_review": "Editorial review still required; automated ID validation cannot prove semantic uniqueness."
+  }
+}
