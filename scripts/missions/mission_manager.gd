@@ -105,6 +105,16 @@ func _save_progress() -> bool:
 	return write_error == OK
 
 
+func _persist_progress() -> void:
+	if not _save_progress():
+		return
+	var save_manager := get_tree().get_first_node_in_group("game_save_manager")
+	if save_manager == null or not save_manager.has_method("save_game"):
+		return
+	if not bool(save_manager.call("save_game")):
+		push_warning("Mission 001 progress was written locally but the unified save could not be updated.")
+
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_PREDELETE:
 		_save_progress()
@@ -124,13 +134,13 @@ func _process(_delta: float) -> void:
 
 	if not _square_reached and _player.global_position.distance_to(Vector3(0.0, 0.0, 0.0)) <= 7.0:
 		_square_reached = true
-		_save_progress()
+		_persist_progress()
 		_refresh_hud()
 
 	if _mira_spoken_to and not _garden_visited:
 		if _player.global_position.distance_to(Vector3(0.0, 0.0, 27.0)) <= 8.0:
 			_garden_visited = true
-			_save_progress()
+			_persist_progress()
 			_claim_completion_reward_if_ready()
 			_refresh_hud()
 
@@ -146,7 +156,7 @@ func _claim_completion_reward_if_ready() -> void:
 	if reward_currency > 0:
 		wallet.call("add_money_once", "mission_001_completion", reward_currency)
 	_completion_reward_claimed = true
-	_save_progress()
+	_persist_progress()
 
 
 func get_hud_snapshot() -> Dictionary:
@@ -164,7 +174,7 @@ func get_hud_snapshot() -> Dictionary:
 func _on_mira_dialogue_spoken() -> void:
 	if not _mira_spoken_to:
 		_mira_spoken_to = true
-		_save_progress()
+		_persist_progress()
 		_refresh_hud()
 
 
