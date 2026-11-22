@@ -236,3 +236,14 @@ The first parallel push/PR cleanup pair raced: one run deleted artifact 14748948
 - **Baseline only (not the latest code head):** prior successful Android Debug #574 on e61002762a95300f59fe51e6072496efac6631bd produced a raw APK of 254,244,363 bytes (254.244363 MB / 242.466319 MiB), artifact ZIP 252,488,852 bytes. The current code-head build #577 has no measured APK size yet.
 - **Scope limit:** this is not proof of full mission 001–004 process-stop recovery or whole-world persistence. The unified save remains **PARTIALLY IMPLEMENTED** until all mission phases, side activities, streamed entities, NPCs and vehicle states have full restart coverage.
 - **Repository safety:** main remains at c9fc82936a43b80af0e3c25eef41c9fee59e47b7; PR #31 remains Draft and unmerged. No public deployment or physical-device test is claimed.
+
+
+## 2026-11-22 — Web-only delivery scope supersedes device testing
+
+- The current delivery direction is **Godot 4.7 Web only**. Android APK creation, physical-phone connection, installation, touch-feel review and phone-specific RAM/FPS/thermal readings are no longer required or accepted as blockers.
+- Primary browser controls: WASD movement, right-mouse-button drag to orbit the third-person camera, E to interact, and Shift to sprint. A dedicated headless Web keyboard/mouse regression test has been added and wired into Godot validation, the private Web/Chromium workflow and the Web Build workflow.
+- Web export remains private and temporary: Godot exports on an ephemeral Actions runner, serves only on 127.0.0.1/localhost for Chromium, records exact export/ZIP measurements and removes temporary files. No public Actions artifact, GitHub Pages deployment, Vercel deployment or public download URL is allowed.
+- The legacy Android workflow is retained for reversibility but is manual-only; it is not part of the current automated acceptance gate. Do not run it unless the owner explicitly changes the platform direction.
+- The current baseline branch is fix/comprehensive-stability-2026-11-20; main is untouched and PR #31 remains Draft/open/unmerged. Web/Chromium results must be checked against the latest PR head after the new keyboard-control commits; results on prior SHAs are historical only.
+- The existing Web Build workflow was observed to create a temporary ZIP, print size/hash measurements, then delete the export and ZIP. It does not upload an artifact. docs/WEB_VERSION.md was corrected to match this actual behavior.
+- Remaining Web blockers must be reported honestly: full-world save coverage, continuous inter-district navigation and NPC obstacle avoidance, advanced vehicle physics/AI, 25 actual locally bundled expressive Arabic dialogue performances, and complete browser gameplay/visual review. Do not mark these complete without code, assets and tests.
