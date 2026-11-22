@@ -486,7 +486,7 @@ Serve the export from an HTTP local server; do not open the HTML through `file:/
 | Graphics numbered elements | 2,250 | 50 (one per parent) | 2,200 |
 | Overlooked details | 100 | 20 | 80 |
 | Overlooked elements | 100 | 20 | 80 |
-| Physics records | No cap | 18 proposed systems | Full version-specific audit and full set of tests still missing |
+| Physics records | No cap | 19 proposed systems | Full version-specific audit and full set of tests still missing |
 | Character records | Evidence-complete census | 4 manual-named entries | Exhaustive named/voice-only/referenced/unnamed-role census missing |
 | Verified overflow | As needed | 0 | None admitted without verified evidence |
 | Runnable Web project | Complete vertical slice in prompt | Existing playable foundation only | Traffic loop, pedestrian activity, mission fail/retry, complete save, debug test scene and full slice not yet present |
