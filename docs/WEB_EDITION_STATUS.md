@@ -1,6 +1,6 @@
 # GTA GHIBLI Web Edition — Verified Status Ledger
 
-Updated: 2026-11-22 — verified foundation commit `e50cdcdd1cf7a99fa0d00768ca6b640500bcfea9`  
+Updated: 2026-11-22 — minimap milestone under CI verification from `28d3c9acb133f8a2bd9255dd0f500433e2bd05c3`  
 New project root: `web-edition/`  
 Development branch: `web/standalone-from-empty-2026-11-22`  
 Base: `main` at `c9fc82936a43b80af0e3c25eef41c9fee59e47b7`
@@ -31,7 +31,7 @@ Base: `main` at `c9fc82936a43b80af0e3c25eef41c9fee59e47b7`
 | Mission 001 | **TESTED — introductory mission only** | Claire signal -> Nora signal -> $250 reward; duplicate payout rejected |
 | Local save | **PARTIALLY TESTED** | A new MissionManager instance restored Mission 001 stage and $600 wallet; world/player/NPC/vehicle-wide persistence is not implemented |
 | HUD | First implementation; visual review pending | Objective, region, wallet, prompt and dialogue elements exist; visual layout has not had a human screenshot review |
-| Map | PRELIMINARY | M-key overlay with region labels; no live minimap, GPS, destination selection or road route guidance |
+| Map / minimap | **PARTIALLY IMPLEMENTED — new minimap awaiting CI** | New top-right minimap draws the four region bands, east-west starter road, Marsa Al-Noor lighthouse and a live player marker/heading. Coordinate conversion and player-position update have regression assertions. No GPS routing, destination selection, minimap rotation or route-following guidance yet |
 | Browser audio | Not implemented | No placeholder/silent audio used; Arabic voice acting remains unverified/not included |
 | CI Web export / Chromium | **PASS** | Web CI #18 on `e50cdc`; WebGL 2 canvas, keyboard/mouse event delivery, no runtime errors or external requests |
 
