@@ -167,7 +167,7 @@ func _register_input_actions() -> void:
 	_bind_key("vehicle_brake", KEY_CTRL)
 
 
-func _bind_key(action_name: StringName, key_code: Key) -> void:
+func _bind_key(action_name: StringName, key_code: int) -> void:
 	if not InputMap.has_action(action_name):
 		InputMap.add_action(action_name)
 	for existing in InputMap.action_get_events(action_name):
