@@ -57,7 +57,7 @@ func _connect_gameplay_signals() -> void:
 
 	for actor in get_tree().get_nodes_in_group("interactables"):
 		if actor.has_signal("activated"):
-			actor.activated.connect(_missions.handle_interaction)
+			actor.connect("activated", Callable(_missions, "handle_interaction"))
 
 
 func _create_environment() -> void:
