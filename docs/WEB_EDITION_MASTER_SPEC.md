@@ -123,3 +123,82 @@ There is no APK delivery measurement in the current Web phase. A 4 GB browser do
 ## Current milestone boundary
 
 The current milestone is a fresh playable foundation: four named blockout districts with a connected starter corridor, basic player movement/camera, interaction, one text-only mission, one basic drivable sedan and a preliminary HUD/map. Models and environment are primitive placeholders. The full world, polished assets, mission campaign, combat, vehicle classes, advanced NPC/traffic/police behavior, GPS, weather, final UI, music and expressive Arabic voice acting remain incomplete.
+
+
+
+---
+
+##  Research-driven scope expansion — San Andreas systems reference
+
+This addendum turns the supplied forensic research brief into a formal requirement for the **independent Web game**. San Andreas is a comparative design and production reference only. GTA GHIBLI must use original names, characters, locations, writing, missions, visual assets, music, radio, voices and data.
+
+### A. Evidence and source discipline
+
+Every research statement about the 2004 title must identify its evidence class:
+- `[CONFIRMED]`: directly attributable evidence, with source ID.
+- `[OBSERVED]`: measured or seen in an identifiable build/setup.
+- `[SECONDARY]`: documented by an attributable secondary source.
+- `[INFERRED]`: consistent technical interpretation, not proof.
+- `[PROPOSED]`: original GTA GHIBLI design/code decision.
+- `[UNKNOWN]`: not established by currently accessible evidence.
+
+The original PS2 retail-era manual inspected in this research pass identifies an NTSC U/C scope. Exact disc build/revision and executable hash remain unknown. PC, Xbox, mobile and later remaster behavior must have their own version records and must not be silently merged with PS2 claims. Source metadata must include stable ID, title, author/publisher, publication date where known, URL, access status, page/section/timestamp and build/version scope. Distinguish opened material from search-index-only, inaccessible and cited-through sources.
+
+### B. Required research registries and explicit completion gate
+
+The research package uses stable IDs and machine-readable JSON:
+- Core: `CORE-01.01` to `CORE-50.45`, 50 parent details × 45 elements.
+- Graphics: `GFX-01.01` to `GFX-50.45`, 50 parent details × 45 elements.
+- Overlooked details: `EXTRA-D-001` to `EXTRA-D-100`.
+- Overlooked elements: `EXTRA-E-001` to `EXTRA-E-100`.
+- Physics: `PHY-<SYSTEM>-<NUMBER>`.
+- Characters: `CHAR-<CLASS>-<NUMBER>`.
+- Verified overflow: `OVER-<DOMAIN>-<NUMBER>`.
+
+Do not count parent headings, cross-links, duplicates, empty placeholders or unsupported assertions as substantive elements. If coverage is incomplete, preserve numbering and list exact missing ID ranges. Structural validation cannot decide whether two researched statements are semantically distinct; that remains an editorial review task. The research handbook and registry JSON must always print both REQUIRED and ACTUAL totals.
+
+### C. Full original Web game system requirements
+
+The final game is a genuinely playable third-person open-world action-adventure, not a website, static illustration, mockup, menu-only build or tiny demo passed off as complete.
+
+The final Web game must include:
+
+1. **World and geography:** four connected original regions, distinct district identities, streets, roads, highways, bridges, tunnels where appropriate, shorelines, countryside, terrain, landmarks, functional points of interest and traversal boundaries. Sector streaming must keep gameplay-critical dependencies resident and release unused assets safely.
+2. **Navigation:** one authoritative world-coordinate service for full map, minimap, mission markers and GPS. Destination selection must snap to reachable graph nodes; route planning must follow actual road/path edges, account for direction/closures, recalculate when blocked and report unreachable destinations honestly.
+3. **Interiors:** real entry conditions, portals, interior scene ownership, return transforms, collision transitions, streaming and save-safe transition tickets. Decorative door meshes do not count as functional interiors.
+4. **Player and camera:** walking, running, sprinting, turning, jumping, slopes, stairs, interaction, camera-relative movement, obstruction-aware orbit/zoom, aiming modes, locomotion animation handoffs and context-specific input maps.
+5. **Vehicles:** cars, utility vehicles, vans, heavy trucks, motorcycles, bicycles, boats, aircraft, helicopters, carts and trailers as appropriate. Each class needs its own tested handling/control mode, collision, suspension or appropriate buoyancy/lift/rail constraints, camera, entry/exit, sound, damage state and contextual HUD. A static mesh is not a completed vehicle.
+6. **World population:** pedestrians, civilians, schedules, traffic lanes, intersections, obstacle avoidance, driver reactions, faction behavior, police/pursuit and mission-controlled actors. Ambient simulation must be bounded by sector budgets; mission-critical actors must hold residency/ownership leases.
+7. **Missions and story:** original campaign and side missions with activation, prerequisites, character/location links, objectives, dialogue, failure/success/retry, cleanup, one-time reward transactions, persistent world changes, checkpoints and save/reload. Include a mission dependency graph and mission-to-character index.
+8. **Combat and inventory:** original fictional equipment classes, inventory, aim/fire/reload, hit detection, recoil, animations, audio, damage feedback and contextual controls. These systems must be safe, age-appropriate and fictional gameplay, not real-world weapon instruction.
+9. **Progression and economy:** skills, status, appearance customization, money, shops, properties, services, optional activities, races, collectibles, statistics and completion categories with unique IDs and idempotent reward transactions.
+10. **Time and environment:** authoritative world clock, sunrise/sunset, day/night lighting, local weather, precipitation, visibility, wetness and environmental audio driven by the same state.
+11. **Audio and localization:** original or licensed music and radio, local bundled ambience and effects, character-specific Arabic dialogue with emotion/performance metadata, subtitles, correct Arabic shaping/RTL and explicit voice provenance. Synthetic speech must be labeled synthetic; silent/empty placeholders do not count as dubbing.
+12. **UI and accessibility:** title/new/continue, pause/settings, graphics/audio/controls, map, mission status, inventory, vehicle/weapon HUD, dialogue, notifications, loading/save UI, scalable text, remappable keyboard/mouse controls, reduced-flash/reduced-motion options and readable context prompts.
+13. **Persistence:** versioned save schema, migrations, checksums, atomic writes/recovery, player/world/vehicle/mission/economy/unlock/appearance/time/weather states and safe handling of interrupted transitions.
+14. **Quality and browser delivery:** WebAssembly + WebGL2 build, local-only smoke testing, no external gameplay network dependency, no secrets, no public hosting unless separately authorized. Measure startup/load time, frame-time percentiles, sector memory estimates, active actors, draw calls and asset residency under repeatable routes.
+
+### D. Production and asset pipeline
+
+Maintain asset provenance for model, mesh, texture, material, rig, animation, collision, navigation, audio, dialogue, mission, UI and world-data records. Each distributable asset must carry a stable asset ID, source/author, licence, attribution requirements, modification history, import settings and content hash. No Rockstar proprietary content is to be copied or redistributed.
+
+Use this proposed original pipeline:
+`creative brief → source/licence approval → DCC authoring → export/validation → Godot import → sector/data integration → Web export → browser QA → measured package → ephemeral cleanup`.
+This is a GTA GHIBLI proposal, not a claim about Rockstar's internal tools.
+
+### E. Required integration invariants
+
+- Mission-owned actors and sectors cannot be removed by ambient distance despawn.
+- A mission finishing while the player drives must not change the player out of vehicle mode or clear the vehicle owner.
+- Vehicle exit must reserve and validate a collision-free exit transform; if both sides are blocked, the player remains seated.
+- Saves during cinematics or transitions must defer or use a consistent transition ticket.
+- Loading a save supersedes stale HUD objectives only after gameplay owners apply the loaded authoritative state.
+- Mission retry releases prior actor leases and transient markers and cannot duplicate actors or rewards.
+- Traffic density is budgeted; ambient AI may degrade gracefully without disabling mission-owned vehicles.
+- An ambient NPC can become mission-owned and later return to its saved ambient schedule through an explicit ownership lease.
+
+### F. Web acceptance plan and scope boundary
+
+Every system follows the status vocabulary used in `docs/WEB_EDITION_STATUS.md`. A feature is `TESTED` only after a repeatable automated or documented manual test. The first browser gate remains Chromium/WebGL2; Firefox and Safari are separate unverified gates until runners and actual jobs exist. A green foundation CI run never means that the full open world, every feature, final art, complete character census or complete historical encyclopedia is finished.
+
+The long-term target for the Web package is real, unique, useful content approaching the requested 4 GB milestone. Track source bytes, uncompressed Web export bytes, and compressed package bytes separately. No duplicate or filler data. Large packages require staged/streamed loading and measured browser compatibility; do not claim 4 GB reached until actual authored content and export measurements prove it.
