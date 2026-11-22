@@ -225,10 +225,19 @@ The NPC navigation lifecycle and save-migration code passed Godot validation #79
 - **Performance:** target T606/4 GB device FPS/RAM/thermal/touch/audio acceptance remains NOT VERIFIED.
 - **Voice:** BLOCKED for bundled offline delivery; text acting directions are tested, but local human/AI dialogue clips and offline playback are not present/verified.
 
-## 2026-11-22 — Mission 002 save/resume continuity candidate
+## 2026-11-22 — Mission 002 save/resume continuity — TESTED
 
-- Mission 002 snapshots now retain both pursuer visibility states and whether the rescued witness is attached as a passenger. Older snapshots without these keys use phase-aware defaults.
-- Restoring an active escape phase recreates the passenger visual on the existing vehicle and restores witness/pursuer visibility, preventing a resumed chase from silently losing its actors.
-- Mission 001–004 save writers now explicitly flush, check the write result and close their files at mission-save boundaries.
-- Regression coverage simulates removal of the rescue actors and restores the active pursuit from its snapshot before continuing the mission.
-- This change adds no game assets. Current-head CI is required before classifying this candidate as TESTED; no physical-device result is implied.
+- Mission 002 snapshots retain both pursuer visibility states and whether the rescued witness is attached as a passenger. Older snapshots without these keys use phase-aware defaults.
+- Restoring an active escape phase recreates the passenger visual on the saved vehicle and restores the witness/pursuer visibility.
+- Mission 001–004 save writers explicitly flush, inspect write status and close files at mission-save boundaries.
+- Regression test simulates the rescue actors being removed, restores the active pursuit from its snapshot, then continues the escape.
+- **Verified code commit:** `bf5e730a91a1d002e11cd7238bc75edf19d8b668`.
+- **Godot 4.7 validation #810:** PASS — import, GDScript parse, mission 001–004 tests and main-scene smoke. [Run](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45013217344)
+- **Android ARM64 Debug #573:** PASS — archive/package checks and APK size recorded. [Run](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45013217408)
+- **Private Web + Chromium #214:** PASS — local-only WebGL 2 runtime, input events and no external requests. [Run](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45013217370)
+- **Web Build #116:** PASS — export, browser smoke and exact sizes recorded; temporary export and ZIP removed after the job. [Run](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45013217390)
+- **Security audit #755:** PASS — Gitleaks reported no leaks. [Run](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45013217336)
+- Raw ARM64 Debug APK: **254,244,363 bytes** (254.244363 MB; 242.466319 MiB), +4,096 bytes versus the previous comparable APK.
+- Temporary Web export: **378,793,008 bytes** (378.793008 MB; 361.245163 MiB). Web ZIP: **237,940,158 bytes** (237.940158 MB; 226.917418 MiB); SHA-256 `5c75f2201f285a3cd347307eb575f616b32a65c86870d08cd47b57408037e664`. Both are CI-only; no public Web artifact or hosting was created.
+- No game assets were added in this code-only reliability change. Physical Unisoc T606 / 4 GB FPS, RAM, heat, touch feel, install and audio remain NOT VERIFIED.
+- Non-fatal OBJ ambient-light warnings and headless RID/ObjectDB/resource teardown warnings remain; successful CI does not mean warning-free logs.

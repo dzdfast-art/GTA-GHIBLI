@@ -66,6 +66,6 @@ No new models, textures, audio clips, fonts, icons or other binary assets were a
 
 No new models, textures, sound files, fonts, icons or other game assets were added. The change consists of GDScript save-state fields and regression-test updates only. Existing provenance rows, licence evidence and final-release clearance statuses are unchanged; this code-only change does not upgrade any asset's ownership or licence status.
 
-## 2026-11-22 mission persistence update
+## 2026-11-22 mission persistence update — verified
 
-No new models, textures, audio, fonts, icons or other game assets were added in this mission save/resume reliability change. Existing provenance and final-release clearance states remain unchanged.
+No new models, textures, audio, fonts, icons or other game assets were added in this mission save/resume reliability change. Existing provenance and final-release clearance states remain unchanged. Godot, Android Debug, private Web/Chromium and security CI passed on code commit `bf5e730a91a1d002e11cd7238bc75edf19d8b668`.
