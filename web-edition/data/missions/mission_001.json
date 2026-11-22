@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "id": "mission_001",
+  "title": "رسالة عند المرسى",
+  "status": "implemented_first_playable_pass",
+  "story_status": "provisional_original_story",
+  "starting_condition": "Speak to Claire Bennett at the Harbor City starting area.",
+  "stages": [
+    {"id": "speak_to_claire", "interaction": "claire", "objective": "Talk to Claire Bennett."},
+    {"id": "find_nora", "interaction": "nora", "objective": "Meet Nora Blake near the Marsa Al-Noor lighthouse."},
+    {"id": "complete", "objective": "Receive the $250 reward and continue exploring."}
+  ],
+  "reward": {"currency": 250},
+  "notes": [
+    "The mission is an original introductory proposal, not a final approved chapter outline.",
+    "Dialogue is currently text-only. No Arabic voice performance is claimed."
+  ]
+}
