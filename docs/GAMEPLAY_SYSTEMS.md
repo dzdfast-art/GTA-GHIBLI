@@ -274,3 +274,10 @@ The Godot 4.7 test run #797 passed the individual navigation tests but its log e
 ## Latest verification — 2026-11-21
 
 The save migration and deferred NPC navigation-agent lifecycle passed the Godot 4.7 validation workflow #798 on game-code commit ab9e707. The Android Debug APK build #561 passed on that same code commit at 254,232,075 bytes raw. The subsequent 1c8da7 commit changes documentation only. The latest Web export and private Chromium reruns (#94 and #192) were still in progress when this record was written. Navigation remains partial: district grids and test path queries are not yet proof of continuous road links, obstacle avoidance, no-path recovery or physical-device NPC performance.
+
+
+## 2026-11-22 side-activity restart and reward recovery
+
+Side activities now persist their active ID, collected-target visibility, target count, reward total and a monotonic progress timestamp. On restore, the director rebuilds objective markers and keeps already-collected targets hidden instead of restoring counters with an empty target list. Each activity reward uses a stable wallet transaction ID. The wallet transaction is saved before the activity is marked complete; if the app closes between those operations, the resumed activity recognizes the existing transaction and completes without another payout. Duplicate completion is rejected.
+
+The wallet's unified snapshot now includes its update timestamp and merges transaction IDs from a newer local compatibility wallet. During restore, an embedded legacy file is written only when the corresponding on-device file is missing, avoiding rollback of an existing newer file. Dedicated regression coverage is pending the new commit's CI. Complete mission/world persistence remains PARTIALLY IMPLEMENTED.

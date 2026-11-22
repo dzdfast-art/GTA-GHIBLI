@@ -55,3 +55,8 @@ No new binary, model, texture, sound or other game asset was added in this save/
 ## Verification note — 2026-11-21
 
 The latest code-only reliability changes add no assets. Godot validation #798 and Android Debug APK #561 passed on code head ab9e707; the later 1c8da7 change is documentation-only. Existing asset rows remain pending final release review, and no new asset licence/ownership clearance is implied.
+
+
+## 2026-11-22 provenance update
+
+No new models, textures, audio clips, fonts, icons or other binary assets were added in the side-activity save-recovery pass. Changes are limited to scripts, tests and documentation. Existing asset provenance and release-clearance states are unchanged; no licence status is upgraded by this code-only change.

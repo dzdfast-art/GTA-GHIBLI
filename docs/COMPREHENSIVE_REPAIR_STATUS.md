@@ -173,3 +173,15 @@ The current documentation head is 1c8da7dddc07a707dc5b6a0518922bfd1c934135. The 
 The #798 Godot log no longer contains the earlier NavigationAgent3D get_world_3d script errors, the parent-busy add_child error, or the root-viewport null-scenario error. Non-fatal OBJ ambient-light import warnings and test-process ObjectDB/resource teardown warnings remain; the workflow passed, but the log is not completely warning-free.
 
 The Git-tree measurement on docs head 1c8da7 is 350,461,886 bytes (350.462 MB / 334.226 MiB), 397 tracked blobs. Main remains 346,596,568 bytes (346.597 MB / 330.540 MiB), 329 tracked blobs. Difference: 3,865,318 bytes (3.865 MB / 3.686 MiB). No new game assets were added in this pass.
+
+
+## 2026-11-22 — side-activity restart and reward recovery
+
+- **Implemented in source:** active side-activity ID, target visibility, target count and progress timestamp are stored in the compatibility file and unified snapshot. Restoring an active activity recreates its objective markers and hides targets already collected.
+- **Implemented in source:** completion rewards use stable transaction IDs through the wallet's one-time reward API. If the process stops after wallet credit but before the activity ledger is committed, resuming recognizes the existing transaction and completes without paying twice.
+- **Implemented in source:** completed activities reject repeat completion; reward totals no longer increase on duplicate callbacks.
+- **Implemented in source:** wallet snapshots include an update timestamp and merge reward transaction IDs from a newer compatibility wallet. Unified restore does not overwrite an existing allowlisted device file with an older embedded copy.
+- **Regression coverage added:** active-target reconstruction, duplicate completion, interrupted reward recovery, newer wallet transaction recovery, and preservation of a newer existing NPC relationship file.
+- **Verification status:** pending Godot 4.7 validation and Android ARM64 Debug CI for commit 6fc51d0. Do not mark this addendum TESTED until the new-head workflows finish.
+- **Scope limit:** mission 001–004 restart timing, all world entities, NPC schedules and every vehicle state still require broader restart tests. Unified save coverage remains PARTIALLY IMPLEMENTED.
+- No game assets were added. Main remains unchanged and PR #31 remains Draft/unmerged.

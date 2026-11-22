@@ -195,3 +195,12 @@ A gate passes only when its implementation and tests exist. Keep **implemented**
 ## Latest CI evidence — 2026-11-21
 
 The NPC navigation lifecycle and save-migration code passed Godot validation #798 on game-code head ab9e707abed1863141418a8a17caa77cf9a1fe66. Android Debug APK #561 also passed on that code head at 254,232,075 raw bytes (254.232 MB / 242.455 MiB). The later 1c8da7 documentation commit changes documentation only. Security audit #743 passed. Current Web Build #94 and private Chromium #192 remain pending/in progress in the latest recorded state. No physical T606/4 GB device test has been performed.
+
+
+## 2026-11-22 save-recovery alignment
+
+- **Side activity progress:** IMPLEMENTED in source; TEST PENDING on commit 6fc51d0. Active IDs, collected-target visibility, counters and timestamps are persisted and restored with recreated markers.
+- **Side activity rewards:** IMPLEMENTED in source; TEST PENDING. Stable wallet transaction IDs prevent duplicate payouts and support recovery after an interrupted completion.
+- **Wallet restore precedence:** IMPLEMENTED in source; TEST PENDING. A newer compatibility wallet is timestamped, its transaction ledger is merged with the unified snapshot, and an existing on-device legacy file is not overwritten by an older embedded copy.
+- **Unified save coverage:** PARTIALLY IMPLEMENTED. This change does not prove restart persistence for every mission phase, every world object, all NPC schedules or every vehicle.
+- **Assets and performance:** no new assets or runtime content were added in this pass; target-device FPS/RAM/thermal acceptance remains NOT VERIFIED.
