@@ -48,7 +48,7 @@ func _run_mission_test() -> void:
 
 	var mira := Node.new()
 	mira.add_user_signal("dialogue_spoken")
-		scene.add_child(mira)
+	scene.add_child(mira)
 
 	var manager: CanvasLayer = MISSION_MANAGER_SCRIPT.new() as CanvasLayer
 	manager.name = "MissionManager"
