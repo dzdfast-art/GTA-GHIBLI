@@ -213,3 +213,14 @@ The NPC navigation lifecycle and save-migration code passed Godot validation #79
 
 
 - **Artifact cleanup:** TESTED for deletion of prior Web artifact 14748948497 (the previous run's artifact list is empty). The initial parallel cleanup produced one harmless 404 race; the workflow now treats an already-deleted artifact as success and serializes Web builds.
+
+
+## 2026-11-22 — NPC save contract alignment
+
+- **NPC transform and daily schedule snapshots:** IMPLEMENTED in `NPCBrain` and TESTED through the unified save manager on code/test head `2495553`. Captured values include actor global position/rotation, schedule enablement, current world hour, work-hour bounds, work/home positions, wander-home origin and relationship values.
+- **Backward compatibility:** TESTED for the existing relationship-only snapshot contract; the new fields are optional when loading older saves.
+- **NPC population coverage:** PARTIALLY IMPLEMENTED. Only currently instantiated nodes in `npc_brains` are captured and restored. Stable IDs, streamed NPC spawn-after-load restoration, transient alarm state and all world entities still need coverage.
+- **Mission 001–004:** individual objective/flow tests passed in Godot #45011215857. Full process-stop/restart at every phase, reward interruption and cross-mission snapshot restore are NOT VERIFIED.
+- **Android/Web/security:** Android ARM64 Debug #45011215912, private Web + Chromium #45011215840, Web Build #45011215820 and security audit #45011215838 passed on the same code/test head.
+- **Performance:** target T606/4 GB device FPS/RAM/thermal/touch/audio acceptance remains NOT VERIFIED.
+- **Voice:** BLOCKED for bundled offline delivery; text acting directions are tested, but local human/AI dialogue clips and offline playback are not present/verified.

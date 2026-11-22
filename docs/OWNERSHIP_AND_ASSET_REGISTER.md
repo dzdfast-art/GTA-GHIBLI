@@ -60,3 +60,8 @@ The latest code-only reliability changes add no assets. Godot validation #798 an
 ## 2026-11-22 provenance update
 
 No new models, textures, audio clips, fonts, icons or other binary assets were added in the side-activity save-recovery pass. Changes are limited to scripts, tests and documentation. Existing asset provenance and release-clearance states are unchanged; no licence status is upgraded by this code-only change.
+
+
+## 2026-11-22 provenance update — NPC persistence pass
+
+No new models, textures, sound files, fonts, icons or other game assets were added. The change consists of GDScript save-state fields and regression-test updates only. Existing provenance rows, licence evidence and final-release clearance statuses are unchanged; this code-only change does not upgrade any asset's ownership or licence status.

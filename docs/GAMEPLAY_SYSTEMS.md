@@ -289,3 +289,12 @@ The Web preview is a CI-only test target. The Web Build workflow now removes pre
 
 
 The previous downloadable Web ZIP artifact was removed from GitHub Actions. Cleanup is now idempotent under concurrent push/PR events; new Web runs retain only size/hash logs and remove their temporary export without uploading it.
+
+
+### NPC transform and daily schedule save contract — 2026-11-22
+
+`NPCBrain.get_save_snapshot()` now records the owning actor's global position and rotation, `schedule_enabled`, `world_hour`, work-start/work-end hours, work and home destinations, the wander-home origin, trust and familiarity. `apply_save_snapshot()` restores these values and retains compatibility with older relationship-only snapshots.
+
+The unified `GameSaveManager` already captures the `npc_brains` group and keys each snapshot by `persistence_id`, falling back to the actor name. The regression test uses a stationary NPC fixture and verifies stable-ID capture, serialized fields and transform/schedule/relationship round-trip.
+
+**Status: TESTED for currently instantiated NPCBrain nodes. Overall NPC/world persistence remains PARTIALLY IMPLEMENTED:** streamed NPCs that spawn after the load pass, duplicate fallback names, transient alarm/path/animation state and every world entity are not covered. Do not claim the entire world is saved.

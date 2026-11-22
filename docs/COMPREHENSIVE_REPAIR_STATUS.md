@@ -195,3 +195,17 @@ The previous Web Build workflow uploaded a downloadable GTA-GHIBLI-Web artifact 
 ### Cleanup race correction — 2026-11-22
 
 The first parallel push/PR cleanup pair raced: one run deleted artifact 14748948497 and the other then received HTTP 404. The artifact list for the old run is now empty, confirming deletion. The workflow cleanup is now idempotent for an artifact already removed by another run, and push/PR Web builds share one concurrency group to prevent duplicate export work. The first run's cleanup failure was a duplicate-delete race, not a Godot/Web export failure.
+
+
+## 2026-11-22 — NPC transform and daily schedule persistence
+
+- **Code:** commit `a5e4101` extends `NPCBrain.get_save_snapshot()` with the actor's global position and rotation, schedule-enabled flag, current world hour, work-hour window, work/home destinations, wander-home origin, trust and familiarity. `apply_save_snapshot()` restores those fields with bounded hour and relationship values.
+- **Compatibility:** the new fields are additive. Older snapshots that contain only trust/familiarity remain accepted; missing transform/schedule fields leave the current authored defaults unchanged. No save-schema version bump was required.
+- **Regression coverage:** `tests/game_save_manager_test.gd` verifies stable-ID capture, serialized NPC transform/schedule fields, transform and schedule restoration, relationship restoration and unified-save round-trip. The fixture disables wandering so the test measures persistence rather than autonomous movement.
+- **Verification on code/test head `24955534577968ba310812c87c5bbedd23290bff`:** Godot 4.7 #45011215857 PASS; Android ARM64 Debug #45011215912 PASS; private Web + Chromium #45011215840 PASS; Web Build + Chromium #45011215820 PASS; repository secret audit #45011215838 PASS.
+- **APK:** 254,240,267 raw bytes (254.240267 MB / 242.462413 MiB), +4,096 bytes versus the previous comparable 254,236,171-byte build. Android artifact ZIP: 252,487,129 bytes.
+- **Private Web measurement:** temporary export folder 378,790,880 bytes (378.791 MB / 361.241 MiB); temporary ZIP 237,938,088 bytes (237.938 MB / 226.920 MiB), SHA-256 `2c8797cbf72a50761e91e44c599744cc0b5947508e0d09c441ade4bc83fc6381`. The workflow removed the export and ZIP from the ephemeral runner; no Web Actions artifact was produced.
+- **Tracked Git tree:** candidate 350,494,147 bytes (350.494 MB / 334.257 MiB), 397 unique blobs; main 346,596,568 bytes (346.597 MB / 330.540 MiB), 329 unique blobs. Candidate is +3,897,579 bytes versus main. No duplicate blob references were present.
+- **Scope limits:** only NPCBrain instances currently registered in `npc_brains` are captured/restored. A stable unique `persistence_id` is required where actor names may collide. Deferred restore for NPCs spawned after load, full streamed-world entity state, path/animation/transient alarm state and complete mission 001–004 restart coverage remain PARTIALLY IMPLEMENTED or NOT VERIFIED.
+- **Warnings:** Godot validation passed, but the log still contains OBJ material ambient-light warnings and several headless-test RID/ObjectDB/resource teardown warnings. It is not warning-free.
+- No new game assets were added. Main remains unchanged; PR #31 remains Draft and unmerged.

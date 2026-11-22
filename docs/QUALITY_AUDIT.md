@@ -149,3 +149,15 @@ Audit found that the existing Web Build workflow uploaded a 237,933,989-byte ZIP
 
 
 The previous Web artifact ID 14748948497 is now absent from the artifact list. The initial duplicate cleanup run returned 404 because a parallel run had already deleted it; the workflow now handles that race safely and serializes Web Build runs for this repository.
+
+
+## 2026-11-22 verification — NPC persistence and current build
+
+- Godot validation #45011215857 passed all 51 validation/test steps, including the unified save manager, NPC perception/schedule/navigation, missions 001–004 flow, side-activity reward recovery, four districts, terrain streaming and main-scene smoke test.
+- Android Debug #45011215912 passed. Raw APK: 254,240,267 bytes (254.240267 MB / 242.462413 MiB); delta +4,096 bytes from the previous comparable build. Artifact ZIP: 252,487,129 bytes. Merged manifest evidence shows package `org.gtaghibli.game`, ABI `arm64-v8a`, and only `android.permission.INTERNET`; no camera, microphone, broad storage, contacts, location, SMS or call-log permission was listed.
+- Private Web + Chromium #45011215840 passed: local-only server, WebGL 2 canvas initialized, browser input delivered and no external requests observed.
+- Web Build #45011215820 passed Chromium. Temporary Web folder: 378,790,880 bytes; temporary ZIP: 237,938,088 bytes; SHA-256 recorded in the Actions log. No Web artifact remained after the run.
+- Repository secret audit #45011215838 passed.
+- Godot logs still contain OBJ ambient-light import warnings and several test-process resource/RID/ObjectDB teardown warnings. Green workflow status does not mean the log is warning-free.
+- Physical Unisoc T606 / 4 GB device performance remains NOT VERIFIED: no physical device was attached; FPS, peak RAM, heat, touch feel, battery and device audio are unmeasured.
+- Arabic dialogue remains BLOCKED for offline delivery: the voice manifest describes remote first-play caching, but no local dialogue audio files are present in the tracked `audio/characters/` tree. The 25-line acting-direction test does not prove recorded human performances or bundled offline clips.
