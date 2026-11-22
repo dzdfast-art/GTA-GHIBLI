@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
+      - main
       - web/standalone-from-empty-2026-11-22
     paths:
       - "web-edition/**"
@@ -91,7 +92,7 @@ jobs:
           NODE_PATH: /tmp/gta-ghibli-playwright/node_modules
         run: node .github/scripts/web-edition-browser-smoke.cjs
 
-      - name: Record actual Web package size and hash, then delete it
+      - name: Package Web export and record exact size and hash
         shell: bash
         run: |
           set -euo pipefail
@@ -119,5 +120,14 @@ jobs:
           print(f"WEB_EXPORT_MIB={total / 1_048_576:.3f}")
           PY
           cat web-edition/build/web-size.txt
-          rm -rf web-edition/build/web web-edition/build/GTA-GHIBLI-Web.zip
-          echo "Temporary Web export and ZIP deleted. No artifact was uploaded."
+
+      - name: Upload playable Web Edition package
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTA-GHIBLI-Web-Edition
+          path: |
+            web-edition/build/GTA-GHIBLI-Web.zip
+            web-edition/build/web-size.txt
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
