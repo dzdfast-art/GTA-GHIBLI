@@ -120,7 +120,27 @@ func _run_mission_test() -> void:
 		_fail("Mission progress was not restored from the local save file.")
 		return
 
-	print("PASS: mission JSON loads, every Mission 001 objective immediately updates the unified save, reward and completion state are committed, and progress survives manager reload.")
+	# Simulate a stale per-mission file after a newer unified snapshot was committed.
+	manager._square_reached = false
+	manager._mira_spoken_to = false
+	manager._garden_visited = false
+	manager._completion_reward_claimed = false
+	manager.call("_save_progress")
+	if not bool(save_manager.call("load_game")):
+		_fail("The unified save must reload successfully after Mission 001 progress changes.")
+		return
+	if not manager._square_reached or not manager._mira_spoken_to or not manager._garden_visited or not manager._completion_reward_claimed:
+		_fail("The authoritative unified mission snapshot must recover progress over a stale compatibility record.")
+		return
+	if int(wallet.call("get_balance")) != 25:
+		_fail("Reloading the unified mission snapshot must not duplicate or lose the completion reward.")
+		return
+	manager.call("_claim_completion_reward_if_ready")
+	if int(wallet.call("get_balance")) != 25:
+		_fail("Restored Mission 001 completion must remain reward-idempotent.")
+		return
+
+	print("PASS: Mission 001 transitions immediately update the unified save; stale compatibility progress is overridden on reload; completion reward remains idempotent.")
 	quit(0)
 
 
