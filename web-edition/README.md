@@ -39,4 +39,4 @@ For a Web export, select the `Web` preset and export to `build/web/index.html`. 
 
 The region geometry and character/vehicle models are blockout placeholders, not finished art. This milestone does not yet contain the full open world, a complete road/GPS network, detailed interiors, a final rig/animation set, weapon combat, traffic/police simulation, all vehicle classes, a complete mission campaign, weather, original music or verified Arabic voice performances. Those requirements are tracked in `../docs/WEB_EDITION_MASTER_SPEC.md` and `../docs/WEB_EDITION_STATUS.md`.
 
-No public Web deployment or public downloadable artifact is created by CI. CI builds and tests on an ephemeral runner and removes the export afterwards.
+CI builds and tests the Web export, then retains a downloadable `GTA-GHIBLI-Web-Edition` Actions artifact for 14 days. The artifact is available to repository users with Actions access; this does not publish or host the game publicly.
