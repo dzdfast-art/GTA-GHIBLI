@@ -2,14 +2,14 @@
 
 > **© 2026 GTA GHIBLI — All rights reserved.** This is an original project under development. No separate open-source or commercial reuse licence is granted. The repository remains public; GitHub's Terms still permit viewing and forking within GitHub. See [COPYRIGHT.md](COPYRIGHT.md) for the full rights notice and limitations.
 
-An original third-person 3D open-world adventure for Android, built with Godot 4. The current repository is an **early playable-systems prototype**, not the finished game.
+An original third-person 3D open-world adventure for modern browsers, built with Godot 4.7 Web. The current repository is an **early playable-systems prototype**, not the finished game.
 
 ## Current verified status
 
 Implemented in the prototype:
 - Godot project configured with the Compatibility renderer.
-- Third-person capsule placeholder, camera-relative movement and touch-orbit camera.
-- On-screen directional controls and a shared contextual interaction action.
+- Third-person capsule placeholder, camera-relative movement and third-person camera orbit.
+- Browser keyboard controls (WASD), right-mouse camera drag, and a shared contextual interaction action.
 - A reusable player interaction router that detects nearby registered interaction areas and dispatches the nearest target's `interact()` method; Mira is the first integrated target.
 - An animated garden gate that opens and closes, plus a physics basket that can be picked up, carried and dropped with the interaction button.
 - Initial graphics pass: filmic tonemapping, sky-based ambient lighting, distance fog, subtle glow, directional shadows, layered tree canopies and small wildflower/stone details.
@@ -27,7 +27,7 @@ Not yet verified or not yet implemented:
 - Full main story, broad cast, varied side missions and living-world systems.
 - Canonical final regions and world map/GPS.
 - Complete inventory/currency and game-wide save system.
-- Physical Android installation, touch feel, camera behavior and target-device performance testing.
+- Full browser gameplay, cross-browser visual review and completion of the remaining gameplay systems.
 
 The first mission's currency reward is currently displayed as prototype information; it is not connected to a real wallet or inventory.
 
@@ -46,12 +46,13 @@ The project must include systemic interactions, physics, people, nature, food, v
 3. Open `project.godot`.
 4. Press **F6** to run the current scene, or **F5** to run the project.
 
-## Current controls
+## Current browser controls
 
-- Keyboard: arrow keys / Godot UI direction actions.
-- Touch: hold the directional joystick on the lower-left side.
-- Camera: drag on the right side of the screen; on desktop, hold the right mouse button and move.
-- Interaction: approach an interactable and use the contextual USE/TALK action (or press E on desktop).
+- Movement: W / A / S / D.
+- Camera: hold the right mouse button and move the pointer.
+- Interaction: approach an interactable and press E.
+- Sprint: hold Shift.
+- Click the game canvas once to focus it before using the keyboard.
 - Starter car: enter with USE; joystick up/down accelerates/reverses, left/right steers, BRAKE slows down, and EXIT returns to on-foot control.
 
 ## Automated validation
@@ -60,13 +61,13 @@ GitHub Actions run [43513899542](https://github.com/dzdfast-art/GTA-GHIBLI/actio
 
 Headless CI does not prove visual quality, real touchscreen behavior, audio playback or performance on a physical phone.
 
-## Android test build
+## Web preview
 
-The repository includes an automated ARM64 debug APK export workflow. See [Android debug test build](docs/ANDROID_TEST_BUILD.md) for build status, artifact download steps and testing limitations. A successful CI build is not a substitute for testing on a physical Android device.
+The current target is the Godot 4.7 Web export. GitHub Actions builds it temporarily, serves it only on 127.0.0.1 for Chromium/WebGL 2 validation, records exact export/ZIP measurements, and removes the temporary files. It does not upload a downloadable Web artifact or publish a public website. See [Web Edition](docs/WEB_VERSION.md). Android APK builds and physical-device testing are outside the current scope.
 
 ## Privacy by default
 
-GTA GHIBLI is designed not to access the player's personal photos, videos, messages, contacts, camera, microphone or general files. No automatic device scan or background media access is part of the game. See [Privacy by Default](docs/PRIVACY_BY_DEFAULT.md). CI checks repository-side Android permission declarations; every final APK/AAB still requires merged-manifest inspection before release.
+GTA GHIBLI is designed not to access the player's personal photos, videos, messages, contacts, camera, microphone or general files. No automatic device scan or background media access is part of the game. See [Privacy by Default](docs/PRIVACY_BY_DEFAULT.md). CI checks Web privacy, bundled/offline dialogue audio, external network requests and secret exposure.
 
 ## Security and ownership
 
@@ -84,7 +85,8 @@ The repository intentionally remains public. Automated secret scanning is config
 - [Core gameplay systems](docs/GAMEPLAY_SYSTEMS.md)
 - [GTA GHIBLI world and story encyclopedia](docs/GTA_GHIBLI_ENCYCLOPEDIA.md)
 - [Initial quality audit](docs/QUALITY_AUDIT.md)
-- [Android 4 GiB content budget](docs/ANDROID_4GB_BUDGET.md)
+- [Historical Android content-budget notes](docs/ANDROID_4GB_BUDGET.md) (not a current delivery gate)
+- [Web Edition and private browser validation](docs/WEB_VERSION.md)
 
 ## Prototype scene and structured data
 
@@ -98,13 +100,13 @@ The repository intentionally remains public. Automated secret scanning is config
 
 Create an original, warm, hand-painted fantasy atmosphere with systemic open-world gameplay. GTA San Andreas is a high-level genre reference only. Do not copy its maps, characters, dialogue, missions, branding, music, source code or extracted assets.
 
-## Size target
+## Content growth
 
-The planned total installed content budget is **4,096 MiB (4 GiB)**. This is not the current repository size, not the current download size, and not a measured Android build. See [Android content budget](docs/ANDROID_4GB_BUDGET.md).
+There is no fixed final size ceiling. Increase size only through useful original or properly licensed game content. Track the Git tree, temporary Web export folder, and temporary Web ZIP separately; none is a public download artifact. Keep browser loading and runtime stability healthy.
 
 ## Quality rule
 
-Do not describe a feature as working until it has been run and tested. For mobile features, distinguish headless tests from actual Android-device tests.
+Do not describe a feature as working until it has been run and tested. Distinguish headless Godot tests from private Chromium/WebGL 2 browser tests. A public Web release requires a separate explicit owner decision.
 
 
 ## Latest playable prototypes (14 November 2026)
