@@ -10,6 +10,7 @@ var _player: CharacterBody3D
 var _missions: Node
 var _hud: CanvasLayer
 var _location_elapsed: float = 0.0
+var _minimap_elapsed: float = 0.0
 
 
 func _ready() -> void:
@@ -37,13 +38,18 @@ func _ready() -> void:
 	_hud.call("set_objective", _missions.call("get_objective"))
 	_hud.call("set_wallet", _missions.call("get_wallet"))
 	_hud.call("set_location", _world.call("get_region_name_at", _player.global_position))
+	_hud.call("update_minimap", _player.global_position, _player.global_rotation.y)
 
 
 func _process(delta: float) -> void:
 	_location_elapsed += delta
+	_minimap_elapsed += delta
 	if _location_elapsed >= 0.35 and _player != null and _world != null:
 		_location_elapsed = 0.0
 		_hud.call("set_location", _world.call("get_region_name_at", _player.global_position))
+	if _minimap_elapsed >= 0.12 and _player != null and _hud != null:
+		_minimap_elapsed = 0.0
+		_hud.call("update_minimap", _player.global_position, _player.global_rotation.y)
 
 
 func _connect_gameplay_signals() -> void:
