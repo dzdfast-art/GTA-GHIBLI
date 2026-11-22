@@ -101,7 +101,7 @@ func _run() -> void:
 		_fail("Mission 001 reward was not idempotent.")
 		return
 
-	var restored_manager := load("res://scripts/systems/mission_manager.gd").new()
+	var restored_manager: Node = load("res://scripts/systems/mission_manager.gd").new()
 	root.add_child(restored_manager)
 	await process_frame
 	if int(restored_manager.get("mission_stage")) != 2:
