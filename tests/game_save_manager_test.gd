@@ -3,6 +3,7 @@ extends SceneTree
 const SAVE_MANAGER_SCRIPT = preload("res://scripts/systems/game_save_manager.gd")
 const WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
 const NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
+const NPC_BRAIN_SCRIPT = preload("res://scripts/systems/npc_brain.gd")
 const TEST_SAVE_PATH := "user://gta_ghibli_save_manager_regression.json"
 const TEST_RELATIONSHIP_PATH := "user://npc_relationships/save_manager_test_migration.json"
 const TEST_RELATIONSHIP_NEWER_PATH := "user://npc_relationships/save_manager_newer.json"
@@ -64,12 +65,31 @@ func _run() -> void:
 	needs.name = "PlayerNeeds"
 	player.add_child(needs)
 
+	var npc_actor := Node3D.new()
+	npc_actor.name = "SaveManagerSnapshotNPC"
+	scene.add_child(npc_actor)
+	npc_actor.global_position = Vector3(8.0, 0.0, 14.0)
+	npc_actor.global_rotation = Vector3(0.0, 0.4, 0.0)
+	var npc_brain := Node.new()
+	npc_brain.set_script(NPC_BRAIN_SCRIPT)
+	npc_brain.set("persistence_id", "save_manager_snapshot_npc")
+	npc_brain.set("relationship_persistence_enabled", false)
+	npc_actor.add_child(npc_brain)
+
 	var manager := SAVE_MANAGER_SCRIPT.new()
 	manager.name = "GameSaveManagerTest"
 	manager.set("save_path_override", TEST_SAVE_PATH)
 	scene.add_child(manager)
 	await process_frame
 	await process_frame
+	npc_brain.set("trust", 38.0)
+	npc_brain.set("familiarity", 67.0)
+	npc_brain.set("schedule_enabled", true)
+	npc_brain.set("work_start_hour", 7)
+	npc_brain.set("work_end_hour", 16)
+	npc_brain.set("work_position", Vector3(24.0, 0.0, -8.0))
+	npc_brain.set("home_position", Vector3(8.0, 0.0, 14.0))
+	npc_brain.call("set_world_hour", 22)
 
 	if not FileAccess.file_exists(TEST_SAVE_PATH):
 		_fail("Existing legacy subsystem files must migrate into a unified save on first launch.")
@@ -121,6 +141,16 @@ func _run() -> void:
 	if not manager.call("save_game"):
 		_fail("The unified save manager must save a valid local game state.")
 		return
+	npc_actor.global_position = Vector3(-90.0, 0.0, -90.0)
+	npc_actor.global_rotation = Vector3.ZERO
+	npc_brain.set("trust", -55.0)
+	npc_brain.set("familiarity", 3.0)
+	npc_brain.set("schedule_enabled", false)
+	npc_brain.set("world_hour", 8)
+	npc_brain.set("work_start_hour", 1)
+	npc_brain.set("work_end_hour", 2)
+	npc_brain.set("work_position", Vector3.ZERO)
+	npc_brain.set("home_position", Vector3.ZERO)
 	wallet.set("balance", 5)
 	needs.set("hunger", 1.0)
 	needs.set("thirst", 2.0)
@@ -133,6 +163,24 @@ func _run() -> void:
 		return
 	if int(needs.get("hunger")) != 82 or int(needs.get("thirst")) != 73 or int(needs.get("energy")) != 64:
 		_fail("The unified needs snapshot must override stale legacy needs files.")
+		return
+	if npc_actor.global_position.distance_to(Vector3(8.0, 0.0, 14.0)) > 0.001:
+		_fail("The unified NPC snapshot must restore the actor world position.")
+		return
+	if absf(npc_actor.global_rotation.y - 0.4) > 0.001:
+		_fail("The unified NPC snapshot must restore the actor world rotation.")
+		return
+	if not bool(npc_brain.get("schedule_enabled")) or int(npc_brain.get("world_hour")) != 22:
+		_fail("The unified NPC snapshot must restore its enabled daily schedule and world hour.")
+		return
+	if int(npc_brain.get("work_start_hour")) != 7 or int(npc_brain.get("work_end_hour")) != 16:
+		_fail("The unified NPC snapshot must restore the authored daily work window.")
+		return
+	if npc_brain.get("work_position") != Vector3(24.0, 0.0, -8.0) or npc_brain.get("home_position") != Vector3(8.0, 0.0, 14.0):
+		_fail("The unified NPC snapshot must restore work and home destinations.")
+		return
+	if not is_equal_approx(float(npc_brain.get("trust")), 38.0) or not is_equal_approx(float(npc_brain.get("familiarity")), 67.0):
+		_fail("The unified NPC snapshot must restore relationship values alongside its schedule.")
 		return
 
 	if not wallet.call("add_money_once", "post_snapshot_reward", 50):
@@ -160,6 +208,12 @@ func _run() -> void:
 		return
 	if not parsed.has("legacy_files") or not parsed.has("missions") or not parsed.has("vehicles"):
 		_fail("The unified save must include legacy records, mission snapshots and vehicle snapshots.")
+		return
+
+	var npc_snapshots: Dictionary = parsed.get("npc_relationships", {})
+	var saved_npc: Dictionary = npc_snapshots.get("save_manager_snapshot_npc", {})
+	if not saved_npc.has("actor_position") or not saved_npc.has("schedule_enabled") or not saved_npc.has("work_position"):
+		_fail("The unified save must include NPC transform and daily schedule fields.")
 		return
 
 	var legacy_files = parsed.get("legacy_files", {})
@@ -215,7 +269,7 @@ func _run() -> void:
 	scene.queue_free()
 	await process_frame
 	_restore_preserved_files()
-	print("PASS: first-launch migration, authoritative needs, newer wallet transaction recovery, player transform, NPC restore precedence and traversal protection.")
+	print("PASS: first-launch migration, authoritative player snapshots, NPC transform and daily schedule restore, newer wallet transaction recovery, relationship precedence and traversal protection.")
 	quit(0)
 
 

@@ -356,10 +356,20 @@ func _save_relationship() -> void:
 	}, "\t"))
 
 func get_save_snapshot() -> Dictionary:
+	var actor := get_parent() as Node3D
 	return {
 		"persistence_id": persistence_id,
 		"trust": trust,
-		"familiarity": familiarity
+		"familiarity": familiarity,
+		"actor_position": _snapshot_vector3(actor.global_position) if actor != null else [],
+		"actor_rotation": _snapshot_vector3(actor.global_rotation) if actor != null else [],
+		"schedule_enabled": schedule_enabled,
+		"world_hour": world_hour,
+		"work_start_hour": work_start_hour,
+		"work_end_hour": work_end_hour,
+		"work_position": _snapshot_vector3(work_position),
+		"home_position": _snapshot_vector3(home_position),
+		"wander_home_position": _snapshot_vector3(_home_position)
 	}
 
 
@@ -368,7 +378,25 @@ func apply_save_snapshot(snapshot: Dictionary) -> bool:
 		return false
 	trust = clampf(float(snapshot.get("trust", trust)), -100.0, 100.0)
 	familiarity = clampf(float(snapshot.get("familiarity", familiarity)), 0.0, 100.0)
+	if snapshot.has("schedule_enabled"):
+		schedule_enabled = bool(snapshot.get("schedule_enabled", schedule_enabled))
+	if snapshot.has("world_hour"):
+		world_hour = clampi(int(snapshot.get("world_hour", world_hour)), -1, 23)
+	if snapshot.has("work_start_hour"):
+		work_start_hour = posmod(int(snapshot.get("work_start_hour", work_start_hour)), 24)
+	if snapshot.has("work_end_hour"):
+		work_end_hour = posmod(int(snapshot.get("work_end_hour", work_end_hour)), 24)
+	work_position = _restore_snapshot_vector3(snapshot.get("work_position", []), work_position)
+	home_position = _restore_snapshot_vector3(snapshot.get("home_position", []), home_position)
+	_home_position = _restore_snapshot_vector3(snapshot.get("wander_home_position", []), _home_position)
+	_wander_target = _home_position
+	var actor := get_parent() as Node3D
+	if actor != null:
+		actor.global_position = _restore_snapshot_vector3(snapshot.get("actor_position", []), actor.global_position)
+		actor.global_rotation = _restore_snapshot_vector3(snapshot.get("actor_rotation", []), actor.global_rotation)
 	relationship_changed.emit(trust, familiarity)
+	if schedule_enabled and world_hour >= 0 and _player == null:
+		_evaluate_reaction()
 	_save_relationship()
 	return true
 
@@ -376,3 +404,13 @@ func apply_save_snapshot(snapshot: Dictionary) -> bool:
 func reload_saved_state() -> void:
 	_load_relationship()
 	relationship_changed.emit(trust, familiarity)
+
+
+func _snapshot_vector3(value: Vector3) -> Array:
+	return [value.x, value.y, value.z]
+
+
+func _restore_snapshot_vector3(value: Variant, fallback: Vector3) -> Vector3:
+	if not value is Array or value.size() < 3:
+		return fallback
+	return Vector3(float(value[0]), float(value[1]), float(value[2]))
