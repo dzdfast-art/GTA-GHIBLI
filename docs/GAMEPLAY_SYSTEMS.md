@@ -5,7 +5,7 @@
 ## 1. Design principles
 
 - Original world, cast, story, dialogue, missions, art, music and assets.
-- Mobile-first third-person open-world game for Android.
+- Web-first third-person open-world game for modern browsers; keyboard and mouse are the primary desktop controls.
 - Reusable systems and data-driven content; avoid giant scripts and duplicated logic.
 - Variety before volume: no filler characters, copy-paste missions or meaningless repeated interactions.
 - Build a small end-to-end feature, test it, then expand.
@@ -13,13 +13,18 @@
 
 The canonical world and cast are defined in [Master Requirements Alignment](MASTER_REQUIREMENTS_ALIGNMENT.md). Prototype names must not silently replace the canonical requirements.
 
+
+## Current delivery target — Web only (2026-11-22)
+
+The active product target is the Godot 4.7 Web export in modern browsers. Keyboard and mouse are the primary desktop input path: WASD movement, right-mouse drag camera orbit, E interaction and Shift sprint. Web acceptance is performed through headless Godot tests and private Chromium on localhost. Android APK output, physical phones and device-specific measurements are not required or used as release gates. Historical touch-control implementation remains compatibility code only; it does not change the current Web-only target.
+
 ## 2. Player and movement
 
 **Implemented in prototype:** capsule placeholder, camera-relative movement, gravity/floor handling, third-person camera and touch orbit.
 
 **Planned:** final original character rig, walk/run/sprint/jump, climbing, swimming/diving, stealth/crouch where useful, animation state machine, health/status, interaction states and responsive input.
 
-Acceptance: movement, collisions, camera and touch release behavior must be tested on desktop and the target Android device. A capsule is not a finished character.
+Acceptance: movement, collisions, camera orbit, keyboard focus and contextual actions must be tested in desktop Chromium. A physical phone is not a Web acceptance requirement. A capsule is not a finished character.
 
 ## 3. Universal interaction system
 
@@ -57,7 +62,7 @@ Use physics according to gameplay need:
 - Area triggers for proximity, pickups and mission zones.
 - Object-specific mass, friction, bounce, damage and breakability where meaningful.
 
-Support gravity, falling, impacts, pushing/pulling and collisions. Do not simulate every decorative leaf or small prop as a full physics body. Keep collision shapes simpler than visual meshes and profile the result on the target phone.
+Support gravity, falling, impacts, pushing/pulling and collisions. Do not simulate every decorative leaf or small prop as a full physics body. Keep collision shapes simpler than visual meshes and profile the result in the Web browser and keep physics costs bounded.
 
 **Planned:** a reusable physical-object component, object interaction states and tests for pickup/drop, push/pull, impact and collision stability.
 
@@ -72,9 +77,9 @@ Distinguish:
 
 Important characters need a distinct purpose, personality, visual identity, voice profile, relationships and authored dialogue. Generic pedestrians may use shared rigs/animations but should vary in appearance and behavior without creating duplicate named identities.
 
-**Expanded reactive-NPC prototype added:** `scripts/systems/npc_brain.gd` now tracks per-NPC trust and familiarity, changes reactions after positive or hostile player actions, supports configurable work/rest hours through `set_world_hour()`, moves alarmed NPCs away from danger, and propagates nearby alarm reactions to other registered NPC brains. Mira is the first integrated character and now attaches the brain during `_ready()`; talking to her increases familiarity and trust. The headless test now covers relationship changes and schedule transitions as well as perception. These are prototype systems: relationship memory is currently runtime-only, schedules require the game clock to call `set_world_hour()`, and movement is simple direct movement rather than NavMesh pathfinding.
+**Expanded reactive-NPC prototype added:** `scripts/systems/npc_brain.gd` tracks per-NPC trust and familiarity, reacts to positive or hostile player actions, supports work/rest hours through `set_world_hour()`, moves alarmed NPCs away from danger and propagates nearby alarms. On the comprehensive repair candidate, each brain creates a NavigationAgent3D and follows a live navigation map when one exists. Four prototype district grids are generated in the candidate branch. The NPC test covers perception, relationship changes, persistence of trust/familiarity and schedule transitions.
 
-**Still planned:** persistent save/load of relationships, authored routines and destinations for the full cast, social groups and coordinated assistance, police/witness response, obstacle-aware navigation, combat decisions, dynamic dialogue branches and integration across all named characters and pedestrians. Use distance-based simulation and population limits for mobile performance.
+**Current limits:** navigation is PARTIALLY IMPLEMENTED. Agent avoidance is disabled; the village, roads, interiors and four districts are not one continuous NavMesh; areas without a live navigation map still use direct-movement fallback. Full obstacle avoidance, no-path behavior across every district, saved daily schedule state and persistent NPC world transforms remain unverified or planned. Use distance-based simulation and population limits for mobile performance.
 
 **Arabic audio requirement:** important dialogue must be genuinely voiced in Arabic with expressive emotional performance, consistent character voices and synchronized subtitles. Text plus an empty audio path is not dubbing. Audio remains incomplete until a real audio asset is integrated and playback is tested.
 
@@ -88,9 +93,13 @@ Planned interactions include:
 
 Avoid turning daily-life features into repetitive chores. Every activity should have a clear gameplay purpose, feedback and proportionate reward.
 
+
+
+**Implemented on the repair candidate:** Harbor City now has an original public drinking fountain scene and imported low-poly OBJ model with stone, copper and water material surfaces. It uses the shared `interact()` contract and the player's existing `PlayerNeeds.drink()` API; drinking restores up to 30 thirst points, shows an Arabic prompt/feedback, and applies a short use cooldown. The scene is instantiated once in the district plaza. Regression coverage checks model surface import, proximity eligibility, hydration amount, cooldown and full-thirst handling. This is source-integrated; current-head import and runtime verification remain pending until CI completes.
+
 ## 7. Vehicles and transportation
 
-A vehicle is complete only when it can be entered, controlled, exited and tested in gameplay. A static vehicle mesh does not count.
+A vehicle is complete only when it can be entered, controlled, exited and tested in browser gameplay. A static vehicle mesh does not count.
 
 Required categories to develop where appropriate:
 - Cars: compact, sedan, sports, utility and service vehicles.
@@ -108,9 +117,11 @@ Use category-specific handling and touch HUDs:
 - Boats: steering, throttle, deceleration/reverse where supported, buoyancy and water interaction.
 - Aircraft/helicopters: pitch, roll, yaw, throttle, climb/descent and landing controls.
 
-Do not show aircraft controls while driving a car. The HUD must transition correctly between on-foot, nearby-vehicle, entering, each vehicle category and exiting states.
+Do not show aircraft controls while driving a car. The browser HUD must transition correctly between on-foot, nearby-vehicle, entering, each vehicle category and exiting states.
 
 **Planned first vehicle gate:** one original drivable car with entry/exit, collision, camera, handling and a mobile driving HUD, followed by an automated test and a real-device test.
+
+**Functional vehicle service added on the repair candidate:** `scenes/world/vehicle_service_garage.tscn` places an original six-material repair workshop in Amber Valley. The Arabic service panel finds a nearby stopped vehicle, quotes the full repair from its missing health, charges the existing player wallet, and calls the vehicle health/repair API. It rejects moving vehicles, out-of-range interactions and insufficient balances; failed repair delivery refunds the charge. `tests/vehicle_service_garage_test.gd` covers those paths. Current-head Godot import and runtime results remain pending until CI finishes; real Android touch/performance acceptance is not claimed.
 
 ## 8. Mission framework and content variety
 
@@ -137,13 +148,13 @@ Before approving a new character, mission or activity, compare it against existi
 
 Reuse of a core mechanic is acceptable when context, stakes, route, constraints or player choices create a different experience. Remove or merge repetition that adds no meaningful value. Do not inflate counts to make the game appear larger.
 
-**Current prototype:** the first tutorial mission tracks reaching the village square, talking to Mira and visiting the garden. Its flags persist locally. The displayed currency reward is not yet connected to a real wallet or inventory.
+**Current prototype:** the first tutorial mission tracks reaching the village square, talking to Mira and visiting the garden. Its flags persist locally. On the comprehensive repair candidate branch, completing it credits the configured 25-currency reward through a wallet transaction ID so the same mission cannot pay twice; this branch change remains subject to its new CI run.
 
 ### Cinematic storytelling and mission content
 
 **Opening cinematic presentation added:** `scripts/missions/cinematic_director.gd` displays an Arabic chapter card, cinematic letterbox bars, timed story subtitles and touch/keyboard advance over the live game view. The opening introduces Leo Bennett, Mira and a mysterious radio signal. It is a presentation-layer prototype, not yet a fully animated camera cutscene; recorded Arabic voices are still pending.
 
-**Three original main-story mission designs added:** `data/missions/mission_002.json` (timed rescue and vehicle pursuit), `mission_003.json` (harbor stealth investigation with a trust choice), and `mission_004.json` (timed family escort and branching escape). These are design records only, not yet playable. The runtime mission manager still implements only the introductory village tutorial. The next implementation milestone is to turn the rescue/pursuit design into the first complete action mission with checkpoints, timer, pursuit actors, failure/retry and save progression.
+**Three original main-story mission prototypes added:** `data/missions/mission_002.json`, `mission_003.json`, and `mission_004.json` each have a corresponding runtime state machine in `scripts/missions/`. Their automated state-flow tests cover rescue/chase, harbor evidence collection, and the train escort/route choice. They are playable blockout prototypes, not finished production missions or a complete campaign. The repair candidate branch adds idempotent wallet reward transactions to all four mission completions and exposes active mission objectives to BRIEF; this new integration awaits CI confirmation.
 
 ## 9. World, buildings and services
 
@@ -159,9 +170,9 @@ Do not imply that every building is enterable. Document which category each loca
 
 ## 10. Save, progression and data
 
-**Implemented in prototype:** versioned local save for the first mission's three progress flags.
+**Implemented in the repair candidate (PARTIALLY IMPLEMENTED):** `game_save_manager.gd` writes a versioned unified record containing player transform, world clock, health/wallet/needs/inventory snapshots, mission and side-activity snapshots, NPC relationship snapshots, vehicle-condition snapshots and allowlisted legacy JSON/CFG files. It validates a temporary JSON record and rotates a backup before replacing the active save. The wallet reward ledger also preserves one-time reward transaction IDs.
 
-**Planned:** a centralized versioned save manager for player position/state, mission progress, inventory, currency, settings, unlocked regions and relevant vehicle/world state. Include validation, defaults, migration and corruption handling.
+**Current save acceptance limits:** the regression now checks player transform restore and a legacy NPC relationship file round-trip while rejecting unrelated and traversal paths. Complete migration of every historical save format, corruption recovery on real device storage, all world object spawn/destruction/collectible states, every NPC transform and all future subsystem snapshots are still PARTIALLY IMPLEMENTED or NOT VERIFIED. Do not describe the whole world as fully persistent until each entity type has a tested snapshot contract.
 
 ## 11. Mobile performance and content budget
 
@@ -169,7 +180,7 @@ Target Android baseline: Infinix SMART 8, Unisoc T606, 4 GB physical RAM, 720 ×
 
 Use mobile renderer settings, LOD, instancing, culling, simplified collision, distance-based NPC/traffic updates, region streaming, compressed textures/audio and adjustable graphics.
 
-The approximately 4 GiB content goal is an auditable storage/content budget, not a runtime RAM goal. Track source assets, imported project size, download size, installed size and update size separately. Never add empty or duplicate files to inflate size.
+Content growth has no fixed final size ceiling and is not a runtime RAM goal. Track unique tracked source blobs, imported project size, raw APK, Web export, artifact ZIP, download size and installed size separately. Never add empty, duplicate or filler files; profile import time, memory and frame time on the target Android device.
 
 ## 12. Current verification
 
@@ -228,3 +239,90 @@ The data catalogue is `data/world/side_activities.json`; the headless regression
 ### حزمة الأصوات البيئية الأصلية
 
 أضيفت 12 مقطع WAV أصلياً مولّداً تركيبياً، موزعة على ست بيئات: الفجر، الغابة نهاراً، الليل، الساحل، المطر، والعاصفة. كل بيئة تتكون من مقطعين متتابعين مدة كل منهما 22.5 ثانية، ليشكلا دورة مدتها 45 ثانية. المواصفات 22,050 هرتز، ستيريو، PCM بدقة 16 بت. يختار `nature_ambience.gd` المجموعة وفق ساعة العالم والمنطقة والطقس، ويشغّل طبقة الصوت الجديدة بمستوى منخفض فوق المؤثرات الإجرائية الحالية. هذه أصوات مصنّعة للمشروع وليست تسجيلات طبيعية حقيقية؛ ولا تمثل بعد الدبلجة العربية التمثيلية المطلوبة للشخصيات. اختبار `nature_ambience_assets_test.gd` يتحقق من تحميل WAV وتبديل البيئات.
+
+
+## 13. Repair candidate verification status — 2026-11-20
+
+- The Android ARM64 Debug workflow is present again on PR #31, restored from the current `main` copy. Its new run is pending; do not quote an older APK size for the current head.
+- Unified save restore now accepts only the named legacy save paths and flat safe-ID NPC relationship JSON files. The new regression checks a legacy-file round-trip and rejects unrelated/traversal writes; CI is pending.
+- District NavigationAgent3D path following is PARTIALLY IMPLEMENTED. Avoidance remains disabled and there is no connected world-wide NavMesh.
+- Physical Android install/touch/FPS/RAM/thermal/audio acceptance remains NOT VERIFIED.
+- Arabic dialogue performance remains incomplete until local offline audio files are present and playback is tested; synthetic TTS must not be labelled human acting.
+- No new asset was added in the save-safety/CI repair commit, so the ownership/asset register has no new row to add.
+
+
+## Sapphire Coast seafood market — IMPLEMENTED on repair candidate
+
+The district instantiates a functional Arabic fishmonger stall using the existing original market-stall model and a new six-material seafood-display mesh (timber, ice, silver fish, golden fish, red fish and weighing-scale details). Three ready-to-eat foods are added to the consumables catalogue: grilled sardines, seafood stew and red mullet plate. The vendor uses the common `interact()` contract, debits the player wallet, grants the food to inventory and refunds the debit if item delivery fails. The foods use the existing consumption/needs system. Regression coverage checks imported display surfaces, world placement, purchase signals, wallet/inventory, food use, unknown products, insufficient funds and interaction range. **CI verification is pending; physical-device performance is NOT VERIFIED.**
+
+
+## 6A. Sapphire Coast lighthouse landmark
+
+**Implemented on the repair candidate:** `scenes/world/coastal_lighthouse.tscn` adds an original 19.8 m coastal tower to Sapphire Coast. Its seven-material OBJ model includes dressed stone courses, tapered plaster masonry, framed glass windows, a brass balcony rail, a lantern room, copper roof and timber entry. The MTL references two project-authored tiled SVG surface textures. `scripts/world/coastal_lighthouse.gd` adds solid tower collision, a shared proximity interaction prompt in Arabic, and a rotating SpotLight3D beacon that activates at dawn, dusk and night and switches off during daytime. Real-time shadows are disabled for mobile cost control. `tests/coastal_lighthouse_test.gd` checks model import, collision, interaction, time-of-day state and rotation; world integration is also checked in `tests/open_world_regions_test.gd`. This is source integration only until current-head Godot import and CI tests pass; physical-device rendering/performance is not claimed.
+
+
+## 2026-11-21 reliability implementation addendum
+
+### Unified save migration
+
+When the configured unified save does not exist, GameSaveManager now checks its allowlisted legacy save paths. If legacy data exists, it reloads the compatible subsystem state and writes a versioned unified snapshot rather than starting from defaults. During restore, legacy files are restored and reloaded first; authoritative versioned snapshots are applied afterwards so stale compatibility files cannot overwrite newer wallet/needs state.
+
+Regression coverage: first-launch migration, wallet balance and reward transaction ledger, hunger/thirst/energy, canonical snapshot precedence over deliberately stale legacy files, player transform, NPC relationship round-trip and traversal rejection. **Status: PARTIALLY IMPLEMENTED** until every mission 001–004, side activity, world entity, NPC schedule and vehicle condition is verified across a full restart.
+
+### NPC navigation-agent lifecycle
+
+NPCBrain now defers creation of its NavigationAgent3D sibling until the owning Node3D has completed its child setup. The agent's navigation map is resolved through the owning Node3D when the agent enters the tree; the brain frees the sibling agent when it exits. Tests cover actors whose brains are attached before the actor enters the SceneTree and world-clock schedule integration.
+
+The Godot 4.7 test run #797 passed the individual navigation tests but its log exposed a wrong get_world_3d call on NavigationAgent3D and a headless root-viewport scenario warning. The current head corrects the world lookup through the owner and gives the district test its own SubViewport World3D. Run #798 is the pending verification. Continuous region/road connectivity, avoidance and physical NPC behavior remain planned/partial.
+
+
+## Latest verification — 2026-11-21
+
+The save migration and deferred NPC navigation-agent lifecycle passed the Godot 4.7 validation workflow #798 on game-code commit ab9e707. The Android Debug APK build #561 passed on that same code commit at 254,232,075 bytes raw. The subsequent 1c8da7 commit changes documentation only. The latest Web export and private Chromium reruns (#94 and #192) were still in progress when this record was written. Navigation remains partial: district grids and test path queries are not yet proof of continuous road links, obstacle avoidance, no-path recovery or physical-device NPC performance.
+
+
+## 2026-11-22 side-activity restart and reward recovery
+
+Side activities now persist their active ID, collected-target visibility, target count, reward total and a monotonic progress timestamp. On restore, the director rebuilds objective markers and keeps already-collected targets hidden instead of restoring counters with an empty target list. Each activity reward uses a stable wallet transaction ID. The wallet transaction is saved before the activity is marked complete; if the app closes between those operations, the resumed activity recognizes the existing transaction and completes without another payout. Duplicate completion is rejected.
+
+The wallet's unified snapshot now includes its update timestamp and merges transaction IDs from a newer local compatibility wallet. During restore, an embedded legacy file is written only when the corresponding on-device file is missing, avoiding rollback of an existing newer file. Dedicated regression coverage is pending the new commit's CI. Complete mission/world persistence remains PARTIALLY IMPLEMENTED.
+
+
+## 2026-11-22 private Web build handling
+
+The Web preview is a CI-only test target. The Web Build workflow now removes previously uploaded GTA-GHIBLI-Web artifacts, records exact export and ZIP sizes plus SHA-256 in the workflow log, and deletes the temporary Web export/ZIP from the ephemeral runner. It no longer uploads a Web bundle. The prior public artifact is removed by the next same-repository workflow run; the private Chromium run continues to serve only on localhost and verifies that no external requests occur.
+
+
+The previous downloadable Web ZIP artifact was removed from GitHub Actions. Cleanup is now idempotent under concurrent push/PR events; new Web runs retain only size/hash logs and remove their temporary export without uploading it.
+
+
+### NPC transform and daily schedule save contract — 2026-11-22
+
+`NPCBrain.get_save_snapshot()` now records the owning actor's global position and rotation, `schedule_enabled`, `world_hour`, work-start/work-end hours, work and home destinations, the wander-home origin, trust and familiarity. `apply_save_snapshot()` restores these values and retains compatibility with older relationship-only snapshots.
+
+The unified `GameSaveManager` already captures the `npc_brains` group and keys each snapshot by `persistence_id`, falling back to the actor name. The regression test uses a stationary NPC fixture and verifies stable-ID capture, serialized fields and transform/schedule/relationship round-trip.
+
+**Status: TESTED for currently instantiated NPCBrain nodes. Overall NPC/world persistence remains PARTIALLY IMPLEMENTED:** streamed NPCs that spawn after the load pass, duplicate fallback names, transient alarm/path/animation state and every world entity are not covered. Do not claim the entire world is saved.
+
+## 2026-11-22 — Mission 002 save/resume continuity — TESTED
+
+- Mission 002 snapshots retain both pursuer visibility states and whether the rescued witness is attached as a passenger. Older snapshots without these keys use phase-aware defaults.
+- Restoring an active escape phase recreates the passenger visual on the saved vehicle and restores the witness/pursuer visibility.
+- Mission 001–004 save writers explicitly flush, inspect write status and close files at mission-save boundaries.
+- Regression test simulates the rescue actors being removed, restores the active pursuit from its snapshot, then continues the escape.
+- **Verified code commit:** `bf5e730a91a1d002e11cd7238bc75edf19d8b668`.
+- **Godot 4.7 validation #810:** PASS — import, GDScript parse, mission 001–004 tests and main-scene smoke. [Run](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45013217344)
+- **Android ARM64 Debug #573:** PASS — archive/package checks and APK size recorded. [Run](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45013217408)
+- **Private Web + Chromium #214:** PASS — local-only WebGL 2 runtime, input events and no external requests. [Run](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45013217370)
+- **Web Build #116:** PASS — export, browser smoke and exact sizes recorded; temporary export and ZIP removed after the job. [Run](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45013217390)
+- **Security audit #755:** PASS — Gitleaks reported no leaks. [Run](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45013217336)
+- Raw ARM64 Debug APK: **254,244,363 bytes** (254.244363 MB; 242.466319 MiB), +4,096 bytes versus the previous comparable APK.
+- Temporary Web export: **378,793,008 bytes** (378.793008 MB; 361.245163 MiB). Web ZIP: **237,940,158 bytes** (237.940158 MB; 226.917418 MiB); SHA-256 `5c75f2201f285a3cd347307eb575f616b32a65c86870d08cd47b57408037e664`. Both are CI-only; no public Web artifact or hosting was created.
+- No game assets were added in this code-only reliability change. Physical Unisoc T606 / 4 GB FPS, RAM, heat, touch feel, install and audio remain NOT VERIFIED.
+- Non-fatal OBJ ambient-light warnings and headless RID/ObjectDB/resource teardown warnings remain; successful CI does not mean warning-free logs.
+
+## 2026-11-22 — Mission 001 save boundary
+
+Mission 001 now immediately calls the unified save coordinator after durable progress transitions: entering the village square, completing Mira's dialogue, reaching the community garden, and claiming the completion reward. The existing per-mission record is still written first for backward compatibility. The new regression verifies each serialized unified snapshot, completion reward state, stale compatibility recovery and one-time reward behavior.
+
+**Status:** IMPLEMENTED and TESTED on source/test SHA 3d1849a6c98198dc87b0d1368b7cc91488d1d0a5; Godot validation #814 passed and its log shows the Mission 001 regression PASS output. The later docs-only head has fresh CI reruns pending; it does not change this source/test conclusion. Mission 001–004 whole-process restart coverage and full-world persistence remain incomplete.

@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 const JOYSTICK_SCRIPT = preload("res://scripts/ui/virtual_joystick.gd")
+const GAME_HUD_SCRIPT = preload("res://scripts/ui/game_hud.gd")
 const JOYSTICK_SIZE := Vector2(176.0, 176.0)
 
 var _active_actions: Array[StringName] = []
@@ -12,6 +13,7 @@ var _sprint_button: Button
 var _steer_left_button: Button
 var _steer_right_button: Button
 var _joystick: Control
+var _game_hud: Control
 var _is_car_mode := false
 var _is_bicycle_mode := false
 var _bike_steering_mode := "analog"
@@ -60,16 +62,42 @@ func _process(_delta: float) -> void:
 		elif player.global_position.distance_to(portal_position) < nearest_distance:
 			nearest_distance = player.global_position.distance_to(portal_position)
 			prompt = "ENTER HOUSE"
-	if _context_button.text != prompt:
-		_context_button.text = prompt
+	if _context_button.tooltip_text != prompt:
+		_context_button.tooltip_text = prompt
+		var icon_path := "res://assets/ui/hud/interact.svg"
+		match prompt:
+			"RIDE":
+				icon_path = "res://assets/ui/hud/bicycle.svg"
+			"ENTER":
+				icon_path = "res://assets/ui/hud/car.svg"
+			"EXIT HOUSE", "ENTER HOUSE":
+				icon_path = "res://assets/ui/hud/interact.svg"
+		_set_button_icon(_context_button, icon_path)
+
+
+func bind_player(player: Node3D) -> void:
+	if _game_hud != null and _game_hud.has_method("bind_player"):
+		_game_hud.call("bind_player", player)
+
+
+func set_gameplay_visible(value: bool) -> void:
+	if _game_hud != null and _game_hud.has_method("set_gameplay_visible"):
+		_game_hud.call("set_gameplay_visible", value)
 
 
 func _register_actions() -> void:
-	var actions := ["vehicle_brake", "bike_pedal", "bike_brake",
+	var actions := ["ui_left", "ui_right", "ui_up", "ui_down",
+		"vehicle_brake", "bike_pedal", "bike_brake",
 		"bike_steer_left", "bike_steer_right", "sprint"]
 	for action in actions:
 		if not InputMap.has_action(action):
 			InputMap.add_action(action)
+	# Desktop Web controls: WASD drives on-foot movement and remains
+	# compatible with the shared vehicle/bicycle actions below.
+	_add_key_binding(&"ui_up", KEY_W)
+	_add_key_binding(&"ui_down", KEY_S)
+	_add_key_binding(&"ui_left", KEY_A)
+	_add_key_binding(&"ui_right", KEY_D)
 	_add_key_binding(&"bike_pedal", KEY_W)
 	_add_key_binding(&"bike_brake", KEY_S)
 	_add_key_binding(&"bike_steer_left", KEY_A)
@@ -93,11 +121,16 @@ func _build_hud() -> void:
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
 
+	_game_hud = GAME_HUD_SCRIPT.new() as Control
+	_game_hud.name = "GameplayHUD"
+	add_child(_game_hud)
+
 	_mode_label = Label.new()
 	_mode_label.text = "ON FOOT"
-	_mode_label.position = Vector2(22.0, 18.0)
+	_mode_label.position = Vector2(22.0, 178.0)
 	_mode_label.add_theme_font_size_override("font_size", 15)
 	_mode_label.add_theme_color_override("font_color", Color(1.0, 0.96, 0.82, 0.92))
+	_mode_label.visible = false
 	root.add_child(_mode_label)
 
 	_joystick = JOYSTICK_SCRIPT.new() as Control
@@ -115,6 +148,7 @@ func _build_hud() -> void:
 
 	_context_button = _make_action_button("USE", Vector2(104.0, 104.0))
 	_context_button.name = "ContextAction"
+	_set_button_icon(_context_button, "res://assets/ui/hud/bicycle.svg")
 	_set_bottom_right(_context_button, -132.0, -132.0, -24.0, -24.0)
 	_context_button.button_down.connect(_press_action.bind(&"interact"))
 	_context_button.button_up.connect(_release_action.bind(&"interact"))
@@ -123,6 +157,7 @@ func _build_hud() -> void:
 
 	_brake_button = _make_action_button("BRAKE", Vector2(88.0, 88.0))
 	_brake_button.name = "VehicleBrake"
+	_set_button_icon(_brake_button, "res://assets/ui/hud/brake.svg")
 	_set_bottom_right(_brake_button, -236.0, -120.0, -144.0, -28.0)
 	_brake_button.visible = false
 	_brake_button.button_down.connect(_on_brake_down)
@@ -132,6 +167,7 @@ func _build_hud() -> void:
 
 	_pedal_button = _make_action_button("PEDAL", Vector2(88.0, 88.0))
 	_pedal_button.name = "BikePedal"
+	_set_button_icon(_pedal_button, "res://assets/ui/hud/pedal.svg")
 	_set_bottom_right(_pedal_button, -236.0, -218.0, -144.0, -126.0)
 	_pedal_button.visible = false
 	_pedal_button.button_down.connect(_press_action.bind(&"bike_pedal"))
@@ -141,6 +177,7 @@ func _build_hud() -> void:
 
 	_sprint_button = _make_action_button("RUN", Vector2(82.0, 82.0))
 	_sprint_button.name = "Sprint"
+	_set_button_icon(_sprint_button, "res://assets/ui/hud/run.svg")
 	_set_bottom_right(_sprint_button, -236.0, -218.0, -150.0, -132.0)
 	_sprint_button.button_down.connect(_press_action.bind(&"sprint"))
 	_sprint_button.button_up.connect(_release_action.bind(&"sprint"))
@@ -219,9 +256,11 @@ func _refresh_controls() -> void:
 	if _mode_label == null:
 		return
 	if _is_bicycle_mode:
+		_mode_label.visible = true
 		_mode_label.text = "CYCLING"
-		_context_button.text = "EXIT BIKE"
-		_brake_button.text = "BRAKE / REV"
+		_context_button.tooltip_text = "EXIT BIKE"
+		_set_button_icon(_context_button, "res://assets/ui/hud/exit.svg")
+		_brake_button.tooltip_text = "BRAKE / REV"
 		_joystick.visible = _bike_steering_mode == "analog"
 		_steer_left_button.visible = _bike_steering_mode == "buttons"
 		_steer_right_button.visible = _bike_steering_mode == "buttons"
@@ -229,9 +268,11 @@ func _refresh_controls() -> void:
 		_brake_button.visible = true
 		_sprint_button.visible = false
 	elif _is_car_mode:
+		_mode_label.visible = true
 		_mode_label.text = "DRIVING"
-		_context_button.text = "EXIT"
-		_brake_button.text = "BRAKE"
+		_context_button.tooltip_text = "EXIT"
+		_set_button_icon(_context_button, "res://assets/ui/hud/exit.svg")
+		_brake_button.tooltip_text = "BRAKE"
 		_joystick.visible = true
 		_steer_left_button.visible = false
 		_steer_right_button.visible = false
@@ -239,9 +280,11 @@ func _refresh_controls() -> void:
 		_brake_button.visible = true
 		_sprint_button.visible = false
 	else:
+		_mode_label.visible = false
 		_mode_label.text = "ON FOOT"
-		_context_button.text = "USE"
-		_brake_button.text = "BRAKE"
+		_context_button.tooltip_text = "USE"
+		_set_button_icon(_context_button, "res://assets/ui/hud/bicycle.svg")
+		_brake_button.tooltip_text = "BRAKE"
 		_joystick.visible = true
 		_steer_left_button.visible = false
 		_steer_right_button.visible = false
@@ -312,29 +355,41 @@ func _release_action(action: StringName) -> void:
 	_set_action(action, false)
 
 
+func _set_button_icon(button: Button, icon_path: String) -> void:
+	if not ResourceLoader.exists(icon_path):
+		push_warning("HUD control icon is missing: " + icon_path)
+		return
+	button.icon = load(icon_path) as Texture2D
+	button.text = ""
+	button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	button.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	button.tooltip_text = button.tooltip_text if not button.tooltip_text.is_empty() else "Action"
+
+
 func _make_action_button(caption: String, button_size: Vector2) -> Button:
 	var button := Button.new()
 	button.text = caption
+	button.tooltip_text = caption
 	button.custom_minimum_size = button_size
 	button.focus_mode = Control.FOCUS_NONE
 	button.add_theme_font_size_override("font_size", 17)
-	button.add_theme_color_override("font_color", Color(0.10, 0.12, 0.11, 1.0))
-	button.add_theme_color_override("font_hover_color", Color(0.05, 0.07, 0.06, 1.0))
-	button.add_theme_stylebox_override("normal", _button_style(Color(0.94, 0.91, 0.80, 0.94)))
-	button.add_theme_stylebox_override("hover", _button_style(Color(1.0, 0.97, 0.87, 1.0)))
-	button.add_theme_stylebox_override("pressed", _button_style(Color(0.70, 0.76, 0.63, 1.0)))
-	button.add_theme_stylebox_override("focus", _button_style(Color(0.94, 0.91, 0.80, 0.94)))
+	button.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
+	button.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 1.0, 1.0))
+	button.add_theme_stylebox_override("normal", _button_style(Color(0.025, 0.035, 0.038, 0.66)))
+	button.add_theme_stylebox_override("hover", _button_style(Color(0.11, 0.13, 0.13, 0.84)))
+	button.add_theme_stylebox_override("pressed", _button_style(Color(0.30, 0.33, 0.31, 0.92)))
+	button.add_theme_stylebox_override("focus", _button_style(Color(0.05, 0.07, 0.07, 0.72)))
 	return button
 
 
 func _button_style(fill_color: Color) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = fill_color
-	style.border_color = Color(0.06, 0.08, 0.07, 0.96)
-	style.set_border_width_all(4)
+	style.border_color = Color(0.94, 0.94, 0.88, 0.94)
+	style.set_border_width_all(3)
 	style.set_corner_radius_all(48)
-	style.shadow_color = Color(0.0, 0.0, 0.0, 0.35)
-	style.shadow_size = 5
+	style.shadow_color = Color(0.0, 0.0, 0.0, 0.50)
+	style.shadow_size = 3
 	return style
 
 

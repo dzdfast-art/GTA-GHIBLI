@@ -3,6 +3,7 @@ extends SceneTree
 ## Headless progression test for the rescue mission state machine.
 
 const RUNTIME_SCRIPT = preload("res://scripts/missions/mission_002_runtime.gd")
+const WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
 const PLAYER_SCRIPT = preload("res://scripts/player/player_controller.gd")
 const CAR_SCRIPT = preload("res://scripts/vehicles/driveable_car.gd")
 
@@ -21,6 +22,11 @@ func _run_test() -> void:
 	camera_pivot.name = "CameraPivot"
 	player.add_child(camera_pivot)
 	world.add_child(player)
+	var wallet: Node = WALLET_SCRIPT.new()
+	wallet.name = "PlayerWallet"
+	wallet.set("persistence_enabled", false)
+	wallet.set("initial_balance", 0)
+	player.add_child(wallet)
 	var car := CharacterBody3D.new()
 	car.set_script(CAR_SCRIPT)
 	world.add_child(car)
@@ -61,6 +67,32 @@ func _run_test() -> void:
 		_fail("Approaching the witness did not start the escape phase.")
 		return
 
+	var rescue_snapshot: Dictionary = runtime.get_save_snapshot()
+	if not bool(rescue_snapshot.get("passenger_rescued", false)):
+		_fail("The active rescue snapshot must record that the witness is now a passenger.")
+		return
+	for actor in [runtime._pursuer, runtime._backup_pursuer, runtime._witness, runtime._passenger_visual]:
+		if is_instance_valid(actor):
+			actor.queue_free()
+	runtime._pursuer = null
+	runtime._backup_pursuer = null
+	runtime._witness = null
+	runtime._passenger_visual = null
+	runtime._visuals_created = false
+	await process_frame
+	if not runtime.apply_save_snapshot(rescue_snapshot):
+		_fail("The unified mission snapshot must restore an active rescue pursuit.")
+		return
+	if runtime._pursuer == null or not runtime._pursuer.visible or runtime._backup_pursuer == null or not runtime._backup_pursuer.visible:
+		_fail("Restoring the escape phase must reactivate both pursuer vehicles.")
+		return
+	if runtime._witness == null or runtime._witness.visible:
+		_fail("Restoring the escape phase must keep the rescued witness hidden at the rescue point.")
+		return
+	if runtime._passenger_visual == null or runtime._passenger_visual.get_parent() != car:
+		_fail("Restoring the escape phase must recreate the rescued passenger inside the saved vehicle.")
+		return
+
 	player.is_driving = true
 	car.driver = player
 	if runtime._backup_pursuer == null or not runtime._backup_pursuer.visible:
@@ -79,6 +111,9 @@ func _run_test() -> void:
 	runtime._process(0.0)
 	if runtime._phase != 6:
 		_fail("Returning safely to the village did not complete the mission.")
+		return
+	if int(wallet.call("get_balance")) != 180:
+		_fail("Completing mission 002 did not credit its reward to the player wallet.")
 		return
 
 	print("PASS: Mission 002 progresses from vehicle entry through checkpoint, blockade, rescue, and escape.")

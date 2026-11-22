@@ -3,6 +3,11 @@
 Audit date: 2026-11-13  
 Audited branch: `main`
 
+
+## Current platform scope — 2026-11-22 (authoritative update)
+
+The current delivery target is Godot 4.7 Web in modern browsers. Android, APK creation, physical phones and device-specific FPS/RAM/thermal/touch acceptance are outside current scope. Earlier Android/device statements in this audit are historical records, not current release blockers. Web acceptance requires Godot 4.7 import/tests, private Web export, Chromium WebGL 2 startup, browser keyboard/mouse input, no runtime errors, no external requests, and no public artifact or hosting deployment.
+
 ## Repository facts
 
 - The repository is public and the default branch is `main`.
@@ -51,3 +56,138 @@ GitHub Actions run #9 passed with Godot 4.7. It imported the project, parsed all
 5. Test button release after lifting a finger or moving a finger away from a button.
 6. Test on the target Android device in landscape orientation.
 7. Add the first villager, interaction prompt, and mission objective tracker.
+
+## Repair candidate addendum — 2026-11-20
+
+**Audited candidate branch:** `fix/comprehensive-stability-2026-11-20`  
+**Base:** `main` at `c9fc82936a43b80af0e3c25eef41c9fee59e47b7`  
+**Merge status:** not merged; `main` remains unchanged.
+
+Candidate changes (not yet CI-verified at the time this addendum was written):
+- Added real sprint speed handling and a regression assertion for the mobile RUN action.
+- Added one-time wallet reward transactions and connected mission completion rewards for missions 001–004.
+- Replaced STATS/BRIEF placeholder copy with live wallet/player/world/mission data reads.
+- Added a pause-menu regression test for the required button order and live page content.
+- Replaced eager loading of the full 72-tile terrain set with bounded proximity streaming and a lifecycle/collision regression test.
+- Added a project application icon and configured the Godot icon property.
+- Added Marsa Al-Noor as a proposed Harbor City landmark, canonical metadata entry, world-map marker and scene/data coordinate test.
+
+Verified separately on `web-preview`, not this candidate branch:
+- Web export and private Chromium smoke test succeeded in [Web Preview run #14](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/44633964747).
+- Chromium launched under Ubuntu 24.04 with Playwright 1.55; the test observed a Godot canvas, WebGL 2, browser input delivery without runtime errors and no external network requests.
+- This is a browser startup/input smoke test, not complete visual gameplay validation.
+
+Known blockers / limits that remain:
+- All 25 dialogue lines in `data/characters/world_dialogue_ar.json` remain marked as needing expressive voice retakes; no new actual performance recordings are included by this candidate.
+- No physical Android device is connected to this testing session; touchscreen feel, sustained FPS, RAM, temperature, audio audibility and install/launch on the target phone remain NOT VERIFIED.
+- NPCs use NavigationAgent3D when a live map exists in the four prototype districts; avoidance remains disabled, the village/road network is not one connected NavMesh, and direct movement remains the fallback where no map is available.
+- Advanced car physics and additional vehicle classes remain incomplete. A first-pass unified save coordinator exists on the candidate branch, but complete legacy-format migration and persistence of every world entity remain incomplete.
+- Asset provenance register still needs per-asset evidence review before a release. No new asset was added in the save-safety/CI repair run.
+- Android output is a debug ARM64 test build, not a signed production release.
+- `main` still contains the capsule player, old STATS/BRIEF placeholder and eager terrain loading; candidate branch changes must pass CI and owner review before any merge decision.
+
+No public Web deployment or Pages publishing was performed.
+
+
+## Repair branch follow-up — 2026-11-20
+
+- `main` remains at `c9fc82936a43b80af0e3c25eef41c9fee59e47b7`; all work remains isolated in Draft PR #31.
+- The branch's Android ARM64 Debug workflow had been removed in its earlier diff. It has now been restored from the exact current `main` workflow; the new Android run is pending, not yet a successful build.
+- The unified save restore routine now uses an explicit allowlist: the known legacy save paths plus one flat, safe-ID JSON file per NPC relationship. Unrelated `user://` paths, path traversal, and legacy records larger than 2 MiB are rejected.
+- `game_save_manager_test.gd` now verifies a real legacy NPC relationship file round-trip, keeps an unrelated sentinel file unchanged, and rejects a traversal write. The result is pending the current Godot CI run.
+- Four district navigation grids and NavigationAgent3D use are present, but avoidance is disabled and there is no continuous world-wide NavMesh. Classify this as PARTIALLY IMPLEMENTED, not complete.
+- All 25 expressive Arabic dialogue lines, physical-device testing, real FPS/RAM/thermal/audio measurements and release signing remain BLOCKED or NOT VERIFIED as applicable.
+- There is no fixed final content-size ceiling. Only original/licensed assets and meaningful playable systems qualify as growth; APK, Web export and tracked-source bytes must be measured separately.
+- Current Godot, Android, private Web/Chromium and security runs are pending. The earlier successful APK size must not be reused as the size of the current branch head.
+
+
+## Public drinking fountain integration — 2026-11-20
+
+- The repair branch now adds an original low-poly OBJ/MTL public drinking fountain to Harbor City's plaza. The scene is wired into `open_world_regions.gd`, uses the shared player interaction contract, and restores thirst through the existing `PlayerNeeds.drink()` API.
+- The standalone `tests/public_drinking_fountain_test.gd` checks imported model surfaces, proximity eligibility, restored thirst, cooldown and full-thirst handling. The district integration test also checks that Harbor City instantiates the fountain and registers its interaction area.
+- The new model is documented in `OWNERSHIP_AND_ASSET_REGISTER.md` as original project-authored geometry. It has not been externally sourced.
+- These tests are **implemented but not yet verified** until the current repair-branch Godot workflow completes. No Android device profiling has been performed for the fountain; frame time, memory and visual scale on Unisoc T606 remain NOT VERIFIED.
+- `main` remains unchanged; this work is on Draft PR #31 only.
+
+
+## Seafood market content — 2026-11-20
+
+- **IMPLEMENTED (source):** A functional Sapphire Coast market reuses the existing `market_stall_lowpoly.obj` and adds an original six-material seafood display OBJ/MTL. The market scene is attached to the Sapphire Coast district.
+- **IMPLEMENTED (source):** Grilled sardines, seafood stew and red mullet plate are valid consumable foods. Purchases debit the wallet and add food inventory; consuming the foods uses the current player-needs API.
+- **TEST PENDING:** The dedicated seafood-market test and district integration assertions are wired into Godot 4.7 validation. Do not classify the change as TESTED until the current-head run passes.
+- **NOT VERIFIED:** Physical-device install, visual quality, FPS, RAM, heat, and touch response on Unisoc T606 / 4 GB.
+- All changes remain on Draft PR #31; `main` has not been modified.
+
+
+## Repair-candidate quality audit — 2026-11-21
+
+Audited head: ab9e707abed1863141418a8a17caa77cf9a1fe66 on fix/comprehensive-stability-2026-11-20; base main remains c9fc82936a43b80af0e3c25eef41c9fee59e47b7.
+
+- **Unified save migration — PARTIALLY IMPLEMENTED.** First-launch migration of allowlisted legacy wallet/needs/NPC records is implemented. The regression verifies reward ledger preservation and that current versioned snapshots override stale legacy files. Mission 001–004, every side activity, all world entities and all vehicle conditions still need complete restore/restart coverage.
+- **NPC navigation attachment — IMPLEMENTED; latest clean runtime verification pending.** NavigationAgent3D attachment is deferred until the owning Node3D has finished adding children; the navigation map is resolved through that Node3D owner. Regression coverage now includes pre-parented NPCs, multiple brains in a test actor and world-clock schedules. The latest head's Godot run #798 is in progress; earlier run #797 passed the test steps but exposed callback/test-world errors that the current head corrects.
+- **Private Web input — TESTED on prior candidate commit.** The viewport-coordinate mouse input passed Chromium input checks and the preview emitted no external network requests on commit 9005973907dbe56392d2571f6bf4fe8ef84e8aca; current-head rerun #190 is in progress.
+- **Security — TESTED.** Repository security audit #742 passed on the current head. This does not replace a physical-device or production-signing audit.
+- **Build size — NOT CURRENT-HEAD VERIFIED.** The last raw APK measurement is 254,227,979 bytes on commit 9005973; current-head Android run #561 is in progress. Git-tree blob totals are 350,450,243 bytes for the candidate and 346,596,568 bytes for main.
+- **Physical performance — NOT VERIFIED.** No target phone/cloud device was attached. No FPS, peak RAM, thermal, touch, battery or device audio measurements are claimed.
+- **Voice — BLOCKED.** No claim of completed human Arabic dubbing is made. AI TTS and human-performed clips must remain separately catalogued.
+
+The Godot test suite's earlier successful run #797 still printed runtime errors before the current correction; a green workflow conclusion alone is not treated as proof of a clean log. Review #798's complete log before promoting navigation status beyond PARTIALLY IMPLEMENTED.
+
+
+## Verification correction — 2026-11-21
+
+Godot validation #798 and Android Debug APK #561 passed on game-code head ab9e707abed1863141418a8a17caa77cf9a1fe66. The later documentation head 1c8da7dddc07a707dc5b6a0518922bfd1c934135 changes only five documentation files. The Godot log no longer shows the previous NavigationAgent3D get_world_3d callback error, the busy-parent add_child error, or the root-viewport null-scenario error. It still contains non-fatal OBJ ambient-light warnings and ObjectDB/resource teardown warnings from several headless test scripts. Android raw APK size on the verified game-code head is 254,232,075 bytes (254.232 MB / 242.455 MiB); the artifact ZIP is 252,475,148 bytes (252.475 MB / 240.780 MiB). Security audit #743 passed on the documentation head. Web Build #94 and private Chromium #192 were still in progress at the time of this update.
+
+
+## 2026-11-22 — save recovery follow-up
+
+The latest completed pre-change head e681c19ad09f118726201f1f60be85e7a410dcfa passed Godot validation, Android Debug APK, private Web + Chromium validation, Web Build and repository security audit. Runs: [Godot #44892150861](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/44892150861), [Android #44892150835](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/44892150835), [private Web + Chromium #44892150832](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/44892150832), [Web Build #44892150858](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/44892150858), [security #44892150863](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/44892150863). These results validate the previous head only.
+
+Commit 6fc51d0 addresses two save-recovery defects: active side activities previously restored counters without recreating target markers, and side-activity rewards used non-idempotent credits. The new code restores target visibility, uses stable wallet transaction IDs, commits the wallet transaction before activity completion, and reconciles newer on-device wallet/legacy records without overwriting existing allowlisted files. Regression tests have been added; the new head is TEST PENDING until its own Godot, Android, Web and security runs finish.
+
+No new assets were added. No physical Android device was connected; touch feel, FPS, RAM, heat, battery, install and device audio remain NOT VERIFIED. Arabic human voice acting remains BLOCKED pending actual local recordings and offline playback tests. Unified save coverage remains PARTIALLY IMPLEMENTED because complete mission 001–004 and world-entity restart coverage is not established.
+
+
+## 2026-11-22 Web bundle exposure correction
+
+Audit found that the existing Web Build workflow uploaded a 237,933,989-byte ZIP as a GitHub Actions artifact. For a public repository, GitHub documents that public artifact resources can be accessed without authentication. The workflow is being corrected to remove prior GTA-GHIBLI-Web artifacts, retain only byte/ZIP/hash measurements in CI logs, and delete the temporary export from the runner without uploading it. The prior artifact ID 14748948497 remains until the cleanup step runs on the next same-repository Web Build. The local Chromium workflow already confirmed localhost-only serving and no external requests.
+
+
+The previous Web artifact ID 14748948497 is now absent from the artifact list. The initial duplicate cleanup run returned 404 because a parallel run had already deleted it; the workflow now handles that race safely and serializes Web Build runs for this repository.
+
+
+## 2026-11-22 verification — NPC persistence and current build
+
+- Godot validation #45011215857 passed all 51 validation/test steps, including the unified save manager, NPC perception/schedule/navigation, missions 001–004 flow, side-activity reward recovery, four districts, terrain streaming and main-scene smoke test.
+- Android Debug #45011215912 passed. Raw APK: 254,240,267 bytes (254.240267 MB / 242.462413 MiB); delta +4,096 bytes from the previous comparable build. Artifact ZIP: 252,487,129 bytes. Merged manifest evidence shows package `org.gtaghibli.game`, ABI `arm64-v8a`, and only `android.permission.INTERNET`; no camera, microphone, broad storage, contacts, location, SMS or call-log permission was listed.
+- Private Web + Chromium #45011215840 passed: local-only server, WebGL 2 canvas initialized, browser input delivered and no external requests observed.
+- Web Build #45011215820 passed Chromium. Temporary Web folder: 378,790,880 bytes; temporary ZIP: 237,938,088 bytes; SHA-256 recorded in the Actions log. No Web artifact remained after the run.
+- Repository secret audit #45011215838 passed.
+- Godot logs still contain OBJ ambient-light import warnings and several test-process resource/RID/ObjectDB teardown warnings. Green workflow status does not mean the log is warning-free.
+- Physical Unisoc T606 / 4 GB device performance remains NOT VERIFIED: no physical device was attached; FPS, peak RAM, heat, touch feel, battery and device audio are unmeasured.
+- Arabic dialogue remains BLOCKED for offline delivery: the voice manifest describes remote first-play caching, but no local dialogue audio files are present in the tracked `audio/characters/` tree. The 25-line acting-direction test does not prove recorded human performances or bundled offline clips.
+
+## 2026-11-22 — Mission 002 save/resume continuity — TESTED
+
+- Mission 002 snapshots retain both pursuer visibility states and whether the rescued witness is attached as a passenger. Older snapshots without these keys use phase-aware defaults.
+- Restoring an active escape phase recreates the passenger visual on the saved vehicle and restores the witness/pursuer visibility.
+- Mission 001–004 save writers explicitly flush, inspect write status and close files at mission-save boundaries.
+- Regression test simulates the rescue actors being removed, restores the active pursuit from its snapshot, then continues the escape.
+- **Verified code commit:** `bf5e730a91a1d002e11cd7238bc75edf19d8b668`.
+- **Godot 4.7 validation #810:** PASS — import, GDScript parse, mission 001–004 tests and main-scene smoke. [Run](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45013217344)
+- **Android ARM64 Debug #573:** PASS — archive/package checks and APK size recorded. [Run](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45013217408)
+- **Private Web + Chromium #214:** PASS — local-only WebGL 2 runtime, input events and no external requests. [Run](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45013217370)
+- **Web Build #116:** PASS — export, browser smoke and exact sizes recorded; temporary export and ZIP removed after the job. [Run](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45013217390)
+- **Security audit #755:** PASS — Gitleaks reported no leaks. [Run](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45013217336)
+- Raw ARM64 Debug APK: **254,244,363 bytes** (254.244363 MB; 242.466319 MiB), +4,096 bytes versus the previous comparable APK.
+- Temporary Web export: **378,793,008 bytes** (378.793008 MB; 361.245163 MiB). Web ZIP: **237,940,158 bytes** (237.940158 MB; 226.917418 MiB); SHA-256 `5c75f2201f285a3cd347307eb575f616b32a65c86870d08cd47b57408037e664`. Both are CI-only; no public Web artifact or hosting was created.
+- No game assets were added in this code-only reliability change. Physical Unisoc T606 / 4 GB FPS, RAM, heat, touch feel, install and audio remain NOT VERIFIED.
+- Non-fatal OBJ ambient-light warnings and headless RID/ObjectDB/resource teardown warnings remain; successful CI does not mean warning-free logs.
+
+## 2026-11-22 — Mission 001 unified-save regression
+
+A newly identified gap allowed Mission 001 to write its legacy record while leaving the versioned unified snapshot stale until the 90-second autosave or an application lifecycle event. Durable objective transitions now immediately persist the unified snapshot after the compatibility write. The regression test checks objective-by-objective snapshot content, wallet/reward consistency, stale compatibility recovery, and duplicate-reward prevention.
+
+Status at this record: **IMPLEMENTED and TESTED** on source/test SHA 3d1849a6c98198dc87b0d1368b7cc91488d1d0a5; Godot validation #814 passed and its log contains the dedicated Mission 001 PASS line. Security audit #759 also passed on that SHA. Android #577 and Web/Chromium #223 were cancelled/superseded by the documentation-only commit. Latest docs-head reruns #815 (Godot), #578 (Android), #225 (private Web/Chromium), and #127 (Web Build) were still in progress. The last measured APK belongs to older code head e61002762a95300f59fe51e6072496efac6631bd: 254,244,363 raw bytes, 252,488,852 artifact ZIP bytes. No new game assets were added.
+
+main is unchanged at c9fc82936a43b80af0e3c25eef41c9fee59e47b7. PR #31 remains Draft and unmerged. Full mission/world persistence, human Arabic voice recordings and physical-device performance remain incomplete or unverified.

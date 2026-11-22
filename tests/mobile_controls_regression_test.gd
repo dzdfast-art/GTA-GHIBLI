@@ -64,6 +64,20 @@ func _run_mobile_controls_test() -> void:
 		_fail("The player did not move while the virtual joystick was held.")
 		return
 
+	# The mobile HUD registers RUN as the sprint action. Verify it changes real player speed.
+	if not InputMap.has_action("sprint"):
+		_fail("The mobile controls did not register the sprint action.")
+		return
+	var base_move_speed := float(player.get("move_speed"))
+	Input.action_press("sprint")
+	for _frame in range(12):
+		await physics_frame
+	if player.velocity.length() <= base_move_speed * 1.1:
+		Input.action_release("sprint")
+		_fail("Holding RUN did not increase the player's movement speed.")
+		return
+	Input.action_release("sprint")
+
 	# Walking and body-facing changes must not rotate the camera by themselves.
 	var camera_rotation_after_walk: Vector3 = camera_pivot.global_rotation
 	if not is_equal_approx(wrapf(camera_rotation_after_walk.y - camera_rotation_before_walk.y, -PI, PI), 0.0) \
@@ -132,7 +146,7 @@ func _run_mobile_controls_test() -> void:
 		_fail("Rotating the player body changed the camera world yaw.")
 		return
 
-	print("PASS: joystick movement, camera stability while walking, touch isolation, and right-side camera look.")
+	print("PASS: joystick movement, RUN sprint speed, camera stability while walking, touch isolation, and right-side camera look.")
 	quit(0)
 
 

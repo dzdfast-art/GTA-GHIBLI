@@ -2,6 +2,7 @@ extends SceneTree
 
 ## Headless state-flow test for the harbor stealth investigation mission.
 const RUNTIME_SCRIPT = preload("res://scripts/missions/mission_003_runtime.gd")
+const WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
 
 
 func _initialize() -> void:
@@ -15,6 +16,11 @@ func _run_test() -> void:
 	var player := CharacterBody3D.new()
 	player.name = "TestPlayer"
 	world.add_child(player)
+	var wallet: Node = WALLET_SCRIPT.new()
+	wallet.name = "PlayerWallet"
+	wallet.set("persistence_enabled", false)
+	wallet.set("initial_balance", 0)
+	player.add_child(wallet)
 	var runtime: CanvasLayer = RUNTIME_SCRIPT.new() as CanvasLayer
 	root.add_child(runtime)
 	runtime.setup(player)
@@ -63,6 +69,9 @@ func _run_test() -> void:
 	runtime._physics_process(0.0)
 	if runtime._phase != 5:
 		_fail("Returning to Nora with all evidence did not complete mission 003.")
+		return
+	if int(wallet.call("get_balance")) != 220:
+		_fail("Completing mission 003 did not credit its reward to the player wallet.")
 		return
 
 	print("PASS: Mission 003 contact, harbor entry, evidence collection, and return flow.")

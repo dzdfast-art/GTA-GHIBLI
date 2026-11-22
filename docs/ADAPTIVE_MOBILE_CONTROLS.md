@@ -1,40 +1,30 @@
-# Adaptive Mobile Controls
+# Adaptive Mobile Controls and Video-Reference Gameplay
 
 ## Design direction
 
-The mobile HUD follows a contextual, state-driven design: controls are shown only when the player can use them. The supplied reference images are visual guidance for a left analog movement stick and a compact right-side action cluster; GTA GHIBLI uses its own original visual treatment.
+GTA GHIBLI uses original project-owned visuals and code while recreating the useful Android open-world gameplay patterns visible in the supplied reference. The existing `MobileControls` CanvasLayer owns touch input. The gameplay status overlay is a separate sibling layer so touch-control opacity settings do not fade the radar or player status.
 
-## Current implementation
+## Implemented in this feature branch
 
-- The on-foot HUD now uses a draggable analog virtual joystick at the lower left.
-- The joystick drives the same `ui_left`, `ui_right`, `ui_up` and `ui_down` input actions as desktop movement.
-- A large contextual `USE` button drives the shared `interact` action.
-- Touch release and HUD teardown release held input actions to avoid a stuck movement/action state.
-- The HUD uses circular, high-contrast controls with a soft dark outline and shadow, sized for touch.
+- **On foot:** lower-left analog movement stick, right-side camera-look zone, contextual interaction and RUN controls.
+- **Player model:** the temporary capsule is replaced by an original lightweight low-poly humanoid with a white sleeveless-style shirt, blue pants, dark shoes, head/hair, and simple walk-cycle arm/leg movement.
+- **Live HUD:** mini-radar, actual village and district road lines, player direction arrow, nearby vehicle/bicycle/landmark/house markers, active objective marker, world clock, wallet cash, health value/bar and an unarmed fist icon.
+- **Bike tutorial:** a blue marker appears above the bicycle. The optional guided sequence asks the player to mount it, ride to the red bridge, dismount, follow the red house marker and enter the house. This is separate from the existing Mira/village mission.
+- **Bicycle:** mount/dismount, PEDAL, BRAKE / REVERSE, plus saved ANALOG, BUTTONS or FLICK steering preferences.
+- **Car:** the existing starter car's contextual enter/exit and driving controls remain in place.
+- **Ambient traffic:** four lightweight original cars move along the village's cross-streets and appear as vehicle markers on the mini-radar.
+- Existing wallet and world-clock services remain the sources of truth; the new HUD does not maintain duplicate money or time state.
 
-## Context profiles to implement with their gameplay systems
+## Important implementation boundaries
 
-| Player state | HUD controls |
-|---|---|
-| On foot | Movement joystick, context interaction; later jump/sprint/attack when those actions are implemented |
-| Bicycle | Steering/balance, pedal or accelerate, brake, dismount |
-| Motorcycle | Steering/lean, throttle, brake, handbrake where appropriate, dismount |
-| Car | Steering, accelerator, brake/reverse, handbrake, horn, exit |
-| Truck/bus | Steering, accelerator, brake/reverse, parking brake, horn, exit |
-| Boat | Steering, throttle, reverse/decelerate, exit |
-| Aircraft/helicopter | Pitch, roll, yaw, throttle, climb/descent, landing and exit controls |
-| Armed on foot | Aim, fire, reload, weapon switch and contextual interaction, based on weapon capabilities |
+- The mini-radar is a stylized live radar with actual road lines and nearby markers, not an exact reproduction of the reference game's detailed map artwork.
+- The four ambient cars are decorative moving traffic for atmosphere and route context. They do not yet implement traffic collision, lane-changing, traffic lights, pedestrian avoidance or full vehicle AI.
+- The player is a procedural low-poly character with a simple walk cycle, not a high-detail rigged/face-animated character.
+- The health component and HUD are connected; damage sources across combat, falls and traffic still need broader gameplay integration.
+- The complete guided bike-to-bridge-to-house sequence has an automated regression test, but it has not yet been visually or touch-tested on a physical Android phone.
+- Motorcycle, truck/bus, boat, aircraft and weapon-specific control profiles remain outside this implementation.
+- The existing pause menu still owns the full-screen world map. The live mini-radar is a separate gameplay display.
 
 ## State-transition contract
 
-The future HUD controller must receive explicit player-state, vehicle-category and equipped-weapon changes from gameplay systems. It must:
-1. Hide controls irrelevant to the active state.
-2. Show only actions supported by the current controller and equipped item.
-3. Release all held actions before switching profiles.
-4. Preserve safe touch zones and avoid overlapping the camera-look area.
-5. Return to the on-foot profile after dismounting or exiting a vehicle.
-6. Provide accessible button sizes and configurable opacity/position.
-
-## Honest implementation boundary
-
-Only the analog on-foot movement stick and shared interaction button are implemented in this change. Vehicle driving, weapon handling, jump, sprint and their HUD profiles remain unimplemented until the corresponding gameplay systems exist. Do not display placeholder controls as if they work. The new HUD has not yet been visually or touch-tested on a physical Android device.
+The existing mobile controls continue to change based on player state. They must release held inputs before switching profiles, show only actions supported by the current controller, preserve camera-look separation and return to the on-foot profile after dismounting or exiting a vehicle.

@@ -26,6 +26,15 @@ func _run_test() -> void:
 	if not wallet.call("add_money", 40) or int(wallet.call("get_balance")) != 105:
 		_fail("Wallet did not add an earned reward.")
 		return
+	if not wallet.call("add_money_once", "mission_test_reward", 25):
+		_fail("Wallet did not accept a new one-time mission reward.")
+		return
+	if wallet.call("add_money_once", "mission_test_reward", 25):
+		_fail("Wallet paid the same mission reward more than once.")
+		return
+	if int(wallet.call("get_balance")) != 130 or not wallet.call("has_reward_transaction", "mission_test_reward"):
+		_fail("Wallet did not preserve the one-time reward transaction.")
+		return
 	print("PASS: Wallet balance, purchase limits and earned rewards.")
 	quit(0)
 

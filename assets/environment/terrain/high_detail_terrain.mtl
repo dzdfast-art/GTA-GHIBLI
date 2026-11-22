@@ -17,3 +17,10 @@ newmtl ground_park
 Kd 0.27 0.45 0.21
 newmtl ground_sand
 Kd 0.72 0.62 0.42
+newmtl ground_crop
+Ka 0.18 0.26 0.11
+Kd 0.34 0.45 0.20
+Ks 0.04 0.04 0.04
+Ns 10.0
+d 1.0
+illum 2

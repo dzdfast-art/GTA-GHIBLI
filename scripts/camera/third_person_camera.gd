@@ -7,11 +7,15 @@ extends Node3D
 @export_range(0.001, 0.03, 0.001) var look_sensitivity: float = 0.006
 @export_range(10.0, 85.0, 1.0) var look_down_limit_degrees: float = 55.0
 @export_range(10.0, 85.0, 1.0) var look_up_limit_degrees: float = 35.0
+@export_range(2.5, 6.0, 0.1) var on_foot_camera_distance := 3.6
+@export_range(3.5, 7.0, 0.1) var vehicle_camera_distance := 5.2
+@export_range(1.0, 12.0, 0.5) var camera_distance_response := 6.0
 
 var _active_touch_index: int = -1
 var _mouse_look_active: bool = false
 var _camera_yaw: float = 0.0
 var _camera_pitch: float = 0.0
+var _spring_arm: SpringArm3D
 
 
 func _ready() -> void:
@@ -20,15 +24,25 @@ func _ready() -> void:
 	_camera_pitch = global_rotation.x
 	_apply_camera_rotation()
 
-	var spring_arm: SpringArm3D = $SpringArm3D
+	_spring_arm = $SpringArm3D as SpringArm3D
+	_spring_arm.spring_length = on_foot_camera_distance
 	var followed_body: Node = get_parent()
 	if followed_body is CollisionObject3D:
-		spring_arm.add_excluded_object(followed_body.get_rid())
+		_spring_arm.add_excluded_object(followed_body.get_rid())
 
 
-func _process(_delta: float) -> void:
-	# The player body turns toward movement; re-apply the stored world-space
-	# camera angles so that body rotation never drags the view around.
+func _process(delta: float) -> void:
+	# On foot, keep the character large enough in frame to match the close
+	# residential follow camera from the reference. Pull back while riding.
+	var followed_body := get_parent()
+	var is_driving := bool(followed_body.get("is_driving")) if followed_body != null else false
+	var target_distance := vehicle_camera_distance if is_driving else on_foot_camera_distance
+	if _spring_arm != null:
+		_spring_arm.spring_length = move_toward(
+			_spring_arm.spring_length, target_distance,
+			camera_distance_response * delta
+		)
+	# Player yaw is independent of world-space camera yaw.
 	_apply_camera_rotation()
 
 

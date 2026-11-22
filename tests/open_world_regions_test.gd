@@ -6,23 +6,166 @@ func _initialize() -> void:
 	call_deferred("_run_test")
 
 func _run_test() -> void:
+	# Give this headless test its own world before it enters the SceneTree.
+	# Replacing the root Viewport world after startup causes a null renderer scenario.
+	var viewport := SubViewport.new()
+	viewport.world_3d = World3D.new()
+	root.add_child(viewport)
+	await process_frame
 	var regions := Node3D.new()
 	regions.set_script(REGIONS_SCRIPT)
-	root.add_child(regions)
+	viewport.add_child(regions)
 	if regions.call("get_region_ids").size() != 4:
 		_fail("The open-world region director did not create four districts.")
 		return
-	if int(regions.call("get_building_count")) != 24:
-		_fail("The four districts did not create the expected building blockout.")
+	if int(regions.call("get_building_count")) != 34:
+		_fail("The four districts did not create sixteen detailed Harbor City houses and eighteen other building shells.")
 		return
 	if int(regions.call("get_population_count")) != 8:
 		_fail("The four districts did not create their civilian population.")
 		return
+	var harbor := regions.get_node("HarborCity") as Node3D
+	var house_collection := harbor.get_node_or_null("HarborResidentialMesh") as MeshInstance3D
+	var road_collection := harbor.get_node_or_null("HarborStreetNetworkMesh") as MeshInstance3D
+	if house_collection == null or house_collection.mesh == null or house_collection.mesh.get_surface_count() < 4:
+		_fail("Harbor City must load its original multi-material low-rise house collection.")
+		return
+	if road_collection == null or road_collection.mesh == null or road_collection.mesh.get_surface_count() < 3:
+		_fail("Harbor City must load its original road, curb and sidewalk collection.")
+		return
+	var fountain := harbor.get_node_or_null("PublicDrinkingFountain") as Node3D
+	if fountain == null:
+		_fail("Harbor City must instantiate the public drinking fountain in its plaza.")
+		return
+	var fountain_visual := fountain.get_node_or_null("Visual") as MeshInstance3D
+	if fountain_visual == null or fountain_visual.mesh == null or fountain_visual.mesh.get_surface_count() < 3:
+		_fail("Harbor City must load all three original public fountain material surfaces.")
+		return
+	var fountain_area := fountain.get_node_or_null("InteractionArea") as Area3D
+	if fountain_area == null or not fountain_area.is_in_group("interaction_areas"):
+		_fail("The public fountain must register its shared proximity interaction area.")
+		return
+	var seafood_market := regions.get_node_or_null("SapphireCoast/SeafoodMarket") as Node3D
+	if seafood_market == null:
+		_fail("Sapphire Coast must instantiate its functional seafood market.")
+		return
+	var seafood_display := seafood_market.get_node_or_null("SeafoodDisplay") as MeshInstance3D
+	if seafood_display == null or seafood_display.mesh == null or seafood_display.mesh.get_surface_count() < 6:
+		_fail("Sapphire Coast must load the original six-surface seafood display asset.")
+		return
+	var seafood_area := seafood_market.get_node_or_null("InteractionArea") as Area3D
+	if seafood_area == null or not seafood_area.is_in_group("interaction_areas"):
+		_fail("The seafood market must register with the shared interaction system.")
+		return
+	var service_garage := regions.get_node_or_null("AmberValley/VehicleServiceGarage") as Node3D
+	if service_garage == null:
+		_fail("Amber Valley must instantiate its functional vehicle service garage.")
+		return
+	var garage_visual := service_garage.get_node_or_null("GarageVisual") as MeshInstance3D
+	if garage_visual == null or garage_visual.mesh == null or garage_visual.mesh.get_surface_count() < 6:
+		_fail("The original six-material workshop model must load in Amber Valley.")
+		return
+	var garage_area := service_garage.get_node_or_null("InteractionArea") as Area3D
+	if garage_area == null or not garage_area.is_in_group("interaction_areas"):
+		_fail("The mechanic workshop must register with the shared interaction system.")
+		return
+	var lighthouse := regions.get_node_or_null("SapphireCoast/CoastalLighthouse") as Node3D
+	if lighthouse == null:
+		_fail("Sapphire Coast must instantiate its original coastal lighthouse landmark.")
+		return
+	var lighthouse_visual := lighthouse.get_node_or_null("LighthouseMesh") as MeshInstance3D
+	if lighthouse_visual == null or lighthouse_visual.mesh == null or lighthouse_visual.mesh.get_surface_count() < 7:
+		_fail("The coastal lighthouse must import all seven original material surfaces.")
+		return
+	var lighthouse_beam := lighthouse.get_node_or_null("BeaconSweep/RotatingBeam") as SpotLight3D
+	if lighthouse_beam == null or lighthouse_beam.shadow_enabled:
+		_fail("The rotating lighthouse beacon must exist without expensive real-time shadows.")
+		return
+	lighthouse.call("set_day_phase", "night")
+	if not bool(lighthouse.call("is_beacon_active")) or not lighthouse_beam.visible:
+		_fail("The lighthouse beacon must switch on at night.")
+		return
+	lighthouse.call("set_day_phase", "day")
+	if bool(lighthouse.call("is_beacon_active")) or lighthouse_beam.visible:
+		_fail("The lighthouse beacon must switch off during the day.")
+		return
+	if lighthouse.get_node_or_null("LighthouseCollision") == null or lighthouse.get_node_or_null("InteractionArea") == null:
+		_fail("The lighthouse must include solid collision and a shared interaction area.")
+		return
+	if harbor.get_children().filter(func(node): return str(node.name).begins_with("HarborHouseCollision_")).size() != 16:
+		_fail("Harbor City must keep 16 collision footprints for its 16 houses.")
+		return
+
 	for region_id in ["harbor_city", "pine_highlands", "amber_valley", "sapphire_coast"]:
-		if regions.get_node_or_null(str(region_id).to_pascal_case()) == null:
+		var district := regions.get_node_or_null(str(region_id).to_pascal_case()) as Node3D
+		if district == null:
 			_fail("A named district node is missing: " + str(region_id))
 			return
-	print("PASS: Four world districts, 24 building shells and eight scheduled civilians.")
+		var ground := district.get_node_or_null("DistrictGround") as MeshInstance3D
+		if ground == null:
+			_fail("A district is missing its ground mesh: " + str(region_id))
+			return
+		var surface_material := ground.material_override as StandardMaterial3D
+		if surface_material == null or surface_material.albedo_texture == null:
+			_fail("The SVG ground surface texture did not load for district: " + str(region_id))
+			return
+	var navigation_regions := get_nodes_in_group("world_navigation_regions")
+	if navigation_regions.size() != 4:
+		_fail("Each district must own a navigation region.")
+		return
+	for region in navigation_regions:
+		var navigation_mesh := (region as NavigationRegion3D).navigation_mesh
+		if navigation_mesh == null or navigation_mesh.get_polygon_count() < 40:
+			_fail("District navigation mesh is missing its walkable cell polygons.")
+			return
+
+	var npc_brains := get_nodes_in_group("npc_brains")
+	if npc_brains.size() < 8:
+		_fail("All eight district civilians must have navigation brains.")
+		return
+	var navigation_ready := false
+	for _frame in range(120):
+		await physics_frame
+		navigation_ready = true
+		for brain in npc_brains:
+			if not brain.call("has_navigation_agent") or not brain.call("has_navigation_map"):
+				navigation_ready = false
+				break
+		if navigation_ready:
+			break
+	if not navigation_ready:
+		var diagnostics := PackedStringArray()
+		for brain in npc_brains:
+			var actor := brain.get_parent() as Node3D
+			var agent := actor.get_node_or_null("NavigationAgent3D") as NavigationAgent3D if actor != null else null
+			if agent == null:
+				diagnostics.append("agent=missing")
+			else:
+				var map := agent.get_navigation_map()
+				var iteration := NavigationServer3D.map_get_iteration_id(map) if map.is_valid() else -1
+				diagnostics.append("map_valid=%s iteration=%d" % [str(map.is_valid()), iteration])
+		_fail("District NavigationServer maps did not synchronize for all eight civilians within 120 physics frames: %s" % "; ".join(diagnostics))
+		return
+	var sample_brain: Node = npc_brains[0]
+	sample_brain.set_process(false)
+	var sample_actor := sample_brain.get_parent() as Node3D
+	var sample_agent := sample_actor.get_node("NavigationAgent3D") as NavigationAgent3D
+	var destination := sample_actor.global_position + Vector3(-2.0, 0.0, -2.0)
+	sample_agent.target_position = destination
+	var path_ready := false
+	for _frame in range(60):
+		await physics_frame
+		sample_agent.get_next_path_position()
+		if sample_agent.get_current_navigation_path().size() >= 2:
+			path_ready = true
+			break
+	if not path_ready:
+		_fail("A civilian could not calculate a path through its district navigation grid after the map synchronized.")
+		return
+
+	viewport.queue_free()
+	await process_frame
+	print("PASS: Four world districts, 34 building shells, eight scheduled civilians and live NavMesh paths.")
 	quit(0)
 
 func _fail(message: String) -> void:

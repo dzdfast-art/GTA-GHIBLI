@@ -1,0 +1,39 @@
+# Project-authored lighthouse materials
+newmtl stone
+Kd 0.62 0.57 0.46
+Ks 0.12 0.12 0.10
+Ns 22
+illum 2
+newmtl plaster
+Kd 0.86 0.80 0.66
+Ks 0.08 0.08 0.07
+Ns 12
+illum 2
+map_Kd coastal_lighthouse_plaster.svg
+newmtl dark_stone
+Kd 0.28 0.30 0.29
+Ks 0.16 0.16 0.15
+Ns 28
+illum 2
+newmtl brass
+Kd 0.78 0.55 0.20
+Ks 0.65 0.52 0.28
+Ns 72
+illum 2
+newmtl glass
+Kd 0.24 0.52 0.57
+Ks 0.70 0.85 0.90
+Ns 100
+d 0.78
+illum 2
+newmtl copper
+Kd 0.42 0.52 0.35
+Ks 0.38 0.42 0.25
+Ns 64
+illum 2
+map_Kd coastal_lighthouse_copper.svg
+newmtl timber
+Kd 0.34 0.21 0.11
+Ks 0.08 0.07 0.05
+Ns 14
+illum 2

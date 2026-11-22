@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/coastal_lighthouse.gd" id="1_script"]
+[ext_resource type="Mesh" path="res://assets/environment/props/coastal_lighthouse.obj" id="2_mesh"]
+
+[node name="CoastalLighthouse" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="LighthouseMesh" type="MeshInstance3D" parent="."]
+mesh = ExtResource("2_mesh")
+
+[node name="BeaconGlow" type="OmniLight3D" parent="."]
+position = Vector3(0, 16.25, 0)
+light_color = Color(1, 0.78, 0.42, 1)
+light_energy = 1.25
+omni_range = 7.0
+shadow_enabled = false
+
+[node name="BeaconSweep" type="Node3D" parent="."]
+position = Vector3(0, 16.25, 0)
+
+[node name="RotatingBeam" type="SpotLight3D" parent="BeaconSweep"]
+light_color = Color(1, 0.88, 0.62, 1)
+light_energy = 2.0
+spot_range = 92.0
+spot_angle = 34.0
+shadow_enabled = false

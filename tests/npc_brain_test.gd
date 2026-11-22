@@ -9,12 +9,27 @@ func _initialize() -> void:
 
 
 func _run_test() -> void:
+	var numeric_id_brain := Node.new()
+	numeric_id_brain.set_script(BRAIN_SCRIPT)
+	numeric_id_brain.set("persistence_id", "npc_12")
+	if numeric_id_brain.call("_relationship_save_path") != "user://npc_relationships/npc_12.json":
+		_fail("NPC relationship IDs must preserve digits instead of collapsing to the same filename.")
+		return
+	numeric_id_brain.set("persistence_id", "12_npc")
+	if numeric_id_brain.call("_relationship_save_path") != "user://npc_relationships/npc_12_npc.json":
+		_fail("NPC relationship IDs beginning with digits must be normalized safely.")
+		return
+
 	var npc := Node3D.new()
 	npc.name = "TestNPC"
 	root.add_child(npc)
 	var brain := Node.new()
 	brain.set_script(BRAIN_SCRIPT)
 	npc.add_child(brain)
+	await process_frame
+	if not brain.call("has_navigation_agent") or npc.get_node_or_null("NavigationAgent3D") == null:
+		_fail("A navigation agent must be attached to its Node3D owner after deferred setup.")
+		return
 
 	var player := CharacterBody3D.new()
 	player.name = "Player"
@@ -46,6 +61,10 @@ func _run_test() -> void:
 	returning_brain.set("persistence_id", "npc_brain_test_persistent")
 	returning_npc.add_child(returning_brain)
 	root.add_child(returning_npc)
+	await process_frame
+	if returning_npc.get_node_or_null("NavigationAgent3D") == null:
+		_fail("An NPC whose brain is added before its actor enters the tree must still receive its deferred navigation agent.")
+		return
 	if not is_equal_approx(float(returning_brain.get("trust")), float(brain.get("trust"))) or not is_equal_approx(float(returning_brain.get("familiarity")), float(brain.get("familiarity"))):
 		_fail("NPC trust and familiarity were not restored in a new session instance.")
 		return
@@ -90,6 +109,10 @@ func _run_test() -> void:
 	var schedule_brain := Node.new()
 	schedule_brain.set_script(BRAIN_SCRIPT)
 	npc.add_child(schedule_brain)
+	await process_frame
+	if npc.get_node_or_null("NavigationAgent3D") == null or not schedule_brain.call("has_navigation_agent"):
+		_fail("A second NPC brain must attach its own navigation agent without replacing the first.")
+		return
 	schedule_brain.set("schedule_enabled", true)
 	schedule_brain.call("set_world_hour", 10)
 	if schedule_brain.get("state_id") != "working":
@@ -100,7 +123,11 @@ func _run_test() -> void:
 		_fail("NPC did not enter its configured rest schedule.")
 		return
 
-	print("PASS: NPC perception, trust, familiarity, aggression and daily schedule checks.")
+	npc.queue_free()
+	player.queue_free()
+	returning_npc.queue_free()
+	await process_frame
+	print("PASS: NPC perception, trust, familiarity, aggression, daily schedule and deferred navigation-agent attachment checks.")
 	quit(0)
 
 

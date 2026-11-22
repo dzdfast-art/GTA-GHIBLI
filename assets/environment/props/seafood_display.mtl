@@ -1,0 +1,42 @@
+# Original, project-authored seafood display materials.
+newmtl wood
+Ka 0.20 0.11 0.055
+Kd 0.42 0.25 0.12
+Ks 0.12 0.10 0.08
+Ns 18
+illum 2
+
+newmtl ice
+Ka 0.12 0.24 0.30
+Kd 0.48 0.72 0.80
+Ks 0.36 0.44 0.50
+Ns 70
+illum 2
+
+newmtl silver
+Ka 0.16 0.19 0.21
+Kd 0.62 0.70 0.72
+Ks 0.55 0.62 0.66
+Ns 80
+illum 2
+
+newmtl gold
+Ka 0.22 0.13 0.04
+Kd 0.78 0.52 0.18
+Ks 0.45 0.32 0.15
+Ns 68
+illum 2
+
+newmtl rose
+Ka 0.20 0.07 0.055
+Kd 0.70 0.29 0.22
+Ks 0.38 0.24 0.20
+Ns 58
+illum 2
+
+newmtl dark
+Ka 0.025 0.03 0.035
+Kd 0.10 0.13 0.15
+Ks 0.35 0.38 0.40
+Ns 90
+illum 2

@@ -66,6 +66,9 @@ var _objective_label: Label
 var _status_label: Label
 var _accept_button: Button
 var _status_override := ""
+var save_path_override := ""
+var _progress_updated_at_unix := 0
+var _saved_target_visibility: Array = []
 
 
 func _ready() -> void:
@@ -109,31 +112,60 @@ func _physics_process(_delta: float) -> void:
 
 
 func _load_progress() -> void:
-	if not FileAccess.file_exists(SAVE_PATH):
+	_completed_ids.clear()
+	_active_id = ""
+	_targets_found = 0
+	_total_rewards = 0
+	_status_override = ""
+	_progress_updated_at_unix = 0
+	_saved_target_visibility.clear()
+	var path := _active_save_path()
+	if not FileAccess.file_exists(path):
 		return
-	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
 		return
 	var parsed = JSON.parse_string(file.get_as_text())
-	if parsed is Dictionary:
-		var ids = parsed.get("completed_ids", [])
-		if ids is Array:
-			for item in ids:
-				var activity_id := str(item)
-				if not _completed_ids.has(activity_id):
-					_completed_ids.append(activity_id)
-		_total_rewards = int(parsed.get("total_rewards", 0))
+	file.close()
+	if not parsed is Dictionary:
+		return
+	var ids = parsed.get("completed_ids", [])
+	if ids is Array:
+		for item in ids:
+			var activity_id := str(item)
+			if not _activity_by_id(activity_id).is_empty() and not _completed_ids.has(activity_id):
+				_completed_ids.append(activity_id)
+	_total_rewards = maxi(0, int(parsed.get("total_rewards", 0)))
+	_progress_updated_at_unix = maxi(0, int(parsed.get("updated_at_unix", 0)))
+	var saved_active_id := str(parsed.get("active_id", ""))
+	var activity := _activity_by_id(saved_active_id)
+	if not activity.is_empty() and not _completed_ids.has(saved_active_id):
+		_active_id = saved_active_id
+		var target_positions: Array = activity.get("targets", [])
+		_targets_found = clampi(int(parsed.get("targets_found", 0)), 0, target_positions.size())
+		var visibility = parsed.get("target_visibility", [])
+		if visibility is Array:
+			_saved_target_visibility = visibility.duplicate()
+		_status_override = str(parsed.get("status_override", ""))
 
 
 func _save_progress() -> void:
-	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	_progress_updated_at_unix = maxi(int(Time.get_unix_time_from_system()), _progress_updated_at_unix + 1)
+	var file := FileAccess.open(_active_save_path(), FileAccess.WRITE)
 	if file == null:
 		push_warning("Could not save side activity progress.")
 		return
 	file.store_string(JSON.stringify({
 		"completed_ids": _completed_ids,
-		"total_rewards": _total_rewards
+		"active_id": _active_id,
+		"targets_found": _targets_found,
+		"target_visibility": _capture_target_visibility(),
+		"total_rewards": _total_rewards,
+		"status_override": _status_override,
+		"updated_at_unix": _progress_updated_at_unix
 	}, "\t"))
+	file.flush()
+	file.close()
 
 
 func _ensure_world_content() -> void:
@@ -146,6 +178,8 @@ func _ensure_world_content() -> void:
 			continue
 		var marker := _make_marker("SideActivity_" + activity_id, _position(activity.get("start", [0, 0, 0])), activity.get("color", Color(0.90, 0.70, 0.22)))
 		_start_nodes[activity_id] = marker
+	if not _active_id.is_empty():
+		_restore_active_activity_targets()
 
 
 func _nearest_available_activity() -> String:
@@ -187,8 +221,14 @@ func _on_accept_pressed() -> void:
 
 
 func _start_activity(activity_id: String) -> void:
+	if _activity_by_id(activity_id).is_empty() or _completed_ids.has(activity_id):
+		return
 	_active_id = activity_id
 	_targets_found = 0
+	_saved_target_visibility.clear()
+	for existing_marker in _target_nodes:
+		if is_instance_valid(existing_marker):
+			existing_marker.queue_free()
 	_target_nodes.clear()
 	var activity := _activity_by_id(activity_id)
 	var target_positions: Array = activity.get("targets", [])
@@ -197,6 +237,8 @@ func _start_activity(activity_id: String) -> void:
 		_target_nodes.append(marker)
 	_status_override = str(activity.get("target_text", "أكمل النشاط الجانبي."))
 	_accept_button.visible = false
+	_save_progress()
+	_save_unified_snapshot()
 	_refresh_hud()
 
 
@@ -206,32 +248,59 @@ func _update_active_activity() -> void:
 		_active_id = ""
 		return
 	if _targets_found < _target_nodes.size():
+		var collected_target := false
 		for marker in _target_nodes:
 			if not is_instance_valid(marker) or not marker.visible:
 				continue
 			if _player.global_position.distance_to(marker.global_position) <= TARGET_RADIUS:
 				marker.visible = false
 				_targets_found += 1
+				collected_target = true
 				_status_override = "أنجزت %d من %d من أهداف النشاط." % [_targets_found, _target_nodes.size()]
 		if _targets_found >= _target_nodes.size():
 			_status_override = "أحسنت! عد إلى نقطة البداية لتسليم المهمة."
+		if collected_target:
+			_saved_target_visibility = _capture_target_visibility()
+			_save_progress()
+			_save_unified_snapshot()
 	else:
 		var return_position := _position(activity.get("return", [0, 0, 0]))
 		if _player.global_position.distance_to(return_position) <= RETURN_RADIUS:
 			_complete_activity(activity)
 
 
-func _complete_activity(activity: Dictionary) -> void:
-	var reward := int(activity.get("reward", 0))
-	_total_rewards += reward
-	if _player != null and is_instance_valid(_player):
-		var wallet := _player.get_node_or_null("PlayerWallet")
-		if wallet != null and wallet.has_method("add_money"):
-			wallet.call("add_money", reward)
-	_completed_ids.append(_active_id)
+func _complete_activity(activity: Dictionary) -> bool:
 	var activity_id := _active_id
+	if activity_id.is_empty() or _completed_ids.has(activity_id):
+		return false
+	var known_activity := _activity_by_id(activity_id)
+	if known_activity.is_empty() or str(activity.get("id", "")) != activity_id:
+		return false
+
+	var reward := maxi(0, int(known_activity.get("reward", 0)))
+	if reward > 0:
+		if _player == null or not is_instance_valid(_player):
+			return false
+		var wallet := _player.get_node_or_null("PlayerWallet")
+		if wallet == null or not wallet.has_method("add_money_once"):
+			push_warning("Side activity reward was not committed because the wallet has no transaction API.")
+			return false
+		var transaction_id := "side_activity_%s_completion" % activity_id
+		var credited := bool(wallet.call("add_money_once", transaction_id, reward))
+		if not credited:
+			if not wallet.has_method("has_reward_transaction") or not bool(wallet.call("has_reward_transaction", transaction_id)):
+				push_warning("Side activity reward transaction could not be confirmed.")
+				return false
+		else:
+			# Persist the wallet transaction before marking the activity complete.
+			# If the app closes here, the resumed activity recognizes the paid ID.
+			_save_unified_snapshot()
+
+	_total_rewards += reward
+	_completed_ids.append(activity_id)
 	_active_id = ""
 	_targets_found = 0
+	_saved_target_visibility.clear()
 	for marker in _target_nodes:
 		if is_instance_valid(marker):
 			marker.queue_free()
@@ -240,9 +309,11 @@ func _complete_activity(activity: Dictionary) -> void:
 		_start_nodes[activity_id].queue_free()
 	_start_nodes.erase(activity_id)
 	_save_progress()
+	_save_unified_snapshot()
 	_status_override = "اكتمل النشاط الجانبي! حصلت على %d قطعة نقدية." % reward
 	_title_label.text = "أنشطة العالم"
 	_refresh_hud()
+	return true
 
 
 func _make_marker(node_name: String, at: Vector3, tint: Color) -> Node3D:
@@ -309,3 +380,112 @@ func _refresh_hud() -> void:
 		_completed_ids.size(),
 		_total_rewards
 	]
+
+func get_save_snapshot() -> Dictionary:
+	return {
+		"completed_ids": _completed_ids.duplicate(),
+		"active_id": _active_id,
+		"targets_found": _targets_found,
+		"target_visibility": _capture_target_visibility(),
+		"total_rewards": _total_rewards,
+		"status_override": _status_override,
+		"updated_at_unix": _progress_updated_at_unix
+	}
+
+
+func apply_save_snapshot(snapshot: Dictionary) -> bool:
+	var completed = snapshot.get("completed_ids", [])
+	if not completed is Array:
+		return false
+	var snapshot_updated_at := maxi(0, int(snapshot.get("updated_at_unix", 0)))
+	if _progress_updated_at_unix > snapshot_updated_at:
+		_restore_active_activity_targets()
+		_refresh_hud()
+		return true
+
+	_completed_ids.clear()
+	for value in completed:
+		var activity_id := str(value)
+		if not _activity_by_id(activity_id).is_empty() and not _completed_ids.has(activity_id):
+			_completed_ids.append(activity_id)
+	_active_id = str(snapshot.get("active_id", ""))
+	if _activity_by_id(_active_id).is_empty() or _completed_ids.has(_active_id):
+		_active_id = ""
+	var active_activity := _activity_by_id(_active_id)
+	var active_targets: Array = active_activity.get("targets", [])
+	_targets_found = clampi(int(snapshot.get("targets_found", 0)), 0, active_targets.size())
+	var visibility = snapshot.get("target_visibility", [])
+	_saved_target_visibility = visibility.duplicate() if visibility is Array else []
+	_total_rewards = maxi(0, int(snapshot.get("total_rewards", 0)))
+	_status_override = str(snapshot.get("status_override", ""))
+	_progress_updated_at_unix = snapshot_updated_at
+	for activity_id in _start_nodes.keys():
+		var marker = _start_nodes[activity_id]
+		if is_instance_valid(marker):
+			marker.visible = not _completed_ids.has(str(activity_id))
+	_restore_active_activity_targets()
+	_save_progress()
+	_refresh_hud()
+	return true
+
+
+func reload_saved_state() -> void:
+	_load_progress()
+	_restore_active_activity_targets()
+	_refresh_hud()
+
+
+func _restore_active_activity_targets() -> void:
+	for marker in _target_nodes:
+		if is_instance_valid(marker):
+			marker.queue_free()
+	_target_nodes.clear()
+	if _active_id.is_empty() or _world_root == null or not is_instance_valid(_world_root):
+		return
+	var activity := _activity_by_id(_active_id)
+	if activity.is_empty() or _completed_ids.has(_active_id):
+		_active_id = ""
+		_targets_found = 0
+		_saved_target_visibility.clear()
+		return
+	var target_positions: Array = activity.get("targets", [])
+	if target_positions.is_empty():
+		_active_id = ""
+		_targets_found = 0
+		return
+	var tint: Color = activity.get("color", Color(0.90, 0.70, 0.22))
+	var restored_found := 0
+	for index in range(target_positions.size()):
+		var marker := _make_marker("SideTarget_%s_%d" % [_active_id, index + 1], _position(target_positions[index]), tint)
+		var marker_visible := index >= _targets_found
+		if index < _saved_target_visibility.size():
+			marker_visible = bool(_saved_target_visibility[index])
+		marker.visible = marker_visible
+		if not marker_visible:
+			restored_found += 1
+		_target_nodes.append(marker)
+	_targets_found = restored_found
+	if _targets_found >= _target_nodes.size():
+		_status_override = "أحسنت! عد إلى نقطة البداية لتسليم المهمة."
+	_refresh_hud()
+
+
+func _capture_target_visibility() -> Array:
+	if _target_nodes.is_empty():
+		return _saved_target_visibility.duplicate()
+	var result: Array = []
+	for marker in _target_nodes:
+		result.append(is_instance_valid(marker) and marker.visible)
+	return result
+
+
+func _save_unified_snapshot() -> void:
+	var manager := get_tree().get_first_node_in_group("game_save_manager")
+	if manager != null and manager.has_method("save_game"):
+		if not bool(manager.call("save_game")):
+			push_warning("Side activity progress changed, but the unified save could not be written.")
+
+
+func _active_save_path() -> String:
+	var override_path := save_path_override.strip_edges()
+	return override_path if not override_path.is_empty() else SAVE_PATH

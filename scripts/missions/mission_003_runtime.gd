@@ -18,6 +18,7 @@ const DETECTION_RADIUS := 3.2
 const MAX_DETECTIONS := 3
 
 var _player: CharacterBody3D
+var _mission_data: Dictionary = {}
 var _world_root: Node3D
 var _phase: Phase = Phase.LOCKED
 var _evidence_found := 0
@@ -36,6 +37,7 @@ var _status_override := ""
 
 
 func _ready() -> void:
+	_load_mission_data()
 	_world_root = get_tree().current_scene as Node3D
 	_build_hud()
 	if _is_completed():
@@ -49,6 +51,8 @@ func _ready() -> void:
 
 func setup(player: CharacterBody3D) -> void:
 	_player = player
+	if _phase == Phase.COMPLETE:
+		_award_completion_reward()
 
 
 func _physics_process(delta: float) -> void:
@@ -91,6 +95,19 @@ func _mission_002_completed() -> bool:
 		return false
 	var data = JSON.parse_string(file.get_as_text())
 	return data is Dictionary and str(data.get("mission_id", "")) == "the_old_road_rescue" and bool(data.get("completed", false))
+
+
+func _load_mission_data() -> void:
+	if not FileAccess.file_exists(MISSION_DATA_PATH):
+		push_warning("Mission 003 data is missing.")
+		return
+	var file := FileAccess.open(MISSION_DATA_PATH, FileAccess.READ)
+	if file == null:
+		push_warning("Could not open Mission 003 data.")
+		return
+	var parsed = JSON.parse_string(file.get_as_text())
+	if parsed is Dictionary:
+		_mission_data = parsed
 
 
 func _is_completed() -> bool:
@@ -191,6 +208,14 @@ func _complete_mission() -> void:
 			"detections": _detections,
 			"reward_currency": 220
 		}, "\t"))
+		file.flush()
+		var write_error := file.get_error()
+		file.close()
+		if write_error != OK:
+			push_warning("Mission 003 completion could not be flushed to storage.")
+	else:
+		push_warning("Could not open Mission 003 completion save.")
+	_award_completion_reward()
 	_status_override = "أحسنت! وصلت الأدلة إلى نورا. انفتح مسار التحقيق في الميناء."
 	for guard in _guards:
 		if is_instance_valid(guard):
@@ -199,6 +224,44 @@ func _complete_mission() -> void:
 		_retry_button.visible = false
 	_refresh_hud()
 
+
+
+func _get_mission_reward_currency() -> int:
+	const MISSION_PATH := "res://data/missions/mission_003.json"
+	if not FileAccess.file_exists(MISSION_PATH):
+		return 220
+	var file := FileAccess.open(MISSION_PATH, FileAccess.READ)
+	if file == null:
+		return 220
+	var parsed = JSON.parse_string(file.get_as_text())
+	if not parsed is Dictionary:
+		return 220
+	var rewards: Dictionary = parsed.get("rewards", {})
+	return maxi(0, int(rewards.get("currency", 220)))
+
+
+func get_hud_snapshot() -> Dictionary:
+	var is_complete := _phase == Phase.COMPLETE
+	var is_active := _phase != Phase.LOCKED and not is_complete
+	var status_text := _status_label.text if _status_label != null else _status_override
+	var objective_text := _objective_label.text if _objective_label != null else status_text
+	return {
+		"active": is_active,
+		"priority": 2,
+		"title": str(_mission_data.get("title", "المهمة")),
+		"objective": objective_text,
+		"status": status_text,
+		"completed": is_complete
+}
+
+
+func _award_completion_reward() -> void:
+	if _player == null:
+		return
+	var wallet := _player.get_node_or_null("PlayerWallet")
+	if wallet == null or not wallet.has_method("add_money_once"):
+		return
+	wallet.call("add_money_once", "mission_003_completion", _get_mission_reward_currency())
 
 func _fail_mission(reason: String) -> void:
 	_phase = Phase.FAILED
@@ -307,6 +370,7 @@ func _build_hud() -> void:
 	_panel.anchor_right = 0.58
 	_panel.anchor_bottom = 0.82
 	add_child(_panel)
+	add_to_group("mission_hud_sources")
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override("separation", 4)
 	_panel.add_child(content)
@@ -356,3 +420,67 @@ func _refresh_hud() -> void:
 			_objective_label.text = "فشلت المهمة. يمكنك إعادة المحاولة."
 	_status_label.text = _status_override
 	_progress_label.text = "الأدلة: %d/3   |   مرات الانكشاف: %d/%d" % [_evidence_found, _detections, MAX_DETECTIONS]
+
+func get_save_snapshot() -> Dictionary:
+	var guard_positions: Array = []
+	var evidence_visibility: Array = []
+	for guard in _guards:
+		guard_positions.append(_node_position_snapshot(guard))
+	for marker in _evidence_markers:
+		evidence_visibility.append(marker.visible if is_instance_valid(marker) else false)
+	return {
+		"phase": int(_phase),
+		"evidence_found": _evidence_found,
+		"detections": _detections,
+		"elapsed": _elapsed,
+		"status_override": _status_override,
+		"guard_positions": guard_positions,
+		"evidence_visibility": evidence_visibility
+	}
+
+
+func apply_save_snapshot(snapshot: Dictionary) -> bool:
+	if not snapshot.has("phase"):
+		return false
+	_phase = clampi(int(snapshot.get("phase", int(Phase.LOCKED))), int(Phase.LOCKED), int(Phase.FAILED))
+	_evidence_found = clampi(int(snapshot.get("evidence_found", 0)), 0, EVIDENCE_POSITIONS.size())
+	_detections = clampi(int(snapshot.get("detections", 0)), 0, MAX_DETECTIONS)
+	_elapsed = maxf(0.0, float(snapshot.get("elapsed", 0.0)))
+	_status_override = str(snapshot.get("status_override", ""))
+	if _phase != Phase.LOCKED and _phase != Phase.COMPLETE and _phase != Phase.FAILED and not _visuals_created:
+		_create_harbor_blockout()
+	var positions = snapshot.get("guard_positions", [])
+	if positions is Array:
+		for index in range(mini(positions.size(), _guards.size())):
+			_restore_node_position(_guards[index], positions[index])
+	var visibility = snapshot.get("evidence_visibility", [])
+	if visibility is Array:
+		for index in range(mini(visibility.size(), _evidence_markers.size())):
+			if is_instance_valid(_evidence_markers[index]):
+				_evidence_markers[index].visible = bool(visibility[index])
+	_refresh_hud()
+	return true
+
+
+func reload_saved_state() -> void:
+	if _is_completed():
+		_phase = Phase.COMPLETE
+		_award_completion_reward()
+	elif _mission_002_completed():
+		if not _visuals_created:
+			_start_mission()
+	else:
+		_phase = Phase.LOCKED
+	_refresh_hud()
+
+
+func _node_position_snapshot(node: Node3D) -> Array:
+	if not is_instance_valid(node):
+		return []
+	return [node.global_position.x, node.global_position.y, node.global_position.z]
+
+
+func _restore_node_position(node: Node3D, value: Variant) -> void:
+	if not is_instance_valid(node) or not value is Array or value.size() < 3:
+		return
+	node.global_position = Vector3(float(value[0]), float(value[1]), float(value[2]))

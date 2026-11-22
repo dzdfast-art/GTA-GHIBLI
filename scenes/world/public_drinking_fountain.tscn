@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/public_drinking_fountain.gd" id="1_fountain"]
+[ext_resource type="Mesh" path="res://assets/environment/props/public_drinking_fountain.obj" id="2_mesh"]
+
+[node name="PublicDrinkingFountain" type="Node3D"]
+script = ExtResource("1_fountain")
+
+[node name="Visual" type="MeshInstance3D" parent="."]
+mesh = ExtResource("2_mesh")

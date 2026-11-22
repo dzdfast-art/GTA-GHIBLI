@@ -1,62 +1,10 @@
-name: Android debug APK
+name: Legacy Android debug APK (manual only)
 
 on:
+  # Retained only for reversibility. The current delivery target is Web.
+  # This legacy APK workflow is not part of normal CI and must not be run
+  # unless the owner explicitly reopens Android work.
   workflow_dispatch:
-  pull_request:
-    paths:
-      - "**.gd"
-      - "**.tscn"
-      - "**.tres"
-      - "**.res"
-      - "**.obj"
-      - "**.blend"
-      - "**.glb"
-      - "**.gltf"
-      - "**.fbx"
-      - "**.json"
-      - "**.godot"
-      - "**.png"
-      - "**.jpg"
-      - "**.jpeg"
-      - "**.webp"
-      - "**.svg"
-      - "**.wav"
-      - "**.ogg"
-      - "**.mp3"
-      - "**.ttf"
-      - "**.otf"
-      - "**.import"
-      - "project.godot"
-      - "export_presets.cfg"
-      - ".github/workflows/android-debug-apk.yml"
-  push:
-    branches: [main]
-    paths:
-      - "**.gd"
-      - "**.tscn"
-      - "**.tres"
-      - "**.res"
-      - "**.obj"
-      - "**.blend"
-      - "**.glb"
-      - "**.gltf"
-      - "**.fbx"
-      - "**.json"
-      - "**.godot"
-      - "**.png"
-      - "**.jpg"
-      - "**.jpeg"
-      - "**.webp"
-      - "**.svg"
-      - "**.wav"
-      - "**.ogg"
-      - "**.mp3"
-      - "**.ttf"
-      - "**.otf"
-      - "**.import"
-      - "project.godot"
-      - "export_presets.cfg"
-      - ".github/workflows/android-debug-apk.yml"
 
 permissions:
   contents: read

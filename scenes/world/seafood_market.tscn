@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/seafood_market.gd" id="1_market"]
+[ext_resource type="Mesh" path="res://assets/environment/props/market_stall_lowpoly.obj" id="2_stall"]
+[ext_resource type="Mesh" path="res://assets/environment/props/seafood_display.obj" id="3_display"]
+
+[node name="SeafoodMarket" type="Node3D"]
+script = ExtResource("1_market")
+
+[node name="StallVisual" type="MeshInstance3D" parent="."]
+mesh = ExtResource("2_stall")
+
+[node name="SeafoodDisplay" type="MeshInstance3D" parent="."]
+mesh = ExtResource("3_display")
+position = Vector3(0, 1.05, 0.05)

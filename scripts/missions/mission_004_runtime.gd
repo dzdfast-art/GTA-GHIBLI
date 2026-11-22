@@ -3,6 +3,7 @@ extends CanvasLayer
 ## Mission 004: escort Mia and protect the last train.
 ## Lightweight runtime blockout; final train art, animation and voice acting are pending.
 
+const MISSION_DATA_PATH := "res://data/missions/mission_004.json"
 const MISSION_003_SAVE := "user://gta_ghibli_mission_003.json"
 const COMPLETION_SAVE := "user://gta_ghibli_mission_004.json"
 
@@ -22,6 +23,7 @@ const MAX_MISSION_TIME := 180.0
 const MAX_ABANDON_TIME := 7.0
 
 var _player: CharacterBody3D
+var _mission_data: Dictionary = {}
 var _world_root: Node3D
 var _phase: Phase = Phase.LOCKED
 var _mia: Node3D
@@ -42,6 +44,7 @@ var _status_override := ""
 
 
 func _ready() -> void:
+	_load_mission_data()
 	_world_root = get_tree().current_scene as Node3D
 	_build_hud()
 	if _is_completed():
@@ -53,8 +56,23 @@ func _ready() -> void:
 	_refresh_hud()
 
 
+func _load_mission_data() -> void:
+	if not FileAccess.file_exists(MISSION_DATA_PATH):
+		push_warning("Mission 004 data is missing.")
+		return
+	var file := FileAccess.open(MISSION_DATA_PATH, FileAccess.READ)
+	if file == null:
+		push_warning("Could not open Mission 004 data.")
+		return
+	var parsed = JSON.parse_string(file.get_as_text())
+	if parsed is Dictionary:
+		_mission_data = parsed
+
+
 func setup(player: CharacterBody3D) -> void:
 	_player = player
+	if _phase == Phase.COMPLETE:
+		_award_completion_reward()
 
 
 func _physics_process(delta: float) -> void:
@@ -172,11 +190,53 @@ func _complete_mission(choice: String) -> void:
 			"alarms_disabled": _alarms_disabled,
 			"reward_currency": reward
 		}, "\t"))
+		file.flush()
+		var write_error := file.get_error()
+		file.close()
+		if write_error != OK:
+			push_warning("Mission 004 completion could not be flushed to storage.")
+	else:
+		push_warning("Could not open Mission 004 completion save.")
+	_award_completion_reward(reward)
 	_status_override = "نجحت! أنقذت ميا وأوصلت القطار عبر المسار %s. مكافأتك %d." % ["الشمالي" if choice == "north" else "الجنوبي", reward]
 	if _retry_button != null:
 		_retry_button.visible = false
 	_refresh_hud()
 
+
+
+func get_hud_snapshot() -> Dictionary:
+	var is_complete := _phase == Phase.COMPLETE
+	var is_active := _phase != Phase.LOCKED and not is_complete
+	var status_text := _status_label.text if _status_label != null else _status_override
+	var objective_text := _objective_label.text if _objective_label != null else status_text
+	return {
+		"active": is_active,
+		"priority": 3,
+		"title": str(_mission_data.get("title", "المهمة")),
+		"objective": objective_text,
+		"status": status_text,
+		"completed": is_complete
+}
+
+
+func _award_completion_reward(amount: int = -1) -> void:
+	if _player == null:
+		return
+	var wallet := _player.get_node_or_null("PlayerWallet")
+	if wallet == null or not wallet.has_method("add_money_once"):
+		return
+	var reward_amount := amount
+	if reward_amount < 0:
+		var saved_route := _route_choice
+		if FileAccess.file_exists(COMPLETION_SAVE):
+			var file := FileAccess.open(COMPLETION_SAVE, FileAccess.READ)
+			if file != null:
+				var parsed = JSON.parse_string(file.get_as_text())
+				if parsed is Dictionary:
+					saved_route = str(parsed.get("route_choice", saved_route))
+		reward_amount = 350 if saved_route == "north" else 400
+	wallet.call("add_money_once", "mission_004_completion", reward_amount)
 
 func _fail_mission(reason: String) -> void:
 	_phase = Phase.FAILED
@@ -336,6 +396,7 @@ func _build_hud() -> void:
 	_panel.anchor_right = 0.58
 	_panel.anchor_bottom = 0.84
 	add_child(_panel)
+	add_to_group("mission_hud_sources")
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override("separation", 4)
 	_panel.add_child(content)
@@ -391,3 +452,70 @@ func _refresh_hud() -> void:
 		int(clampf(_escort_elapsed / ESCORT_DURATION, 0.0, 1.0) * 100.0),
 		int(maxf(0.0, MAX_MISSION_TIME - _mission_elapsed))
 	]
+
+func get_save_snapshot() -> Dictionary:
+	var alarm_visibility: Array = []
+	for marker in _alarm_markers:
+		alarm_visibility.append(marker.visible if is_instance_valid(marker) else false)
+	return {
+		"phase": int(_phase),
+		"alarms_disabled": _alarms_disabled,
+		"mission_elapsed": _mission_elapsed,
+		"escort_elapsed": _escort_elapsed,
+		"abandon_elapsed": _abandon_elapsed,
+		"route_choice": _route_choice,
+		"status_override": _status_override,
+		"train_position": _node_position_snapshot(_train),
+		"mia_position": _node_position_snapshot(_mia),
+		"mia_visible": _mia.visible if is_instance_valid(_mia) else true,
+		"alarm_visibility": alarm_visibility
+	}
+
+
+func apply_save_snapshot(snapshot: Dictionary) -> bool:
+	if not snapshot.has("phase"):
+		return false
+	_phase = clampi(int(snapshot.get("phase", int(Phase.LOCKED))), int(Phase.LOCKED), int(Phase.FAILED))
+	_alarms_disabled = clampi(int(snapshot.get("alarms_disabled", 0)), 0, ALARM_POSITIONS.size())
+	_mission_elapsed = clampf(float(snapshot.get("mission_elapsed", 0.0)), 0.0, MAX_MISSION_TIME)
+	_escort_elapsed = maxf(0.0, float(snapshot.get("escort_elapsed", 0.0)))
+	_abandon_elapsed = maxf(0.0, float(snapshot.get("abandon_elapsed", 0.0)))
+	_route_choice = str(snapshot.get("route_choice", ""))
+	_status_override = str(snapshot.get("status_override", ""))
+	if _phase != Phase.LOCKED and _phase != Phase.COMPLETE and _phase != Phase.FAILED and not _visuals_created:
+		_create_station_blockout()
+	_restore_node_position(_train, snapshot.get("train_position", []))
+	_restore_node_position(_mia, snapshot.get("mia_position", []))
+	if is_instance_valid(_mia):
+		_mia.visible = bool(snapshot.get("mia_visible", true))
+	var visibility = snapshot.get("alarm_visibility", [])
+	if visibility is Array:
+		for index in range(mini(visibility.size(), _alarm_markers.size())):
+			if is_instance_valid(_alarm_markers[index]):
+				_alarm_markers[index].visible = bool(visibility[index])
+	_refresh_hud()
+	return true
+
+
+func reload_saved_state() -> void:
+	if _is_completed():
+		_phase = Phase.COMPLETE
+		_award_completion_reward()
+	elif _mission_003_completed():
+		if not _visuals_created:
+			_start_mission()
+	else:
+		_phase = Phase.LOCKED
+	_refresh_hud()
+
+
+func _node_position_snapshot(node: Node3D) -> Array:
+	if not is_instance_valid(node):
+		return []
+	return [node.global_position.x, node.global_position.y, node.global_position.z]
+
+
+func _restore_node_position(node: Node3D, value: Variant) -> void:
+	if not is_instance_valid(node) or not value is Array or value.size() < 3:
+		return
+	node.global_position = Vector3(float(value[0]), float(value[1]), float(value[2]))

@@ -2,6 +2,7 @@ extends SceneTree
 
 ## Headless progression test for the last-train escort mission.
 const RUNTIME_SCRIPT = preload("res://scripts/missions/mission_004_runtime.gd")
+const WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
 
 
 func _initialize() -> void:
@@ -15,6 +16,11 @@ func _run_test() -> void:
 	var player := CharacterBody3D.new()
 	player.name = "Mission004TestPlayer"
 	world.add_child(player)
+	var wallet: Node = WALLET_SCRIPT.new()
+	wallet.name = "PlayerWallet"
+	wallet.set("persistence_enabled", false)
+	wallet.set("initial_balance", 0)
+	player.add_child(wallet)
 	var runtime: CanvasLayer = RUNTIME_SCRIPT.new() as CanvasLayer
 	root.add_child(runtime)
 	runtime.setup(player)
@@ -61,6 +67,9 @@ func _run_test() -> void:
 	runtime._physics_process(0.1)
 	if runtime._phase != 6 or runtime._route_choice != "north":
 		_fail("Choosing the north route did not complete the mission.")
+		return
+	if int(wallet.call("get_balance")) != 350:
+		_fail("Completing mission 004 north route did not credit its reward to the player wallet.")
 		return
 
 	print("PASS: Mission 004 Mia meeting, train access, alarm shutdown, escort and route choice.")
