@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "characters": [
+    {
+      "id": "leo_bennett",
+      "name": "Leo Bennett",
+      "role": "playable_protagonist",
+      "known_relationships": []
+    },
+    {
+      "id": "claire_bennett",
+      "name": "Claire Bennett",
+      "role": "main_character",
+      "known_relationships": [{"type": "mother_of", "character_id": "leo_bennett"}]
+    },
+    {
+      "id": "mia_bennett",
+      "name": "Mia Bennett",
+      "role": "main_character",
+      "known_relationships": [{"type": "sister_of", "character_id": "leo_bennett"}]
+    },
+    {
+      "id": "nora_blake",
+      "name": "Nora Blake",
+      "role": "established_named_character",
+      "known_relationships": []
+    }
+  ],
+  "notes": [
+    "Preserve all four names.",
+    "No unsupported biography, age, personality or relationship is asserted.",
+    "The first mission dialogue is a provisional original story proposal."
+  ]
+}
