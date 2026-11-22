@@ -1,6 +1,6 @@
 # GTA GHIBLI Web Edition — Verified Status Ledger
 
-Updated: 2026-11-22  
+Updated: 2026-11-22 — verified foundation commit `e50cdcdd1cf7a99fa0d00768ca6b640500bcfea9`  
 New project root: `web-edition/`  
 Development branch: `web/standalone-from-empty-2026-11-22`  
 Base: `main` at `c9fc82936a43b80af0e3c25eef41c9fee59e47b7`
@@ -19,21 +19,21 @@ Base: `main` at `c9fc82936a43b80af0e3c25eef41c9fee59e47b7`
 
 | System | Current status | Evidence / limit |
 |---|---|---|
-| Godot project + main scene | Implemented, CI pending | Fresh project files in `web-edition/` |
-| Four named regions | Blockout implemented | Four adjacent ground areas with a single road corridor; not a finished open world |
+| Godot project + main scene | **TESTED** | Godot 4.7 import and scene startup passed in Web CI #18 |
+| Four named regions | **TESTED — blockout only** | Coordinate assertions passed for all four; one connecting road corridor, not a finished open world |
 | Marsa Al-Noor | Provisional landmark | Lighthouse blockout in Harbor City; final map/story placement not approved |
 | Leo Bennett | Placeholder player | Capsule-based temporary visual; no final rig or animation |
 | Claire / Mia / Nora | Placeholder interactive characters | Names and confirmed family relationships preserved; not final character models |
-| Walking / sprinting / jumping | Implemented in source, CI pending | WASD, Shift, Space |
-| Camera orbit / zoom | Implemented in source, CI pending | Right mouse drag and wheel |
-| Interaction | Implemented in source, CI pending | E near Claire/Mia/Nora or starter sedan |
-| Sedan | First drivable pass, CI pending | Basic acceleration, steering, reverse, brake and enter/exit; advanced physics/audio absent |
-| Mission 001 | First playable pass, CI pending | Claire interaction -> Nora interaction -> $250 reward |
-| Local save | Partial implementation | Mission stage and wallet written using ConfigFile; complete save coverage absent |
-| HUD | First pass | Objective, region, wallet, prompt and dialogue text |
-| Map | Preliminary overlay | Region labels only; no live minimap, GPS or road route guidance |
+| Walking / sprinting / jumping | **TESTED** | WASD movement assertion passed; Shift/Space bindings exist but their animations/visual transitions are not final |
+| Camera orbit / zoom | IMPLEMENTED; input delivery smoke-tested | Chromium delivered right-mouse drag; exact camera transform/zoom behavior has not yet been asserted by an automated test |
+| Character / vehicle interaction | **PARTIALLY TESTED** | Claire/Nora actor signals drive the mission; proximity vehicle-entry/exit handler passes. Actual browser E press end-to-end assertion remains to be added |
+| Sedan | **TESTED — first pass** | Nearby entry, acceleration/movement and exit passed; advanced handling, suspension, damage, audio and extra vehicle classes absent |
+| Mission 001 | **TESTED — introductory mission only** | Claire signal -> Nora signal -> $250 reward; duplicate payout rejected |
+| Local save | **PARTIALLY TESTED** | A new MissionManager instance restored Mission 001 stage and $600 wallet; world/player/NPC/vehicle-wide persistence is not implemented |
+| HUD | First implementation; visual review pending | Objective, region, wallet, prompt and dialogue elements exist; visual layout has not had a human screenshot review |
+| Map | PRELIMINARY | M-key overlay with region labels; no live minimap, GPS, destination selection or road route guidance |
 | Browser audio | Not implemented | No placeholder/silent audio used; Arabic voice acting remains unverified/not included |
-| CI Web export / Chromium | Configured, pending this branch | See the new Web Edition CI workflow once it runs |
+| CI Web export / Chromium | **PASS** | Web CI #18 on `e50cdc`; WebGL 2 canvas, keyboard/mouse event delivery, no runtime errors or external requests |
 
 ## Not yet implemented / not claimed
 
@@ -49,14 +49,37 @@ Base: `main` at `c9fc82936a43b80af0e3c25eef41c9fee59e47b7`
 - Final visual parity with the requested painterly anime-inspired direction.
 - 4 GB content milestone; no size target is claimed as reached.
 
-## Required verification before promoting this milestone
+## Latest verified Web foundation — 2026-11-22
 
-1. Godot 4.7 clean import and script parser.
-2. JSON validation for region, cast and mission records.
-3. Automated test for main-scene startup, four-region mapping, character interactions, mission progression/reward, player movement and vehicle drive/exit.
-4. Godot Web export producing non-empty HTML, JavaScript, WebAssembly and PCK.
-5. Local-only Chromium/WebGL 2 startup, keyboard and mouse input smoke test.
-6. No JavaScript/runtime errors and no external network requests.
-7. Exact tracked source, uncompressed export and compressed ZIP sizes plus Web ZIP SHA-256.
+**Source commit:** `e50cdcdd1cf7a99fa0d00768ca6b640500bcfea9`  
+**Draft PR:** [#35](https://github.com/dzdfast-art/GTA-GHIBLI/pull/35)  
+**Web CI #18:** [PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45021272226)  
+**Security Audit #776:** [PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45021272233)
 
-A green foundation test proves only the tested foundation. It is not full-game acceptance.
+The CI log confirms:
+- Godot 4.7 clean import and project startup.
+- Region/cast/mission JSON validation.
+- End-to-end foundation test: WASD movement; Claire/Nora world-signal interaction; Mission 001 reward paid once; nearby E interaction enters the starter sedan; the sedan moves; E exits; a fresh mission-manager instance restores Mission 001 and the $600 balance.
+- Web export completed with non-empty HTML, JavaScript, WebAssembly and PCK.
+- Chromium initialized a 1280×720 Godot canvas with WebGL 2.
+- Browser delivered WASD, right-mouse drag and M-key events.
+- No JavaScript/runtime errors and no external network requests.
+
+### Exact temporary Web export measurement
+
+| Measurement | Bytes | Decimal MB | MiB |
+|---|---:|---:|---:|
+| Uncompressed Web export folder | 39,865,354 | 39.865 | 38.019 |
+| Compressed Web ZIP | 10,270,137 | 10.270 | 9.794 |
+
+- Export files: **7**
+- ZIP SHA-256: `0af14cc871ecf9315886287297072f4fc2e68733b786d5fd02ad15762b1ec3d1`
+- The export and ZIP were created only on the ephemeral GitHub Actions runner, measured, and deleted. No artifact or public download link was uploaded.
+- These bytes include the Godot Web runtime, loader and current small game pack. They are not 10 MB of unique authored game art. The long-term 4 GB genuine-content milestone is **NOT REACHED**.
+
+### Remaining major requirements
+
+The foundation is not the complete game. Still incomplete: detailed connected four-region world and Marsa Al-Noor story role; finished Leo/Claire/Mia/Nora models, rigs and animations; full campaign and restart coverage; real roads/interiors/bridges/streaming/GPS/minimap; motorcycles/trucks/boats/aircraft/helicopters; weapons and combat; pedestrian/traffic/police AI; day/night/weather; final menu/settings/Arabic RTL UI; original music/ambience/SFX; expressive Arabic voice performances; asset provenance/expanded inventory; cross-browser validation beyond Chromium; and meaningful original content growth toward 4 GB.
+
+A green CI foundation run proves only the cases above. It does not prove full-game acceptance, final visual quality, cross-browser compatibility, or completion of the full specification.
+
