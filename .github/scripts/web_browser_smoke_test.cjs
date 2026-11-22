@@ -140,6 +140,10 @@ async function main() {
     // locator actionability/stability wait can time out on an actively rendered
     // WebGL canvas even when the canvas is visible and the game is responsive.
     await page.mouse.click(640, 360);
+    await page.mouse.move(640, 360);
+    await page.mouse.down({ button: "right" });
+    await page.mouse.move(700, 360, { steps: 4 });
+    await page.mouse.up({ button: "right" });
     await page.keyboard.press("w");
     await page.waitForTimeout(1000);
 
@@ -149,7 +153,7 @@ async function main() {
     await page.screenshot({ path: "/tmp/gta-ghibli-web-preview-smoke.png" });
     console.log("PASS: Web preview opened in Chromium on a local-only HTTP server.");
     console.log("PASS: Godot canvas initialized with WebGL 2: " + JSON.stringify(state));
-    console.log("PASS: Browser input events were delivered without runtime errors.");
+    console.log("PASS: Browser WASD and right-mouse drag input events were delivered without runtime errors.");
     console.log("PASS: No external network requests were made by the preview.");
     console.log("PASS: Temporary screenshot saved on the ephemeral runner only.");
   } finally {
