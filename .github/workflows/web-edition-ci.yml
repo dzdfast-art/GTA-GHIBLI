@@ -59,7 +59,7 @@ jobs:
       - name: Export WebAssembly game
         run: |
           mkdir -p web-edition/build/web
-          godot --headless --path web-edition --export-release "Web" web-edition/build/web/index.html
+          godot --headless --path web-edition --export-release "Web" build/web/index.html
 
       - name: Verify Web export files
         shell: bash
