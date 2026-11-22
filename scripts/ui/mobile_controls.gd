@@ -86,11 +86,18 @@ func set_gameplay_visible(value: bool) -> void:
 
 
 func _register_actions() -> void:
-	var actions := ["vehicle_brake", "bike_pedal", "bike_brake",
+	var actions := ["ui_left", "ui_right", "ui_up", "ui_down",
+		"vehicle_brake", "bike_pedal", "bike_brake",
 		"bike_steer_left", "bike_steer_right", "sprint"]
 	for action in actions:
 		if not InputMap.has_action(action):
 			InputMap.add_action(action)
+	# Desktop Web controls: WASD drives on-foot movement and remains
+	# compatible with the shared vehicle/bicycle actions below.
+	_add_key_binding(&"ui_up", KEY_W)
+	_add_key_binding(&"ui_down", KEY_S)
+	_add_key_binding(&"ui_left", KEY_A)
+	_add_key_binding(&"ui_right", KEY_D)
 	_add_key_binding(&"bike_pedal", KEY_W)
 	_add_key_binding(&"bike_brake", KEY_S)
 	_add_key_binding(&"bike_steer_left", KEY_A)
