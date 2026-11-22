@@ -146,3 +146,41 @@ Updated: 2026-11-22. This block supersedes earlier statements in this file that 
 GPS road routing/destination selection, complete roads/interiors/sector streaming, finished player and character rigs/animations, expanded campaign with fail/retry, full-state persistence, safe vehicle exit reservations, traffic/pedestrian/police AI, other vehicle classes, weapons/combat, activities/collectibles/economy/property systems, day/night/weather, original audio/radio/Arabic voice performance, final menus/settings/RTL audit, full asset provenance, browser performance budgets, Firefox/Safari validation and complete research registries remain incomplete or unverified.
 
 This is an intentional partial delivery record. Do not represent the 140 fixed-registry entries or current playable foundation as the completed encyclopaedia or final open-world game.
+
+
+
+---
+
+## CI result and fresh Web package measurement — 2026-11-22
+
+Tested branch head: `e743cc23b6ced0dff1e87a7903e6be294f80f530`  
+PR #35: https://github.com/dzdfast-art/GTA-GHIBLI/pull/35
+
+- Web CI run **#45025430985: PASS** — https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45025430985
+- Security Audit run **#45025431054: PASS** — https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45025431054
+- The research validation CI step passed: JSON parsing, Python bytecode compilation, and all 3 local research-helper CLI tests.
+- Godot 4.7 import passed.
+- The existing gameplay foundation regression test passed.
+- WebAssembly export and HTML/JS/WASM/PCK validation passed.
+- Chromium started a 1280×720 Godot canvas with WebGL 2; WASD, right-mouse drag and map input were delivered; no browser runtime errors and no external network requests were reported.
+- Temporary export and ZIP were deleted after measurement; no GitHub artifact was uploaded.
+
+### Exact package measurement from run #45025430985
+
+| Measurement | Bytes | Decimal MB | MiB |
+|---|---:|---:|---:|
+| Uncompressed Web export | 39,868,954 | 39.869 | 38.022 |
+| Compressed Web ZIP | 10,273,661 | 10.274 | 9.798 |
+
+- Export files: 7.
+- ZIP SHA-256: `9bffd8bf660f18bee7bdb67a59631a1fcb59a175273376f132de3bb10b9f0885`.
+- The ZIP contains the existing Godot Web runtime and small foundation game pack, not 10.274 MB of unique authored gameplay assets.
+- This measurement is for tested head `e743cc...`; it is not a 4 GB milestone. No current 4 GB claim is made.
+
+### Helper use documentation
+- `docs/research/RESEARCH_HELPER_README.md` now contains Windows CMD setup, an end-to-end workflow, commands, limits and expected incomplete validator exit code.
+- `docs/research/sample_source_note.md` is a sample note explicitly marked `USER_NOTE_NOT_VERIFIED`; it must not be cited as historical evidence.
+- These two added documentation/sample files were committed after the tested head. They do not alter the Godot project or CI scripts. The tested head still includes the helper code, its automated tests and the CI validation step.
+
+### Final current boundary
+This release is a playable Web foundation with a researched implementation reference package—not the finished San Andreas-scale open world and not a completed 4,700-entry historical encyclopedia. The four required research registries remain at 140 / 4,700 actual numbered entries, the physics registry has 19 proposed systems and the character subset has four named PS2-manual entries. The exact gaps above remain open.
