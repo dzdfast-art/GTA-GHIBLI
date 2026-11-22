@@ -28,6 +28,12 @@ func _run() -> void:
 		_fail("Expected Claire, Mia, and Nora interactive actors.")
 		return
 
+	var claire := world.get_node_or_null("ClaireBennett")
+	var nora := world.get_node_or_null("NoraBlake")
+	if claire == null or nora == null:
+		_fail("Claire or Nora is missing from the built world.")
+		return
+
 	var vehicles := get_nodes_in_group("drivable_vehicles")
 	if vehicles.size() != 1:
 		_fail("Expected one functional starter sedan in the foundation milestone.")
@@ -54,8 +60,15 @@ func _run() -> void:
 		return
 
 	var vehicle := vehicles[0] as Node3D
+	player.velocity = Vector3.ZERO
+	player.global_position = vehicle.global_position + Vector3(3.0, 0.0, 0.0)
+	await physics_frame
+	player.call("_try_interact")
+	if player.get("_driven_vehicle") != vehicle:
+		_fail("E interaction did not enter the nearby starter sedan.")
+		return
+
 	var vehicle_start: Vector3 = vehicle.global_position
-	player.call("_enter_vehicle", vehicle)
 	Input.action_press("move_forward")
 	for _frame in range(24):
 		await physics_frame
@@ -63,34 +76,49 @@ func _run() -> void:
 	if vehicle.global_position.distance_to(vehicle_start) < 0.25:
 		_fail("The starter sedan did not move under driving input.")
 		return
-	player.call("_exit_vehicle")
+
+	player.call("_try_interact")
 	if player.get("_driven_vehicle") != null:
-		_fail("The player did not exit the sedan.")
+		_fail("E interaction did not exit the starter sedan.")
 		return
 
 	missions.call("reset_progress")
-	missions.call("handle_interaction", "claire")
+	claire.call("activate")
 	if int(missions.get("mission_stage")) != 1:
-		_fail("Mission 001 did not advance after speaking to Claire.")
+		_fail("Activating Claire did not start Mission 001 through the world signal.")
 		return
-	missions.call("handle_interaction", "nora")
+
+	nora.call("activate")
 	if int(missions.get("mission_stage")) != 2:
-		_fail("Mission 001 did not complete after meeting Nora.")
+		_fail("Activating Nora did not complete Mission 001 through the world signal.")
 		return
 	if int(missions.call("get_wallet")) != 600:
 		_fail("Mission 001 reward was not added.")
 		return
-	missions.call("handle_interaction", "nora")
+
+	nora.call("activate")
 	if int(missions.call("get_wallet")) != 600:
 		_fail("Mission 001 reward was not idempotent.")
+		return
+
+	var restored_manager := load("res://scripts/systems/mission_manager.gd").new()
+	root.add_child(restored_manager)
+	await process_frame
+	if int(restored_manager.get("mission_stage")) != 2:
+		_fail("Mission 001 progress was not restored by a new manager instance.")
+		return
+	if int(restored_manager.call("get_wallet")) != 600:
+		_fail("The wallet balance was not restored by a new manager instance.")
 		return
 
 	print("PASS: fresh Web project main scene starts.")
 	print("PASS: four named region coordinates and three named interactive characters exist.")
 	print("PASS: keyboard movement moves the player.")
-	print("PASS: the starter sedan moves, accepts a driver and can be exited.")
-	print("PASS: Mission 001 advances and its $250 reward cannot be claimed twice.")
+	print("PASS: nearby E interaction enters the starter sedan; driving and E exit work.")
+	print("PASS: Claire and Nora world interactions complete Mission 001 and grant $250 once.")
+	print("PASS: Mission 001 stage and $600 wallet restore through a new manager instance.")
 	print("NOTE: this is foundation regression coverage, not full-game acceptance.")
+	restored_manager.queue_free()
 	game.queue_free()
 	await process_frame
 	quit(0)
