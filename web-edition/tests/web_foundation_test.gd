@@ -33,17 +33,39 @@ func _run() -> void:
 		_fail("Expected one functional starter sedan in the foundation milestone.")
 		return
 
-	if world.call("get_region_name_at", Vector3(-96.0, 0.0, 0.0)) != "Harbor City":
-		_fail("Harbor City coordinate mapping failed.")
+	var expected_regions := [
+		[Vector3(-96.0, 0.0, 0.0), "Harbor City"],
+		[Vector3(-32.0, 0.0, 0.0), "Sapphire Coast"],
+		[Vector3(32.0, 0.0, 0.0), "Pine Highlands"],
+		[Vector3(96.0, 0.0, 0.0), "Amber Valley"]
+	]
+	for entry in expected_regions:
+		if world.call("get_region_name_at", entry[0]) != entry[1]:
+			_fail("Region coordinate mapping failed for " + entry[1])
+			return
+
+	var start_position: Vector3 = player.global_position
+	Input.action_press("move_forward")
+	for _frame in range(24):
+		await physics_frame
+	Input.action_release("move_forward")
+	if player.global_position.distance_to(start_position) < 0.35:
+		_fail("WASD forward input did not move the player.")
 		return
-	if world.call("get_region_name_at", Vector3(-32.0, 0.0, 0.0)) != "Sapphire Coast":
-		_fail("Sapphire Coast coordinate mapping failed.")
+
+	var vehicle := vehicles[0] as Node3D
+	var vehicle_start: Vector3 = vehicle.global_position
+	player.call("_enter_vehicle", vehicle)
+	Input.action_press("move_forward")
+	for _frame in range(24):
+		await physics_frame
+	Input.action_release("move_forward")
+	if vehicle.global_position.distance_to(vehicle_start) < 0.25:
+		_fail("The starter sedan did not move under driving input.")
 		return
-	if world.call("get_region_name_at", Vector3(32.0, 0.0, 0.0)) != "Pine Highlands":
-		_fail("Pine Highlands coordinate mapping failed.")
-		return
-	if world.call("get_region_name_at", Vector3(96.0, 0.0, 0.0)) != "Amber Valley":
-		_fail("Amber Valley coordinate mapping failed.")
+	player.call("_exit_vehicle")
+	if player.get("_driven_vehicle") != null:
+		_fail("The player did not exit the sedan.")
 		return
 
 	missions.call("reset_progress")
@@ -56,14 +78,19 @@ func _run() -> void:
 		_fail("Mission 001 did not complete after meeting Nora.")
 		return
 	if int(missions.call("get_wallet")) != 600:
-		_fail("Mission 001 reward was not added exactly once.")
+		_fail("Mission 001 reward was not added.")
+		return
+	missions.call("handle_interaction", "nora")
+	if int(missions.call("get_wallet")) != 600:
+		_fail("Mission 001 reward was not idempotent.")
 		return
 
 	print("PASS: fresh Web project main scene starts.")
-	print("PASS: player, four connected blockout regions, and interactive named characters exist.")
-	print("PASS: one starter sedan is registered as drivable.")
-	print("PASS: Mission 001 progresses and awards the expected one-time reward.")
-	print("NOTE: this is a foundation regression test, not full-game acceptance.")
+	print("PASS: four named region coordinates and three named interactive characters exist.")
+	print("PASS: keyboard movement moves the player.")
+	print("PASS: the starter sedan moves, accepts a driver and can be exited.")
+	print("PASS: Mission 001 advances and its $250 reward cannot be claimed twice.")
+	print("NOTE: this is foundation regression coverage, not full-game acceptance.")
 	game.queue_free()
 	await process_frame
 	quit(0)
