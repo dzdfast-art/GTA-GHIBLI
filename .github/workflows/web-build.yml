@@ -82,6 +82,9 @@ jobs:
       - name: Test bicycle, house and world tutorial
         run: godot --headless --path . --script res://tests/video_reference_tutorial_test.gd
 
+      - name: Test Web desktop keyboard and mouse controls
+        run: godot --headless --path . --script res://tests/web_keyboard_controls_test.gd
+
       - name: Export single-threaded WebAssembly build
         run: |
           mkdir -p build/web
