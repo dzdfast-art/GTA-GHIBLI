@@ -2,7 +2,7 @@ extends Node
 class_name GhibliMissionManager
 
 signal objective_changed(text: String)
-signal notification(text: String)
+signal notification_requested(text: String)
 signal dialogue_changed(speaker: String, line: String)
 signal wallet_changed(amount: int)
 
@@ -40,7 +40,7 @@ func handle_interaction(action_id: String) -> void:
 					"ليو، وصلت رسالة من نورا. ابحث عنها قرب منارة Marsa Al-Noor."
 				)
 				objective_changed.emit(get_objective())
-				notification.emit("بدأت المهمة 001: رسالة عند المرسى")
+				notification_requested.emit("بدأت المهمة 001: رسالة عند المرسى")
 				_save_game()
 			else:
 				dialogue_changed.emit("Claire Bennett", "انتبه لنفسك يا ليو.")
@@ -54,16 +54,16 @@ func handle_interaction(action_id: String) -> void:
 				)
 				objective_changed.emit(get_objective())
 				wallet_changed.emit(wallet)
-				notification.emit("اكتملت المهمة الافتتاحية — مكافأة $250")
+				notification_requested.emit("اكتملت المهمة الافتتاحية — مكافأة $250")
 				_save_game()
 			elif mission_stage == 0:
-				notification.emit("تحدث إلى Claire أولاً لمعرفة وجهتك.")
+				notification_requested.emit("تحدث إلى Claire أولاً لمعرفة وجهتك.")
 			else:
 				dialogue_changed.emit("Nora Blake", "سنلتقي مجدداً في الفصل التالي.")
 		"mia":
 			dialogue_changed.emit("Mia Bennett", "لا تنسَ أن تستكشف المدينة قبل أن تغادرها.")
 		_:
-			notification.emit("لا يوجد تفاعل متاح هنا.")
+			notification_requested.emit("لا يوجد تفاعل متاح هنا.")
 
 
 func reset_progress() -> void:
