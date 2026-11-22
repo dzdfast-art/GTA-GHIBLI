@@ -178,3 +178,11 @@ The previous Web artifact ID 14748948497 is now absent from the artifact list. T
 - Temporary Web export: **378,793,008 bytes** (378.793008 MB; 361.245163 MiB). Web ZIP: **237,940,158 bytes** (237.940158 MB; 226.917418 MiB); SHA-256 `5c75f2201f285a3cd347307eb575f616b32a65c86870d08cd47b57408037e664`. Both are CI-only; no public Web artifact or hosting was created.
 - No game assets were added in this code-only reliability change. Physical Unisoc T606 / 4 GB FPS, RAM, heat, touch feel, install and audio remain NOT VERIFIED.
 - Non-fatal OBJ ambient-light warnings and headless RID/ObjectDB/resource teardown warnings remain; successful CI does not mean warning-free logs.
+
+## 2026-11-22 — Mission 001 unified-save regression
+
+A newly identified gap allowed Mission 001 to write its legacy record while leaving the versioned unified snapshot stale until the 90-second autosave or an application lifecycle event. Durable objective transitions now immediately persist the unified snapshot after the compatibility write. The regression test checks objective-by-objective snapshot content, wallet/reward consistency, stale compatibility recovery, and duplicate-reward prevention.
+
+Status at this record: **IMPLEMENTED in source; TEST PENDING** on Godot validation #814 for 3d1849a6c98198dc87b0d1368b7cc91488d1d0a5. Security audit #759 passed on that SHA; Android #577, private Web/Chromium #223, and Web Build #125 were still running. The last measured APK belongs to older code head e61002762a95300f59fe51e6072496efac6631bd: 254,244,363 raw bytes, 252,488,852 artifact ZIP bytes. No new game assets were added.
+
+main is unchanged at c9fc82936a43b80af0e3c25eef41c9fee59e47b7. PR #31 remains Draft and unmerged. Full mission/world persistence, human Arabic voice recordings and physical-device performance remain incomplete or unverified.

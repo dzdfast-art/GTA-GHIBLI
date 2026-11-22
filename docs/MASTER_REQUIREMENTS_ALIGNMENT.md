@@ -241,3 +241,11 @@ The NPC navigation lifecycle and save-migration code passed Godot validation #79
 - Temporary Web export: **378,793,008 bytes** (378.793008 MB; 361.245163 MiB). Web ZIP: **237,940,158 bytes** (237.940158 MB; 226.917418 MiB); SHA-256 `5c75f2201f285a3cd347307eb575f616b32a65c86870d08cd47b57408037e664`. Both are CI-only; no public Web artifact or hosting was created.
 - No game assets were added in this code-only reliability change. Physical Unisoc T606 / 4 GB FPS, RAM, heat, touch feel, install and audio remain NOT VERIFIED.
 - Non-fatal OBJ ambient-light warnings and headless RID/ObjectDB/resource teardown warnings remain; successful CI does not mean warning-free logs.
+
+## 2026-11-22 — Mission 001 immediate persistence alignment
+
+- Mission 001 now commits each durable objective transition to the unified save coordinator immediately after successfully writing its existing compatibility record.
+- The mission regression now checks serialized snapshots for the square objective, Mira dialogue, completion/reward state, stale legacy-file recovery and reward idempotency.
+- Status on source/test SHA 3d1849a6c98198dc87b0d1368b7cc91488d1d0a5: **IMPLEMENTED / TEST PENDING** until Godot validation #814 completes. Security Audit #759 passed; Android #577, Web/Chromium #223 and Web Build #125 were still running at the time of recording.
+- This does not establish complete process-stop recovery for all missions or persistence for every world entity. Overall save alignment remains **PARTIALLY IMPLEMENTED**.
+- main remains unchanged (c9fc82936a43b80af0e3c25eef41c9fee59e47b7); PR #31 remains Draft and unmerged.

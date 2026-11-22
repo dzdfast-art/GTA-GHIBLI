@@ -315,3 +315,9 @@ The unified `GameSaveManager` already captures the `npc_brains` group and keys e
 - Temporary Web export: **378,793,008 bytes** (378.793008 MB; 361.245163 MiB). Web ZIP: **237,940,158 bytes** (237.940158 MB; 226.917418 MiB); SHA-256 `5c75f2201f285a3cd347307eb575f616b32a65c86870d08cd47b57408037e664`. Both are CI-only; no public Web artifact or hosting was created.
 - No game assets were added in this code-only reliability change. Physical Unisoc T606 / 4 GB FPS, RAM, heat, touch feel, install and audio remain NOT VERIFIED.
 - Non-fatal OBJ ambient-light warnings and headless RID/ObjectDB/resource teardown warnings remain; successful CI does not mean warning-free logs.
+
+## 2026-11-22 — Mission 001 save boundary
+
+Mission 001 now immediately calls the unified save coordinator after durable progress transitions: entering the village square, completing Mira's dialogue, reaching the community garden, and claiming the completion reward. The existing per-mission record is still written first for backward compatibility. The new regression verifies each serialized unified snapshot, completion reward state, stale compatibility recovery and one-time reward behavior.
+
+**Status:** IMPLEMENTED in source; TEST PENDING on Godot validation #814 for 3d1849a6c98198dc87b0d1368b7cc91488d1d0a5. Do not mark it TESTED until that exact head passes. Mission 001–004 whole-process restart coverage and full-world persistence remain incomplete.

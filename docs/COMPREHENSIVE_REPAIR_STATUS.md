@@ -226,3 +226,13 @@ The first parallel push/PR cleanup pair raced: one run deleted artifact 14748948
 - Temporary Web export: **378,793,008 bytes** (378.793008 MB; 361.245163 MiB). Web ZIP: **237,940,158 bytes** (237.940158 MB; 226.917418 MiB); SHA-256 `5c75f2201f285a3cd347307eb575f616b32a65c86870d08cd47b57408037e664`. Both are CI-only; no public Web artifact or hosting was created.
 - No game assets were added in this code-only reliability change. Physical Unisoc T606 / 4 GB FPS, RAM, heat, touch feel, install and audio remain NOT VERIFIED.
 - Non-fatal OBJ ambient-light warnings and headless RID/ObjectDB/resource teardown warnings remain; successful CI does not mean warning-free logs.
+
+## 2026-11-22 — Mission 001 immediate unified-save persistence
+
+- **Implemented in source:** every durable Mission 001 transition (village square reached, Mira dialogue completed, community garden reached, and completion reward claimed) writes the compatibility mission record and immediately calls the versioned GameSaveManager.save_game() when that manager is present.
+- **Failure behavior:** if the legacy write fails, the unified snapshot is not falsely reported as updated. If the unified save fails, a warning is emitted and the compatibility record remains available for migration/recovery.
+- **Regression coverage added:** tests/mission_manager_test.gd inspects the serialized unified snapshots after the square and dialogue transitions, checks the mission completion flag and wallet balance in the same save, then simulates stale compatibility progress and verifies canonical snapshot restore plus reward idempotency.
+- **Verification:** source/test head 3d1849a6c98198dc87b0d1368b7cc91488d1d0a5 has Security Audit #759 passing. Godot #814, Android Debug #577, private Web/Chromium #223 and Web Build #125 were still in progress when this record was authored. Mission 001 regression status therefore remains **TEST PENDING** until Godot #814 completes.
+- **Baseline only (not the latest code head):** prior successful Android Debug #574 on e61002762a95300f59fe51e6072496efac6631bd produced a raw APK of 254,244,363 bytes (254.244363 MB / 242.466319 MiB), artifact ZIP 252,488,852 bytes. The current code-head build #577 has no measured APK size yet.
+- **Scope limit:** this is not proof of full mission 001–004 process-stop recovery or whole-world persistence. The unified save remains **PARTIALLY IMPLEMENTED** until all mission phases, side activities, streamed entities, NPCs and vehicle states have full restart coverage.
+- **Repository safety:** main remains at c9fc82936a43b80af0e3c25eef41c9fee59e47b7; PR #31 remains Draft and unmerged. No public deployment or physical-device test is claimed.
