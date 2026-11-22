@@ -5,7 +5,7 @@
 ## 1. Design principles
 
 - Original world, cast, story, dialogue, missions, art, music and assets.
-- Mobile-first third-person open-world game for Android.
+- Web-first third-person open-world game for modern browsers; keyboard and mouse are the primary desktop controls.
 - Reusable systems and data-driven content; avoid giant scripts and duplicated logic.
 - Variety before volume: no filler characters, copy-paste missions or meaningless repeated interactions.
 - Build a small end-to-end feature, test it, then expand.
@@ -13,13 +13,18 @@
 
 The canonical world and cast are defined in [Master Requirements Alignment](MASTER_REQUIREMENTS_ALIGNMENT.md). Prototype names must not silently replace the canonical requirements.
 
+
+## Current delivery target — Web only (2026-11-22)
+
+The active product target is the Godot 4.7 Web export in modern browsers. Keyboard and mouse are the primary desktop input path: WASD movement, right-mouse drag camera orbit, E interaction and Shift sprint. Web acceptance is performed through headless Godot tests and private Chromium on localhost. Android APK output, physical phones and device-specific measurements are not required or used as release gates. Historical touch-control implementation remains compatibility code only; it does not change the current Web-only target.
+
 ## 2. Player and movement
 
 **Implemented in prototype:** capsule placeholder, camera-relative movement, gravity/floor handling, third-person camera and touch orbit.
 
 **Planned:** final original character rig, walk/run/sprint/jump, climbing, swimming/diving, stealth/crouch where useful, animation state machine, health/status, interaction states and responsive input.
 
-Acceptance: movement, collisions, camera and touch release behavior must be tested on desktop and the target Android device. A capsule is not a finished character.
+Acceptance: movement, collisions, camera orbit, keyboard focus and contextual actions must be tested in desktop Chromium. A physical phone is not a Web acceptance requirement. A capsule is not a finished character.
 
 ## 3. Universal interaction system
 
@@ -57,7 +62,7 @@ Use physics according to gameplay need:
 - Area triggers for proximity, pickups and mission zones.
 - Object-specific mass, friction, bounce, damage and breakability where meaningful.
 
-Support gravity, falling, impacts, pushing/pulling and collisions. Do not simulate every decorative leaf or small prop as a full physics body. Keep collision shapes simpler than visual meshes and profile the result on the target phone.
+Support gravity, falling, impacts, pushing/pulling and collisions. Do not simulate every decorative leaf or small prop as a full physics body. Keep collision shapes simpler than visual meshes and profile the result in the Web browser and keep physics costs bounded.
 
 **Planned:** a reusable physical-object component, object interaction states and tests for pickup/drop, push/pull, impact and collision stability.
 
@@ -94,7 +99,7 @@ Avoid turning daily-life features into repetitive chores. Every activity should 
 
 ## 7. Vehicles and transportation
 
-A vehicle is complete only when it can be entered, controlled, exited and tested in gameplay. A static vehicle mesh does not count.
+A vehicle is complete only when it can be entered, controlled, exited and tested in browser gameplay. A static vehicle mesh does not count.
 
 Required categories to develop where appropriate:
 - Cars: compact, sedan, sports, utility and service vehicles.
@@ -112,7 +117,7 @@ Use category-specific handling and touch HUDs:
 - Boats: steering, throttle, deceleration/reverse where supported, buoyancy and water interaction.
 - Aircraft/helicopters: pitch, roll, yaw, throttle, climb/descent and landing controls.
 
-Do not show aircraft controls while driving a car. The HUD must transition correctly between on-foot, nearby-vehicle, entering, each vehicle category and exiting states.
+Do not show aircraft controls while driving a car. The browser HUD must transition correctly between on-foot, nearby-vehicle, entering, each vehicle category and exiting states.
 
 **Planned first vehicle gate:** one original drivable car with entry/exit, collision, camera, handling and a mobile driving HUD, followed by an automated test and a real-device test.
 
