@@ -146,3 +146,6 @@ No new assets were added. No physical Android device was connected; touch feel, 
 ## 2026-11-22 Web bundle exposure correction
 
 Audit found that the existing Web Build workflow uploaded a 237,933,989-byte ZIP as a GitHub Actions artifact. For a public repository, GitHub documents that public artifact resources can be accessed without authentication. The workflow is being corrected to remove prior GTA-GHIBLI-Web artifacts, retain only byte/ZIP/hash measurements in CI logs, and delete the temporary export from the runner without uploading it. The prior artifact ID 14748948497 remains until the cleanup step runs on the next same-repository Web Build. The local Chromium workflow already confirmed localhost-only serving and no external requests.
+
+
+The previous Web artifact ID 14748948497 is now absent from the artifact list. The initial duplicate cleanup run returned 404 because a parallel run had already deleted it; the workflow now handles that race safely and serializes Web Build runs for this repository.

@@ -14,7 +14,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: gta-ghibli-web-build-${{ github.event.pull_request.number || github.ref }}
+  group: gta-ghibli-web-build-${{ github.repository }}
   cancel-in-progress: true
 
 jobs:
@@ -48,8 +48,14 @@ jobs:
           else
             while IFS= read -r artifact_id; do
               [ -z "${artifact_id}" ] && continue
-              gh api --method DELETE "repos/${GITHUB_REPOSITORY}/actions/artifacts/${artifact_id}"
-              echo "Deleted public Web artifact ${artifact_id}."
+              if gh api --method DELETE "repos/${GITHUB_REPOSITORY}/actions/artifacts/${artifact_id}" >/dev/null 2>&1; then
+                echo "Deleted public Web artifact ${artifact_id}."
+              elif ! gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${artifact_id}" >/dev/null 2>&1; then
+                echo "Web artifact ${artifact_id} was already removed by another concurrent cleanup."
+              else
+                echo "Could not delete Web artifact ${artifact_id}; it still exists."
+                exit 1
+              fi
             done <<< "${artifact_ids}"
           fi
 

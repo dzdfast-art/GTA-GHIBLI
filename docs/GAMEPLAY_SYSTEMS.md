@@ -286,3 +286,6 @@ The wallet's unified snapshot now includes its update timestamp and merges trans
 ## 2026-11-22 private Web build handling
 
 The Web preview is a CI-only test target. The Web Build workflow now removes previously uploaded GTA-GHIBLI-Web artifacts, records exact export and ZIP sizes plus SHA-256 in the workflow log, and deletes the temporary Web export/ZIP from the ephemeral runner. It no longer uploads a Web bundle. The prior public artifact is removed by the next same-repository workflow run; the private Chromium run continues to serve only on localhost and verifies that no external requests occur.
+
+
+The previous downloadable Web ZIP artifact was removed from GitHub Actions. Cleanup is now idempotent under concurrent push/PR events; new Web runs retain only size/hash logs and remove their temporary export without uploading it.

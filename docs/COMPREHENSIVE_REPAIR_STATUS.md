@@ -190,3 +190,8 @@ The Git-tree measurement on docs head 1c8da7 is 350,461,886 bytes (350.462 MB / 
 ## 2026-11-22 Web artifact privacy correction
 
 The previous Web Build workflow uploaded a downloadable GTA-GHIBLI-Web artifact even though the gameplay preview was tested locally. Because the repository is public, GitHub documents that public artifact endpoints can be accessed without authentication. The workflow now deletes prior artifacts named GTA-GHIBLI-Web, does not upload a new Web ZIP, records export/ZIP bytes and SHA-256 in the Actions log only, and removes the temporary export before the runner exits. The cleanup uses only the workflow-scoped GITHUB_TOKEN with actions:write; fork pull requests skip deletion. The earlier run #45008944503 artifact (ID 14748948497) is targeted by this cleanup on the next same-repository run. No Pages deployment is configured.
+
+
+### Cleanup race correction — 2026-11-22
+
+The first parallel push/PR cleanup pair raced: one run deleted artifact 14748948497 and the other then received HTTP 404. The artifact list for the old run is now empty, confirming deletion. The workflow cleanup is now idempotent for an artifact already removed by another run, and push/PR Web builds share one concurrency group to prevent duplicate export work. The first run's cleanup failure was a duplicate-delete race, not a Godot/Web export failure.

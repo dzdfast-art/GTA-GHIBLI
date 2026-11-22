@@ -210,3 +210,6 @@ The NPC navigation lifecycle and save-migration code passed Godot validation #79
 
 - **Web gameplay validation:** TESTED on commit 3d4083a in private Chromium; the preview used a local-only server, initialized WebGL 2, delivered browser input, and made no external network requests.
 - **Web artifact distribution:** BLOCKED pending cleanup of the artifact from run #45008944503. The Web Build workflow has been changed to delete old GTA-GHIBLI-Web artifacts, keep size/hash measurements in logs, and remove the temporary export without uploading a bundle. No public hosting or Pages deployment is used.
+
+
+- **Artifact cleanup:** TESTED for deletion of prior Web artifact 14748948497 (the previous run's artifact list is empty). The initial parallel cleanup produced one harmless 404 race; the workflow now treats an already-deleted artifact as success and serializes Web builds.
