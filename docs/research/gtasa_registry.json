@@ -22,7 +22,10 @@
     "graphics_parent_details": 50,
     "graphics_elements": 50,
     "overlooked_details": 20,
-    "overlooked_elements": 20
+    "overlooked_elements": 20,
+    "physics_records": 19,
+    "character_records": 4,
+    "overflow_records": 0
   },
   "parents": {
     "core": [
@@ -1839,260 +1842,280 @@
         "id": "EXTRA-D-001",
         "topic": "Manual control sets change by locomotion context; the same physical input concept has different meanings while walking, cycling, swimming, flying or driving.",
         "classification": "[CONFIRMED]",
-        "claim": "SRC-003",
+        "claim": "Manual control sets change by locomotion context; the same physical input concept has different meanings while walking, cycling, swimming, flying or driving.",
         "source_refs": [
           "SRC-003"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-003",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "Manual control sets change by locomotion context; the same physical input concept has different meanings while walking, cycling, swimming, flying or driving.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "Manual control sets change by locomotion context; the same physical input concept has different meanings while walking, cycling, swimming, flying or driving."
       },
       {
         "id": "EXTRA-D-002",
         "topic": "A waypoint selected on the full map is intended to appear on the radar, linking long-range planning to the in-world navigation display.",
         "classification": "[CONFIRMED]",
-        "claim": "SRC-003",
+        "claim": "A waypoint selected on the full map is intended to appear on the radar, linking long-range planning to the in-world navigation display.",
         "source_refs": [
           "SRC-003"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-003",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "A waypoint selected on the full map is intended to appear on the radar, linking long-range planning to the in-world navigation display.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "A waypoint selected on the full map is intended to appear on the radar, linking long-range planning to the in-world navigation display."
       },
       {
         "id": "EXTRA-D-003",
         "topic": "The map legend can be hidden and map layers such as territory, mission locations and contacts can be toggled; map readability is therefore user-configurable.",
         "classification": "[CONFIRMED]",
-        "claim": "SRC-003",
+        "claim": "The map legend can be hidden and map layers such as territory, mission locations and contacts can be toggled; map readability is therefore user-configurable.",
         "source_refs": [
           "SRC-003"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-003",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The map legend can be hidden and map layers such as territory, mission locations and contacts can be toggled; map readability is therefore user-configurable.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The map legend can be hidden and map layers such as territory, mission locations and contacts can be toggled; map readability is therefore user-configurable."
       },
       {
         "id": "EXTRA-D-004",
         "topic": "The vehicle control page includes trip-skip, horn and radio cycling in addition to steering and acceleration, so vehicle mode is also a media/utility context.",
         "classification": "[CONFIRMED]",
-        "claim": "SRC-003",
+        "claim": "The vehicle control page includes trip-skip, horn and radio cycling in addition to steering and acceleration, so vehicle mode is also a media/utility context.",
         "source_refs": [
           "SRC-003"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-003",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The vehicle control page includes trip-skip, horn and radio cycling in addition to steering and acceleration, so vehicle mode is also a media/utility context.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The vehicle control page includes trip-skip, horn and radio cycling in addition to steering and acceleration, so vehicle mode is also a media/utility context."
       },
       {
         "id": "EXTRA-D-005",
         "topic": "The manual treats underwater movement as a distinct control mode, not as ordinary walking with a water visual effect.",
         "classification": "[CONFIRMED]",
-        "claim": "SRC-003",
+        "claim": "The manual treats underwater movement as a distinct control mode, not as ordinary walking with a water visual effect.",
         "source_refs": [
           "SRC-003"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-003",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The manual treats underwater movement as a distinct control mode, not as ordinary walking with a water visual effect.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The manual treats underwater movement as a distinct control mode, not as ordinary walking with a water visual effect."
       },
       {
         "id": "EXTRA-D-006",
         "topic": "The helicopter and plane manual pages assign distinct vertical, pitch/roll and rudder actions; aircraft should not be implemented as cars with a flight animation.",
         "classification": "[CONFIRMED]",
-        "claim": "SRC-003",
+        "claim": "The helicopter and plane manual pages assign distinct vertical, pitch/roll and rudder actions; aircraft should not be implemented as cars with a flight animation.",
         "source_refs": [
           "SRC-003"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-003",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The helicopter and plane manual pages assign distinct vertical, pitch/roll and rudder actions; aircraft should not be implemented as cars with a flight animation.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The helicopter and plane manual pages assign distinct vertical, pitch/roll and rudder actions; aircraft should not be implemented as cars with a flight animation."
       },
       {
         "id": "EXTRA-D-007",
         "topic": "The developer's low-detail model explanation concerns shared building representations loaded as travel proceeds, not simply reducing every mesh independently.",
         "classification": "[CONFIRMED]",
-        "claim": "SRC-004",
+        "claim": "The developer's low-detail model explanation concerns shared building representations loaded as travel proceeds, not simply reducing every mesh independently.",
         "source_refs": [
           "SRC-004"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-004",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The developer's low-detail model explanation concerns shared building representations loaded as travel proceeds, not simply reducing every mesh independently.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The developer's low-detail model explanation concerns shared building representations loaded as travel proceeds, not simply reducing every mesh independently."
       },
       {
         "id": "EXTRA-D-008",
         "topic": "The developer Q&A says some city sections had reached the game's object-count limit, connecting density directly to partition capacity.",
         "classification": "[CONFIRMED]",
-        "claim": "SRC-004",
+        "claim": "The developer Q&A says some city sections had reached the game's object-count limit, connecting density directly to partition capacity.",
         "source_refs": [
           "SRC-004"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-004",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The developer Q&A says some city sections had reached the game's object-count limit, connecting density directly to partition capacity.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The developer Q&A says some city sections had reached the game's object-count limit, connecting density directly to partition capacity."
       },
       {
         "id": "EXTRA-D-009",
         "topic": "The 6×6 km figure explicitly excludes interiors; quoting it as the complete traversable content size would undercount the game.",
         "classification": "[CONFIRMED]",
-        "claim": "SRC-004",
+        "claim": "The 6×6 km figure explicitly excludes interiors; quoting it as the complete traversable content size would undercount the game.",
         "source_refs": [
           "SRC-004"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-004",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The 6×6 km figure explicitly excludes interiors; quoting it as the complete traversable content size would undercount the game.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The 6×6 km figure explicitly excludes interiors; quoting it as the complete traversable content size would undercount the game."
       },
       {
         "id": "EXTRA-D-010",
         "topic": "The early three-map proposal would have separated emergency vehicle and weather sets by city, but this was a discarded plan rather than shipped behavior.",
         "classification": "[SECONDARY]",
-        "claim": "SRC-006",
+        "claim": "The early three-map proposal would have separated emergency vehicle and weather sets by city, but this was a discarded plan rather than shipped behavior.",
         "source_refs": [
           "SRC-006"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-006",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The early three-map proposal would have separated emergency vehicle and weather sets by city, but this was a discarded plan rather than shipped behavior.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The early three-map proposal would have separated emergency vehicle and weather sets by city, but this was a discarded plan rather than shipped behavior."
       },
       {
         "id": "EXTRA-D-011",
         "topic": "A later developer retrospective says the separate-city proposal was abandoned after a meeting before artists began full work on those maps.",
         "classification": "[SECONDARY]",
-        "claim": "SRC-006",
+        "claim": "A later developer retrospective says the separate-city proposal was abandoned after a meeting before artists began full work on those maps.",
         "source_refs": [
           "SRC-006"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-006",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "A later developer retrospective says the separate-city proposal was abandoned after a meeting before artists began full work on those maps.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "A later developer retrospective says the separate-city proposal was abandoned after a meeting before artists began full work on those maps."
       },
       {
         "id": "EXTRA-D-012",
         "topic": "The PS2 manual identifies its disc as NTSC U/C; manual-derived control claims in this registry must not automatically be generalized to PAL manuals or later ports.",
         "classification": "[CONFIRMED]",
-        "claim": "SRC-003",
+        "claim": "The PS2 manual identifies its disc as NTSC U/C; manual-derived control claims in this registry must not automatically be generalized to PAL manuals or later ports.",
         "source_refs": [
           "SRC-003"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-003",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The PS2 manual identifies its disc as NTSC U/C; manual-derived control claims in this registry must not automatically be generalized to PAL manuals or later ports.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The PS2 manual identifies its disc as NTSC U/C; manual-derived control claims in this registry must not automatically be generalized to PAL manuals or later ports."
       },
       {
         "id": "EXTRA-D-013",
         "topic": "The initial March 2004 press release gives forecast dates, while the current Rockstar page displays October 26; forecast dates must not be recorded as actual launch dates.",
         "classification": "[CONFIRMED]",
-        "claim": "SRC-001;SRC-002",
+        "claim": "The initial March 2004 press release gives forecast dates, while the current Rockstar page displays October 26; forecast dates must not be recorded as actual launch dates.",
         "source_refs": [
           "SRC-001",
           "SRC-002"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-001;SRC-002",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The initial March 2004 press release gives forecast dates, while the current Rockstar page displays October 26; forecast dates must not be recorded as actual launch dates.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The initial March 2004 press release gives forecast dates, while the current Rockstar page displays October 26; forecast dates must not be recorded as actual launch dates."
       },
       {
         "id": "EXTRA-D-014",
         "topic": "The official December 2004 announcement schedules PC and Xbox for June 2005, establishing that those ports were not the March 2004 PS2 baseline.",
         "classification": "[CONFIRMED]",
-        "claim": "SRC-007",
+        "claim": "The official December 2004 announcement schedules PC and Xbox for June 2005, establishing that those ports were not the March 2004 PS2 baseline.",
         "source_refs": [
           "SRC-007"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-007",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The official December 2004 announcement schedules PC and Xbox for June 2005, establishing that those ports were not the March 2004 PS2 baseline.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The official December 2004 announcement schedules PC and Xbox for June 2005, establishing that those ports were not the March 2004 PS2 baseline."
       },
       {
         "id": "EXTRA-D-015",
         "topic": "Obbe Vermeij describes RenderWare as the engine used for San Andreas, but does not disclose the game's complete custom gameplay framework in that interview.",
         "classification": "[CONFIRMED]",
-        "claim": "SRC-005",
+        "claim": "Obbe Vermeij describes RenderWare as the engine used for San Andreas, but does not disclose the game's complete custom gameplay framework in that interview.",
         "source_refs": [
           "SRC-005"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-005",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "Obbe Vermeij describes RenderWare as the engine used for San Andreas, but does not disclose the game's complete custom gameplay framework in that interview.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "Obbe Vermeij describes RenderWare as the engine used for San Andreas, but does not disclose the game's complete custom gameplay framework in that interview."
       },
       {
         "id": "EXTRA-D-016",
         "topic": "The manual presents the map as both a travel aid and an information filter: it supports waypoint placement while optional layers can be hidden.",
         "classification": "[INFERRED]",
-        "claim": "SRC-003",
+        "claim": "The manual presents the map as both a travel aid and an information filter: it supports waypoint placement while optional layers can be hidden.",
         "source_refs": [
           "SRC-003"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-003",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The manual presents the map as both a travel aid and an information filter: it supports waypoint placement while optional layers can be hidden.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The manual presents the map as both a travel aid and an information filter: it supports waypoint placement while optional layers can be hidden."
       },
       {
         "id": "EXTRA-D-017",
         "topic": "The controls manual includes positive and negative conversation responses, suggesting that dialogue interaction can include player choice at the input level; it does not prove branching narrative outcomes.",
         "classification": "[CONFIRMED]",
-        "claim": "SRC-003",
+        "claim": "The controls manual includes positive and negative conversation responses, suggesting that dialogue interaction can include player choice at the input level; it does not prove branching narrative outcomes.",
         "source_refs": [
           "SRC-003"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-003",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The controls manual includes positive and negative conversation responses, suggesting that dialogue interaction can include player choice at the input level; it does not prove branching narrative outcomes.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The controls manual includes positive and negative conversation responses, suggesting that dialogue interaction can include player choice at the input level; it does not prove branching narrative outcomes."
       },
       {
         "id": "EXTRA-D-018",
         "topic": "The current GTADb catalogue combines multiple platforms in its platform list; its aggregate mission, vehicle and collectible figures are not accepted as PS2-only counts here.",
         "classification": "[SECONDARY]",
-        "claim": "SRC-009",
+        "claim": "The current GTADb catalogue combines multiple platforms in its platform list; its aggregate mission, vehicle and collectible figures are not accepted as PS2-only counts here.",
         "source_refs": [
           "SRC-009"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-009",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The current GTADb catalogue combines multiple platforms in its platform list; its aggregate mission, vehicle and collectible figures are not accepted as PS2-only counts here.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The current GTADb catalogue combines multiple platforms in its platform list; its aggregate mission, vehicle and collectible figures are not accepted as PS2-only counts here."
       },
       {
         "id": "EXTRA-D-019",
         "topic": "The public credits transcription separates Rockstar North production roles from New York publishing/production/QA roles; studio location and credited responsibility should remain separate fields.",
         "classification": "[SECONDARY]",
-        "claim": "SRC-008",
+        "claim": "The public credits transcription separates Rockstar North production roles from New York publishing/production/QA roles; studio location and credited responsibility should remain separate fields.",
         "source_refs": [
           "SRC-008"
         ],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "SRC-008",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The public credits transcription separates Rockstar North production roles from New York publishing/production/QA roles; studio location and credited responsibility should remain separate fields.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The public credits transcription separates Rockstar North production roles from New York publishing/production/QA roles; studio location and credited responsibility should remain separate fields."
       },
       {
         "id": "EXTRA-D-020",
         "topic": "The available public evidence in this research pass does not settle the exact PS2 build number, source-control product or per-sector memory budget.",
         "classification": "[UNKNOWN]",
-        "claim": "",
+        "claim": "The available public evidence in this research pass does not settle the exact PS2 build number, source-control product or per-sector memory budget.",
         "source_refs": [],
         "build_scope": "PS2 2004 baseline unless the cited source's platform context is explicitly stated",
         "status": "RESEARCHED — scope caveat retained",
-        "condition_implication_verification": "",
-        "verification": "See evidence label and referenced source; full PS2 build replay not performed."
+        "condition_implication_verification": "The available public evidence in this research pass does not settle the exact PS2 build number, source-control product or per-sector memory budget.",
+        "verification": "See evidence label and referenced source; full PS2 build replay not performed.",
+        "detail": "The available public evidence in this research pass does not settle the exact PS2 build number, source-control product or per-sector memory budget."
       }
     ],
     "overlooked_elements": [
@@ -2455,5 +2478,14 @@
     "The first 20 extra details/elements are distinct substantive entries; IDs 021–100 in each registry are not delivered.",
     "Physics records are proposed models for the original Web game, not claims about Rockstar's internal implementation.",
     "Character census is a starter subset, not a complete census."
-  ]
+  ],
+  "audit": {
+    "required_total_main_and_extra": 4700,
+    "actual_total_main_and_extra": 140,
+    "missing_core_elements": 2200,
+    "missing_graphics_elements": 2200,
+    "missing_overlooked_details": 80,
+    "missing_overlooked_elements": 80,
+    "semantic_duplicate_review": "Editorial review still required; automated ID validation cannot prove semantic uniqueness."
+  }
 }
