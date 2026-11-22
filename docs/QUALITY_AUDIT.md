@@ -3,6 +3,11 @@
 Audit date: 2026-11-13  
 Audited branch: `main`
 
+
+## Current platform scope — 2026-11-22 (authoritative update)
+
+The current delivery target is Godot 4.7 Web in modern browsers. Android, APK creation, physical phones and device-specific FPS/RAM/thermal/touch acceptance are outside current scope. Earlier Android/device statements in this audit are historical records, not current release blockers. Web acceptance requires Godot 4.7 import/tests, private Web export, Chromium WebGL 2 startup, browser keyboard/mouse input, no runtime errors, no external requests, and no public artifact or hosting deployment.
+
 ## Repository facts
 
 - The repository is public and the default branch is `main`.
