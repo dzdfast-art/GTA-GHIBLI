@@ -321,6 +321,10 @@ func _restore_legacy_files(files: Variant) -> void:
 		var path := str(path_value)
 		if not _is_allowed_legacy_restore_path(path):
 			continue
+		# Do not overwrite an existing on-device file with an older embedded copy.
+		# Versioned subsystem snapshots below still restore canonical state.
+		if FileAccess.file_exists(path):
+			continue
 		var content := str(files[path_value])
 		if content.to_utf8_buffer().size() > MAX_LEGACY_RESTORE_BYTES:
 			continue

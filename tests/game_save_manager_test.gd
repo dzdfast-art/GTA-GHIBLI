@@ -5,6 +5,7 @@ const WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
 const NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
 const TEST_SAVE_PATH := "user://gta_ghibli_save_manager_regression.json"
 const TEST_RELATIONSHIP_PATH := "user://npc_relationships/save_manager_test_migration.json"
+const TEST_RELATIONSHIP_NEWER_PATH := "user://npc_relationships/save_manager_newer.json"
 const TEST_UNRELATED_PATH := "user://gta_ghibli_save_manager_unrelated.txt"
 const TEST_ESCAPE_PATH := "user://save_manager_escape.json"
 const LEGACY_WALLET_PATH := "user://player_wallet.json"
@@ -22,6 +23,8 @@ func _initialize() -> void:
 func _run() -> void:
 	_preserve_file(LEGACY_WALLET_PATH)
 	_preserve_file(LEGACY_NEEDS_PATH)
+	_preserve_file(TEST_RELATIONSHIP_PATH)
+	_preserve_file(TEST_RELATIONSHIP_NEWER_PATH)
 	_remove_test_files()
 	if not _write_text(LEGACY_WALLET_PATH, JSON.stringify({
 		"schema_version": 2,
@@ -131,6 +134,17 @@ func _run() -> void:
 	if int(needs.get("hunger")) != 82 or int(needs.get("thirst")) != 73 or int(needs.get("energy")) != 64:
 		_fail("The unified needs snapshot must override stale legacy needs files.")
 		return
+
+	if not wallet.call("add_money_once", "post_snapshot_reward", 50):
+		_fail("The wallet must accept a new transaction after the unified snapshot.")
+		return
+	if not manager.call("load_game"):
+		_fail("The unified save manager must reload after a newer wallet transaction.")
+		return
+	if int(wallet.call("get_balance")) != 325 or not wallet.call("has_reward_transaction", "post_snapshot_reward"):
+		_fail("Restore must preserve a newer legacy wallet balance and transaction ledger.")
+		return
+
 	if not FileAccess.file_exists(TEST_SAVE_PATH):
 		_fail("The save manager must create its versioned save file.")
 		return
@@ -153,6 +167,7 @@ func _run() -> void:
 		_fail("The unified save must capture an existing NPC relationship JSON file.")
 		return
 	legacy_files[TEST_UNRELATED_PATH] = "must_not_overwrite_unrelated_user_file"
+	legacy_files[TEST_RELATIONSHIP_NEWER_PATH] = "must_not_overwrite_newer_relationship"
 	legacy_files["user://npc_relationships/../../save_manager_escape.json"] = "must_not_escape_user_directory"
 	if not _write_text(TEST_SAVE_PATH, JSON.stringify(parsed, "\t")):
 		_fail("Could not write the controlled restore-path regression fixture.")
@@ -161,6 +176,9 @@ func _run() -> void:
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(TEST_RELATIONSHIP_PATH))
 	if not _write_text(TEST_UNRELATED_PATH, "keep-existing-user-file"):
 		_fail("Could not create the unrelated user-file sentinel.")
+		return
+	if not _write_text(TEST_RELATIONSHIP_NEWER_PATH, "keep-existing-newer-relationship"):
+		_fail("Could not create the newer allowlisted NPC relationship sentinel.")
 		return
 	if FileAccess.file_exists(TEST_ESCAPE_PATH):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(TEST_ESCAPE_PATH))
@@ -185,6 +203,9 @@ func _run() -> void:
 	if _read_text(TEST_UNRELATED_PATH) != "keep-existing-user-file":
 		_fail("An unrelated user file must not be overwritten by save restoration.")
 		return
+	if _read_text(TEST_RELATIONSHIP_NEWER_PATH) != "keep-existing-newer-relationship":
+		_fail("A newer existing allowlisted NPC file must not be overwritten by an older embedded copy.")
+		return
 	if FileAccess.file_exists(TEST_ESCAPE_PATH):
 		_fail("A traversal entry must not write outside the NPC relationship directory.")
 		return
@@ -194,7 +215,7 @@ func _run() -> void:
 	scene.queue_free()
 	await process_frame
 	_restore_preserved_files()
-	print("PASS: first-launch legacy migration, authoritative wallet/needs snapshots, player transform restore, NPC legacy migration and traversal protection.")
+	print("PASS: first-launch migration, authoritative needs, newer wallet transaction recovery, player transform, NPC restore precedence and traversal protection.")
 	quit(0)
 
 
@@ -228,6 +249,7 @@ func _remove_test_files() -> void:
 		TEST_SAVE_PATH + ".tmp",
 		TEST_SAVE_PATH + ".bak",
 		TEST_RELATIONSHIP_PATH,
+		TEST_RELATIONSHIP_NEWER_PATH,
 		TEST_UNRELATED_PATH,
 		TEST_ESCAPE_PATH
 	]:
