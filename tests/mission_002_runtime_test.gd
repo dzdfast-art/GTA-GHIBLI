@@ -67,6 +67,32 @@ func _run_test() -> void:
 		_fail("Approaching the witness did not start the escape phase.")
 		return
 
+	var rescue_snapshot: Dictionary = runtime.get_save_snapshot()
+	if not bool(rescue_snapshot.get("passenger_rescued", false)):
+		_fail("The active rescue snapshot must record that the witness is now a passenger.")
+		return
+	for actor in [runtime._pursuer, runtime._backup_pursuer, runtime._witness, runtime._passenger_visual]:
+		if is_instance_valid(actor):
+			actor.queue_free()
+	runtime._pursuer = null
+	runtime._backup_pursuer = null
+	runtime._witness = null
+	runtime._passenger_visual = null
+	runtime._visuals_created = false
+	await process_frame
+	if not runtime.apply_save_snapshot(rescue_snapshot):
+		_fail("The unified mission snapshot must restore an active rescue pursuit.")
+		return
+	if runtime._pursuer == null or not runtime._pursuer.visible or runtime._backup_pursuer == null or not runtime._backup_pursuer.visible:
+		_fail("Restoring the escape phase must reactivate both pursuer vehicles.")
+		return
+	if runtime._witness == null or runtime._witness.visible:
+		_fail("Restoring the escape phase must keep the rescued witness hidden at the rescue point.")
+		return
+	if runtime._passenger_visual == null or runtime._passenger_visual.get_parent() != car:
+		_fail("Restoring the escape phase must recreate the rescued passenger inside the saved vehicle.")
+		return
+
 	player.is_driving = true
 	car.driver = player
 	if runtime._backup_pursuer == null or not runtime._backup_pursuer.visible:

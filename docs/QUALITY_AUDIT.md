@@ -161,3 +161,11 @@ The previous Web artifact ID 14748948497 is now absent from the artifact list. T
 - Godot logs still contain OBJ ambient-light import warnings and several test-process resource/RID/ObjectDB teardown warnings. Green workflow status does not mean the log is warning-free.
 - Physical Unisoc T606 / 4 GB device performance remains NOT VERIFIED: no physical device was attached; FPS, peak RAM, heat, touch feel, battery and device audio are unmeasured.
 - Arabic dialogue remains BLOCKED for offline delivery: the voice manifest describes remote first-play caching, but no local dialogue audio files are present in the tracked `audio/characters/` tree. The 25-line acting-direction test does not prove recorded human performances or bundled offline clips.
+
+## 2026-11-22 — Mission 002 save/resume continuity candidate
+
+- Mission 002 snapshots now retain both pursuer visibility states and whether the rescued witness is attached as a passenger. Older snapshots without these keys use phase-aware defaults.
+- Restoring an active escape phase recreates the passenger visual on the existing vehicle and restores witness/pursuer visibility, preventing a resumed chase from silently losing its actors.
+- Mission 001–004 save writers now explicitly flush, check the write result and close their files at mission-save boundaries.
+- Regression coverage simulates removal of the rescue actors and restores the active pursuit from its snapshot before continuing the mission.
+- This change adds no game assets. Current-head CI is required before classifying this candidate as TESTED; no physical-device result is implied.

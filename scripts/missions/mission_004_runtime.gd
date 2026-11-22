@@ -190,6 +190,13 @@ func _complete_mission(choice: String) -> void:
 			"alarms_disabled": _alarms_disabled,
 			"reward_currency": reward
 		}, "\t"))
+		file.flush()
+		var write_error := file.get_error()
+		file.close()
+		if write_error != OK:
+			push_warning("Mission 004 completion could not be flushed to storage.")
+	else:
+		push_warning("Could not open Mission 004 completion save.")
 	_award_completion_reward(reward)
 	_status_override = "نجحت! أنقذت ميا وأوصلت القطار عبر المسار %s. مكافأتك %d." % ["الشمالي" if choice == "north" else "الجنوبي", reward]
 	if _retry_button != null:

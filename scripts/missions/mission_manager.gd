@@ -99,7 +99,10 @@ func _save_progress() -> bool:
 		push_warning("Could not write local save file.")
 		return false
 	file.store_string(JSON.stringify(save_data, "\t"))
-	return file.get_error() == OK
+	file.flush()
+	var write_error := file.get_error()
+	file.close()
+	return write_error == OK
 
 
 func _notification(what: int) -> void:

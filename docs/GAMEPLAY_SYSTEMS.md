@@ -298,3 +298,11 @@ The previous downloadable Web ZIP artifact was removed from GitHub Actions. Clea
 The unified `GameSaveManager` already captures the `npc_brains` group and keys each snapshot by `persistence_id`, falling back to the actor name. The regression test uses a stationary NPC fixture and verifies stable-ID capture, serialized fields and transform/schedule/relationship round-trip.
 
 **Status: TESTED for currently instantiated NPCBrain nodes. Overall NPC/world persistence remains PARTIALLY IMPLEMENTED:** streamed NPCs that spawn after the load pass, duplicate fallback names, transient alarm/path/animation state and every world entity are not covered. Do not claim the entire world is saved.
+
+## 2026-11-22 — Mission 002 save/resume continuity candidate
+
+- Mission 002 snapshots now retain both pursuer visibility states and whether the rescued witness is attached as a passenger. Older snapshots without these keys use phase-aware defaults.
+- Restoring an active escape phase recreates the passenger visual on the existing vehicle and restores witness/pursuer visibility, preventing a resumed chase from silently losing its actors.
+- Mission 001–004 save writers now explicitly flush, check the write result and close their files at mission-save boundaries.
+- Regression coverage simulates removal of the rescue actors and restores the active pursuit from its snapshot before continuing the mission.
+- This change adds no game assets. Current-head CI is required before classifying this candidate as TESTED; no physical-device result is implied.

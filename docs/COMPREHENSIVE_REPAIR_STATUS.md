@@ -209,3 +209,11 @@ The first parallel push/PR cleanup pair raced: one run deleted artifact 14748948
 - **Scope limits:** only NPCBrain instances currently registered in `npc_brains` are captured/restored. A stable unique `persistence_id` is required where actor names may collide. Deferred restore for NPCs spawned after load, full streamed-world entity state, path/animation/transient alarm state and complete mission 001–004 restart coverage remain PARTIALLY IMPLEMENTED or NOT VERIFIED.
 - **Warnings:** Godot validation passed, but the log still contains OBJ material ambient-light warnings and several headless-test RID/ObjectDB/resource teardown warnings. It is not warning-free.
 - No new game assets were added. Main remains unchanged; PR #31 remains Draft and unmerged.
+
+## 2026-11-22 — Mission 002 save/resume continuity candidate
+
+- Mission 002 snapshots now retain both pursuer visibility states and whether the rescued witness is attached as a passenger. Older snapshots without these keys use phase-aware defaults.
+- Restoring an active escape phase recreates the passenger visual on the existing vehicle and restores witness/pursuer visibility, preventing a resumed chase from silently losing its actors.
+- Mission 001–004 save writers now explicitly flush, check the write result and close their files at mission-save boundaries.
+- Regression coverage simulates removal of the rescue actors and restores the active pursuit from its snapshot before continuing the mission.
+- This change adds no game assets. Current-head CI is required before classifying this candidate as TESTED; no physical-device result is implied.

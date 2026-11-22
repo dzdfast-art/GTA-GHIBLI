@@ -208,6 +208,13 @@ func _complete_mission() -> void:
 			"detections": _detections,
 			"reward_currency": 220
 		}, "\t"))
+		file.flush()
+		var write_error := file.get_error()
+		file.close()
+		if write_error != OK:
+			push_warning("Mission 003 completion could not be flushed to storage.")
+	else:
+		push_warning("Could not open Mission 003 completion save.")
 	_award_completion_reward()
 	_status_override = "أحسنت! وصلت الأدلة إلى نورا. انفتح مسار التحقيق في الميناء."
 	for guard in _guards:

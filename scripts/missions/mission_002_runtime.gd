@@ -149,6 +149,11 @@ func _save_completion() -> void:
 		"completed": true,
 		"reward_currency": int(_mission_data.get("rewards", {}).get("currency", 180))
 	}, "\t"))
+	file.flush()
+	var write_error := file.get_error()
+	file.close()
+	if write_error != OK:
+		push_warning("Mission 002 completion could not be flushed to storage.")
 
 
 func _start_mission() -> void:
@@ -505,7 +510,10 @@ func get_save_snapshot() -> Dictionary:
 		"pursuer_position": _node_position_snapshot(_pursuer),
 		"backup_pursuer_position": _node_position_snapshot(_backup_pursuer),
 		"witness_position": _node_position_snapshot(_witness),
-		"witness_visible": _witness.visible if is_instance_valid(_witness) else false
+		"witness_visible": _witness.visible if is_instance_valid(_witness) else false,
+		"pursuer_visible": _pursuer.visible if is_instance_valid(_pursuer) else false,
+		"backup_pursuer_visible": _backup_pursuer.visible if is_instance_valid(_backup_pursuer) else false,
+		"passenger_rescued": is_instance_valid(_passenger_visual)
 	}
 
 
@@ -523,7 +531,17 @@ func apply_save_snapshot(snapshot: Dictionary) -> bool:
 	_restore_node_position(_backup_pursuer, snapshot.get("backup_pursuer_position", []))
 	_restore_node_position(_witness, snapshot.get("witness_position", []))
 	if is_instance_valid(_witness):
-		_witness.visible = bool(snapshot.get("witness_visible", true))
+		_witness.visible = bool(snapshot.get("witness_visible", _phase != Phase.ESCAPE_PURSUIT))
+	if is_instance_valid(_pursuer):
+		_pursuer.visible = bool(snapshot.get("pursuer_visible", _phase == Phase.ESCAPE_PURSUIT))
+	if is_instance_valid(_backup_pursuer):
+		_backup_pursuer.visible = bool(snapshot.get("backup_pursuer_visible", _phase == Phase.ESCAPE_PURSUIT))
+	var passenger_rescued := bool(snapshot.get("passenger_rescued", _phase == Phase.ESCAPE_PURSUIT))
+	if passenger_rescued:
+		_add_passenger_visual()
+	elif is_instance_valid(_passenger_visual):
+		_passenger_visual.queue_free()
+		_passenger_visual = null
 	_refresh_hud()
 	return true
 
