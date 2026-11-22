@@ -90,6 +90,18 @@ func _run() -> void:
 	npc_brain.set("work_position", Vector3(24.0, 0.0, -8.0))
 	npc_brain.set("home_position", Vector3(8.0, 0.0, 14.0))
 	npc_brain.call("set_world_hour", 22)
+	if not npc_brain.is_in_group("npc_brains"):
+		_fail("An NPC brain must register in the unified save manager group.")
+		return
+	var live_npc_snapshots: Dictionary = manager.call("_capture_npc_snapshots")
+	var live_npc_snapshot: Dictionary = live_npc_snapshots.get("save_manager_snapshot_npc", {})
+	if not live_npc_snapshot.has("actor_position") or Vector3(
+		float(live_npc_snapshot["actor_position"][0]),
+		float(live_npc_snapshot["actor_position"][1]),
+		float(live_npc_snapshot["actor_position"][2])
+	).distance_to(Vector3(8.0, 0.0, 14.0)) > 0.001:
+		_fail("The unified save manager must capture the NPC actor world position under its stable ID.")
+		return
 
 	if not FileAccess.file_exists(TEST_SAVE_PATH):
 		_fail("Existing legacy subsystem files must migrate into a unified save on first launch.")
@@ -141,6 +153,18 @@ func _run() -> void:
 	if not manager.call("save_game"):
 		_fail("The unified save manager must save a valid local game state.")
 		return
+	var immediate_save_file := FileAccess.open(TEST_SAVE_PATH, FileAccess.READ)
+	if immediate_save_file == null:
+		_fail("The unified NPC snapshot file must be readable immediately after saving.")
+		return
+	var immediate_save = JSON.parse_string(immediate_save_file.get_as_text())
+	immediate_save_file.close()
+	var immediate_npc_snapshots: Dictionary = immediate_save.get("npc_relationships", {})
+	var immediate_npc_snapshot: Dictionary = immediate_npc_snapshots.get("save_manager_snapshot_npc", {})
+	if not immediate_npc_snapshot.has("actor_position"):
+		_fail("The serialized unified save is missing the NPC actor position snapshot.")
+		return
+	print("NPC_SAVE_POSITION=" + JSON.stringify(immediate_npc_snapshot.get("actor_position", [])))
 	npc_actor.global_position = Vector3(-90.0, 0.0, -90.0)
 	npc_actor.global_rotation = Vector3.ZERO
 	npc_brain.set("trust", -55.0)
