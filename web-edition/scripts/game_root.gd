@@ -48,7 +48,7 @@ func _process(delta: float) -> void:
 
 func _connect_gameplay_signals() -> void:
 	_missions.objective_changed.connect(_hud.set_objective)
-	_missions.notification.connect(_hud.show_notification)
+	_missions.connect("notification_requested", Callable(_hud, "show_notification"))
 	_missions.dialogue_changed.connect(_hud.show_dialogue)
 	_missions.wallet_changed.connect(_hud.set_wallet)
 	_player.prompt_changed.connect(_hud.set_prompt)
