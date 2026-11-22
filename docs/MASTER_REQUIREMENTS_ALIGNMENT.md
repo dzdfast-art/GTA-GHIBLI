@@ -3,10 +3,15 @@
 **Status:** requirements baseline and discrepancy register  
 **Primary source:** `GTA_GHIBLI_FULL_PROMPT.txt`  
 **Engine in the current prototype:** Godot 4.7 (headless CI validation)  
-**Target:** Android, with the Infinix SMART 8 / Unisoc T606 / 4 GB physical RAM as the baseline test device  
-**Content growth:** no fixed final size ceiling; every increase must be genuine, useful and compatible with the Android performance baseline (not a runtime RAM target)
+**Current target:** Godot 4.7 Web for modern browsers. The earlier Android / Unisoc T606 baseline is historical and is not a current acceptance gate.  
+**Content growth:** no fixed final size ceiling; every increase must be genuine, useful, licensed/original and remain compatible with stable Web loading and browser runtime performance.
 
 This document turns the supplied master prompt and the current repository evidence into one controlled implementation baseline. It does not claim that planned systems already exist.
+
+
+## Current platform directive — 2026-11-22
+
+The user has changed the current delivery target to **Godot 4.7 Web only**. Do not require, run or wait for Android APK builds, physical-phone testing, ARM64 installation, or phone-specific RAM/FPS/thermal checks. Accept the Web candidate using Godot 4.7 validation, Web export, private Chromium/WebGL 2 smoke tests, browser keyboard/mouse tests and Web privacy/security audits. Retain legacy Android source/configuration unless a separate explicit removal request is given; it is not part of the current release gate. Web exports must remain temporary and localhost-only; do not upload public artifacts, deploy Pages or publish a URL.
 
 ## 1. Authority and project identity
 
@@ -96,14 +101,14 @@ Each implemented category needs real entry/exit, collision, movement, handling, 
 - Reduce excessive repetition: compare mission mechanics, locations, dialogue, rewards and narrative purpose before adding content. Reuse a mechanic only when the context or challenge changes meaningfully.
 - Repeated everyday objects (roads, trees, shops) are acceptable when natural; repeated filler content is not.
 
-## 5. Mobile controls and performance
+## 5. Web controls and browser performance
 
-- Context-sensitive HUD states: on-foot, interacting, weapon use, nearby vehicle, car/truck, motorcycle, boat, airplane and helicopter.
-- Keep only relevant controls visible for the current state.
-- Touch targets, safe areas and landscape layout must work across Android screen sizes.
-- Optimize for the target device's **4 GB physical RAM**. Virtual RAM expansion is not equivalent to physical RAM.
-- Use LOD, instancing, culling, simple collision, distance-based AI and region streaming.
-- The **4 GiB content target is storage/content**, not permission to consume 4 GiB of RAM. Track source, imported, download and installed sizes separately.
+- Context-sensitive browser HUD states: on-foot, interacting, nearby vehicle, car/truck, motorcycle, boat and aircraft where implemented.
+- Keyboard and mouse are the primary desktop browser input path: WASD movement, right-mouse drag camera orbit, E interaction and Shift sprint.
+- Verify browser canvas focus, pointer capture/release, window resizing, keyboard mapping and WebGL 2 using private Chromium on localhost.
+- Physical Android phones, APK installation, touchscreen feel and phone-specific RAM/FPS/thermal readings are not required for the current Web deliverable.
+- Use LOD, instancing, culling, simple collision, distance-based AI and region streaming to avoid browser stalls and excessive asset download size.
+- Record Web export folder size, temporary ZIP size and tracked Git blob totals separately; none is an APK size or a browser runtime-memory measurement.
 
 ## 6. Current verified implementation snapshot
 
