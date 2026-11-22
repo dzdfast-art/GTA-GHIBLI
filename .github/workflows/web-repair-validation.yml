@@ -56,8 +56,11 @@ jobs:
       - name: Import project resources
         run: godot --headless --editor --path . --quit
 
-      - name: Test mobile controls and camera isolation
+      - name: Test shared touch-input regression (headless simulation; no device required)
         run: godot --headless --path . --script res://tests/mobile_controls_regression_test.gd
+
+      - name: Test Web desktop keyboard and mouse controls
+        run: godot --headless --path . --script res://tests/web_keyboard_controls_test.gd
 
       - name: Test vehicle damage and repair
         run: godot --headless --path . --script res://tests/vehicle_damage_repair_test.gd
