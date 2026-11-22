@@ -204,3 +204,9 @@ The NPC navigation lifecycle and save-migration code passed Godot validation #79
 - **Wallet restore precedence:** IMPLEMENTED in source; TEST PENDING. A newer compatibility wallet is timestamped, its transaction ledger is merged with the unified snapshot, and an existing on-device legacy file is not overwritten by an older embedded copy.
 - **Unified save coverage:** PARTIALLY IMPLEMENTED. This change does not prove restart persistence for every mission phase, every world object, all NPC schedules or every vehicle.
 - **Assets and performance:** no new assets or runtime content were added in this pass; target-device FPS/RAM/thermal acceptance remains NOT VERIFIED.
+
+
+## 2026-11-22 Web privacy requirement
+
+- **Web gameplay validation:** TESTED on commit 3d4083a in private Chromium; the preview used a local-only server, initialized WebGL 2, delivered browser input, and made no external network requests.
+- **Web artifact distribution:** BLOCKED pending cleanup of the artifact from run #45008944503. The Web Build workflow has been changed to delete old GTA-GHIBLI-Web artifacts, keep size/hash measurements in logs, and remove the temporary export without uploading a bundle. No public hosting or Pages deployment is used.

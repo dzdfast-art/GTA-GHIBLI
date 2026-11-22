@@ -141,3 +141,8 @@ The latest completed pre-change head e681c19ad09f118726201f1f60be85e7a410dcfa pa
 Commit 6fc51d0 addresses two save-recovery defects: active side activities previously restored counters without recreating target markers, and side-activity rewards used non-idempotent credits. The new code restores target visibility, uses stable wallet transaction IDs, commits the wallet transaction before activity completion, and reconciles newer on-device wallet/legacy records without overwriting existing allowlisted files. Regression tests have been added; the new head is TEST PENDING until its own Godot, Android, Web and security runs finish.
 
 No new assets were added. No physical Android device was connected; touch feel, FPS, RAM, heat, battery, install and device audio remain NOT VERIFIED. Arabic human voice acting remains BLOCKED pending actual local recordings and offline playback tests. Unified save coverage remains PARTIALLY IMPLEMENTED because complete mission 001–004 and world-entity restart coverage is not established.
+
+
+## 2026-11-22 Web bundle exposure correction
+
+Audit found that the existing Web Build workflow uploaded a 237,933,989-byte ZIP as a GitHub Actions artifact. For a public repository, GitHub documents that public artifact resources can be accessed without authentication. The workflow is being corrected to remove prior GTA-GHIBLI-Web artifacts, retain only byte/ZIP/hash measurements in CI logs, and delete the temporary export from the runner without uploading it. The prior artifact ID 14748948497 remains until the cleanup step runs on the next same-repository Web Build. The local Chromium workflow already confirmed localhost-only serving and no external requests.

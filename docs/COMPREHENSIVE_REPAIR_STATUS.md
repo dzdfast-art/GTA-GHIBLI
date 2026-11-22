@@ -185,3 +185,8 @@ The Git-tree measurement on docs head 1c8da7 is 350,461,886 bytes (350.462 MB / 
 - **Verification status:** pending Godot 4.7 validation and Android ARM64 Debug CI for commit 6fc51d0. Do not mark this addendum TESTED until the new-head workflows finish.
 - **Scope limit:** mission 001–004 restart timing, all world entities, NPC schedules and every vehicle state still require broader restart tests. Unified save coverage remains PARTIALLY IMPLEMENTED.
 - No game assets were added. Main remains unchanged and PR #31 remains Draft/unmerged.
+
+
+## 2026-11-22 Web artifact privacy correction
+
+The previous Web Build workflow uploaded a downloadable GTA-GHIBLI-Web artifact even though the gameplay preview was tested locally. Because the repository is public, GitHub documents that public artifact endpoints can be accessed without authentication. The workflow now deletes prior artifacts named GTA-GHIBLI-Web, does not upload a new Web ZIP, records export/ZIP bytes and SHA-256 in the Actions log only, and removes the temporary export before the runner exits. The cleanup uses only the workflow-scoped GITHUB_TOKEN with actions:write; fork pull requests skip deletion. The earlier run #45008944503 artifact (ID 14748948497) is targeted by this cleanup on the next same-repository run. No Pages deployment is configured.

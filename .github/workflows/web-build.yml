@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: gta-ghibli-web-build-${{ github.event.pull_request.number || github.ref }}
@@ -33,6 +34,24 @@ jobs:
         with:
           version: 4.7-stable
           export-templates: true
+
+      - name: Remove previously uploaded public Web bundles
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifact_ids="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/artifacts" --jq '.artifacts[] | select(.name == "GTA-GHIBLI-Web") | .id')"
+          if [ -z "${artifact_ids}" ]; then
+            echo "No previous GTA-GHIBLI-Web artifacts found."
+          else
+            while IFS= read -r artifact_id; do
+              [ -z "${artifact_id}" ] && continue
+              gh api --method DELETE "repos/${GITHUB_REPOSITORY}/actions/artifacts/${artifact_id}"
+              echo "Deleted public Web artifact ${artifact_id}."
+            done <<< "${artifact_ids}"
+          fi
 
       - name: Run privacy audits
         run: |
@@ -97,12 +116,11 @@ jobs:
           cat > build/web/README-WEB.txt <<'EOF'
           GTA GHIBLI — Web build
 
-          This is a browser game export, not an Android APK.
-          Upload the entire folder contents to a static HTTPS web host.
-          Open index.html through the web host; do not use file://.
-          The host must serve .wasm as application/wasm and .pck as application/octet-stream.
-          The game uses a single-threaded Web export and does not require COOP/COEP headers.
-          Use a current browser with WebAssembly and WebGL 2 support.
+          This temporary export exists only for private CI validation.
+          It is not a distributable build and must not be uploaded to public hosting,
+          GitHub Pages, public storage or a public download location.
+          The workflow tests it on a local-only runner server, records its size,
+          then removes the export and ZIP before the job ends.
           EOF
           (cd build/web && zip -q -r ../GTA-GHIBLI-Web.zip .)
           bytes="$(stat -c%s build/GTA-GHIBLI-Web.zip)"
@@ -128,13 +146,4 @@ jobs:
           print(f"WEB_FOLDER_MIB={total / 1_048_576:.2f}")
           PY
           cat build/web-size.txt
-
-      - name: Upload verified Web game bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: GTA-GHIBLI-Web
-          path: |
-            build/GTA-GHIBLI-Web.zip
-            build/web-size.txt
-          if-no-files-found: error
-          retention-days: 30
+          rm -rf build/web build/GTA-GHIBLI-Web.zip

@@ -281,3 +281,8 @@ The save migration and deferred NPC navigation-agent lifecycle passed the Godot 
 Side activities now persist their active ID, collected-target visibility, target count, reward total and a monotonic progress timestamp. On restore, the director rebuilds objective markers and keeps already-collected targets hidden instead of restoring counters with an empty target list. Each activity reward uses a stable wallet transaction ID. The wallet transaction is saved before the activity is marked complete; if the app closes between those operations, the resumed activity recognizes the existing transaction and completes without another payout. Duplicate completion is rejected.
 
 The wallet's unified snapshot now includes its update timestamp and merges transaction IDs from a newer local compatibility wallet. During restore, an embedded legacy file is written only when the corresponding on-device file is missing, avoiding rollback of an existing newer file. Dedicated regression coverage is pending the new commit's CI. Complete mission/world persistence remains PARTIALLY IMPLEMENTED.
+
+
+## 2026-11-22 private Web build handling
+
+The Web preview is a CI-only test target. The Web Build workflow now removes previously uploaded GTA-GHIBLI-Web artifacts, records exact export and ZIP sizes plus SHA-256 in the workflow log, and deletes the temporary Web export/ZIP from the ephemeral runner. It no longer uploads a Web bundle. The prior public artifact is removed by the next same-repository workflow run; the private Chromium run continues to serve only on localhost and verifies that no external requests occur.
