@@ -50,6 +50,9 @@ jobs:
       - name: Validate OBJ mesh surface budgets
         run: python tools/validate_obj_surface_counts.py
 
+      - name: Validate OBJ material library references
+        run: python tools/validate_obj_material_references.py
+
       - name: Audit Android privacy permissions
         run: python tools/privacy_audit.py
 
