@@ -50,6 +50,12 @@ jobs:
           python3 -m json.tool web-edition/data/missions/mission_001.json >/dev/null
           python3 -m json.tool web-edition/data/story/cast.json >/dev/null
 
+      - name: Validate research registry and helper tools
+        run: |
+          python3 -m json.tool docs/research/gtasa_registry.json >/dev/null
+          python3 -m py_compile web-edition/tools/research_helper.py
+          python3 -m unittest discover -s web-edition/tests -p 'test_*.py' -v
+
       - name: Import the new standalone Godot project
         run: godot --headless --editor --path web-edition --quit
 
