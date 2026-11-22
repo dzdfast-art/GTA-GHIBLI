@@ -72,4 +72,4 @@ No new models, textures, audio, fonts, icons or other game assets were added in 
 
 ## 2026-11-22 Mission 001 save reliability follow-up
 
-No new models, textures, audio, fonts, icons, or other game assets were added in this source/test change. No new third-party asset was introduced, so no new licence clearance is claimed. Mission 001 save-boundary code and its regression test were added; current verification on that code/test head is pending Godot validation #814. Security Audit #759 passed; Android/Web/Chromium gates were still in progress. Existing per-asset provenance and release-clearance states remain unchanged.
+No new models, textures, audio, fonts, icons, or other game assets were added in this source/test change. No new third-party asset was introduced, so no new licence clearance is claimed. Mission 001 save-boundary code and its regression test were added; Godot validation #814 passed on source/test SHA 3d1849a6c98198dc87b0d1368b7cc91488d1d0a5. Security Audit #759 passed. Fresh Android/Web/Chromium checks on the subsequent docs-only branch head remain pending. Existing per-asset provenance and release-clearance states remain unchanged.

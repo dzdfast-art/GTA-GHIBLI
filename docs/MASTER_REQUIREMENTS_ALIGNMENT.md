@@ -246,6 +246,6 @@ The NPC navigation lifecycle and save-migration code passed Godot validation #79
 
 - Mission 001 now commits each durable objective transition to the unified save coordinator immediately after successfully writing its existing compatibility record.
 - The mission regression now checks serialized snapshots for the square objective, Mira dialogue, completion/reward state, stale legacy-file recovery and reward idempotency.
-- Status on source/test SHA 3d1849a6c98198dc87b0d1368b7cc91488d1d0a5: **IMPLEMENTED / TEST PENDING** until Godot validation #814 completes. Security Audit #759 passed; Android #577, Web/Chromium #223 and Web Build #125 were still running at the time of recording.
+- Status on source/test SHA 3d1849a6c98198dc87b0d1368b7cc91488d1d0a5: **IMPLEMENTED / TESTED** — Godot validation #814 passed, including the Mission 001 unified-save recovery regression. Security Audit #759 passed. Android #577 and Web/Chromium #223 were cancelled/superseded by the docs-only follow-up; current docs-head reruns #815, #578, #225 and #127 were in progress at the time of this update.
 - This does not establish complete process-stop recovery for all missions or persistence for every world entity. Overall save alignment remains **PARTIALLY IMPLEMENTED**.
 - main remains unchanged (c9fc82936a43b80af0e3c25eef41c9fee59e47b7); PR #31 remains Draft and unmerged.
