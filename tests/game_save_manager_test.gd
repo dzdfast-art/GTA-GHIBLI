@@ -74,6 +74,8 @@ func _run() -> void:
 	npc_brain.set_script(NPC_BRAIN_SCRIPT)
 	npc_brain.set("persistence_id", "save_manager_snapshot_npc")
 	npc_brain.set("relationship_persistence_enabled", false)
+	# Keep the fixture stationary so the test measures persistence, not autonomous wandering.
+	npc_brain.set("wander_speed", 0.0)
 	npc_actor.add_child(npc_brain)
 
 	var manager := SAVE_MANAGER_SCRIPT.new()
@@ -164,7 +166,6 @@ func _run() -> void:
 	if not immediate_npc_snapshot.has("actor_position"):
 		_fail("The serialized unified save is missing the NPC actor position snapshot.")
 		return
-	print("NPC_SAVE_POSITION=" + JSON.stringify(immediate_npc_snapshot.get("actor_position", [])))
 	npc_actor.global_position = Vector3(-90.0, 0.0, -90.0)
 	npc_actor.global_rotation = Vector3.ZERO
 	npc_brain.set("trust", -55.0)
