@@ -19,7 +19,8 @@ func _run() -> void:
 	var player := game.get_node_or_null("Player")
 	var world := game.get_node_or_null("World")
 	var missions := game.get_node_or_null("MissionManager")
-	if player == null or world == null or missions == null:
+	var hud := game.get_node_or_null("GameplayHUD")
+	if player == null or world == null or missions == null or hud == null:
 		_fail("Player, World, or MissionManager is missing from the new project.")
 		return
 
@@ -49,6 +50,20 @@ func _run() -> void:
 		if world.call("get_region_name_at", entry[0]) != entry[1]:
 			_fail("Region coordinate mapping failed for " + entry[1])
 			return
+
+	var minimap := hud.get_node_or_null("HUDRoot/MinimapPanel/WorldMinimap")
+	if minimap == null:
+		_fail("Live minimap control is missing from the HUD.")
+		return
+	var map_origin: Vector2 = minimap.call("world_to_map", Vector3(-128.0, 0.0, -32.0))
+	var map_far_corner: Vector2 = minimap.call("world_to_map", Vector3(128.0, 0.0, 32.0))
+	if map_origin.distance_to(Vector2.ZERO) > 0.01 or map_far_corner.distance_to(Vector2(180.0, 132.0)) > 0.01:
+		_fail("Minimap world-to-map coordinate conversion is incorrect.")
+		return
+	hud.call("update_minimap", player.global_position, 0.5)
+	if minimap.get("player_world_position") != player.global_position:
+		_fail("Minimap did not receive the live player world position.")
+		return
 
 	var start_position: Vector3 = player.global_position
 	Input.action_press("move_forward")
@@ -113,6 +128,7 @@ func _run() -> void:
 
 	print("PASS: fresh Web project main scene starts.")
 	print("PASS: four named region coordinates and three named interactive characters exist.")
+	print("PASS: minimap maps world bounds correctly and receives the live player position.")
 	print("PASS: keyboard movement moves the player.")
 	print("PASS: nearby E interaction enters the starter sedan; driving and E exit work.")
 	print("PASS: Claire and Nora world interactions complete Mission 001 and grant $250 once.")
