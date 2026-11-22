@@ -172,8 +172,11 @@ jobs:
       - name: Test video-reference bicycle, house, and red bridge world integration
         run: timeout 300 godot --headless --path . --script res://tests/video_reference_world_flow_test.gd
 
-      - name: Test mobile joystick, player movement, and camera touch isolation
+      - name: Test shared touch-input regression (headless simulation; no device required)
         run: timeout 300 godot --headless --path . --script res://tests/mobile_controls_regression_test.gd
+
+      - name: Test Web desktop keyboard and mouse controls
+        run: timeout 300 godot --headless --path . --script res://tests/web_keyboard_controls_test.gd
 
       - name: Test first mission objective flow
         run: timeout 300 godot --headless --path . --script res://tests/mission_manager_test.gd
