@@ -29,7 +29,7 @@ For a Web export, select the `Web` preset and export to `build/web/index.html`. 
 
 ## Current playable foundation
 
-- Four named region blockouts connected by one continuous ground strip and a main road corridor.
+- Four named region blockouts connected by one continuous ground strip, a main east-west arterial, and a connected grid of north-south streets and cross streets in the four regions.
 - Provisional Marsa Al-Noor lighthouse landmark in Harbor City.
 - Original temporary placeholder representations for Leo, Claire, Mia and Nora.
 - A first text-only mission with two interactive stages, a $250 reward and a local save file.
@@ -38,6 +38,6 @@ For a Web export, select the `Web` preset and export to `build/web/index.html`. 
 
 ## Important limitations
 
-The region geometry and character/vehicle models are blockout placeholders, not finished art. The current A* GPS graph is an early prototype: it models the east-west starter corridor plus six short access spurs to the registered points of interest. The current world itself still has no alternate street grid or closure simulation: closing the only corridor/access edge can make a destination unreachable. Pedestrian-only paths, lane guidance, step-by-step instructions for every segment and voice prompts remain unimplemented. Turn restrictions are currently graph-level rules and are not yet authored for a fully expanded in-world street grid. The nearest-node snap is bounded; destinations outside that bound are reported as unreachable. This milestone does not yet contain the full open world, a complete road/GPS network, detailed interiors, a final rig/animation set, weapon combat, traffic/police simulation, all vehicle classes, a complete mission campaign, weather, original music or verified Arabic voice performances. Those requirements are tracked in `../docs/WEB_EDITION_MASTER_SPEC.md` and `../docs/WEB_EDITION_STATUS.md`.
+The region geometry and character/vehicle models are blockout placeholders, not finished art. The A* GPS graph now includes a small connected street grid and six short access spurs to the registered points of interest; it is still a prototype rather than a complete city road network. The current world itself still has no alternate street grid or closure simulation: closing the only corridor/access edge can make a destination unreachable. Pedestrian-only paths, lane guidance, step-by-step instructions for every segment and voice prompts remain unimplemented. Turn restrictions are currently graph-level rules and are not yet authored for a fully expanded in-world street grid. The nearest-node snap is bounded; destinations outside that bound are reported as unreachable. This milestone does not yet contain the full open world, a complete road/GPS network, detailed interiors, a final rig/animation set, weapon combat, traffic/police simulation, all vehicle classes, a complete mission campaign, weather, original music or verified Arabic voice performances. Those requirements are tracked in `../docs/WEB_EDITION_MASTER_SPEC.md` and `../docs/WEB_EDITION_STATUS.md`.
 
 CI exports the Web build, records its exact size and SHA-256 in the job log, then deletes the temporary build directory. It does not upload or retain a downloadable Actions artifact.
