@@ -116,6 +116,7 @@ func find_route(
 	var route_edges: Array[String] = []
 	for index in range(1, reversed_nodes.size()):
 		route_edges.append(str(came_from_edge[reversed_nodes[index]]))
+	var maneuvers := _build_maneuvers(route_path)
 
 	return {
 		"reachable": true,
@@ -124,6 +125,7 @@ func find_route(
 		"path": route_path,
 		"node_ids": reversed_nodes,
 		"edge_ids": route_edges,
+		"maneuvers": maneuvers,
 		"start_node_id": start_id,
 		"destination_node_id": destination_id
 	}
@@ -139,6 +141,37 @@ func get_edge_count() -> int:
 		for connection in connections:
 			edge_ids[str(connection.get("edge_id", ""))] = true
 	return edge_ids.size()
+
+
+func _build_maneuvers(path: Array[Vector3]) -> Array[Dictionary]:
+	var maneuvers: Array[Dictionary] = []
+	for index in range(1, path.size() - 1):
+		var previous_position: Vector3 = path[index - 1]
+		var turn_position: Vector3 = path[index]
+		var next_position: Vector3 = path[index + 1]
+		var incoming := Vector2(
+			turn_position.x - previous_position.x,
+			turn_position.z - previous_position.z
+		)
+		var outgoing := Vector2(
+			next_position.x - turn_position.x,
+			next_position.z - turn_position.z
+		)
+		if incoming.length_squared() < 0.01 or outgoing.length_squared() < 0.01:
+			continue
+		var signed_angle := rad_to_deg(incoming.normalized().angle_to(outgoing.normalized()))
+		var absolute_angle := absf(signed_angle)
+		if absolute_angle < 35.0 or absolute_angle > 150.0:
+			continue
+		var turn_kind := "right" if signed_angle > 0.0 else "left"
+		maneuvers.append({
+			"kind": turn_kind,
+			"instruction": "Turn " + turn_kind,
+			"position": turn_position,
+			"path_index": index,
+			"angle_degrees": signed_angle
+		})
+	return maneuvers
 
 
 func _find_nearest_node(position: Vector3, max_distance: float) -> String:
@@ -183,6 +216,7 @@ func _unreachable(reason: String) -> Dictionary:
 		"path": [],
 		"node_ids": [],
 		"edge_ids": [],
+		"maneuvers": [],
 		"start_node_id": "",
 		"destination_node_id": ""
 	}

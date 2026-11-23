@@ -121,5 +121,16 @@ func _update_navigation_route() -> void:
 	_hud.call("set_navigation_route", _active_route)
 	if bool(_active_route.get("reachable", false)):
 		_hud.call("set_waypoint_status", _active_waypoint_name, float(_active_route.get("distance", 0.0)), true)
+		_hud.call("set_navigation_guidance", _get_next_route_instruction(_active_route))
 	else:
 		_hud.call("set_waypoint_status", _active_waypoint_name, 0.0, false)
+		_hud.call("set_navigation_guidance", "No connected road route")
+
+
+func _get_next_route_instruction(route: Dictionary) -> String:
+	for maneuver in route.get("maneuvers", []):
+		var turn_position: Vector3 = maneuver.get("position", Vector3.ZERO)
+		var distance_to_turn: float = _player.global_position.distance_to(turn_position)
+		if distance_to_turn > 3.0:
+			return "%s in %.0f m" % [str(maneuver.get("instruction", "Turn")), distance_to_turn]
+	return "Continue to destination"

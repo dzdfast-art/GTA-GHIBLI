@@ -1,6 +1,28 @@
 
 ---
 
+## Verified navigation baseline — PR #40 passed — 2026-11-23
+
+- PR #40: https://github.com/dzdfast-art/GTA-GHIBLI/pull/40 — Draft/open/unmerged, stacked on PR #39.
+- Tested PR #40 merge-ref run: https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45229951546 — PASS.
+- Security audit: https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45229951201 — PASS.
+- Tested PR #40 head: 1b84a1e5cdb06b8180ab49d017546ff667b7e0ab.
+- Godot import, foundation regression, WebAssembly export, export-file verification, Chromium/WebGL2 localhost smoke, size/hash measurement and temporary build cleanup all passed.
+- Foundation regression specifically confirms all six POIs reachable on the starter road graph, out-of-range snap rejected, road distance and route geometry updated on full map/minimap, player movement, sedan entry/drive/exit, Mission 001 reward idempotency and mission-stage/wallet restoration.
+- Chromium confirms a 1280x720 WebGL2 canvas, keyboard/mouse/map event delivery, no runtime errors and no external requests. This is a smoke test, not complete-game or cross-browser acceptance.
+- PR #40 measured Web ZIP 10,294,008 bytes (10.294 MB decimal / 9.817 MiB); uncompressed export 39,889,958 bytes (38.042 MiB); seven export files; ZIP SHA-256 b697d7c4c1ed810299757a5b3ca28581d1842185117e97db1dd670c2220f4b11.
+- CI artifact listing for PR #40 returned no artifacts; the export folder was deleted on the runner after measurement.
+
+## Next increment — PR #41 basic turn guidance — CI pending
+
+- PR #41: https://github.com/dzdfast-art/GTA-GHIBLI/pull/41 — draft branch feature/web-gps-turn-guidance-20261123, stacked on PR #40.
+- Added route-derived left/right maneuver data to the A* result, excluding near-straight and near-reversal bends.
+- The gameplay HUD now displays the next turn instruction and its remaining distance; when the route has no remaining turn, it displays continuation guidance. Unreachable routes produce a no-connected-road-route message.
+- Regression coverage added for left and right turns in an isolated three-node graph, the lighthouse route's right turn and HUD instruction/distance.
+- This increment is IMPLEMENTED — CI NOT YET VERIFIED. It is only basic turn guidance on the tiny starter corridor/access-spur graph, not full navigation voice prompts or comprehensive step-by-step guidance.
+
+---
+
 ## Authoritative status update — 2026-11-23 — PR #40 road-graph GPS (CI pending)
 
 This section is the current status snapshot for the Web Edition. Older entries below are retained as historical records and may describe earlier branches, CI runs or delivery rules.

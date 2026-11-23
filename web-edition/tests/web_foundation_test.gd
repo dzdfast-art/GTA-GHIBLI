@@ -136,6 +136,46 @@ func _run() -> void:
 	if not bool(active_route.get("reachable", false)) or active_route.get("path", []).size() < 3:
 		_fail("Selecting a waypoint did not produce a connected road route.")
 		return
+	var active_maneuvers: Array = active_route.get("maneuvers", [])
+	if active_maneuvers.is_empty():
+		_fail("The active GPS route did not produce a turn instruction.")
+		return
+	if str(active_maneuvers[0].get("instruction", "")) != "Turn right":
+		_fail("The lighthouse access spur did not produce the expected right-turn instruction.")
+		return
+	var guidance_label := hud.get("_guidance_label") as Label
+	if guidance_label == null or not guidance_label.text.contains("NEXT TURN — Turn right in"):
+		_fail("The HUD did not display the next turn and its remaining distance.")
+		return
+
+	var turn_planner = load("res://scripts/world/route_planner.gd").new()
+	var turn_graph := {
+		"nodes": [
+			{"id": "A", "position": Vector3(0.0, 0.0, 0.0)},
+			{"id": "B", "position": Vector3(10.0, 0.0, 0.0)},
+			{"id": "C", "position": Vector3(10.0, 0.0, 10.0)}
+		],
+		"edges": [
+			{"id": "AB", "from": "A", "to": "B", "cost": 10.0},
+			{"id": "BC", "from": "B", "to": "C", "cost": 10.0}
+		]
+	}
+	if not bool(turn_planner.call("configure", turn_graph)):
+		_fail("The isolated turn-guidance test graph could not be configured.")
+		return
+	var right_turn_route: Dictionary = turn_planner.call(
+		"find_route", Vector3.ZERO, Vector3(10.0, 0.0, 10.0), 1.0
+	)
+	var left_turn_route: Dictionary = turn_planner.call(
+		"find_route", Vector3(10.0, 0.0, 10.0), Vector3.ZERO, 1.0
+	)
+	if right_turn_route.get("maneuvers", []).size() != 1 or str(right_turn_route["maneuvers"][0]["kind"]) != "right":
+		_fail("The route planner did not identify a right turn in the isolated test graph.")
+		return
+	if left_turn_route.get("maneuvers", []).size() != 1 or str(left_turn_route["maneuvers"][0]["kind"]) != "left":
+		_fail("The route planner did not identify a left turn in the isolated test graph.")
+		return
+
 	var route_distance := float(active_route.get("distance", 0.0))
 	var straight_line_distance: float = player.global_position.distance_to(lighthouse_position)
 	if route_distance <= straight_line_distance:
@@ -222,6 +262,8 @@ func _run() -> void:
 	print("PASS: all six points of interest are reachable through the connected road graph.")
 	print("PASS: off-network starts are reported unreachable beyond the configured snap distance.")
 	print("PASS: selecting a map marker produces a road-following route, distance and map/minimap polyline.")
+	print("PASS: GPS derives the next-turn instruction and remaining distance for the HUD.")
+	print("PASS: isolated route geometry correctly distinguishes left and right turns.")
 	print("PASS: keyboard movement moves the player.")
 	print("PASS: nearby E interaction enters the starter sedan; driving and E exit work.")
 	print("PASS: Claire and Nora world interactions complete Mission 001 and grant $250 once.")

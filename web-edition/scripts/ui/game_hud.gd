@@ -85,6 +85,7 @@ class MinimapCanvas extends Control:
 var _objective_label: Label
 var _location_label: Label
 var _waypoint_label: Label
+var _guidance_label: Label
 var _cash_label: Label
 var _prompt_label: Label
 var _dialogue_label: Label
@@ -104,16 +105,18 @@ func _ready() -> void:
 
 	var info_panel := _make_panel()
 	info_panel.position = Vector2(22.0, 20.0)
-	info_panel.custom_minimum_size = Vector2(390.0, 142.0)
+	info_panel.custom_minimum_size = Vector2(390.0, 164.0)
 	root.add_child(info_panel)
 	var info_column := VBoxContainer.new()
 	info_panel.add_child(info_column)
 	_objective_label = _make_label("Mission 001 — تحدث إلى Claire Bennett", 19, Color(1.0, 0.91, 0.69))
 	_location_label = _make_label("Harbor City", 15, Color(0.82, 0.88, 0.89))
 	_waypoint_label = _make_label("", 14, Color(1.0, 0.82, 0.43))
+	_guidance_label = _make_label("", 14, Color(0.72, 0.91, 1.0))
 	info_column.add_child(_objective_label)
 	info_column.add_child(_location_label)
 	info_column.add_child(_waypoint_label)
+	info_column.add_child(_guidance_label)
 
 	var status_panel := _make_panel()
 	status_panel.anchor_left = 1.0
@@ -264,6 +267,10 @@ func set_waypoint_status(point_name: String, distance: float, route_reachable: b
 func set_navigation_route(route: Dictionary) -> void:
 	_minimap.set_navigation_route(route)
 	_map_canvas.call("set_navigation_route", route)
+
+
+func set_navigation_guidance(instruction: String) -> void:
+	_guidance_label.text = ("NEXT TURN — " + instruction) if not instruction.is_empty() else ""
 
 
 func get_waypoint_status_text() -> String:
