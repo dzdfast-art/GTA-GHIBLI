@@ -19,6 +19,7 @@ func build_world() -> void:
 	for index in range(REGION_NAMES.size()):
 		_create_region(index)
 	_create_connected_road()
+	_create_access_roads()
 	_create_landmarks()
 	_create_characters()
 	_create_starting_vehicle()
@@ -74,6 +75,71 @@ func get_points_of_interest() -> Array[Dictionary]:
 			"position": Vector3(113.0, 0.0, -18.0)
 		}
 	]
+
+
+func get_road_graph() -> Dictionary:
+	var points: Array[Dictionary] = get_points_of_interest()
+	var road_x_values: Array[float] = [-128.0, -96.0, -64.0, -32.0, 0.0, 32.0, 64.0, 96.0, 128.0]
+	for point in points:
+		var position: Vector3 = point["position"]
+		road_x_values.append(position.x)
+	road_x_values.sort()
+
+	var unique_x_values: Array[float] = []
+	for x_value in road_x_values:
+		if unique_x_values.is_empty() or absf(unique_x_values[unique_x_values.size() - 1] - x_value) > 0.01:
+			unique_x_values.append(x_value)
+
+	var nodes: Array[Dictionary] = []
+	var edges: Array[Dictionary] = []
+	var road_node_ids: Dictionary = {}
+	for x_value in unique_x_values:
+		var node_id := "road_%d" % roundi(x_value)
+		road_node_ids[roundi(x_value)] = node_id
+		nodes.append({"id": node_id, "position": Vector3(x_value, 0.0, 0.0), "kind": "road"})
+
+	for index in range(unique_x_values.size() - 1):
+		var from_x := unique_x_values[index]
+		var to_x := unique_x_values[index + 1]
+		var from_id := str(road_node_ids[roundi(from_x)])
+		var to_id := str(road_node_ids[roundi(to_x)])
+		edges.append({
+			"id": "road_segment_%02d" % index,
+			"from": from_id,
+			"to": to_id,
+			"cost": absf(to_x - from_x)
+		})
+
+	for point in points:
+		var point_id := str(point["id"])
+		var point_position: Vector3 = point["position"]
+		var road_node_id := str(road_node_ids[roundi(point_position.x)])
+		var poi_node_id := "poi_" + point_id
+		nodes.append({"id": poi_node_id, "position": point_position, "kind": "poi"})
+		edges.append({
+			"id": "access_" + point_id,
+			"from": road_node_id,
+			"to": poi_node_id,
+			"cost": point_position.distance_to(Vector3(point_position.x, 0.0, 0.0))
+		})
+
+	return {"nodes": nodes, "edges": edges}
+
+
+func _create_access_roads() -> void:
+	var material := _make_material(Color(0.17, 0.18, 0.18))
+	for point in get_points_of_interest():
+		var point_position: Vector3 = point["position"]
+		if absf(point_position.z) < 0.5:
+			continue
+		var access_road := MeshInstance3D.new()
+		access_road.name = "AccessRoad_" + str(point["id"])
+		var road_mesh := BoxMesh.new()
+		road_mesh.size = Vector3(5.0, 0.055, absf(point_position.z))
+		access_road.mesh = road_mesh
+		access_road.position = Vector3(point_position.x, 0.08, point_position.z * 0.5)
+		access_road.material_override = material
+		add_child(access_road)
 
 
 func _create_region(index: int) -> void:
