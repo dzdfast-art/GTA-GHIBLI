@@ -292,6 +292,8 @@ func _add_box(parent: Node3D, node_name: String, position: Vector3,
 	instance.mesh = mesh
 	instance.position = position
 	instance.material_override = _material(color)
+	if node_name.ends_with("Path"):
+		instance.add_to_group("radar_roads")
 	parent.add_child(instance)
 
 	if with_collision:

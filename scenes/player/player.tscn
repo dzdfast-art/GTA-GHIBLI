@@ -3,14 +3,7 @@
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/camera/third_person_camera.gd" id="2_camera"]
 [ext_resource type="Script" path="res://scripts/systems/player_interactor.gd" id="3_interactor"]
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_Player"]
-radius = 0.38
-height = 1.8
-
-[sub_resource type="StandardMaterial3D" id="Material_Player"]
-albedo_color = Color(0.24, 0.38, 0.72, 1)
-roughness = 0.9
+[ext_resource type="Script" path="res://scripts/player/humanoid_visual.gd" id="4_humanoid"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape_Player"]
 radius = 0.38
@@ -19,9 +12,8 @@ height = 1.8
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_player")
 
-[node name="Visual" type="MeshInstance3D" parent="."]
-mesh = SubResource("CapsuleMesh_Player")
-material_override = SubResource("Material_Player")
+[node name="Visual" type="Node3D" parent="."]
+script = ExtResource("4_humanoid")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape_Player")

@@ -69,6 +69,7 @@ func _build_road(center: Vector3) -> void:
 	var midpoint := Vector3(center.x * 0.5, 0.08, center.z * 0.5)
 	var road := MeshInstance3D.new()
 	road.name = "RoadTo_" + str(_region_ids.back())
+	road.add_to_group("radar_roads")
 	var road_mesh := BoxMesh.new()
 	road_mesh.size = Vector3(5.2, 0.12, length)
 	road.mesh = road_mesh
