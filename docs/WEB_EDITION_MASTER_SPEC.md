@@ -219,3 +219,17 @@ The following is an original GTA GHIBLI engineering proposal, not a claim about 
 - Draw the computed polyline and destination marker on the minimap. The full map remains a placeholder and does not yet provide destination selection or turn-by-turn guidance.
 
 The first graph contains 16 nodes and 16 edges: nine arterial links, four location-access spurs and three coastal-bypass links. Its regression gate covers graph loading, generated road geometry, route to Nora, bypass around one closed edge, unreachable reporting when lighthouse access is closed, and route delivery to the minimap. A green gate validates only these cases; it does not establish a complete road network, pedestrian navigation, traffic AI, collision-aware GPS or full-world streaming.
+
+
+---
+
+## Validation record — 2026-11-23 road graph milestone
+
+The first data-driven road graph and mission-aware minimap route were validated on commit 63e158d7b3178bc102cb478dc9b62185348f2675 by Web CI run #45159757563:
+
+- Godot 4.7 import and the complete foundation regression script passed.
+- The new test verified 16 nodes, 16 edges, generated arterial road geometry, a route to Nora through the lighthouse access spur, a detour around a closed coastal arterial edge, an unreachable result when the only lighthouse access edge is closed, and delivery of route points/destination to the minimap.
+- WebAssembly export, HTML/JavaScript/WASM/PCK checks and Chromium 140 WebGL 2 smoke passed at 1280×720. WASD, right-mouse drag and M-key input were delivered. No browser runtime errors or external requests were reported.
+- The temporary Web ZIP was 10,286,847 bytes (10.287 MB decimal / 9.810 MiB), SHA-256 934015e0ae6213d0d1d009b7d20c8c04a789ac5651e73b8b614af6f31644cb4b. The uncompressed export was 39,887,794 bytes (38.040 MiB; seven files). Both temporary export and ZIP were deleted by CI; no artifact was uploaded.
+- This validates the prototype graph and the tested mission route only. The road graph is not a complete navigation network; nearest-node endpoint connectors are straight, pedestrian routing and collision-aware destination snapping are absent, and the full world remains blockout.
+- The current main SHA is 0e166bbd3041adbed838e8436a0eecb73da9746b; the tested work is isolated on the Web development branch. PR #35 was already merged in the previous session and is not reopened or rewritten by this update.

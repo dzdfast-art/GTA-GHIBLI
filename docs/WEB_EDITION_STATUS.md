@@ -224,3 +224,64 @@ This release is a playable Web foundation with a researched implementation refer
 - Existing successful run #45025650263 tested the earlier branch head fd9c6cb, not this road-network change.
 - No current export size or SHA-256 is claimed for this change until the new CI run reports them.
 - No Actions artifact is requested or uploaded by the Web development workflow.
+
+
+---
+
+## Authoritative daily result — 2026-11-23: road graph milestone verified
+
+This section supersedes the immediately preceding "Status before CI result" block.
+
+### Repository state after this work
+- main remains at 0e166bbd3041adbed838e8436a0eecb73da9746b; this run did not modify main.
+- Web development branch: web/standalone-from-empty-2026-11-22 at 63e158d7b3178bc102cb478dc9b62185348f2675.
+- New development commit: https://github.com/dzdfast-art/GTA-GHIBLI/commit/63e158d7b3178bc102cb478dc9b62185348f2675.
+- PR #35 is already closed and merged at 4b9c657d21870d0e2e947c041db8c2abd3ad7bdf from the previous session; it cannot truthfully be described as Draft/open. This update did not rewrite or reverse main and did not create or merge another PR.
+- PR #36 is merged on main and its Web CI upload step left an existing Actions artifact: artifact ID 14757749108, 10,274,141 bytes, created by run #45033114459, scheduled to expire 2026-12-06. This branch does not copy that upload behavior. The current GitHub connector exposes artifact listing/download but not artifact deletion, so this update did not claim to remove that pre-existing artifact.
+- The branch is diverged from current main: one commit ahead and two commits behind. No merge/rebase was performed.
+- No PR #31 or legacy B1–B16 project files were used as a source or modified.
+
+### CI and executable validation
+- Web CI run #45159757563 (workflow run number 42): PASS on this exact commit.
+- Godot 4.7 project import: PASS.
+- JSON validation, including road_graph.json: PASS.
+- Research registry/helper validation: PASS.
+- Gameplay regression: PASS, including all pre-existing foundation checks and the new 16-node/16-edge road graph checks.
+- WebAssembly export and HTML/JS/WASM/PCK presence checks: PASS.
+- Chromium 140.0.7339.16 at 1280×720 with WebGL 2: PASS.
+- Browser delivered WASD, right-mouse drag and M key events; no browser runtime errors and no external network requests were reported.
+- Temporary export and ZIP were measured and deleted on the runner. The run produced no Actions artifact.
+- No separate security-audit run was triggered for this branch commit. The latest main security audit #45033114458 passed on main commit 0e166bb, but that is not a security audit of this new branch head.
+
+### Exact package and source measurements
+| Measurement | Before this milestone | After this milestone |
+|---|---:|---:|
+| Tracked web-edition source files | 18 files / 60,025 bytes | 20 files / 81,801 bytes |
+| Tracked source growth | — | +2 files / +21,776 bytes |
+| Uncompressed Web export | 39,868,954 bytes | 39,887,794 bytes |
+| Compressed Web ZIP | 10,273,661 bytes | 10,286,847 bytes |
+
+- Current uncompressed export: 39.888 MB decimal / 38.040 MiB.
+- Current compressed ZIP: 10.287 MB decimal / 9.810 MiB.
+- Export files: 7.
+- ZIP SHA-256: 934015e0ae6213d0d1d009b7d20c8c04a789ac5651e73b8b614af6f31644cb4b.
+- The 21,776-byte source increase is code/JSON/documentation, not a new binary art/audio asset pack. The 4 GB unique-content goal remains NOT REACHED.
+
+### Final status classification for this milestone
+| System | Status | Exact boundary |
+|---|---|---|
+| Road graph data | TESTED | 16 stable nodes / 16 edges across the four blockout regions |
+| Generated road strips | TESTED | Visible arterial, access roads and coastal bypass over the existing collidable ground |
+| Dijkstra shortest path | TESTED | Segment-length weighting; excludes supplied closed edge IDs |
+| Detour selection | TESTED | Coastal bypass selected when the tested arterial edge is closed |
+| Unreachable reporting | TESTED | Nora's route is reported unreachable when its only lighthouse access edge is closed |
+| Mission-aware minimap route | TESTED | Claire for stage 0, Nora for stage 1; route polyline and destination marker delivered to HUD |
+| Full GPS | PARTIALLY IMPLEMENTED | No player-selected destinations, turn-by-turn guidance, obstacle-aware endpoint connectors or complete road coverage |
+| Full world / interiors / streaming | PLANNED or PARTIALLY IMPLEMENTED | Region geometry remains blockout; this road graph is not a finished world |
+| Traffic, pedestrian and police navigation | PLANNED | No traffic lane simulation or NPC pathfinding is added in this milestone |
+| 4 GB real content | NOT REACHED | No filler or duplicate assets were added |
+
+### Links
+- Web CI #45159757563: https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45159757563
+- Tested commit: https://github.com/dzdfast-art/GTA-GHIBLI/commit/63e158d7b3178bc102cb478dc9b62185348f2675
+- Web development branch: https://github.com/dzdfast-art/GTA-GHIBLI/tree/web/standalone-from-empty-2026-11-22
