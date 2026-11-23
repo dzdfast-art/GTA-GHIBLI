@@ -20,7 +20,7 @@ func _run() -> void:
 	if following.get("target_position", Vector3.ZERO) == Vector3.ZERO:
 		_fail("Vehicle route follower did not provide a forward target.")
 		return
-	var departed: Dictionary = follower.call("evaluate_vehicle", route, Vector3(4.0, 0.0, 9.0))
+	var departed: Dictionary = follower.call("evaluate_vehicle", route, Vector3(3.0, 0.0, 9.0))
 	if str(departed.get("status", "")) != "off_route" or not bool(departed.get("reroute_required", false)):
 		_fail("Vehicle departure from route did not request a reroute.")
 		return
