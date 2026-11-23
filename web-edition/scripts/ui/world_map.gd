@@ -156,6 +156,17 @@ func _draw() -> void:
 	var road_end := world_to_map(Vector3(128.0, 0.0, 0.0))
 	draw_line(road_start, road_end, Color(0.10, 0.12, 0.13), 14.0)
 	draw_line(road_start, road_end, Color(0.78, 0.70, 0.50), 1.6)
+	# Keep the map topology in sync with the connected in-world street grid.
+	for street_x in [-96.0, -32.0, 32.0, 96.0]:
+		var vertical_start := world_to_map(Vector3(street_x, 0.0, -27.0))
+		var vertical_end := world_to_map(Vector3(street_x, 0.0, 27.0))
+		draw_line(vertical_start, vertical_end, Color(0.10, 0.12, 0.13), 5.0 * _zoom)
+		draw_line(vertical_start, vertical_end, Color(0.68, 0.64, 0.52), 0.7 * _zoom)
+	for street_z in [-24.0, 24.0]:
+		var horizontal_start := world_to_map(Vector3(-99.0, 0.0, street_z))
+		var horizontal_end := world_to_map(Vector3(99.0, 0.0, street_z))
+		draw_line(horizontal_start, horizontal_end, Color(0.10, 0.12, 0.13), 5.0 * _zoom)
+		draw_line(horizontal_start, horizontal_end, Color(0.68, 0.64, 0.52), 0.7 * _zoom)
 
 	if _route_points.size() > 1:
 		var route_line := PackedVector2Array()
