@@ -4,11 +4,15 @@ class_name GhibliRoutePlanner
 
 var _nodes: Dictionary = {}
 var _adjacency: Dictionary = {}
+var _edge_ids: Dictionary = {}
+var _blocked_edge_ids: Dictionary = {}
 
 
 func configure(graph: Dictionary) -> bool:
 	_nodes.clear()
 	_adjacency.clear()
+	_edge_ids.clear()
+	_blocked_edge_ids.clear()
 	var graph_nodes: Array = graph.get("nodes", [])
 	var graph_edges: Array = graph.get("edges", [])
 	if graph_nodes.size() < 2 or graph_edges.is_empty():
@@ -31,7 +35,7 @@ func configure(graph: Dictionary) -> bool:
 		var edge_id := str(edge.get("id", ""))
 		var from_id := str(edge.get("from", ""))
 		var to_id := str(edge.get("to", ""))
-		if edge_id.is_empty() or not _nodes.has(from_id) or not _nodes.has(to_id):
+		if edge_id.is_empty() or _edge_ids.has(edge_id) or not _nodes.has(from_id) or not _nodes.has(to_id):
 			return false
 		if from_id == to_id:
 			return false
@@ -40,10 +44,16 @@ func configure(graph: Dictionary) -> bool:
 		var edge_cost := float(edge.get("cost", from_position.distance_to(to_position)))
 		if edge_cost <= 0.0:
 			return false
-		var connection := {"to": to_id, "edge_id": edge_id, "cost": edge_cost}
-		var reverse_connection := {"to": from_id, "edge_id": edge_id, "cost": edge_cost}
-		_adjacency[from_id].append(connection)
-		_adjacency[to_id].append(reverse_connection)
+		var direction := str(edge.get("direction", "both"))
+		if not ["both", "forward", "reverse"].has(direction):
+			return false
+		_edge_ids[edge_id] = true
+		if bool(edge.get("blocked", false)):
+			_blocked_edge_ids[edge_id] = true
+		if direction == "both" or direction == "forward":
+			_adjacency[from_id].append({"to": to_id, "edge_id": edge_id, "cost": edge_cost})
+		if direction == "both" or direction == "reverse":
+			_adjacency[to_id].append({"to": from_id, "edge_id": edge_id, "cost": edge_cost})
 
 	return true
 
@@ -79,6 +89,9 @@ func find_route(
 		open_set.erase(current_id)
 		closed_set[current_id] = true
 		for connection in _adjacency.get(current_id, []):
+			var edge_id := str(connection.get("edge_id", ""))
+			if _blocked_edge_ids.has(edge_id):
+				continue
 			var next_id := str(connection.get("to", ""))
 			if closed_set.has(next_id):
 				continue
@@ -136,11 +149,21 @@ func get_node_count() -> int:
 
 
 func get_edge_count() -> int:
-	var edge_ids: Dictionary = {}
-	for connections in _adjacency.values():
-		for connection in connections:
-			edge_ids[str(connection.get("edge_id", ""))] = true
-	return edge_ids.size()
+	return _edge_ids.size()
+
+
+func get_blocked_edge_count() -> int:
+	return _blocked_edge_ids.size()
+
+
+func set_edge_blocked(edge_id: String, blocked: bool) -> bool:
+	if not _edge_ids.has(edge_id):
+		return false
+	if blocked:
+		_blocked_edge_ids[edge_id] = true
+	else:
+		_blocked_edge_ids.erase(edge_id)
+	return true
 
 
 func _build_maneuvers(path: Array[Vector3]) -> Array[Dictionary]:
