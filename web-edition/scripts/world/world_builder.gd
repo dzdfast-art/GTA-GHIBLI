@@ -135,9 +135,9 @@ func _create_access_roads() -> void:
 		var access_road := MeshInstance3D.new()
 		access_road.name = "AccessRoad_" + str(point["id"])
 		var road_mesh := BoxMesh.new()
-		road_mesh.size = Vector3(5.0, 0.055, absf(point_position.z))
+		road_mesh.size = Vector3(5.0, 0.08, absf(point_position.z))
 		access_road.mesh = road_mesh
-		access_road.position = Vector3(point_position.x, 0.08, point_position.z * 0.5)
+		access_road.position = Vector3(point_position.x, 0.055, point_position.z * 0.5)
 		access_road.material_override = material
 		add_child(access_road)
 
