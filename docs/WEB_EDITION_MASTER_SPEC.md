@@ -218,3 +218,12 @@ The first navigable graph increment for the Web Edition is now authored on the P
 
 ### Build-output handling
 Web CI continues to export and measure the Web package, but the PR #40 workflow removes the upload-artifact step and deletes the temporary build directory after measurement. This policy prevents future PR runs from leaving downloadable Actions ZIP artifacts. It does not delete the earlier PR #39 artifact already created; that artifact and its expiry are recorded in the status ledger.
+---
+
+## Implementation snapshot — starter-road GPS maneuvers (PR #41 candidate)
+
+- A* route results now include left/right bend instructions derived from consecutive route points in the map plane. Straight and near-180-degree reversal segments are not presented as turns.
+- The gameplay HUD shows the next route maneuver and Euclidean distance from the player to that maneuver. The instruction is recalculated with the route as the player moves.
+- The tests exercise both left and right cases on a controlled graph, verify the lighthouse route's right-turn instruction and check HUD delivery.
+- PR #40 road-graph routing is verified by CI run 45229951546; PR #41 maneuver changes are pending their own Godot/Web/Chromium and security checks.
+- This remains prototype guidance over the east-west starter corridor and six access spurs. It is not a complete turn-by-turn navigation system.
