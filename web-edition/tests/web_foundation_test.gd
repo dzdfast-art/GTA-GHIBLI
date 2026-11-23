@@ -65,6 +65,53 @@ func _run() -> void:
 		_fail("Minimap did not receive the live player world position.")
 		return
 
+	var road_network = world.get("road_network")
+	if road_network == null or int(road_network.call("get_node_count")) != 16 or int(road_network.call("get_edge_count")) != 16:
+		_fail("The new data-driven road graph did not load its 16 nodes and 16 edges.")
+		return
+	if world.get_node_or_null("RoadSurface_arterial_harbor_west") == null:
+		_fail("The road graph was loaded but its main-road geometry was not created.")
+		return
+
+	var nora_route: Dictionary = world.call("find_road_route", Vector3(-114.0, 0.0, 0.0), nora.global_position)
+	if str(nora_route.get("status", "")) != "ok":
+		_fail("The road graph could not route the player to Nora.")
+		return
+	var nora_edges: Array = nora_route.get("edge_ids", [])
+	if not nora_edges.has("local_lighthouse_access"):
+		_fail("The Nora route did not use the lighthouse access road.")
+		return
+
+	var detour_route: Dictionary = world.call(
+		"find_road_route",
+		Vector3(-96.0, 0.0, 0.0),
+		Vector3(-32.0, 0.0, 0.0),
+		["arterial_coast_west_to_center"]
+	)
+	if str(detour_route.get("status", "")) != "ok":
+		_fail("The road graph did not find the coastal bypass around a closed road edge.")
+		return
+	var detour_edges: Array = detour_route.get("edge_ids", [])
+	if detour_edges.has("arterial_coast_west_to_center") or not detour_edges.has("local_coast_bypass_loop"):
+		_fail("The route planner did not avoid the closed edge using the coastal bypass.")
+		return
+
+	var blocked_nora_route: Dictionary = world.call(
+		"find_road_route",
+		Vector3(-114.0, 0.0, 0.0),
+		nora.global_position,
+		["local_lighthouse_access"]
+	)
+	if str(blocked_nora_route.get("status", "")) != "unreachable":
+		_fail("The route planner did not report an unreachable destination when its only access road was closed.")
+		return
+
+	hud.call("set_navigation_route", nora_route.get("points", PackedVector3Array()), "Nora Blake", float(nora_route.get("distance", 0.0)))
+	var displayed_route: PackedVector3Array = minimap.get("route_points")
+	if displayed_route.size() < 2 or str(minimap.get("route_destination")) != "Nora Blake":
+		_fail("The minimap did not receive the active GPS route and destination.")
+		return
+
 	var start_position: Vector3 = player.global_position
 	Input.action_press("move_forward")
 	for _frame in range(24):
@@ -129,6 +176,9 @@ func _run() -> void:
 	print("PASS: fresh Web project main scene starts.")
 	print("PASS: four named region coordinates and three named interactive characters exist.")
 	print("PASS: minimap maps world bounds correctly and receives the live player position.")
+	print("PASS: the data-driven road graph loads 16 nodes/16 edges and creates road geometry.")
+	print("PASS: Dijkstra routing reaches Nora, detours around a closed edge and reports blocked access as unreachable.")
+	print("PASS: the minimap receives the active route and destination marker.")
 	print("PASS: keyboard movement moves the player.")
 	print("PASS: nearby E interaction enters the starter sedan; driving and E exit work.")
 	print("PASS: Claire and Nora world interactions complete Mission 001 and grant $250 once.")

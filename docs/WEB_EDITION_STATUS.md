@@ -184,3 +184,43 @@ PR #35: https://github.com/dzdfast-art/GTA-GHIBLI/pull/35
 
 ### Final current boundary
 This release is a playable Web foundation with a researched implementation reference package—not the finished San Andreas-scale open world and not a completed 4,700-entry historical encyclopedia. The four required research registries remain at 140 / 4,700 actual numbered entries, the physics registry has 19 proposed systems and the character subset has four named PS2-manual entries. The exact gaps above remain open.
+
+
+---
+
+## Daily development update — 2026-11-23: first road graph and mission GPS
+
+### Repository state audited before this change
+- main: 0e166bbd3041adbed838e8436a0eecb73da9746b.
+- Web development branch before this change: fd9c6cbdf85fd804bfcbeed27b7e26fe5c486d6c.
+- PR #35 was already closed and merged at 4b9c657d21870d0e2e947c041db8c2abd3ad7bdf by the previous session. This update does not attempt to rewrite or reverse main.
+- PR #36 was also merged into main; it changed Web CI to retain a downloadable Actions artifact. That behavior is not copied into this development branch because the current delivery rule requires temporary export, measurement and deletion.
+- PR #35 cannot be kept Draft/open after its recorded merge. No new PR is created by this update.
+
+### Work added on the Web development branch
+- Added web-edition/data/world/road_graph.json: 16 nodes and 16 edges across the four blockout regions, including the east-west arterial, four location-access spurs and a coastal bypass.
+- Added web-edition/scripts/world/road_network.gd: graph validation, nearest-node endpoint selection, Dijkstra shortest path, closed-edge exclusion, unreachable-route reporting and route geometry output.
+- Updated the world builder to create road surfaces from the graph instead of one hard-coded road strip.
+- Updated the HUD/minimap to draw the active route and destination marker.
+- The introductory mission now guides the player to Claire at stage 0 and Nora at stage 1; the route clears after the introductory mission is complete.
+- Added regression cases for graph counts, road geometry, Nora routing, bypassing a closed road edge, unreachable lighthouse access and minimap route state.
+- Added CI JSON validation for the road graph. No external runtime assets, remote services or public hosting are introduced.
+
+### Status before CI result
+| System | Status | Boundary |
+|---|---|---|
+| Road graph data | IMPLEMENTED | 16 nodes / 16 edges; prototype coverage only |
+| Road surface generation | IMPLEMENTED | Visual blockout strips over the existing collidable regional ground |
+| Shortest-path routing | IMPLEMENTED — awaiting CI | Dijkstra by horizontal segment length; closed edge IDs can be excluded |
+| Mission-aware GPS overlay | IMPLEMENTED — awaiting CI | Introductory Claire/Nora objectives only |
+| Full GPS destination selection | PLANNED | No user-selected destinations, turn-by-turn prompts or road snapping to the full world |
+| Pedestrian/path navigation | PLANNED | Current graph is for roads only; endpoint connectors are straight and not obstacle-aware |
+| Full road network / traffic lanes | PLANNED | Not a finished street system; traffic simulation is not implemented |
+| Four-region world | PARTIALLY IMPLEMENTED | Region and building geometry remain blockout placeholders |
+
+### Validation boundary
+- Godot is not installed in the working container; no local Godot parse/import or Web export is claimed.
+- The GitHub Web CI triggered by this branch update must be used to establish Godot 4.7 import, gameplay regression, Web export and Chromium/WebGL 2 results.
+- Existing successful run #45025650263 tested the earlier branch head fd9c6cb, not this road-network change.
+- No current export size or SHA-256 is claimed for this change until the new CI run reports them.
+- No Actions artifact is requested or uploaded by the Web development workflow.

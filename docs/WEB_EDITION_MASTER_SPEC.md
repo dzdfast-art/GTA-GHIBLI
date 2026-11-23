@@ -202,3 +202,20 @@ This is a GTA GHIBLI proposal, not a claim about Rockstar's internal tools.
 Every system follows the status vocabulary used in `docs/WEB_EDITION_STATUS.md`. A feature is `TESTED` only after a repeatable automated or documented manual test. The first browser gate remains Chromium/WebGL2; Firefox and Safari are separate unverified gates until runners and actual jobs exist. A green foundation CI run never means that the full open world, every feature, final art, complete character census or complete historical encyclopedia is finished.
 
 The long-term target for the Web package is real, unique, useful content approaching the requested 4 GB milestone. Track source bytes, uncompressed Web export bytes, and compressed package bytes separately. No duplicate or filler data. Large packages require staged/streamed loading and measured browser compatibility; do not claim 4 GB reached until actual authored content and export measurements prove it.
+
+
+---
+
+## 2026-11-23 implementation decision — first road graph and route guidance
+
+The following is an original GTA GHIBLI engineering proposal, not a claim about the original 2004 game's source code or internal navigation:
+
+- Store road topology in web-edition/data/world/road_graph.json, with stable node and edge IDs and Godot world X/Z coordinates in meters.
+- Generate visible road strips from the same edge records used by navigation so the displayed prototype roads and route graph do not drift apart.
+- Use Dijkstra shortest path weighted by horizontal segment length. Treat edges as bidirectional unless explicitly marked one-way.
+- Pass closed edge IDs into the route query so a blocked edge is excluded and a detour can be selected when an alternate path exists. Return unreachable when no path remains.
+- Snap the start and destination to their nearest road nodes, then add straight endpoint connectors. This is a temporary prototype rule; production navigation must use reachable walkable connectors, collision/path queries and safe destination snapping.
+- Feed the current introductory mission target into the minimap: Claire during Mission 001 stage 0, Nora during stage 1, and no active route after completion.
+- Draw the computed polyline and destination marker on the minimap. The full map remains a placeholder and does not yet provide destination selection or turn-by-turn guidance.
+
+The first graph contains 16 nodes and 16 edges: nine arterial links, four location-access spurs and three coastal-bypass links. Its regression gate covers graph loading, generated road geometry, route to Nora, bypass around one closed edge, unreachable reporting when lighthouse access is closed, and route delivery to the minimap. A green gate validates only these cases; it does not establish a complete road network, pedestrian navigation, traffic AI, collision-aware GPS or full-world streaming.

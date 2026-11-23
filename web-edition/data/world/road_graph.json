@@ -1,0 +1,286 @@
+{
+  "schema_version": 1,
+  "coordinate_system": "Godot world X/Z in meters; node positions use [x, y, z].",
+  "routing": {
+    "algorithm": "Dijkstra shortest path weighted by horizontal segment length.",
+    "direction": "Edges are bidirectional unless one_way is true.",
+    "closures": "find_route accepts a list of closed edge IDs and excludes those edges.",
+    "endpoint_policy": "Start and destination are connected to their nearest graph nodes with straight endpoint connectors; this is a prototype policy, not obstacle-aware pedestrian navigation."
+  },
+  "nodes": [
+    {
+      "id": "harbor_west_gate",
+      "name": "Harbor west gate",
+      "region_id": "harbor_city",
+      "position": [
+        -124,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "harbor_center",
+      "name": "Harbor center",
+      "region_id": "harbor_city",
+      "position": [
+        -96,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "lighthouse_junction",
+      "name": "Lighthouse junction",
+      "region_id": "harbor_city",
+      "position": [
+        -79,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "coast_west",
+      "name": "Coast west junction",
+      "region_id": "sapphire_coast",
+      "position": [
+        -64,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "coast_center",
+      "name": "Coast center",
+      "region_id": "sapphire_coast",
+      "position": [
+        -32,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "coast_east",
+      "name": "Coast east junction",
+      "region_id": "sapphire_coast",
+      "position": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "highland_center",
+      "name": "Highland center",
+      "region_id": "pine_highlands",
+      "position": [
+        32,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "valley_west",
+      "name": "Valley west junction",
+      "region_id": "amber_valley",
+      "position": [
+        64,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "amber_center",
+      "name": "Amber center",
+      "region_id": "amber_valley",
+      "position": [
+        96,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "amber_east",
+      "name": "Amber east gate",
+      "region_id": "amber_valley",
+      "position": [
+        124,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "marsa_al_noor_gate",
+      "name": "Marsa Al-Noor access",
+      "region_id": "harbor_city",
+      "position": [
+        -79,
+        0,
+        17
+      ]
+    },
+    {
+      "id": "coast_cafe_gate",
+      "name": "Coast cafe access",
+      "region_id": "sapphire_coast",
+      "position": [
+        -50,
+        0,
+        -19
+      ]
+    },
+    {
+      "id": "highland_cabin_gate",
+      "name": "Highland cabin access",
+      "region_id": "pine_highlands",
+      "position": [
+        14,
+        0,
+        -18
+      ]
+    },
+    {
+      "id": "amber_farm_gate",
+      "name": "Amber farm access",
+      "region_id": "amber_valley",
+      "position": [
+        113,
+        0,
+        -18
+      ]
+    },
+    {
+      "id": "coast_bypass_west",
+      "name": "Coastal bypass west",
+      "region_id": "sapphire_coast",
+      "position": [
+        -64,
+        0,
+        -13
+      ]
+    },
+    {
+      "id": "coast_bypass_east",
+      "name": "Coastal bypass east",
+      "region_id": "sapphire_coast",
+      "position": [
+        0,
+        0,
+        -13
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "arterial_harbor_west",
+      "from": "harbor_west_gate",
+      "to": "harbor_center",
+      "width": 11,
+      "road_type": "arterial"
+    },
+    {
+      "id": "arterial_harbor_lighthouse",
+      "from": "harbor_center",
+      "to": "lighthouse_junction",
+      "width": 11,
+      "road_type": "arterial"
+    },
+    {
+      "id": "arterial_lighthouse_coast",
+      "from": "lighthouse_junction",
+      "to": "coast_west",
+      "width": 11,
+      "road_type": "arterial"
+    },
+    {
+      "id": "arterial_coast_west_to_center",
+      "from": "coast_west",
+      "to": "coast_center",
+      "width": 11,
+      "road_type": "arterial"
+    },
+    {
+      "id": "arterial_coast_center_to_east",
+      "from": "coast_center",
+      "to": "coast_east",
+      "width": 11,
+      "road_type": "arterial"
+    },
+    {
+      "id": "arterial_coast_to_highlands",
+      "from": "coast_east",
+      "to": "highland_center",
+      "width": 11,
+      "road_type": "arterial"
+    },
+    {
+      "id": "arterial_highlands_to_valley",
+      "from": "highland_center",
+      "to": "valley_west",
+      "width": 11,
+      "road_type": "arterial"
+    },
+    {
+      "id": "arterial_valley_to_amber",
+      "from": "valley_west",
+      "to": "amber_center",
+      "width": 11,
+      "road_type": "arterial"
+    },
+    {
+      "id": "arterial_amber_east",
+      "from": "amber_center",
+      "to": "amber_east",
+      "width": 11,
+      "road_type": "arterial"
+    },
+    {
+      "id": "local_lighthouse_access",
+      "from": "lighthouse_junction",
+      "to": "marsa_al_noor_gate",
+      "width": 7,
+      "road_type": "local"
+    },
+    {
+      "id": "local_coast_cafe",
+      "from": "coast_west",
+      "to": "coast_cafe_gate",
+      "width": 7,
+      "road_type": "local"
+    },
+    {
+      "id": "local_highland_cabin",
+      "from": "highland_center",
+      "to": "highland_cabin_gate",
+      "width": 7,
+      "road_type": "local"
+    },
+    {
+      "id": "local_amber_farm",
+      "from": "amber_center",
+      "to": "amber_farm_gate",
+      "width": 7,
+      "road_type": "local"
+    },
+    {
+      "id": "local_coast_bypass_west",
+      "from": "coast_west",
+      "to": "coast_bypass_west",
+      "width": 6.5,
+      "road_type": "local"
+    },
+    {
+      "id": "local_coast_bypass_loop",
+      "from": "coast_bypass_west",
+      "to": "coast_bypass_east",
+      "width": 6.5,
+      "road_type": "local"
+    },
+    {
+      "id": "local_coast_bypass_east",
+      "from": "coast_bypass_east",
+      "to": "coast_east",
+      "width": 6.5,
+      "road_type": "local"
+    }
+  ]
+}

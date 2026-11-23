@@ -28,15 +28,15 @@ For a Web export, select the `Web` preset and export to `build/web/index.html`. 
 
 ## Current playable foundation
 
-- Four named region blockouts connected by one continuous ground strip and a main road corridor.
+- Four named region blockouts connected by a data-driven 16-node/16-edge road graph: one east-west arterial, local access roads and a coastal bypass.
 - Provisional Marsa Al-Noor lighthouse landmark in Harbor City.
 - Original temporary placeholder representations for Leo, Claire, Mia and Nora.
 - A first text-only mission with two interactive stages, a $250 reward and a local save file.
 - A first functional sedan with basic acceleration, steering, reverse and braking.
-- Basic HUD, region label and a preliminary map overlay.
+- Basic HUD, region label, live minimap and mission-aware GPS route overlay for the introductory objectives. The route planner supports closed-edge avoidance on the current graph.
 
 ## Important limitations
 
-The region geometry and character/vehicle models are blockout placeholders, not finished art. This milestone does not yet contain the full open world, a complete road/GPS network, detailed interiors, a final rig/animation set, weapon combat, traffic/police simulation, all vehicle classes, a complete mission campaign, weather, original music or verified Arabic voice performances. Those requirements are tracked in `../docs/WEB_EDITION_MASTER_SPEC.md` and `../docs/WEB_EDITION_STATUS.md`.
+The region geometry and character/vehicle models are blockout placeholders, not finished art. The current road graph is a small prototype, not a complete city network; GPS currently routes only the introductory mission objective and uses nearest-road-node endpoint connectors. The game does not yet contain the full open world, detailed interiors, a final rig/animation set, weapon combat, traffic/police simulation, all vehicle classes, a complete mission campaign, weather, original music or verified Arabic voice performances. Those requirements are tracked in `../docs/WEB_EDITION_MASTER_SPEC.md` and `../docs/WEB_EDITION_STATUS.md`.
 
 No public Web deployment or public downloadable artifact is created by CI. CI builds and tests on an ephemeral runner and removes the export afterwards.

@@ -4,6 +4,9 @@ class_name GhibliWebHUD
 class MinimapCanvas extends Control:
 	var player_world_position := Vector3(-114.0, 0.0, 0.0)
 	var player_heading: float = 0.0
+	var route_points := PackedVector3Array()
+	var route_destination := ""
+	var route_distance: float = 0.0
 	const WORLD_MIN := Vector2(-128.0, -32.0)
 	const WORLD_SIZE := Vector2(256.0, 64.0)
 	const REGION_COLORS := [
@@ -17,6 +20,18 @@ class MinimapCanvas extends Control:
 	func set_player_state(world_position: Vector3, heading: float) -> void:
 		player_world_position = world_position
 		player_heading = heading
+		queue_redraw()
+
+	func set_route(points: PackedVector3Array, destination_name: String, distance: float) -> void:
+		route_points = points.duplicate()
+		route_destination = destination_name
+		route_distance = distance
+		queue_redraw()
+
+	func clear_route() -> void:
+		route_points.clear()
+		route_destination = ""
+		route_distance = 0.0
 		queue_redraw()
 
 	func world_to_map(world_position: Vector3, map_size: Vector2 = Vector2(180.0, 132.0)) -> Vector2:
@@ -46,6 +61,14 @@ class MinimapCanvas extends Control:
 		draw_circle(lighthouse, 4.0, Color(1.0, 0.82, 0.35))
 		draw_circle(lighthouse, 1.5, Color(0.12, 0.10, 0.07))
 
+		if route_points.size() >= 2:
+			var route_map_points := PackedVector2Array()
+			for route_point in route_points:
+				route_map_points.append(world_to_map(route_point, size))
+			draw_polyline(route_map_points, Color(1.0, 0.64, 0.22, 0.96), 3.2, true)
+			draw_circle(route_map_points[route_map_points.size() - 1], 4.8, Color(1.0, 0.76, 0.30))
+			draw_arc(route_map_points[route_map_points.size() - 1], 7.0, 0.0, TAU, 20, Color(0.10, 0.08, 0.05), 1.2)
+
 		var player_point := world_to_map(player_world_position, size)
 		var heading_vector := Vector2(sin(player_heading), -cos(player_heading))
 		draw_line(player_point, player_point + heading_vector * 11.0, Color(0.98, 0.98, 0.94), 2.0)
@@ -62,6 +85,7 @@ var _notice_label: Label
 var _vehicle_label: Label
 var _map_panel: PanelContainer
 var _minimap: MinimapCanvas
+var _route_label: Label
 
 
 func _ready() -> void:
@@ -176,6 +200,8 @@ func _ready() -> void:
 	map_column.add_child(_make_label("       │                         │", 18, Color(0.83, 0.90, 0.91)))
 	map_column.add_child(_make_label("Pine Highlands ─── Amber Valley", 18, Color(0.83, 0.90, 0.91)))
 	map_column.add_child(_make_label("Marsa Al-Noor: Harbor City (موقع أولي)", 15, Color(0.94, 0.84, 0.63)))
+	_route_label = _make_label("GPS — no active destination", 15, Color(1.0, 0.72, 0.34))
+	map_column.add_child(_route_label)
 	map_column.add_child(_make_label("M — إغلاق الخريطة", 14, Color(0.78, 0.84, 0.86)))
 
 
@@ -201,6 +227,16 @@ func set_vehicle_state(is_driving: bool, vehicle_name: String) -> void:
 
 func update_minimap(world_position: Vector3, heading: float) -> void:
 	_minimap.set_player_state(world_position, heading)
+
+
+func set_navigation_route(points: PackedVector3Array, destination_name: String, distance: float) -> void:
+	_minimap.set_route(points, destination_name, distance)
+	_route_label.text = "GPS — " + destination_name + " · " + str(roundi(distance)) + " m"
+
+
+func clear_navigation_route() -> void:
+	_minimap.clear_route()
+	_route_label.text = "GPS — no active destination"
 
 
 func show_dialogue(speaker: String, line: String) -> void:

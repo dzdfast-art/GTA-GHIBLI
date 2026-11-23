@@ -3,6 +3,8 @@ class_name GhibliWorldBuilder
 
 const INTERACTABLE_SCRIPT = preload("res://scripts/world/interactable.gd")
 const CAR_SCRIPT = preload("res://scripts/vehicles/car_controller.gd")
+const ROAD_NETWORK_SCRIPT = preload("res://scripts/world/road_network.gd")
+const ROAD_GRAPH_PATH := "res://data/world/road_graph.json"
 
 const REGION_NAMES := [
 	"Harbor City",
@@ -13,9 +15,11 @@ const REGION_NAMES := [
 const REGION_CENTERS := [-96.0, -32.0, 32.0, 96.0]
 
 var spawn_position := Vector3(-114.0, 0.05, 0.0)
+var road_network: RefCounted
 
 
 func build_world() -> void:
+	_load_road_network()
 	for index in range(REGION_NAMES.size()):
 		_create_region(index)
 	_create_connected_road()
@@ -27,6 +31,31 @@ func build_world() -> void:
 func get_region_name_at(position: Vector3) -> String:
 	var index := clampi(int(floor((position.x + 128.0) / 64.0)), 0, REGION_NAMES.size() - 1)
 	return REGION_NAMES[index]
+
+
+func find_road_route(start_position: Vector3, destination_position: Vector3, blocked_edge_ids: Array = []) -> Dictionary:
+	if road_network == null:
+		return {"status": "invalid_graph", "node_ids": [], "edge_ids": [], "points": PackedVector3Array(), "distance": 0.0}
+	return road_network.call("find_route", start_position, destination_position, blocked_edge_ids)
+
+
+func _load_road_network() -> void:
+	road_network = ROAD_NETWORK_SCRIPT.new()
+	var graph_text := FileAccess.get_file_as_string(ROAD_GRAPH_PATH)
+	if graph_text.is_empty():
+		push_error("Road graph file is missing or empty: " + ROAD_GRAPH_PATH)
+		road_network = null
+		return
+
+	var parsed_graph: Variant = JSON.parse_string(graph_text)
+	if typeof(parsed_graph) != TYPE_DICTIONARY:
+		push_error("Road graph JSON must contain an object at its root.")
+		road_network = null
+		return
+
+	if not bool(road_network.call("load_graph", parsed_graph)):
+		push_error("Road graph validation failed; navigation is disabled.")
+		road_network = null
 
 
 func _create_region(index: int) -> void:
@@ -68,33 +97,63 @@ func _create_region(index: int) -> void:
 
 
 func _create_connected_road() -> void:
+	if road_network == null:
+		return
+	var segments: Array = road_network.call("get_segments")
+	for segment_variant in segments:
+		var segment: Dictionary = segment_variant
+		_create_road_segment(segment)
+
+
+func _create_road_segment(segment: Dictionary) -> void:
+	var start_position: Vector3 = segment.get("from_position", Vector3.ZERO)
+	var end_position: Vector3 = segment.get("to_position", Vector3.ZERO)
+	var flat_delta := Vector2(end_position.x - start_position.x, end_position.z - start_position.z)
+	var segment_length := flat_delta.length()
+	if segment_length < 0.1:
+		return
+
+	var edge_id := str(segment.get("id", "unnamed"))
+	var road_type := str(segment.get("road_type", "local"))
+	var road_width := maxf(float(segment.get("width", 7.0)), 3.0)
+	var midpoint := (start_position + end_position) * 0.5
+	var road_rotation := atan2(flat_delta.x, flat_delta.y)
+
+	var shoulder := MeshInstance3D.new()
+	shoulder.name = "RoadShoulder_" + edge_id
+	var shoulder_mesh := BoxMesh.new()
+	shoulder_mesh.size = Vector3(road_width + 1.8, 0.035, segment_length)
+	shoulder.mesh = shoulder_mesh
+	shoulder.position = Vector3(midpoint.x, 0.02, midpoint.z)
+	shoulder.rotation.y = road_rotation
+	shoulder.material_override = _make_material(Color(0.48, 0.43, 0.34))
+	add_child(shoulder)
+
 	var road := MeshInstance3D.new()
+	road.name = "RoadSurface_" + edge_id
 	var road_mesh := BoxMesh.new()
-	road_mesh.size = Vector3(258.0, 0.08, 11.0)
+	road_mesh.size = Vector3(road_width, 0.08, segment_length)
 	road.mesh = road_mesh
-	road.position = Vector3(0.0, 0.055, 0.0)
-	road.material_override = _make_material(Color(0.12, 0.14, 0.15))
+	road.position = Vector3(midpoint.x, 0.06, midpoint.z)
+	road.rotation.y = road_rotation
+	var road_color := Color(0.12, 0.14, 0.15) if road_type == "arterial" else Color(0.16, 0.17, 0.17)
+	road.material_override = _make_material(road_color)
 	add_child(road)
 
-	var shoulder_material := _make_material(Color(0.48, 0.43, 0.34))
-	for side in [-1.0, 1.0]:
-		var shoulder := MeshInstance3D.new()
-		var shoulder_mesh := BoxMesh.new()
-		shoulder_mesh.size = Vector3(258.0, 0.035, 1.2)
-		shoulder.mesh = shoulder_mesh
-		shoulder.position = Vector3(0.0, 0.02, side * 6.0)
-		shoulder.material_override = shoulder_material
-		add_child(shoulder)
-
-	var line_material := _make_material(Color(0.91, 0.82, 0.54))
-	for x in range(-124, 125, 12):
-		var line := MeshInstance3D.new()
-		var line_mesh := BoxMesh.new()
-		line_mesh.size = Vector3(5.0, 0.025, 0.12)
-		line.mesh = line_mesh
-		line.position = Vector3(float(x), 0.105, 0.0)
-		line.material_override = line_material
-		add_child(line)
+	if road_type == "arterial":
+		var dash_count := maxi(1, int(floor(segment_length / 12.0)))
+		for dash_index in range(dash_count):
+			var fraction := (float(dash_index) + 0.5) / float(dash_count)
+			var mark_position := start_position.lerp(end_position, fraction)
+			var line := MeshInstance3D.new()
+			line.name = "RoadMark_" + edge_id + "_" + str(dash_index + 1)
+			var line_mesh := BoxMesh.new()
+			line_mesh.size = Vector3(0.14, 0.025, minf(3.8, segment_length / float(dash_count) * 0.55))
+			line.mesh = line_mesh
+			line.position = Vector3(mark_position.x, 0.112, mark_position.z)
+			line.rotation.y = road_rotation
+			line.material_override = _make_material(Color(0.91, 0.82, 0.54))
+			add_child(line)
 
 
 func _create_region_props(index: int, center_x: float) -> void:

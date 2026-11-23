@@ -11,6 +11,7 @@ var _missions: Node
 var _hud: CanvasLayer
 var _location_elapsed: float = 0.0
 var _minimap_elapsed: float = 0.0
+var _navigation_elapsed: float = 0.0
 
 
 func _ready() -> void:
@@ -39,6 +40,7 @@ func _ready() -> void:
 	_hud.call("set_wallet", _missions.call("get_wallet"))
 	_hud.call("set_location", _world.call("get_region_name_at", _player.global_position))
 	_hud.call("update_minimap", _player.global_position, _player.global_rotation.y)
+	_refresh_navigation()
 
 
 func _process(delta: float) -> void:
@@ -50,6 +52,41 @@ func _process(delta: float) -> void:
 	if _minimap_elapsed >= 0.12 and _player != null and _hud != null:
 		_minimap_elapsed = 0.0
 		_hud.call("update_minimap", _player.global_position, _player.global_rotation.y)
+
+	_navigation_elapsed += delta
+	if _navigation_elapsed >= 0.4 and _player != null and _world != null and _hud != null:
+		_navigation_elapsed = 0.0
+		_refresh_navigation()
+
+
+func _refresh_navigation() -> void:
+	if _world == null or _player == null or _missions == null or _hud == null:
+		return
+
+	var destination: Node3D
+	var destination_name := ""
+	match int(_missions.get("mission_stage")):
+		0:
+			destination = _world.get_node_or_null("ClaireBennett") as Node3D
+			destination_name = "Claire Bennett"
+		1:
+			destination = _world.get_node_or_null("NoraBlake") as Node3D
+			destination_name = "Nora Blake"
+		_:
+			_hud.call("clear_navigation_route")
+			return
+
+	if destination == null:
+		_hud.call("clear_navigation_route")
+		return
+
+	var route: Dictionary = _world.call("find_road_route", _player.global_position, destination.global_position)
+	if str(route.get("status", "")) != "ok":
+		_hud.call("clear_navigation_route")
+		return
+
+	var route_points: PackedVector3Array = route.get("points", PackedVector3Array())
+	_hud.call("set_navigation_route", route_points, destination_name, float(route.get("distance", 0.0)))
 
 
 func _connect_gameplay_signals() -> void:

@@ -18,7 +18,8 @@
     }
   ],
   "connectivity": {
-    "status": "prototype_corridor",
-    "description": "One continuous ground strip and east-west road corridor join the four blockout districts; this is not yet a complete road/path network."
+    "status": "road_graph_v1",
+    "road_graph_path": "res://data/world/road_graph.json",
+    "description": "A data-driven 16-node/16-edge road graph adds the east-west arterial, local access spurs and a coastal bypass. The four regions remain blockouts; this is not the finished street, path or GPS network."
   }
 }

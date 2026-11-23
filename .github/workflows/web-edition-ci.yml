@@ -47,6 +47,7 @@ jobs:
       - name: Validate project JSON data
         run: |
           python3 -m json.tool web-edition/data/world/regions.json >/dev/null
+          python3 -m json.tool web-edition/data/world/road_graph.json >/dev/null
           python3 -m json.tool web-edition/data/missions/mission_001.json >/dev/null
           python3 -m json.tool web-edition/data/story/cast.json >/dev/null
 
