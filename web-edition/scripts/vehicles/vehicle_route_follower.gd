@@ -24,7 +24,9 @@ func evaluate_vehicle(route: Dictionary, vehicle_position: Vector3) -> Dictionar
 		return {"valid": false, "status": "unreachable", "reroute_required": false, "arrived": false, "target_position": vehicle_position, "progress": progress}
 	var off_route := bool(progress_model.call("is_off_route", progress, off_route_threshold))
 	var path: Array = route.get("path", [])
-	var target := path[path.size() - 1] if not path.is_empty() else vehicle_position
+	var target: Vector3 = vehicle_position
+	if not path.is_empty():
+		target = path[path.size() - 1]
 	if not path.is_empty():
 		var nearest_index := int(progress.get("nearest_segment", 0))
 		var target_index := mini(nearest_index + 1, path.size() - 1)

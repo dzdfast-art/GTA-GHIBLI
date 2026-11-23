@@ -2,7 +2,7 @@ extends RefCounted
 class_name GhibliRegionStreamingState
 var states: Dictionary={}
 func request_load(region_id: String) -> bool:
-	if region_id.is_empty() or states.get(region_id,"")=="loaded": return false
+	if region_id.is_empty() or states.get(region_id,"unloaded") in ["loading", "loaded"]: return false
 	states[region_id]="loading"
 	return true
 func mark_loaded(region_id: String) -> bool:

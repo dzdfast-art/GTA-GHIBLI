@@ -15,4 +15,4 @@ func translate(key: String) -> String:
 	if not strings.has(key): return key
 	return str(strings[key].get(locale,strings[key].get("en",key)))
 func is_rtl() -> bool:
-	return locale=="ar
+	return locale == "ar"

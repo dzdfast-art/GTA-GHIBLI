@@ -26,7 +26,7 @@ func _run() -> void:
 	if float(start_result.get("cross_track_distance", INF)) > 0.01:
 		_fail("A player on the road route was incorrectly marked off-route.")
 		return
-	var off_route_result: Dictionary = evaluator.call("evaluate", route, Vector3(5.0, 0.0, 6.0))
+	var off_route_result: Dictionary = evaluator.call("evaluate", route, Vector3(4.0, 0.0, 7.0))
 	if not bool(evaluator.call("is_off_route", off_route_result, 5.0)):
 		_fail("Cross-track distance did not detect a player away from the route.")
 		return
