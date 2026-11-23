@@ -115,6 +115,18 @@ func _run() -> void:
 	if int(route_planner.call("get_edge_count")) < points_of_interest.size() + 7:
 		_fail("The road graph is missing connecting road segments.")
 		return
+	if int(route_planner.call("get_node_count")) < 25 or int(route_planner.call("get_edge_count")) < 30:
+		_fail("The expanded road graph is missing its connected street-grid intersections and segments.")
+		return
+	var cross_grid_route: Dictionary = route_planner.call(
+		"find_route", Vector3(-96.0, 0.0, -24.0), Vector3(-32.0, 0.0, 24.0), 1.0
+	)
+	if not bool(cross_grid_route.get("reachable", false)):
+		_fail("The new north-south and east-west streets are not connected into a drivable route network.")
+		return
+	if cross_grid_route.get("edge_ids", []).is_empty():
+		_fail("The street-grid route did not return traversed road segment IDs.")
+		return
 	for point in points_of_interest:
 		var destination: Vector3 = point["position"]
 		var candidate_route: Dictionary = route_planner.call(
@@ -398,6 +410,7 @@ func _run() -> void:
 	print("PASS: four named region coordinates and three named interactive characters exist.")
 	print("PASS: minimap maps world bounds correctly and receives the live player position.")
 	print("PASS: world-map POIs have unique IDs and correct region coordinates.")
+	print("PASS: the expanded north-south and cross-street grid connects across multiple regions.")
 	print("PASS: all six points of interest are reachable through the connected road graph.")
 	print("PASS: off-network starts are reported unreachable beyond the configured snap distance.")
 	print("PASS: selecting a map marker produces a road-following route, distance and map/minimap polyline.")
