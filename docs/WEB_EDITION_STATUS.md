@@ -234,7 +234,7 @@ This section supersedes the immediately preceding "Status before CI result" bloc
 
 ### Repository state after this work
 - main remains at 0e166bbd3041adbed838e8436a0eecb73da9746b; this run did not modify main.
-- Web development branch current head after the documentation follow-up: 40e130b902b43e7f479812e3719379e98cfac9ea; gameplay implementation commit: 63e158d7b3178bc102cb478dc9b62185348f2675.
+- Web development branch: web/standalone-from-empty-2026-11-22; gameplay implementation commit: 63e158d7b3178bc102cb478dc9b62185348f2675; documentation-only evidence update: 40e130b902b43e7f479812e3719379e98cfac9ea. The branch link below resolves the live head.
 - New development commit: https://github.com/dzdfast-art/GTA-GHIBLI/commit/63e158d7b3178bc102cb478dc9b62185348f2675.
 - PR #35 is already closed and merged at 4b9c657d21870d0e2e947c041db8c2abd3ad7bdf from the previous session; it cannot truthfully be described as Draft/open. This update did not rewrite or reverse main and did not create or merge another PR.
 - PR #36 is merged on main and its Web CI upload step left an existing Actions artifact: artifact ID 14757749108, 10,274,141 bytes, created by run #45033114459, scheduled to expire 2026-12-06. This branch does not copy that upload behavior. The current GitHub connector exposes artifact listing/download but not artifact deletion, so this update did not claim to remove that pre-existing artifact.
@@ -286,4 +286,4 @@ This section supersedes the immediately preceding "Status before CI result" bloc
 - Tested commit: https://github.com/dzdfast-art/GTA-GHIBLI/commit/63e158d7b3178bc102cb478dc9b62185348f2675
 - Web development branch: https://github.com/dzdfast-art/GTA-GHIBLI/tree/web/standalone-from-empty-2026-11-22
 
-- Documentation-only follow-up commit: 40e130b902b43e7f479812e3719379e98cfac9ea. It changes only the Web status/master-spec evidence record; gameplay code is unchanged. CI #45160613726 was triggered for that documentation commit and was still running when this note was recorded. The gameplay commit 63e158d7b3178bc102cb478dc9b62185348f2675 already passed the full Web gate in run #45159757563.
+- Documentation-only follow-up commit 40e130b902b43e7f479812e3719379e98cfac9ea recorded the test evidence; it did not change gameplay code. Web CI #45160613726 was triggered for that docs commit and was still running at the time of the original status entry. The gameplay commit 63e158d7b3178bc102cb478dc9b62185348f2675 passed the full Web gate in run #45159757563. This ledger correction is documentation-only and does not alter the tested game code.
