@@ -12,7 +12,7 @@ func _run() -> void:
 	root.add_child(game)
 
 	var system_ids: Array[String] = game.call("get_runtime_system_ids")
-	if system_ids.size() < 50:
+	if system_ids.size() != 52:
 		_fail("The game root did not initialize the complete runtime systems registry.")
 		return
 	if game.call("get_runtime_system", "wanted_level") == null or game.call("get_runtime_system", "police_pursuit") == null:
@@ -20,7 +20,7 @@ func _run() -> void:
 		return
 
 	var health: Dictionary = game.call("get_runtime_health_report")
-	if not bool(health.get("healthy", false)):
+	if int(health.get("total", 0)) != 58 or int(health.get("passed", 0)) != 58 or not bool(health.get("healthy", false)):
 		_fail("Runtime integration health checks did not pass: " + str(health))
 		return
 	var acceptance: Dictionary = game.call("get_web_acceptance_status")
