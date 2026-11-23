@@ -6,6 +6,7 @@ var _nodes: Dictionary = {}
 var _adjacency: Dictionary = {}
 var _edge_ids: Dictionary = {}
 var _blocked_edge_ids: Dictionary = {}
+var _turn_restrictions: Dictionary = {}
 
 
 func configure(graph: Dictionary) -> bool:
@@ -13,6 +14,7 @@ func configure(graph: Dictionary) -> bool:
 	_adjacency.clear()
 	_edge_ids.clear()
 	_blocked_edge_ids.clear()
+	_turn_restrictions.clear()
 	var graph_nodes: Array = graph.get("nodes", [])
 	var graph_edges: Array = graph.get("edges", [])
 	if graph_nodes.size() < 2 or graph_edges.is_empty():
@@ -55,6 +57,24 @@ func configure(graph: Dictionary) -> bool:
 		if direction == "both" or direction == "reverse":
 			_adjacency[to_id].append({"to": from_id, "edge_id": edge_id, "cost": edge_cost})
 
+	for restriction in graph.get("turn_restrictions", []):
+		if not restriction is Dictionary:
+			return false
+		var via_id := str(restriction.get("via", ""))
+		var from_edge_id := str(restriction.get("from_edge", ""))
+		var to_edge_id := str(restriction.get("to_edge", ""))
+		var restriction_type := str(restriction.get("type", "no"))
+		if not _nodes.has(via_id) or not _edge_ids.has(from_edge_id) or not _edge_ids.has(to_edge_id):
+			return false
+		if from_edge_id == to_edge_id or not ["no", "only"].has(restriction_type):
+			return false
+		if not _edge_connects_to(from_edge_id, via_id) or not _edge_leaves_from(to_edge_id, via_id):
+			return false
+		var restriction_key := _turn_key(via_id, from_edge_id)
+		if not _turn_restrictions.has(restriction_key):
+			_turn_restrictions[restriction_key] = {"no": {}, "only": {}}
+		_turn_restrictions[restriction_key][restriction_type][to_edge_id] = true
+
 	return true
 
 
@@ -71,49 +91,64 @@ func find_route(
 	if start_id.is_empty() or destination_id.is_empty():
 		return _unreachable("Start or destination is too far from the road graph.")
 
-	var open_set: Dictionary = {start_id: true}
+	# The incoming edge is part of the search state: legal exits depend on
+	# how the vehicle entered a junction, not only on the junction node.
+	var start_state := _state_key(start_id, "")
+	var open_set: Dictionary = {start_state: true}
 	var closed_set: Dictionary = {}
+	var state_nodes: Dictionary = {start_state: start_id}
+	var state_incoming_edges: Dictionary = {start_state: ""}
 	var came_from: Dictionary = {}
-	var came_from_edge: Dictionary = {}
-	var path_costs: Dictionary = {start_id: 0.0}
-	var found := false
-
+	var path_costs: Dictionary = {start_state: 0.0}
+	var found_state := ""
 	while not open_set.is_empty():
-		var current_id := _lowest_estimated_node(open_set, path_costs, destination_id)
-		if current_id.is_empty():
+		var current_state := _lowest_estimated_state(open_set, path_costs, state_nodes, destination_id)
+		if current_state.is_empty():
 			break
+		var current_id := str(state_nodes[current_state])
 		if current_id == destination_id:
-			found = true
+			found_state = current_state
 			break
 
-		open_set.erase(current_id)
-		closed_set[current_id] = true
+		open_set.erase(current_state)
+		closed_set[current_state] = true
+		var incoming_edge_id := str(state_incoming_edges[current_state])
 		for connection in _adjacency.get(current_id, []):
 			var edge_id := str(connection.get("edge_id", ""))
-			if _blocked_edge_ids.has(edge_id):
+			if _blocked_edge_ids.has(edge_id) or not _is_turn_allowed(current_id, incoming_edge_id, edge_id):
 				continue
 			var next_id := str(connection.get("to", ""))
-			if closed_set.has(next_id):
+			var next_state := _state_key(next_id, edge_id)
+			if closed_set.has(next_state):
 				continue
-			var tentative_cost := float(path_costs[current_id]) + float(connection.get("cost", 0.0))
-			if tentative_cost >= float(path_costs.get(next_id, INF)):
+			var tentative_cost := float(path_costs[current_state]) + float(connection.get("cost", 0.0))
+			if tentative_cost >= float(path_costs.get(next_state, INF)):
 				continue
-			came_from[next_id] = current_id
-			came_from_edge[next_id] = str(connection.get("edge_id", ""))
-			path_costs[next_id] = tentative_cost
-			open_set[next_id] = true
+			came_from[next_state] = current_state
+			path_costs[next_state] = tentative_cost
+			state_nodes[next_state] = next_id
+			state_incoming_edges[next_state] = edge_id
+			open_set[next_state] = true
 
-	if not found:
-		return _unreachable("No connected road path reaches this destination.")
+	if found_state.is_empty():
+		return _unreachable("No connected road path reaches this destination under the active turn restrictions.")
 
-	var reversed_nodes: Array[String] = [destination_id]
-	var cursor := destination_id
-	while cursor != start_id:
+	var reversed_states: Array[String] = [found_state]
+	var cursor := found_state
+	while cursor != start_state:
 		if not came_from.has(cursor):
 			return _unreachable("The route reconstruction was incomplete.")
 		cursor = str(came_from[cursor])
-		reversed_nodes.append(cursor)
-	reversed_nodes.reverse()
+		reversed_states.append(cursor)
+	reversed_states.reverse()
+
+	var reversed_nodes: Array[String] = []
+	var route_edges: Array[String] = []
+	for index in range(reversed_states.size()):
+		var state := reversed_states[index]
+		reversed_nodes.append(str(state_nodes[state]))
+		if index > 0:
+			route_edges.append(str(state_incoming_edges[state]))
 
 	var route_path: Array[Vector3] = []
 	_append_distinct(route_path, start_position)
@@ -126,11 +161,6 @@ func find_route(
 	for index in range(1, route_path.size()):
 		route_distance += route_path[index - 1].distance_to(route_path[index])
 
-	var route_edges: Array[String] = []
-	for index in range(1, reversed_nodes.size()):
-		route_edges.append(str(came_from_edge[reversed_nodes[index]]))
-	var maneuvers := _build_maneuvers(route_path)
-
 	return {
 		"reachable": true,
 		"reason": "",
@@ -138,7 +168,7 @@ func find_route(
 		"path": route_path,
 		"node_ids": reversed_nodes,
 		"edge_ids": route_edges,
-		"maneuvers": maneuvers,
+		"maneuvers": _build_maneuvers(route_path),
 		"start_node_id": start_id,
 		"destination_node_id": destination_id
 	}
@@ -166,20 +196,50 @@ func set_edge_blocked(edge_id: String, blocked: bool) -> bool:
 	return true
 
 
+func _is_turn_allowed(via_id: String, incoming_edge_id: String, outgoing_edge_id: String) -> bool:
+	if incoming_edge_id.is_empty():
+		return true
+	var restriction_key := _turn_key(via_id, incoming_edge_id)
+	if not _turn_restrictions.has(restriction_key):
+		return true
+	var rules: Dictionary = _turn_restrictions[restriction_key]
+	var only_rules: Dictionary = rules.get("only", {})
+	if not only_rules.is_empty() and not only_rules.has(outgoing_edge_id):
+		return false
+	return not rules.get("no", {}).has(outgoing_edge_id)
+
+
+func _edge_connects_to(edge_id: String, node_id: String) -> bool:
+	for connections in _adjacency.values():
+		for connection in connections:
+			if str(connection.get("edge_id", "")) == edge_id and str(connection.get("to", "")) == node_id:
+				return true
+	return false
+
+
+func _edge_leaves_from(edge_id: String, node_id: String) -> bool:
+	for connection in _adjacency.get(node_id, []):
+		if str(connection.get("edge_id", "")) == edge_id:
+			return true
+	return false
+
+
+func _turn_key(via_id: String, incoming_edge_id: String) -> String:
+	return via_id + "\u001f" + incoming_edge_id
+
+
+func _state_key(node_id: String, incoming_edge_id: String) -> String:
+	return node_id + "\u001f" + incoming_edge_id
+
+
 func _build_maneuvers(path: Array[Vector3]) -> Array[Dictionary]:
 	var maneuvers: Array[Dictionary] = []
 	for index in range(1, path.size() - 1):
 		var previous_position: Vector3 = path[index - 1]
 		var turn_position: Vector3 = path[index]
 		var next_position: Vector3 = path[index + 1]
-		var incoming := Vector2(
-			turn_position.x - previous_position.x,
-			turn_position.z - previous_position.z
-		)
-		var outgoing := Vector2(
-			next_position.x - turn_position.x,
-			next_position.z - turn_position.z
-		)
+		var incoming := Vector2(turn_position.x - previous_position.x, turn_position.z - previous_position.z)
+		var outgoing := Vector2(next_position.x - turn_position.x, next_position.z - turn_position.z)
 		if incoming.length_squared() < 0.01 or outgoing.length_squared() < 0.01:
 			continue
 		var signed_angle := rad_to_deg(incoming.normalized().angle_to(outgoing.normalized()))
@@ -209,21 +269,22 @@ func _find_nearest_node(position: Vector3, max_distance: float) -> String:
 	return nearest_id
 
 
-func _lowest_estimated_node(
+func _lowest_estimated_state(
 	open_set: Dictionary,
 	path_costs: Dictionary,
+	state_nodes: Dictionary,
 	destination_id: String
 ) -> String:
-	var best_id := ""
+	var best_state := ""
 	var best_score := INF
 	var destination_position: Vector3 = _nodes[destination_id]["position"]
-	for node_id in open_set:
-		var node_position: Vector3 = _nodes[node_id]["position"]
-		var score := float(path_costs.get(node_id, INF)) + node_position.distance_to(destination_position)
+	for state in open_set:
+		var node_position: Vector3 = _nodes[str(state_nodes[state])]["position"]
+		var score := float(path_costs.get(state, INF)) + node_position.distance_to(destination_position)
 		if score < best_score:
 			best_score = score
-			best_id = str(node_id)
-	return best_id
+			best_state = str(state)
+	return best_state
 
 
 func _append_distinct(path: Array[Vector3], position: Vector3) -> void:
