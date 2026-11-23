@@ -22,7 +22,7 @@ func evaluate(route: Dictionary, world_position: Vector3, arrival_radius: float 
 
 	var nearest_distance := INF
 	var nearest_segment := 0
-	var nearest_position := path[0]
+	var nearest_position: Vector3 = path[0]
 	var distance_after_nearest := 0.0
 	var cumulative_distance := 0.0
 	for index in range(path.size() - 1):
