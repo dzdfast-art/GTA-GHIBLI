@@ -283,6 +283,56 @@ func _run() -> void:
 		_fail("The one-way road incorrectly permitted travel against its declared direction.")
 		return
 
+	var restriction_planner = load("res://scripts/world/route_planner.gd").new()
+	var restricted_graph := {
+		"nodes": [
+			{"id": "A", "position": Vector3(0.0, 0.0, 0.0)},
+			{"id": "B", "position": Vector3(10.0, 0.0, 0.0)},
+			{"id": "C", "position": Vector3(10.0, 0.0, 10.0)},
+			{"id": "D", "position": Vector3(20.0, 0.0, 0.0)}
+		],
+		"edges": [
+			{"id": "AB", "from": "A", "to": "B", "cost": 10.0},
+			{"id": "BC", "from": "B", "to": "C", "cost": 10.0},
+			{"id": "CD", "from": "C", "to": "D", "cost": 14.14},
+			{"id": "BD", "from": "B", "to": "D", "cost": 10.0}
+		],
+		"turn_restrictions": [
+			{"via": "B", "from_edge": "AB", "to_edge": "BD", "type": "no"}
+		]
+	}
+	if not bool(restriction_planner.call("configure", restricted_graph)):
+		_fail("A valid no-turn restriction could not be configured.")
+		return
+	var no_turn_route: Dictionary = restriction_planner.call(
+		"find_route", Vector3.ZERO, Vector3(20.0, 0.0, 0.0), 1.0
+	)
+	if no_turn_route.get("edge_ids", []) != ["AB", "BC", "CD"]:
+		_fail("The planner ignored a prohibited turn or failed to find its legal detour.")
+		return
+
+	var only_turn_graph: Dictionary = restricted_graph.duplicate(true)
+	only_turn_graph["turn_restrictions"] = [
+		{"via": "B", "from_edge": "AB", "to_edge": "BC", "type": "only"}
+	]
+	if not bool(restriction_planner.call("configure", only_turn_graph)):
+		_fail("A valid only-turn restriction could not be configured.")
+		return
+	var only_turn_route: Dictionary = restriction_planner.call(
+		"find_route", Vector3.ZERO, Vector3(20.0, 0.0, 0.0), 1.0
+	)
+	if only_turn_route.get("edge_ids", []) != ["AB", "BC", "CD"]:
+		_fail("The planner did not enforce an only-turn restriction at a junction.")
+		return
+
+	var invalid_turn_graph: Dictionary = restricted_graph.duplicate(true)
+	invalid_turn_graph["turn_restrictions"] = [
+		{"via": "B", "from_edge": "AB", "to_edge": "MISSING", "type": "no"}
+	]
+	if bool(restriction_planner.call("configure", invalid_turn_graph)):
+		_fail("The planner accepted a turn restriction referencing an unknown road edge.")
+		return
+
 	var start_position: Vector3 = player.global_position
 	Input.action_press("move_forward")
 	for _frame in range(24):
@@ -356,6 +406,8 @@ func _run() -> void:
 	print("PASS: live road closures clear the active route and reopening restores it.")
 	print("PASS: A* selects an alternate path when a road edge closes and reports unreachable when all paths close.")
 	print("PASS: one-way road direction is enforced by the route planner.")
+	print("PASS: prohibited and only-turn junction restrictions are enforced with legal detours.")
+	print("PASS: malformed junction restrictions referencing unknown roads are rejected.")
 	print("PASS: keyboard movement moves the player.")
 	print("PASS: nearby E interaction enters the starter sedan; driving and E exit work.")
 	print("PASS: Claire and Nora world interactions complete Mission 001 and grant $250 once.")
