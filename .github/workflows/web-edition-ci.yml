@@ -75,7 +75,7 @@ jobs:
           for test_file in "${tests[@]}"; do
             test_name="${test_file##*/}"
             echo "::group::Running ${test_name}"
-            godot --headless --path web-edition --script "res://tests/${test_name}"
+            timeout 30s godot --headless --path web-edition --script "res://tests/${test_name}"
             echo "::endgroup::"
           done
           echo "Executed ${#tests[@]} GDScript regression tests successfully."
