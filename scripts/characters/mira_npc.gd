@@ -199,7 +199,7 @@ func _play_greeting_voice()->void:
 		_voice_player.stream=load(path)
 		_voice_player.play()
 		return
-	var cache:="user://voice_cache/mira_greeting_001.mp3"
+	var cache:="user://voice_cache/mira_greeting_001_expressive_v2.mp3"
 	if FileAccess.file_exists(cache):
 		_play_cached(cache)
 		return
@@ -224,7 +224,7 @@ func _on_voice_downloaded(result:int,response_code:int,_headers:PackedStringArra
 		push_warning("Mira Arabic voice download failed.")
 		return
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://voice_cache"))
-	var cache:="user://voice_cache/mira_greeting_001.mp3"
+	var cache:="user://voice_cache/mira_greeting_001_expressive_v2.mp3"
 	var file:=FileAccess.open(cache,FileAccess.WRITE)
 	if file==null:return
 	file.store_buffer(body)

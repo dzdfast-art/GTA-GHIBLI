@@ -1,0 +1,3 @@
+# GTA GHIBLI — Original City Material Set
+
+Eleven original, procedurally authored 2048×2048 SVG surface materials created specifically for this project. They are actively used by the open-world district renderer for roads, worn lane markings, brick and concrete facades, corrugated metal, tiled roofs, sidewalk paving, storefront glazing, garage shutters, timber benches and fences, and rusted steel street furniture and cargo containers. The vector source contains individually varied chips, grain, weathering, seams, scratches, reflections, fading, cracks and wear. No third-party game assets or texture packs are included in this material set.

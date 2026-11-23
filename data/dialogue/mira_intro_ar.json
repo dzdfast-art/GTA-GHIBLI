@@ -23,11 +23,11 @@
     ],
     "performance_direction_ar": "ابدئي بابتسامة مسموعة ودفء، مع ضحكة خفيفة طبيعية جداً، وخففي السرعة عند عبارة اشتقنا إليك، ثم اختمي السؤال بأمل وحنان.",
     "audio_path": "res://assets/audio/dialogue/ar/mira_greeting_001.ogg",
-    "audio_status": "generated_remote_cache_on_first_play",
-    "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/033e70e372284077883e538608b65b69/id=a7837ad72aa2436e96eaa03fd6122601.mp3",
+    "audio_status": "expressive_tts_take_generated_pending_in_game_audition",
+    "audio_url": "https://resource2.heygen.ai/text_to_speech/b4838dbec0634015b826f1957c74788a/033e70e372284077883e538608b65b69/id=938b382f2c51457d852345ff8d830d47.mp3",
     "emotion_id": "joy",
     "heygen_performance_tag": "[laughs]",
-    "performance_recording_status": "existing_clip_needs_expressive_retake"
+    "performance_recording_status": "new_tts_take_generated_not_yet_auditioned_on_device"
   },
   "emotion_library": [
     {
@@ -73,5 +73,5 @@
       "recording_status": "needs_expressive_take"
     }
   ],
-  "note_ar": "أضيفت تعليمات أداء عاطفي وعلامات توجيه للممثل الصوتي. التسجيل الحالي لم يُعَد توليده بعد، لذلك لا يُوصف بأنه دبلجة عاطفية نهائية."
+  "note_ar": "تم توليد عينة TTS عربية جديدة لتحية ميرا بتوجيهات تعبيرية؛ لم تُختبر بعد داخل اللعبة أو على الهاتف. بقية حوارات الشخصيات ما زالت تحتاج إعادة أداء عاطفي، ولا يُوصف المشروع بأنه مكتمل الدبلجة."
 }

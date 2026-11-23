@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "chapter_id": "chapter_01",
+  "title_ar": "الفصل الأول: طريق العودة",
+  "status": "four_mission_runtime_prototype",
+  "note_ar": "هذا سجل تقدم للفصل الأول الحالي المكوّن من أربع مهمات. لا يعني اكتمال حملة اللعبة الكاملة أو محتوى GTA النهائي.",
+  "missions": [
+    {
+      "id": "meet_the_village",
+      "number": 1,
+      "title_ar": "صباح جديد في قرية الصفصاف",
+      "save_file": "user://gta_ghibli_save.json",
+      "prerequisite": null,
+      "reward_currency": 25
+    },
+    {
+      "id": "the_old_road_rescue",
+      "number": 2,
+      "title_ar": "الطريق القديم: عملية الإنقاذ",
+      "save_file": "user://gta_ghibli_mission_002.json",
+      "prerequisite": "meet_the_village",
+      "reward_currency": 180
+    },
+    {
+      "id": "shadows_over_the_harbor",
+      "number": 3,
+      "title_ar": "ظلال فوق الميناء",
+      "save_file": "user://gta_ghibli_mission_003.json",
+      "prerequisite": "the_old_road_rescue",
+      "reward_currency": 220
+    },
+    {
+      "id": "the_last_train",
+      "number": 4,
+      "title_ar": "القطار الأخير",
+      "save_file": "user://gta_ghibli_mission_004.json",
+      "prerequisite": "shadows_over_the_harbor",
+      "north_reward_currency": 350,
+      "south_reward_currency": 400
+    }
+  ]
+}

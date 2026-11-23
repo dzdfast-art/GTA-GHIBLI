@@ -1,6 +1,17 @@
 extends CanvasLayer
 
 const SETTINGS_PATH := "user://gta_ghibli_settings.cfg"
+const NEW_GAME_SAVE_PATHS := [
+	"user://gta_ghibli_save.json",
+	"user://gta_ghibli_mission_002.json",
+	"user://gta_ghibli_mission_003.json",
+	"user://gta_ghibli_mission_004.json",
+	"user://player_wallet.json",
+	"user://player_needs.json",
+	"user://player_inventory.json",
+	"user://gta_ghibli_side_activities.json"
+]
+const NPC_RELATIONSHIPS_DIRECTORY := "user://npc_relationships"
 const WORLD_MAP_VIEW_SCRIPT = preload("res://scripts/ui/world_map_view.gd")
 const PANEL_COLOR := Color(0.055, 0.075, 0.075, 0.97)
 const ACCENT := Color(0.83, 0.72, 0.43, 1.0)
@@ -12,9 +23,10 @@ var _settings_panel: PanelContainer
 var _map_panel: Control
 var _map_view: Control
 var _pause_touch_button: Button
+var _info_dialog: AcceptDialog
 var _menu_buttons: Array[Button] = []
 var _menu_cursors: Array[Label] = []
-var _selected_menu_index := 2
+var _selected_menu_index := 0
 var _settings := {
 	"master_volume": 0.85, "music_volume": 0.65, "effects_volume": 0.85,
 	"dialogue_volume": 1.0, "look_sensitivity": 1.0, "graphics_quality": 2,
@@ -52,6 +64,8 @@ func toggle_pause() -> void:
 		_open_menu()
 
 func _open_menu() -> void:
+	_selected_menu_index = 0
+	_refresh_menu_selection()
 	_overlay.visible = true
 	_main_panel.visible = true
 	_settings_panel.visible = false
@@ -59,6 +73,7 @@ func _open_menu() -> void:
 		_map_panel.visible = false
 	if _pause_touch_button != null:
 		_pause_touch_button.visible = false
+	get_tree().call_group("gameplay_hud", "set_gameplay_visible", false)
 	get_tree().paused = true
 
 func _close_menu() -> void:
@@ -66,6 +81,7 @@ func _close_menu() -> void:
 	if _pause_touch_button != null:
 		_pause_touch_button.visible = true
 	get_tree().paused = false
+	get_tree().call_group("gameplay_hud", "set_gameplay_visible", true)
 
 func _build_interface() -> void:
 	_overlay = Control.new()
@@ -468,11 +484,80 @@ func _show_main_menu() -> void:
 	_refresh_menu_selection()
 
 func _show_info(section: String) -> void:
-	var dialog := AcceptDialog.new()
-	dialog.dialog_text = section + "\nسيتم ربط هذه الصفحة ببيانات اللعب لاحقاً."
-	dialog.title = "GTA GHIBLI"
-	_overlay.add_child(dialog)
-	dialog.popup_centered()
+	if _info_dialog == null or not is_instance_valid(_info_dialog):
+		_info_dialog = AcceptDialog.new()
+		_info_dialog.name = "PauseInfoDialog"
+		_overlay.add_child(_info_dialog)
+	_info_dialog.title = "GTA GHIBLI  |  " + section
+	if section == "الإحصائيات":
+		_info_dialog.dialog_text = _build_stats_report()
+	else:
+		_info_dialog.dialog_text = _build_mission_brief_report()
+	if _info_dialog.visible:
+		_info_dialog.hide()
+	_info_dialog.popup_centered()
+
+
+func _build_stats_report() -> String:
+	var player := get_tree().get_first_node_in_group("player")
+	if player == null:
+		return "بيانات اللاعب غير متاحة حالياً."
+
+	var lines: Array[String] = ["إحصائيات اللاعب", ""]
+	var health := player.get_node_or_null("PlayerHealth")
+	if health != null:
+		lines.append("الصحة: %d / %d" % [
+			roundi(float(health.get("current_health"))),
+			roundi(float(health.get("maximum_health")))
+		])
+	else:
+		lines.append("الصحة: غير متاحة")
+
+	var wallet := player.get_node_or_null("PlayerWallet")
+	if wallet != null and wallet.has_method("get_balance"):
+		lines.append("النقود: %d قطعة" % int(wallet.call("get_balance")))
+	else:
+		lines.append("النقود: غير متاحة")
+
+	var needs := player.get_node_or_null("PlayerNeeds")
+	if needs != null:
+		lines.append("الجوع: %d / 100" % roundi(float(needs.get("hunger"))))
+		lines.append("العطش: %d / 100" % roundi(float(needs.get("thirst"))))
+		lines.append("الطاقة: %d / 100" % roundi(float(needs.get("energy"))))
+	return "\n".join(lines)
+
+
+func _build_mission_brief_report() -> String:
+	var campaign := get_tree().get_first_node_in_group("campaign_progress")
+	if campaign == null or not campaign.has_method("get_campaign_snapshot"):
+		return "لا يوجد سجل تقدم للمهام متاح حالياً."
+
+	var snapshot: Dictionary = campaign.call("get_campaign_snapshot")
+	var missions: Array = snapshot.get("missions", [])
+	var lines: Array[String] = [
+		str(snapshot.get("chapter_title", "ملخص الفصل الأول")),
+		"المهام المكتملة: %d / %d" % [
+			int(snapshot.get("completed_count", 0)),
+			int(snapshot.get("total_count", missions.size()))
+		],
+		""
+	]
+	for mission_value in missions:
+		if not mission_value is Dictionary:
+			continue
+		var mission: Dictionary = mission_value
+		var state := "مكتملة" if bool(mission.get("completed", false)) else ("متاحة" if bool(mission.get("unlocked", false)) else "مقفلة")
+		lines.append("%d. %s — %s" % [
+			int(mission.get("number", lines.size())),
+			str(mission.get("title", "مهمة")),
+			state
+		])
+	var current_mission_id := str(snapshot.get("current_mission_id", ""))
+	if current_mission_id.is_empty():
+		lines.append("\nاكتمل الفصل الأول.")
+	else:
+		lines.append("\nالمهمة الحالية: " + current_mission_id)
+	return "\n".join(lines)
 
 func _on_slider_changed(value: float, key: String, label: Label, caption: String, step: float) -> void:
 	_settings[key] = value
@@ -554,8 +639,64 @@ func _load_settings() -> void:
 		_settings[key] = config.get_value("game", key, _settings[key])
 
 func _restart_game() -> void:
+	var dialog := _overlay.get_node_or_null("NewGameConfirmation") as ConfirmationDialog
+	if dialog == null:
+		dialog = ConfirmationDialog.new()
+		dialog.name = "NewGameConfirmation"
+		dialog.title = "بدء لعبة جديدة"
+		dialog.dialog_text = "سيتم حذف تقدم المهمات والنقود والاحتياجات والمخزون والعلاقات المحفوظة. ستبقى إعداداتك كما هي. هل تريد المتابعة؟"
+		dialog.ok_button_text = "بدء لعبة جديدة"
+		dialog.cancel_button_text = "إلغاء"
+		dialog.confirmed.connect(_confirm_new_game)
+		_overlay.add_child(dialog)
+	dialog.popup_centered()
+
+func _confirm_new_game() -> void:
+	if not _clear_saved_game_data():
+		if _info_dialog == null or not is_instance_valid(_info_dialog):
+			_info_dialog = AcceptDialog.new()
+			_info_dialog.name = "PauseInfoDialog"
+			_overlay.add_child(_info_dialog)
+		_info_dialog.title = "تعذر بدء لعبة جديدة"
+		_info_dialog.dialog_text = "تعذر حذف كل ملفات الحفظ. لم تتم إعادة تحميل اللعبة حتى لا يبقى تقدم قديم."
+		_info_dialog.popup_centered()
+		return
 	get_tree().paused = false
 	get_tree().reload_current_scene()
+
+func _clear_saved_game_data() -> bool:
+	var all_removed := true
+	for save_path in NEW_GAME_SAVE_PATHS:
+		if not FileAccess.file_exists(save_path):
+			continue
+		var error := DirAccess.remove_absolute(ProjectSettings.globalize_path(save_path))
+		if error != OK:
+			push_error("Could not remove new-game save %s: %s" % [save_path, error_string(error)])
+			all_removed = false
+	if not _remove_user_directory(NPC_RELATIONSHIPS_DIRECTORY):
+		all_removed = false
+	return all_removed
+
+func _remove_user_directory(directory_path: String) -> bool:
+	var absolute_directory := ProjectSettings.globalize_path(directory_path)
+	if not DirAccess.dir_exists_absolute(absolute_directory):
+		return true
+	var files := DirAccess.get_files_at(absolute_directory)
+	var directories := DirAccess.get_directories_at(absolute_directory)
+	for file_name in files:
+		var file_path := directory_path.path_join(file_name)
+		var error := DirAccess.remove_absolute(ProjectSettings.globalize_path(file_path))
+		if error != OK:
+			push_error("Could not remove saved relationship %s: %s" % [file_path, error_string(error)])
+			return false
+	for directory_name in directories:
+		if not _remove_user_directory(directory_path.path_join(directory_name)):
+			return false
+	var remove_error := DirAccess.remove_absolute(absolute_directory)
+	if remove_error != OK:
+		push_error("Could not remove save directory %s: %s" % [directory_path, error_string(remove_error)])
+		return false
+	return true
 
 func _quit_game() -> void:
 	get_tree().paused = false

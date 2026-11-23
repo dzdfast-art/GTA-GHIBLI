@@ -11,6 +11,7 @@ const MISSION_MANAGER_SCRIPT = preload("res://scripts/missions/mission_manager.g
 const MISSION_002_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_002_runtime.gd")
 const MISSION_003_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_003_runtime.gd")
 const MISSION_004_RUNTIME_SCRIPT = preload("res://scripts/missions/mission_004_runtime.gd")
+const MISSION_CAMPAIGN_SCRIPT = preload("res://scripts/missions/campaign_progress.gd")
 const SIDE_ACTIVITY_DIRECTOR_SCRIPT = preload("res://scripts/world/side_activity_director.gd")
 const CINEMATIC_DIRECTOR_SCRIPT = preload("res://scripts/missions/cinematic_director.gd")
 const AMBIENCE_SCRIPT = preload("res://scripts/audio/nature_ambience.gd")
@@ -20,6 +21,7 @@ const TERRAIN_EXPANSION_SCRIPT = preload("res://scripts/world/terrain_expansion_
 const PLAYER_NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
 const CONSUMABLE_INVENTORY_SCRIPT = preload("res://scripts/systems/consumable_inventory.gd")
 const PLAYER_WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
+const PLAYER_HEALTH_SCRIPT = preload("res://scripts/systems/player_health.gd")
 const WILDLIFE_DIRECTOR_SCRIPT = preload("res://scripts/world/wildlife_director.gd")
 const STORY_CHARACTER_DIRECTOR_SCRIPT = preload("res://scripts/characters/story_character_director.gd")
 const WORLD_WEATHER_SCRIPT = preload("res://scripts/world/world_weather.gd")
@@ -42,6 +44,7 @@ func _ready() -> void:
 	_create_mission_002_runtime()
 	_create_mission_003_runtime()
 	_create_mission_004_runtime()
+	_create_campaign_progress()
 	_create_story_cinematic()
 	_create_nature_ambience()
 	_create_world_weather()
@@ -122,6 +125,9 @@ func _create_player() -> void:
 	var player: CharacterBody3D = PLAYER_SCENE.instantiate() as CharacterBody3D
 	player.name = "Player"
 	player.add_to_group("player")
+	var health: Node = PLAYER_HEALTH_SCRIPT.new()
+	health.name = "PlayerHealth"
+	player.add_child(health)
 	player.position = Vector3(0.0, 0.95, -18.0)
 	player.rotation.y = PI
 	add_child(player)
@@ -143,6 +149,7 @@ func _create_mobile_controls() -> void:
 	var mobile_controls: CanvasLayer = MOBILE_CONTROLS_SCRIPT.new() as CanvasLayer
 	mobile_controls.name = "MobileControls"
 	add_child(mobile_controls)
+	mobile_controls.call_deferred("bind_player", get_node_or_null("Player") as Node3D)
 
 func _create_mission_manager() -> void:
 	var player := get_node_or_null("Player") as Node3D
@@ -177,6 +184,11 @@ func _create_mission_003_runtime() -> void:
 	mission_runtime.name = "Mission003Runtime"
 	add_child(mission_runtime)
 	mission_runtime.setup(player)
+
+func _create_campaign_progress() -> void:
+	var progress: Node = MISSION_CAMPAIGN_SCRIPT.new()
+	progress.name = "MissionCampaignProgress"
+	add_child(progress)
 
 func _create_mission_004_runtime() -> void:
 	var player := get_node_or_null("Player") as CharacterBody3D

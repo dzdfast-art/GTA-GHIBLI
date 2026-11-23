@@ -2,7 +2,7 @@
   "schema_version": 2,
   "language": "ar",
   "language_name": "العربية",
-  "status": "generated_26_arabic_dialogue_clips_remote_cached_on_first_play",
+  "status": "partial_expressive_retake_in_progress",
   "voice_provider": "HeyGen Voice",
   "voices": {
     "female": "Lamia - Clear & Professional",
@@ -83,5 +83,12 @@
     }
   },
   "cache_policy": "download once into user://voice_cache/ and play from local cache on subsequent launches",
-  "note_ar": "تم توليد 26 مقطعاً صوتياً عربياً. يتم تنزيل المقاطع عند أول سماع وتخزينها على الجهاز. يلزم الإنترنت لأول تشغيل لكل مقطع؛ بعد التخزين تعمل الأصوات دون إنترنت."
+  "note_ar": "تم توليد نسخة عربية جديدة تجريبية لتحية ميرا فقط. بقية المقاطع الـ25 ما زالت بحاجة إلى إعادة أداء عاطفي، وتحية ميرا نفسها تنتظر الاستماع والاختبار داخل اللعبة وعلى الهاتف.",
+  "expressive_retake_progress": {
+    "completed_lines": 1,
+    "total_lines": 26,
+    "remaining_lines": 25,
+    "pending_device_audition": true,
+    "updated_line_id": "mira_greeting_001"
+  }
 }

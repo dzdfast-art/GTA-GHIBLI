@@ -42,6 +42,7 @@ var _status_override := ""
 
 
 func _ready() -> void:
+	add_to_group("mission_hud_sources")
 	_world_root = get_tree().current_scene as Node3D
 	_build_hud()
 	if _is_completed():
@@ -55,6 +56,8 @@ func _ready() -> void:
 
 func setup(player: CharacterBody3D) -> void:
 	_player = player
+	if _phase == Phase.COMPLETE:
+		_claim_saved_mission_reward()
 
 
 func _physics_process(delta: float) -> void:
@@ -172,10 +175,30 @@ func _complete_mission(choice: String) -> void:
 			"alarms_disabled": _alarms_disabled,
 			"reward_currency": reward
 		}, "\t"))
+	_claim_mission_reward(reward)
 	_status_override = "نجحت! أنقذت ميا وأوصلت القطار عبر المسار %s. مكافأتك %d." % ["الشمالي" if choice == "north" else "الجنوبي", reward]
 	if _retry_button != null:
 		_retry_button.visible = false
 	_refresh_hud()
+
+
+func _claim_mission_reward(amount: int) -> void:
+	if _player == null or amount <= 0:
+		return
+	var wallet := _player.get_node_or_null("PlayerWallet")
+	if wallet != null and wallet.has_method("claim_reward"):
+		wallet.call("claim_reward", "mission_004_the_last_train", amount)
+
+
+func _claim_saved_mission_reward() -> void:
+	if not FileAccess.file_exists(COMPLETION_SAVE):
+		return
+	var file := FileAccess.open(COMPLETION_SAVE, FileAccess.READ)
+	if file == null:
+		return
+	var saved = JSON.parse_string(file.get_as_text())
+	if saved is Dictionary and bool(saved.get("completed", false)):
+		_claim_mission_reward(int(saved.get("reward_currency", 0)))
 
 
 func _fail_mission(reason: String) -> void:
@@ -328,6 +351,44 @@ func _add_box_visual(parent: Node3D, size: Vector3, tint: Color) -> void:
 	parent.add_child(mesh_instance)
 
 
+func get_hud_snapshot() -> Dictionary:
+	var target := MIA_POSITION
+	var has_target := true
+	match _phase:
+		Phase.MEET_MIA:
+			target = MIA_POSITION
+		Phase.REACH_TRAIN:
+			target = TRAIN_START
+		Phase.DISABLE_ALARMS:
+			has_target = false
+			for marker in _alarm_markers:
+				if is_instance_valid(marker) and marker.visible:
+					target = marker.global_position
+					has_target = true
+					break
+		Phase.ESCORT_TRAIN:
+			target = _train.global_position if _train != null and is_instance_valid(_train) else TRAIN_START
+		Phase.CHOOSE_ROUTE:
+			target = NORTH_ROUTE
+		_:
+			has_target = false
+	var active := _phase != Phase.LOCKED and _phase != Phase.COMPLETE
+	return {
+		"active": active,
+		"priority": 4,
+		"title": "القطار الأخير",
+		"objective": _objective_label.text if _objective_label != null else "",
+		"status": _status_override,
+		"target_position": target,
+		"has_target": has_target and active,
+		"can_retry": _phase == Phase.FAILED
+	}
+
+
+func retry_from_hud() -> void:
+	_on_retry_pressed()
+
+
 func _build_hud() -> void:
 	_panel = PanelContainer.new()
 	_panel.name = "Mission004Panel"
@@ -335,6 +396,7 @@ func _build_hud() -> void:
 	_panel.anchor_top = 0.60
 	_panel.anchor_right = 0.58
 	_panel.anchor_bottom = 0.84
+	_panel.visible = false
 	add_child(_panel)
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override("separation", 4)
