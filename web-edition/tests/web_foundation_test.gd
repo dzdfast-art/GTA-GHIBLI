@@ -104,10 +104,10 @@ func _run() -> void:
 		_fail("The world map selected the wrong point of interest.")
 		return
 	game.call("_on_waypoint_selected", "marsa_al_noor", "Marsa Al-Noor Lighthouse", lighthouse_position)
-	hud.call("set_waypoint_status", "Marsa Al-Noor Lighthouse", 42.0)
 	game.call("_process", 0.2)
-	if not str(hud.call("get_waypoint_status_text")).contains("42 m"):
-		_fail("The HUD did not show the selected waypoint's direct distance.")
+	var expected_direct_distance := "%.0f m" % player.global_position.distance_to(lighthouse_position)
+	if not str(hud.call("get_waypoint_status_text")).contains(expected_direct_distance):
+		_fail("The HUD did not show the live straight-line distance to the selected waypoint.")
 		return
 	if not bool(minimap.get("has_waypoint")) or minimap.get("waypoint_world_position") != lighthouse_position:
 		_fail("The minimap did not receive the selected waypoint marker.")
