@@ -137,7 +137,7 @@ func _run() -> void:
 		_fail("Selecting a waypoint did not produce a connected road route.")
 		return
 	var route_distance := float(active_route.get("distance", 0.0))
-	var straight_line_distance := player.global_position.distance_to(lighthouse_position)
+	var straight_line_distance: float = player.global_position.distance_to(lighthouse_position)
 	if route_distance <= straight_line_distance:
 		_fail("The route distance did not account for the road-access detour.")
 		return
