@@ -62,8 +62,23 @@ jobs:
       - name: Import the new standalone Godot project
         run: godot --headless --editor --path web-edition --quit
 
-      - name: Run gameplay foundation regression test
-        run: godot --headless --path web-edition --script res://tests/web_foundation_test.gd
+      - name: Run every Web Edition GDScript regression test
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          tests=(web-edition/tests/*_test.gd)
+          if (("${#tests[@]}" == 0)); then
+            echo "No GDScript regression tests were found."
+            exit 1
+          fi
+          for test_file in "${tests[@]}"; do
+            test_name="${test_file##*/}"
+            echo "::group::Running ${test_name}"
+            timeout 20s godot --headless --quit-after 600 --path web-edition --script "res://tests/${test_name}"
+            echo "::endgroup::"
+          done
+          echo "Executed ${#tests[@]} GDScript regression tests successfully."
 
       - name: Export WebAssembly game
         run: |
