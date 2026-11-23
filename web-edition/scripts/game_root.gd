@@ -134,3 +134,13 @@ func _get_next_route_instruction(route: Dictionary) -> String:
 		if distance_to_turn > 3.0:
 			return "%s in %.0f m" % [str(maneuver.get("instruction", "Turn")), distance_to_turn]
 	return "Continue to destination"
+
+
+
+func set_road_edge_blocked(edge_id: String, blocked: bool) -> bool:
+	if _route_planner == null:
+		return false
+	var updated := bool(_route_planner.call("set_edge_blocked", edge_id, blocked))
+	if updated and not _active_waypoint_id.is_empty():
+		_update_navigation_route()
+	return updated
