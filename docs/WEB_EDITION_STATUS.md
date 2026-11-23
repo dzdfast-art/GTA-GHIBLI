@@ -1,6 +1,29 @@
 
 ---
 
+## Verified navigation baseline — PR #41 passed — 2026-11-23
+
+- PR #41: https://github.com/dzdfast-art/GTA-GHIBLI/pull/41 — Draft/open/unmerged; stacked on PR #40.
+- Tested branch-head run: https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45230635607 — PASS.
+- Security audit: https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45230669321 — PASS.
+- Tested PR #41 head: ba9396d61c0e72491c7fdc10a8e31d914b647ce0.
+- Godot import, JSON/research checks, foundation gameplay regression, WebAssembly export, export-file verification, Chromium/WebGL2 smoke test, package measurement and cleanup all passed.
+- Added regression evidence: GPS turns identified left/right on a controlled graph; the lighthouse route shows the expected right-turn prompt and HUD displays the next turn with remaining distance.
+- Chromium reported a 1280x720 Godot canvas with WebGL2, keyboard/mouse/map input delivered, no runtime errors and no external requests. This is not full-game or cross-browser acceptance.
+- PR #41 Web ZIP: 10,297,171 bytes (10.297 MB decimal / 9.820 MiB); uncompressed export: 39,893,174 bytes (38.045 MiB); seven files; SHA-256 d7e6bb4bde4868214c98639dd89bf8e3d3c7b40638a4f5f363dfe5af62a0c823.
+- CI artifact list for run 45230635607 was empty; temporary Web export directory was removed after measurement.
+
+## Next increment — PR #42 road closures and one-way edges — CI pending
+
+- PR #42 candidate branch: feature/web-gps-road-closures-20261123, stacked on PR #41 branch feature/web-gps-turn-guidance-20261123.
+- Route graph validation now supports bidirectional, forward-only and reverse-only edges; duplicate IDs and unsupported direction values are rejected.
+- The planner supports runtime edge blocking/unblocking. A* skips blocked edges and recalculates from the current position; the game root exposes set_road_edge_blocked for gameplay/world systems.
+- Regression coverage added for a live closure clearing the active HUD/map route, reopening restoring it, a synthetic alternate path selected after a closure, unreachable status when all paths close, and enforcement of a one-way edge.
+- The current actual world remains a single starter corridor with six access spurs and has no alternate street grid/closure simulation. The alternate-route test uses a controlled graph until the world topology grows.
+- PR #42 code is IMPLEMENTED — CI NOT YET VERIFIED.
+
+---
+
 ## Verified navigation baseline — PR #40 passed — 2026-11-23
 
 - PR #40: https://github.com/dzdfast-art/GTA-GHIBLI/pull/40 — Draft/open/unmerged, stacked on PR #39.

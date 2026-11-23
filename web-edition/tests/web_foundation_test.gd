@@ -194,6 +194,95 @@ func _run() -> void:
 		_fail("The minimap did not receive the selected waypoint marker.")
 		return
 
+	if not bool(game.call("set_road_edge_blocked", "road_segment_00", true)):
+		_fail("The game root could not close a known road edge.")
+		return
+	if bool(game.get("_active_route").get("reachable", false)):
+		_fail("The active route remained reachable after its only access segment was closed.")
+		return
+	if not str(hud.call("get_waypoint_status_text")).contains("no connected road route"):
+		_fail("The HUD did not report an unreachable route after a road closure.")
+		return
+	if minimap.get("route_points").size() != 0 or world_map.get("_route_points").size() != 0:
+		_fail("The map and minimap retained a stale route after the road closure.")
+		return
+	if not bool(game.call("set_road_edge_blocked", "road_segment_00", false)):
+		_fail("The game root could not reopen the road edge.")
+		return
+	if not bool(game.get("_active_route").get("reachable", false)):
+		_fail("The GPS route did not recover after reopening the road edge.")
+		return
+
+	var detour_planner = load("res://scripts/world/route_planner.gd").new()
+	var detour_graph := {
+		"nodes": [
+			{"id": "A", "position": Vector3(0.0, 0.0, 0.0)},
+			{"id": "B", "position": Vector3(10.0, 0.0, 0.0)},
+			{"id": "C", "position": Vector3(0.0, 0.0, 15.0)},
+			{"id": "D", "position": Vector3(10.0, 0.0, 10.0)}
+		],
+		"edges": [
+			{"id": "AB", "from": "A", "to": "B", "cost": 10.0},
+			{"id": "BD", "from": "B", "to": "D", "cost": 10.0},
+			{"id": "AC", "from": "A", "to": "C", "cost": 15.0},
+			{"id": "CD", "from": "C", "to": "D", "cost": 11.18}
+		]
+	}
+	if not bool(detour_planner.call("configure", detour_graph)):
+		_fail("The alternate-route test graph could not be configured.")
+		return
+	var original_detour_route: Dictionary = detour_planner.call(
+		"find_route", Vector3.ZERO, Vector3(10.0, 0.0, 10.0), 1.0
+	)
+	if original_detour_route.get("edge_ids", []) != ["AB", "BD"]:
+		_fail("The route planner did not choose the shortest open path before a closure.")
+		return
+	if not bool(detour_planner.call("set_edge_blocked", "BD", true)):
+		_fail("The route planner could not block a known edge.")
+		return
+	var alternate_route: Dictionary = detour_planner.call(
+		"find_route", Vector3.ZERO, Vector3(10.0, 0.0, 10.0), 1.0
+	)
+	if alternate_route.get("edge_ids", []) != ["AC", "CD"]:
+		_fail("The route planner did not choose the alternate path after a closure.")
+		return
+	if not bool(detour_planner.call("set_edge_blocked", "CD", true)):
+		_fail("The route planner could not block the alternate route edge.")
+		return
+	var no_detour_route: Dictionary = detour_planner.call(
+		"find_route", Vector3.ZERO, Vector3(10.0, 0.0, 10.0), 1.0
+	)
+	if bool(no_detour_route.get("reachable", false)):
+		_fail("The route planner did not report unreachable after all paths were closed.")
+		return
+	if bool(detour_planner.call("set_edge_blocked", "unknown_edge", false)):
+		_fail("The route planner accepted an unknown edge ID.")
+		return
+	detour_planner.call("set_edge_blocked", "BD", false)
+	if not bool(detour_planner.call("find_route", Vector3.ZERO, Vector3(10.0, 0.0, 10.0), 1.0).get("reachable", false)):
+		_fail("The route planner did not recover after reopening an alternate edge.")
+		return
+
+	var one_way_planner = load("res://scripts/world/route_planner.gd").new()
+	var one_way_graph := {
+		"nodes": [
+			{"id": "west", "position": Vector3(-5.0, 0.0, 0.0)},
+			{"id": "east", "position": Vector3(5.0, 0.0, 0.0)}
+		],
+		"edges": [
+			{"id": "one_way_eastbound", "from": "west", "to": "east", "direction": "forward", "cost": 10.0}
+		]
+	}
+	if not bool(one_way_planner.call("configure", one_way_graph)):
+		_fail("The one-way road test graph could not be configured.")
+		return
+	if not bool(one_way_planner.call("find_route", Vector3(-5.0, 0.0, 0.0), Vector3(5.0, 0.0, 0.0), 1.0).get("reachable", false)):
+		_fail("The one-way road did not permit travel in its declared direction.")
+		return
+	if bool(one_way_planner.call("find_route", Vector3(5.0, 0.0, 0.0), Vector3(-5.0, 0.0, 0.0), 1.0).get("reachable", false)):
+		_fail("The one-way road incorrectly permitted travel against its declared direction.")
+		return
+
 	var start_position: Vector3 = player.global_position
 	Input.action_press("move_forward")
 	for _frame in range(24):
@@ -264,6 +353,9 @@ func _run() -> void:
 	print("PASS: selecting a map marker produces a road-following route, distance and map/minimap polyline.")
 	print("PASS: GPS derives the next-turn instruction and remaining distance for the HUD.")
 	print("PASS: isolated route geometry correctly distinguishes left and right turns.")
+	print("PASS: live road closures clear the active route and reopening restores it.")
+	print("PASS: A* selects an alternate path when a road edge closes and reports unreachable when all paths close.")
+	print("PASS: one-way road direction is enforced by the route planner.")
 	print("PASS: keyboard movement moves the player.")
 	print("PASS: nearby E interaction enters the starter sedan; driving and E exit work.")
 	print("PASS: Claire and Nora world interactions complete Mission 001 and grant $250 once.")

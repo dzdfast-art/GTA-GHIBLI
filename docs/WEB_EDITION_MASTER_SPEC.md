@@ -227,3 +227,12 @@ Web CI continues to export and measure the Web package, but the PR #40 workflow 
 - The tests exercise both left and right cases on a controlled graph, verify the lighthouse route's right-turn instruction and check HUD delivery.
 - PR #40 road-graph routing is verified by CI run 45229951546; PR #41 maneuver changes are pending their own Godot/Web/Chromium and security checks.
 - This remains prototype guidance over the east-west starter corridor and six access spurs. It is not a complete turn-by-turn navigation system.
+---
+
+## Implementation snapshot — one-way edges and road closures (PR #42 candidate)
+
+- Road graph edges accept a direction policy: bidirectional (default), forward-only or reverse-only. Duplicate edge IDs, self-loops, invalid endpoints, non-positive costs and unsupported direction values are rejected during configuration.
+- The A* planner can block/unblock a known edge at runtime. Closed edges are ignored during expansion; the active route is recalculated when the game root receives an edge-state update.
+- Regression cases cover route choice before and after a synthetic closure, alternate-path selection, no-path reporting when all alternatives close, reopening recovery, live HUD/map route clearing/restoration, unknown edge handling and one-way direction enforcement.
+- PR #41 turn-guidance baseline passed branch-head CI run 45230635607 and Security Audit run 45230669321.
+- PR #42 is still pending Godot/Web/Chromium and security validation. The live blockout world has not yet gained a real alternate street grid; alternate route selection is tested on a controlled graph.
