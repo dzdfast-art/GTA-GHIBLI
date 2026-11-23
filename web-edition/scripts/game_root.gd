@@ -255,8 +255,6 @@ func _register_world_runtime_data() -> void:
 		streaming.call("mark_loaded", region_ids[index])
 	for point in _points_of_interest:
 		get_runtime_system("map_marker_manager").call("add_marker", str(point.id), point.position, str(point.category))
-		if str(point.category) == "landmark":
-			get_runtime_system("landmark_discovery").call("discover", str(point.id), _player.global_position, point.position, 0.01)
 	get_runtime_system("fast_travel_registry").call("unlock", "harbor_city", Vector3(-114.0, 0.0, 0.0))
 	get_runtime_system("parking_registry").call("add_space", "harbor_market_parking", Vector3(-81.0, 0.0, 25.0))
 	get_runtime_system("safehouse_registry").call("register_house", "pine_cabin", Vector3(14.0, 0.0, -18.0), 2500)
