@@ -1,28 +1,26 @@
 extends SceneTree
+
 func _initialize() -> void:
 	call_deferred("_run")
+
 func _run() -> void:
-	extends RefCounted
-	class_name GhibliWantedLevel
-	var level: int=0
-	var max_level: int=5
-	var cooldown: float=0.0
-	func add_crime(severity: int=1) -> int:
-		level=clampi(level+maxi(1,severity),0,max_level)
-		cooldown=0.0
-		return level
-	func reduce_by_arrest() -> int:
-		level=maxi(0,level-2)
-		cooldown=0.0
-		return level
-	func tick(delta: float, hidden: bool) -> int:
-		if delta>0.0 and hidden and level>0:
-			cooldown+=delta
-			if cooldown>=30.0:
-				level-=1
-				cooldown=0.0
-		return level
-	func get_level() -> int:
-		return level
-	print("PASS: Wanted Level and Police Response.")
+	var script = load("res://scripts/world/wanted_level.gd")
+	if script == null:
+		_fail("Wanted level implementation did not load.")
+		return
+	var model = script.new()
+	assert(model.get_level() == 0)
+	assert(model.add_crime(2) == 2)
+	assert(model.add_crime(99) == 5)
+	assert(model.reduce_by_arrest() == 3)
+	assert(model.tick(29.0, true) == 3)
+	assert(model.tick(31.0, true) == 2)
+	assert(model.tick(60.0, false) == 2)
+	assert(model.configure(3))
+	assert(model.add_crime(1) == 3)
+	print("PASS: Wanted level escalation, arrest reduction and hidden cooldown.")
 	quit(0)
+
+func _fail(message: String) -> void:
+	push_error(message)
+	quit(1)
