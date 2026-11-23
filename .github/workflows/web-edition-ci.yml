@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - web/standalone-from-empty-2026-11-22
+      - 'feature/web-*'
     paths:
       - "web-edition/**"
       - ".github/workflows/web-edition-ci.yml"
@@ -14,6 +15,7 @@ on:
   pull_request:
     branches:
       - main
+      - 'feature/web-*'
     paths:
       - "web-edition/**"
       - ".github/workflows/web-edition-ci.yml"
@@ -121,13 +123,6 @@ jobs:
           PY
           cat web-edition/build/web-size.txt
 
-      - name: Upload playable Web Edition package
-        uses: actions/upload-artifact@v4
-        with:
-          name: GTA-GHIBLI-Web-Edition
-          path: |
-            web-edition/build/GTA-GHIBLI-Web.zip
-            web-edition/build/web-size.txt
-          if-no-files-found: error
-          retention-days: 14
-          compression-level: 0
+      - name: Remove temporary Web export and package
+        if: always()
+        run: rm -rf web-edition/build

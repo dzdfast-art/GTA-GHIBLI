@@ -103,11 +103,52 @@ func _run() -> void:
 	if str(selected_waypoint["id"]) != "marsa_al_noor":
 		_fail("The world map selected the wrong point of interest.")
 		return
+
+	var route_planner = load("res://scripts/world/route_planner.gd").new()
+	var road_graph: Dictionary = world.call("get_road_graph")
+	if not bool(route_planner.call("configure", road_graph)):
+		_fail("The connected starter-road graph could not be configured.")
+		return
+	if int(route_planner.call("get_node_count")) < points_of_interest.size() + 8:
+		_fail("The road graph is missing expected road and point-of-interest nodes.")
+		return
+	if int(route_planner.call("get_edge_count")) < points_of_interest.size() + 7:
+		_fail("The road graph is missing connecting road segments.")
+		return
+	for point in points_of_interest:
+		var destination: Vector3 = point["position"]
+		var candidate_route: Dictionary = route_planner.call(
+			"find_route", player.global_position, destination, 36.0
+		)
+		if not bool(candidate_route.get("reachable", false)):
+			_fail("A registered point of interest has no connected road route: " + str(point["id"]))
+			return
+	var unreachable_route: Dictionary = route_planner.call(
+		"find_route", Vector3(0.0, 0.0, 100.0), lighthouse_position, 4.0
+	)
+	if bool(unreachable_route.get("reachable", false)):
+		_fail("The GPS planner accepted a start point outside the road snap limit.")
+		return
+
 	game.call("_on_waypoint_selected", "marsa_al_noor", "Marsa Al-Noor Lighthouse", lighthouse_position)
-	game.call("_process", 0.2)
-	var expected_direct_distance := "%.0f m" % player.global_position.distance_to(lighthouse_position)
-	if not str(hud.call("get_waypoint_status_text")).contains(expected_direct_distance):
-		_fail("The HUD did not show the live straight-line distance to the selected waypoint.")
+	game.call("_process", 0.5)
+	var active_route: Dictionary = game.get("_active_route")
+	if not bool(active_route.get("reachable", false)) or active_route.get("path", []).size() < 3:
+		_fail("Selecting a waypoint did not produce a connected road route.")
+		return
+	var route_distance := float(active_route.get("distance", 0.0))
+	var straight_line_distance: float = player.global_position.distance_to(lighthouse_position)
+	if route_distance <= straight_line_distance:
+		_fail("The route distance did not account for the road-access detour.")
+		return
+	if not str(hud.call("get_waypoint_status_text")).contains("(road)"):
+		_fail("The HUD did not label the distance as a road route.")
+		return
+	if minimap.get("route_points").size() < 3:
+		_fail("The minimap did not receive the planned road-route geometry.")
+		return
+	if world_map.get("_route_points").size() < 3:
+		_fail("The full world map did not receive the planned road-route geometry.")
 		return
 	if not bool(minimap.get("has_waypoint")) or minimap.get("waypoint_world_position") != lighthouse_position:
 		_fail("The minimap did not receive the selected waypoint marker.")
@@ -178,7 +219,9 @@ func _run() -> void:
 	print("PASS: four named region coordinates and three named interactive characters exist.")
 	print("PASS: minimap maps world bounds correctly and receives the live player position.")
 	print("PASS: world-map POIs have unique IDs and correct region coordinates.")
-	print("PASS: selecting a map marker sets the waypoint and updates direct-distance HUD/minimap state.")
+	print("PASS: all six points of interest are reachable through the connected road graph.")
+	print("PASS: off-network starts are reported unreachable beyond the configured snap distance.")
+	print("PASS: selecting a map marker produces a road-following route, distance and map/minimap polyline.")
 	print("PASS: keyboard movement moves the player.")
 	print("PASS: nearby E interaction enters the starter sedan; driving and E exit work.")
 	print("PASS: Claire and Nora world interactions complete Mission 001 and grant $250 once.")

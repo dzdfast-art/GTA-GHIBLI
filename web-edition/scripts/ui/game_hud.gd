@@ -10,6 +10,7 @@ class MinimapCanvas extends Control:
 	var player_heading: float = 0.0
 	var waypoint_world_position := Vector3.ZERO
 	var has_waypoint: bool = false
+	var route_points: Array[Vector3] = []
 	const WORLD_MIN := Vector2(-128.0, -32.0)
 	const WORLD_SIZE := Vector2(256.0, 64.0)
 	const REGION_COLORS := [
@@ -28,6 +29,14 @@ class MinimapCanvas extends Control:
 	func set_waypoint(world_position: Vector3, active: bool) -> void:
 		waypoint_world_position = world_position
 		has_waypoint = active
+		queue_redraw()
+
+	func set_navigation_route(route: Dictionary) -> void:
+		route_points.clear()
+		if bool(route.get("reachable", false)):
+			for position in route.get("path", []):
+				if position is Vector3:
+					route_points.append(position)
 		queue_redraw()
 
 	func world_to_map(world_position: Vector3, map_size: Vector2 = Vector2(180.0, 132.0)) -> Vector2:
@@ -63,8 +72,12 @@ class MinimapCanvas extends Control:
 		draw_circle(player_point, 5.0, Color(0.20, 0.82, 1.0))
 		draw_arc(player_point, 7.0, 0.0, TAU, 20, Color(0.97, 0.98, 0.92), 1.3)
 		if has_waypoint:
+			if route_points.size() > 1:
+				var route_line := PackedVector2Array()
+				for route_position in route_points:
+					route_line.append(world_to_map(route_position, size))
+				draw_polyline(route_line, Color(1.0, 0.73, 0.22, 0.96), 2.4, true)
 			var waypoint_point := world_to_map(waypoint_world_position, size)
-			draw_line(player_point, waypoint_point, Color(1.0, 0.78, 0.26, 0.9), 1.8)
 			draw_circle(waypoint_point, 4.0, Color(1.0, 0.78, 0.26))
 			draw_arc(waypoint_point, 7.0, 0.0, TAU, 20, Color(1.0, 0.90, 0.58), 1.2)
 
@@ -200,7 +213,7 @@ func _ready() -> void:
 	map_column.add_child(_map_canvas)
 	_map_canvas.connect("waypoint_selected", Callable(self, "_forward_waypoint_selection"))
 	map_column.add_child(_make_label("Click a marker to set a waypoint • Wheel: zoom • Right-drag: pan • M: close", 14, Color(0.78, 0.84, 0.86)))
-	map_column.add_child(_make_label("Waypoint distance is direct-line distance, not road GPS.", 12, Color(0.70, 0.76, 0.77)))
+	map_column.add_child(_make_label("Gold route follows the current connected starter-road graph.", 12, Color(0.70, 0.76, 0.77)))
 
 
 func set_objective(text: String) -> void:
@@ -238,11 +251,19 @@ func update_minimap(
 	_map_canvas.call("set_player_state", world_position, heading)
 
 
-func set_waypoint_status(point_name: String, distance: float) -> void:
+func set_waypoint_status(point_name: String, distance: float, route_reachable: bool = true) -> void:
 	if point_name.is_empty():
 		_waypoint_label.text = ""
 		return
-	_waypoint_label.text = "WAYPOINT — %s · %.0f m (direct)" % [point_name, distance]
+	if not route_reachable:
+		_waypoint_label.text = "GPS — no connected road route to " + point_name
+		return
+	_waypoint_label.text = "GPS ROUTE — %s · %.0f m (road)" % [point_name, distance]
+
+
+func set_navigation_route(route: Dictionary) -> void:
+	_minimap.set_navigation_route(route)
+	_map_canvas.call("set_navigation_route", route)
 
 
 func get_waypoint_status_text() -> String:

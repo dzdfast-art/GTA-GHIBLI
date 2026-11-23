@@ -18,6 +18,7 @@ var _player_position := Vector3(-114.0, 0.0, 0.0)
 var _player_heading: float = 0.0
 var _waypoint_id: String = ""
 var _waypoint_position := Vector3.ZERO
+var _route_points: Array[Vector3] = []
 var _zoom: float = 1.0
 var _pan := Vector2.ZERO
 var _dragging: bool = false
@@ -52,6 +53,16 @@ func set_waypoint(point_id: String, world_position: Vector3) -> void:
 func clear_waypoint() -> void:
 	_waypoint_id = ""
 	_waypoint_position = Vector3.ZERO
+	_route_points.clear()
+	queue_redraw()
+
+
+func set_navigation_route(route: Dictionary) -> void:
+	_route_points.clear()
+	if bool(route.get("reachable", false)):
+		for position in route.get("path", []):
+			if position is Vector3:
+				_route_points.append(position)
 	queue_redraw()
 
 
@@ -145,6 +156,12 @@ func _draw() -> void:
 	var road_end := world_to_map(Vector3(128.0, 0.0, 0.0))
 	draw_line(road_start, road_end, Color(0.10, 0.12, 0.13), 14.0)
 	draw_line(road_start, road_end, Color(0.78, 0.70, 0.50), 1.6)
+
+	if _route_points.size() > 1:
+		var route_line := PackedVector2Array()
+		for route_position in _route_points:
+			route_line.append(world_to_map(route_position))
+		draw_polyline(route_line, Color(1.0, 0.72, 0.20, 0.98), 4.0, true)
 
 	for point in _points:
 		var point_position: Vector3 = point.get("position", Vector3.ZERO)

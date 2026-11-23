@@ -1,3 +1,42 @@
+
+---
+
+## Authoritative status update — 2026-11-23 — PR #40 road-graph GPS (CI pending)
+
+This section is the current status snapshot for the Web Edition. Older entries below are retained as historical records and may describe earlier branches, CI runs or delivery rules.
+
+### Current branch and review stack
+- PR #39: [Add interactive world map and selectable waypoints](https://github.com/dzdfast-art/GTA-GHIBLI/pull/39), open, Draft, unmerged; head 5f3a8dd5e135feb2af0cd09c426a007cc11185d4.
+- PR #40 candidate branch: feature/web-road-graph-gps-20261123, based on the PR #39 head. PR #40 is intended to stack on PR #39 rather than repeat its entire diff against main.
+- main has not been edited or merged by this work.
+- Godot/Web edition only. No Android export or phone acceptance is included.
+
+### Verified previous baseline
+- PR #39 Web CI: [run 45221217715](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45221217715) — PASS.
+- The completed Chromium localhost step reported WebGL 2 initialisation, delivery of keyboard/mouse/map input, no browser runtime errors and no external requests.
+- The same run reported a 10,284,365-byte Web ZIP (10.284 MB decimal), an uncompressed export of 39,880,082 bytes (38.033 MiB), and ZIP SHA-256 43286ecfabf9905a519eab051bf3a4f128739a9883ad22d015796fae81590202.
+- Security audit: [run 45221217828](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45221217828) — PASS.
+- These are PR #39 measurements, not measurements for PR #40.
+
+### Navigation increment — implemented, awaiting CI
+- Added web-edition/scripts/world/route_planner.gd: a small A* route planner with graph validation, bounded nearest-node snapping, road-edge costs, reconstructed route geometry, route distance and explicit unreachable results.
+- Added road graph data in world_builder.gd: a bidirectional east-west starter corridor plus six point-of-interest access spurs.
+- Added visible access-road strips from the corridor to the six current points of interest.
+- Connected waypoint selection and player movement to route recalculation, with route geometry drawn on the full map and minimap.
+- HUD distance now identifies a road route rather than a straight-line distance.
+- Expanded web_foundation_test.gd to check graph completeness, reachability of all six points of interest, bounded-snap rejection, route distance beyond direct distance for the lighthouse route, and route propagation to both maps.
+- These code changes are IMPLEMENTED — CI NOT YET VERIFIED at the time of this status entry. Do not describe the new GPS as tested until PR #40 CI completes successfully.
+
+### Navigation limits that remain
+- This graph models only the existing straight east-west corridor and six simple access spurs.
+- Full local streets, intersections, junction turn restrictions, one-way roads, closures, alternate routes, dynamic obstacles, pedestrian paths, voice guidance and turn-by-turn instructions remain unimplemented.
+- The current bounded nearest-node snap is 36 world units for gameplay route updates. A distant start or destination can be correctly reported as unreachable; this is not a complete GPS for the eventual open world.
+
+### CI package privacy correction
+- PR #39 run 45221217715 created Actions artifact ID 14839509383, named GTA-GHIBLI-Web-Edition, size 10,284,845 bytes, with recorded expiry 2026-12-07T16:53:58Z. Because the repository is public, it must be treated as downloadable by the public until expiry.
+- The available GitHub actions in this session expose artifact listing and download, but not artifact deletion. The existing PR #39 artifact has therefore NOT been deleted; no claim of deletion is made.
+- PR #40 updates the workflow to stop uploading Actions artifacts and to remove the temporary Web export directory on the runner after measurement. This correction applies to subsequent workflow runs; it does not retroactively remove artifact ID 14839509383.
+- No Pages, Vercel or other public game deployment was created.
 # GTA GHIBLI Web Edition — Verified Status Ledger
 
 Updated: 2026-11-22 — minimap milestone under CI verification from `28d3c9acb133f8a2bd9255dd0f500433e2bd05c3`  

@@ -4,13 +4,17 @@ const WORLD_SCRIPT = preload("res://scripts/world/world_builder.gd")
 const PLAYER_SCRIPT = preload("res://scripts/player/player_controller.gd")
 const MISSION_SCRIPT = preload("res://scripts/systems/mission_manager.gd")
 const HUD_SCRIPT = preload("res://scripts/ui/game_hud.gd")
+const ROUTE_PLANNER_SCRIPT = preload("res://scripts/world/route_planner.gd")
 
 var _world: Node3D
 var _player: CharacterBody3D
 var _missions: Node
 var _hud: CanvasLayer
+var _route_planner: RefCounted
+var _active_route: Dictionary = {}
 var _location_elapsed: float = 0.0
 var _minimap_elapsed: float = 0.0
+var _navigation_elapsed: float = 0.0
 var _points_of_interest: Array[Dictionary] = []
 var _active_waypoint_id: String = ""
 var _active_waypoint_name: String = ""
@@ -29,6 +33,9 @@ func _ready() -> void:
 	add_child(_world)
 	_world.call("build_world")
 	_points_of_interest = _world.call("get_points_of_interest")
+	_route_planner = ROUTE_PLANNER_SCRIPT.new()
+	if not bool(_route_planner.call("configure", _world.call("get_road_graph"))):
+		push_error("The starter road graph could not be configured.")
 
 	_player = PLAYER_SCRIPT.new()
 	_player.name = "Player"
@@ -56,9 +63,11 @@ func _process(delta: float) -> void:
 	if _minimap_elapsed >= 0.12 and _player != null and _hud != null:
 		_minimap_elapsed = 0.0
 		_hud.call("update_minimap", _player.global_position, _player.global_rotation.y, _active_waypoint_position, not _active_waypoint_id.is_empty())
-		if not _active_waypoint_id.is_empty():
-			var distance := _player.global_position.distance_to(_active_waypoint_position)
-			_hud.call("set_waypoint_status", _active_waypoint_name, distance)
+	if not _active_waypoint_id.is_empty():
+		_navigation_elapsed += delta
+		if _navigation_elapsed >= 0.30:
+			_navigation_elapsed = 0.0
+			_update_navigation_route()
 
 
 func _connect_gameplay_signals() -> void:
@@ -99,4 +108,18 @@ func _on_waypoint_selected(point_id: String, point_name: String, world_position:
 	_active_waypoint_id = point_id
 	_active_waypoint_name = point_name
 	_active_waypoint_position = world_position
+	_update_navigation_route()
 	_hud.call("show_notification", "Waypoint selected — " + point_name)
+
+
+func _update_navigation_route() -> void:
+	if _route_planner == null or _player == null or _hud == null:
+		return
+	_active_route = _route_planner.call(
+		"find_route", _player.global_position, _active_waypoint_position, 36.0
+	)
+	_hud.call("set_navigation_route", _active_route)
+	if bool(_active_route.get("reachable", false)):
+		_hud.call("set_waypoint_status", _active_waypoint_name, float(_active_route.get("distance", 0.0)), true)
+	else:
+		_hud.call("set_waypoint_status", _active_waypoint_name, 0.0, false)
