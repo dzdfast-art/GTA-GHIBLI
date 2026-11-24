@@ -49,7 +49,7 @@ func _build_character() -> void:
 			_arm_pivots.clear()
 			_leg_pivots.clear()
 			for pivot_name in ["ArmPivot_Left", "ArmPivot_Right"]:
-				var pivot := imported_hero.get_node_or_null(pivot_name) as Node3D
+				var pivot := imported_hero.find_child(pivot_name, true, false) as Node3D
 				if pivot != null:
 					_arm_pivots.append(pivot)
 			for pivot_name in ["LegPivot_Left", "LegPivot_Right"]:
@@ -74,20 +74,28 @@ func _apply_imported_hero_materials(hero: Node3D) -> void:
 	hoodie_material.uv1_scale = Vector3(3.0, 3.0, 3.0)
 	hoodie_material.roughness = 0.96
 	hoodie_material.metallic = 0.01
-	for path in ["HoodieBody", "Hood", "HoodiePocket", "HoodieZip", "HoodieDrawstrings", "ArmPivot_Left/HoodieSleeve", "ArmPivot_Right/HoodieSleeve"]:
-		var part := hero.get_node_or_null(path) as MeshInstance3D
+	for part_name in ["HoodieBody", "Hood", "HoodiePocket", "HoodieZip", "HoodieDrawstrings"]:
+		var part := hero.find_child(part_name, true, false) as MeshInstance3D
 		if part != null:
 			part.material_override = hoodie_material
+	for side in ["ArmPivot_Left", "ArmPivot_Right"]:
+		var arm := hero.find_child(side, true, false) as Node3D
+		if arm != null:
+			var sleeve := arm.get_node_or_null("HoodieSleeve") as MeshInstance3D
+			if sleeve != null:
+				sleeve.material_override = hoodie_material
 	var trouser_material := StandardMaterial3D.new()
 	trouser_material.albedo_color = Color.WHITE
 	trouser_material.albedo_texture = CARGO_TROUSER_TEXTURE
 	trouser_material.uv1_scale = Vector3(2.0, 3.0, 2.0)
 	trouser_material.roughness = 0.94
 	for side in ["LegPivot_Left", "LegPivot_Right"]:
-		for part_name in ["TrouserLeg", "CargoPocket", "KneePanel"]:
-			var part := hero.get_node_or_null(side + "/" + part_name) as MeshInstance3D
-			if part != null:
-				part.material_override = trouser_material
+		var leg := hero.find_child(side, true, false) as Node3D
+		if leg != null:
+			for part_name in ["TrouserLeg", "CargoPocket", "KneePanel"]:
+				var part := leg.get_node_or_null(part_name) as MeshInstance3D
+				if part != null:
+					part.material_override = trouser_material
 
 
 func _add_back_logo() -> void:
