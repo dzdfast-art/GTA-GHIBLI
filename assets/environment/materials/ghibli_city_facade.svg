@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs>
+ <linearGradient id="stone" x2="1" y2="1"><stop stop-color="#c8c8bd"/><stop offset=".48" stop-color="#8e9ca0"/><stop offset="1" stop-color="#65777d"/></linearGradient>
+ <pattern id="panels" width="128" height="128" patternUnits="userSpaceOnUse">
+  <path d="M0 1h128M0 126h128M2 0v128M126 0v128" stroke="#e8e4d6" stroke-width="3" opacity=".28"/>
+  <path d="M12 8h104M12 12h104" stroke="#53656d" stroke-width="2" opacity=".12"/>
+  <rect x="8" y="18" width="3" height="92" fill="#f2eddd" opacity=".13"/>
+ </pattern>
+</defs>
+<rect width="512" height="512" fill="url(#stone)"/><rect width="512" height="512" fill="url(#panels)"/>
+<path d="M0 255h512M0 258h512" stroke="#394c53" stroke-width="3" opacity=".19"/>
+<path d="M64 0v512M256 0v512M448 0v512" stroke="#f4eedc" stroke-width="2" opacity=".12"/>
+</svg>
