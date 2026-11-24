@@ -19,7 +19,7 @@ var _refresh_timer := 0.0
 
 
 func _ready() -> void:
-	layer = 12
+	layer = 1
 	add_to_group("reference_hud")
 	_build_hud()
 	_bind_player()
