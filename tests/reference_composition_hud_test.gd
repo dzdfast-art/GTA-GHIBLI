@@ -105,6 +105,7 @@ func _run_test() -> void:
 	player_status.call("apply_damage", 30.0)
 	player_status.call("set_wanted_level", 3)
 	player_status.call("set_weapon", "rifle", 30, 120)
+	wallet.set("persistence_enabled", false)
 	wallet.call("add_money", 25)
 	main.get_node("WorldClock").call("set_time", 18, 30)
 	hud.call("_refresh_values")
