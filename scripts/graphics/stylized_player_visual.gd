@@ -53,7 +53,7 @@ func _build_character() -> void:
 				if pivot != null:
 					_arm_pivots.append(pivot)
 			for pivot_name in ["LegPivot_Left", "LegPivot_Right"]:
-				var pivot := imported_hero.get_node_or_null(pivot_name) as Node3D
+				var pivot := _find_named_node(imported_hero, pivot_name) as Node3D
 				if pivot != null:
 					_leg_pivots.append(pivot)
 			if _arm_pivots.size() == 2 and _leg_pivots.size() == 2:
