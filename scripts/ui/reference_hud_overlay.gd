@@ -7,6 +7,7 @@ var _minimap: Control
 var _money_label: Label
 var _clock_label: Label
 var _weapon_label: Label
+var _weapon_name_label: Label
 var _ammo_label: Label
 var _health_bar: ProgressBar
 var _armor_bar: ProgressBar
@@ -77,7 +78,7 @@ func _build_hud() -> void:
 		_wanted_stars.append(star)
 
 	_health_bar = _make_bar("HealthBar", Color(0.84, 0.10, 0.10))
-	_place_top_right(_health_bar, -304.0, 115.0, -118.0, 132.0)
+	_place_top_right(_health_bar, -108.0, 160.0, -18.0, 177.0)
 	_root.add_child(_health_bar)
 
 	_armor_bar = _make_bar("ArmorBar", Color(0.18, 0.82, 0.30))
@@ -96,9 +97,9 @@ func _build_hud() -> void:
 	_weapon_label = _make_label("WeaponIcon", "✊", 36, Color(1.0, 0.98, 0.88))
 	_weapon_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	weapon_stack.add_child(_weapon_label)
-	var weapon_name := _make_label("WeaponName", "FIST", 11, Color(1.0, 0.88, 0.55))
-	weapon_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	weapon_stack.add_child(weapon_name)
+	_weapon_name_label = _make_label("WeaponName", "FIST", 11, Color(1.0, 0.88, 0.55))
+	_weapon_name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	weapon_stack.add_child(_weapon_name_label)
 	_ammo_label = _make_label("Ammo", "MELEE", 11, Color(1.0, 1.0, 1.0))
 	_ammo_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	weapon_stack.add_child(_ammo_label)
@@ -132,6 +133,7 @@ func _refresh_values() -> void:
 		for index in range(_wanted_stars.size()):
 			_wanted_stars[index].modulate = Color(1.0, 0.82, 0.22) if index < wanted else Color(0.34, 0.39, 0.43, 0.75)
 		var weapon_id := str(_status.get("equipped_weapon_id"))
+		_weapon_name_label.text = _weapon_name_for(weapon_id)
 		if weapon_id == "fists":
 			_weapon_label.text = "✊"
 			_ammo_label.text = "MELEE"
@@ -151,6 +153,21 @@ func _weapon_icon_for(weapon_id: String) -> String:
 		"knife":
 			return "╱"
 	return "•"
+
+
+func _weapon_name_for(weapon_id: String) -> String:
+	match weapon_id:
+		"pistol":
+			return "PISTOL"
+		"rifle":
+			return "RIFLE"
+		"smg":
+			return "SMG"
+		"shotgun":
+			return "SHOTGUN"
+		"knife":
+			return "KNIFE"
+	return "FIST"
 
 
 func _make_label(node_name: String, caption: String, font_size: int, color: Color) -> Label:
