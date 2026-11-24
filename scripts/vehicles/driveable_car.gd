@@ -170,7 +170,7 @@ func _add_wheel(node_name: String, local_position: Vector3) -> void:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = Color(0.075, 0.08, 0.075)
 	material.roughness = 1.0
-		wheel.material_override = material
+	wheel.material_override = material
 	add_child(wheel)
 
 	var hub := MeshInstance3D.new()
@@ -181,7 +181,6 @@ func _add_wheel(node_name: String, local_position: Vector3) -> void:
 	hub_mesh.height = 0.30
 	hub_mesh.radial_segments = 12
 	hub.mesh = hub_mesh
-	hub.rotation.z = PI * 0.5
 	var hub_material := StandardMaterial3D.new()
 	hub_material.albedo_color = Color(0.56, 0.61, 0.64)
 	hub_material.metallic = 0.72
