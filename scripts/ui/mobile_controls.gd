@@ -240,6 +240,9 @@ func _refresh_controls() -> void:
 	if _mode_label == null:
 		return
 	if _is_bicycle_mode:
+		_release_action(&"attack")
+		_release_action(&"jump")
+		_release_action(&"sprint")
 		_mode_label.text = "CYCLING"
 		_context_button.text = "EXIT BIKE"
 		_brake_button.text = "BRAKE / REV"
@@ -252,6 +255,9 @@ func _refresh_controls() -> void:
 		_attack_button.visible = false
 		_jump_button.visible = false
 	elif _is_car_mode:
+		_release_action(&"attack")
+		_release_action(&"jump")
+		_release_action(&"sprint")
 		_mode_label.text = "DRIVING"
 		_context_button.text = "EXIT"
 		_brake_button.text = "BRAKE"
