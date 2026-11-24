@@ -97,6 +97,8 @@ jobs:
             res://scripts/world/wildlife_director.gd \
             res://scripts/audio/wildlife_voice.gd \
             res://scripts/world/world_weather.gd \
+            res://scripts/graphics/ghibli_environment_upgrade.gd \
+            res://scripts/graphics/stylized_player_visual.gd \
             res://scripts/missions/cinematic_director.gd
           do
             echo "Checking $script"
@@ -183,6 +185,9 @@ jobs:
 
       - name: Test optional world side activities and wallet rewards
         run: godot --headless --path . --script res://tests/side_activity_director_test.gd
+
+      - name: Test Ghibli visual upgrade
+        run: godot --headless --path . --script res://tests/graphics_quality_pass_test.gd
 
       - name: Run main scene smoke test
         run: godot --headless --path . --quit-after 180
