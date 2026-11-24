@@ -186,10 +186,15 @@ jobs:
           emulator-options: -no-snapshot-load -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
           disable-animations: true
           script: |
-            set -euo pipefail
-            adb wait-for-device
-            package_name=$(sed -n "s/^package: name='\\([^']*\\)'.*/\\1/p" build/apk-badging.txt | head -n 1)
-            test -n "$package_name"
+            set -eu
+            test -s build/apk-badging.txt
+            package_name=$(awk -F"'" '/^package: name=/ { print $2; exit }' build/apk-badging.txt)
+            if [ -z "$package_name" ]; then
+              echo "Could not parse Android package name from build/apk-badging.txt:"
+              head -n 5 build/apk-badging.txt
+              exit 1
+            fi
+            echo "Launching Android package: $package_name"
             adb install -r build/GTA-GHIBLI-debug.apk
             adb shell monkey -p "$package_name" -c android.intent.category.LAUNCHER 1
             sleep 25
