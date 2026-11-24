@@ -23,6 +23,7 @@ const PLAYER_WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
 const WILDLIFE_DIRECTOR_SCRIPT = preload("res://scripts/world/wildlife_director.gd")
 const STORY_CHARACTER_DIRECTOR_SCRIPT = preload("res://scripts/characters/story_character_director.gd")
 const WORLD_WEATHER_SCRIPT = preload("res://scripts/world/world_weather.gd")
+const GRAPHICS_UPGRADE_SCRIPT = preload("res://scripts/graphics/ghibli_environment_upgrade.gd")
 
 func _ready() -> void:
 	_create_world()
@@ -30,6 +31,7 @@ func _ready() -> void:
 	_create_village()
 	_create_open_world_regions()
 	_create_red_bridge()
+	_create_graphics_upgrade()
 	_create_wildlife()
 	_create_player()
 	_create_story_characters()
@@ -259,3 +261,9 @@ func _create_pause_settings_menu() -> void:
 	var pause_menu: CanvasLayer = PAUSE_SETTINGS_MENU_SCRIPT.new() as CanvasLayer
 	pause_menu.name = "PauseSettingsMenu"
 	add_child(pause_menu)
+
+
+func _create_graphics_upgrade() -> void:
+	var upgrade: Node3D = GRAPHICS_UPGRADE_SCRIPT.new() as Node3D
+	upgrade.name = "GhibliVisualPass"
+	add_child(upgrade)
