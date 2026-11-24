@@ -2,6 +2,8 @@ extends CharacterBody3D
 
 const RED_PAINT_TEXTURE: Texture2D = preload("res://assets/vehicles/materials/ghibli_sports_car_red.svg")
 const GLASS_TEXTURE: Texture2D = preload("res://assets/environment/materials/ghibli_city_glass.svg")
+const PBR_SPORT_COUPE_SCENE: PackedScene = preload("res://assets/vehicles/models/ghibli_sport_coupe.gltf")
+const WHEEL_NODE_NAMES: Array[String] = ["Wheel_Front_Left", "Wheel_Front_Right", "Wheel_Rear_Left", "Wheel_Rear_Right"]
 
 @export var max_forward_speed := 12.0
 @export var max_reverse_speed := 4.5
@@ -15,6 +17,8 @@ var driver: CharacterBody3D
 var _speed := 0.0
 var _saved_collision_layer := 1
 var _saved_collision_mask := 1
+var _vehicle_model: Node3D
+var _wheel_nodes: Array[Node3D] = []
 
 func _ready() -> void:
 	add_to_group("vehicles")
@@ -49,6 +53,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y -= gravity * delta
 	move_and_slide()
+	_animate_vehicle_wheels(delta, input_vector.x)
 	_sync_driver_pose()
 
 func interact() -> void:
@@ -113,6 +118,38 @@ func _set_hud_vehicle_mode(active: bool) -> void:
 		hud.call("set_vehicle_mode", active)
 
 func _build_vehicle_visuals() -> void:
+	if PBR_SPORT_COUPE_SCENE == null:
+		push_warning("PBR sport coupe asset could not be loaded; using the safe procedural fallback.")
+		_build_fallback_vehicle_visuals()
+		return
+	_vehicle_model = PBR_SPORT_COUPE_SCENE.instantiate() as Node3D
+	if _vehicle_model == null:
+		push_warning("PBR sport coupe scene did not instantiate; using the procedural fallback.")
+		_build_fallback_vehicle_visuals()
+		return
+	_vehicle_model.name = "PBR_SportCoupe"
+	add_child(_vehicle_model)
+	_wheel_nodes.clear()
+	for wheel_name in WHEEL_NODE_NAMES:
+		var wheel := _vehicle_model.get_node_or_null(wheel_name) as Node3D
+		if wheel != null:
+			_wheel_nodes.append(wheel)
+	if _wheel_nodes.size() != WHEEL_NODE_NAMES.size():
+		push_warning("PBR sport coupe wheel groups are incomplete; expected four independently rotating wheels.")
+
+func _animate_vehicle_wheels(delta: float, steering_input: float) -> void:
+	if _wheel_nodes.is_empty():
+		return
+	var spin_angle := (_speed / 0.34) * delta
+	for index in range(_wheel_nodes.size()):
+		var wheel := _wheel_nodes[index]
+		if wheel == null or not is_instance_valid(wheel):
+			continue
+		if index < 2:
+			wheel.rotation.y = -steering_input * 0.30
+		wheel.rotate_object_local(Vector3.RIGHT, spin_angle)
+
+func _build_fallback_vehicle_visuals() -> void:
 	_add_box("LowerBody", Vector3(1.9, 0.72, 3.9), Vector3(0.0, 0.86, 0.0), Color(0.88, 0.055, 0.045))
 	_add_box("Cabin", Vector3(1.55, 0.78, 1.9), Vector3(0.0, 1.58, 0.22), Color(0.12, 0.25, 0.34))
 	_add_box("FrontGlass", Vector3(1.38, 0.48, 0.06), Vector3(0.0, 1.63, -0.76), Color(0.16, 0.39, 0.49))
