@@ -185,24 +185,21 @@ jobs:
           emulator-boot-timeout: 540
           emulator-options: -no-snapshot-load -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
           disable-animations: true
-          script: |
-            set -eu
-            adb wait-for-device
-            test -s build/apk-badging.txt
-            package_name=$(awk -F"'" '/^package: name=/ { print $2; exit }' build/apk-badging.txt)
-            test -n "$package_name"
-            echo "Launching Android package: $package_name"
-            adb install -r build/GTA-GHIBLI-debug.apk
-            adb shell monkey -p "$package_name" -c android.intent.category.LAUNCHER 1
-            sleep 25
-            app_pid=$(adb shell pidof "$package_name" | tr -d "\\r")
-            test -n "$app_pid"
-            printf "%s\\n" "$app_pid" > build/emulator-app-pid.txt
-            adb shell dumpsys activity activities > build/emulator-activities.txt
-            adb shell dumpsys meminfo "$package_name" > build/emulator-meminfo.txt
-            adb logcat -d --pid="$app_pid" -v brief > build/emulator-logcat.txt
-            ! grep -Eiq "FATAL EXCEPTION|SIGSEGV|Fatal signal" build/emulator-logcat.txt
+          script: bash tools/android_emulator_smoke.sh
 
+      - name: Upload Android emulator smoke evidence
+        if: always() && steps.launch-emulator.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTA-GHIBLI-Android-emulator-evidence
+          path: |
+            build/emulator-app-pid.txt
+            build/emulator-activities.txt
+            build/emulator-meminfo.txt
+            build/emulator-screenshot.png
+            build/emulator-logcat.txt
+          if-no-files-found: warn
+          retention-days: 14
       - name: Upload Android emulator smoke evidence
         if: always() && steps.launch-emulator.outcome == 'success'
         uses: actions/upload-artifact@v4
