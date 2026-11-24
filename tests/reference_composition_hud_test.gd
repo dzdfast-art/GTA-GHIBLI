@@ -115,7 +115,7 @@ func _run_test() -> void:
 	if str(hud_root.get_node("GameClock").text) != "18:30":
 		_fail("The HUD clock did not update from WorldClock.")
 		return
-	if str(hud_root.get_node("Ammo").text) != "30/120":
+	if str(hud_root.get_node("WeaponPanel/VBoxContainer/Ammo").text) != "30/120":
 		_fail("The HUD weapon/ammunition display did not update from PlayerStatus.")
 		return
 	if not hud_root.get_node("WantedStars/Star_2").modulate.is_equal_approx(Color(1.0, 0.82, 0.22)):
