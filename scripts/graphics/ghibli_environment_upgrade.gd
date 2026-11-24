@@ -31,13 +31,10 @@ func _build_harbor_city() -> void:
 	]
 
 	for data in tower_data:
-		_add_tower(
-			skyline,
-			str(data["name"]),
-			data["at"] as Vector3,
-			data["size"] as Vector3,
-			data["color"] as Color
-		)
+		var tower_at: Vector3 = data["at"]
+		var tower_size: Vector3 = data["size"]
+		var tower_color: Color = data["color"]
+		_add_tower(skyline, str(data["name"]), tower_at, tower_size, tower_color)
 
 	_add_city_sign(skyline)
 	_build_city_road(harbor)
@@ -200,7 +197,7 @@ func _build_city_road(parent: Node3D) -> void:
 			_make_material(Color(0.61, 0.62, 0.58), 0.96))
 
 	var line_mesh := BoxMesh.new()
-	line_mesh.size = Vector3(0.12, 0.025, 1.45)
+	line_mesh.size = Vector3(1.45, 0.025, 0.12)
 	for index in range(12):
 		_add_mesh(parent, "RoadDash_%02d" % index, line_mesh,
 			Vector3(-19.0 + float(index) * 3.45, 0.205, 18.3),
