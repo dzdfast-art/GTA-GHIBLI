@@ -396,6 +396,14 @@ func _run() -> void:
 		_fail("Mission 001 reward was not idempotent.")
 		return
 
+	var autosave_manager: RefCounted = load("res://scripts/world/save_slot_manager.gd").new()
+	var autosave_record: Dictionary = autosave_manager.call("load_slot", "autosave")
+	var autosave_payload: Dictionary = autosave_record.get("payload", {})
+	if int(autosave_payload.get("mission_stage", -1)) != 2 or int(autosave_payload.get("wallet", -1)) != 600:
+		_fail("The game root did not persist Mission 001 stage and wallet in its durable autosave slot.")
+		return
+	autosave_manager.call("delete_slot", "autosave")
+
 	var restored_manager: Node = load("res://scripts/systems/mission_manager.gd").new()
 	root.add_child(restored_manager)
 	await process_frame
@@ -425,6 +433,7 @@ func _run() -> void:
 	print("PASS: nearby E interaction enters the starter sedan; driving and E exit work.")
 	print("PASS: Claire and Nora world interactions complete Mission 001 and grant $250 once.")
 	print("PASS: Mission 001 stage and $600 wallet restore through a new manager instance.")
+	print("PASS: game-root wallet changes persist the mission stage and balance in a durable autosave slot.")
 	print("NOTE: this is foundation regression coverage, not full-game acceptance.")
 	restored_manager.queue_free()
 	game.queue_free()

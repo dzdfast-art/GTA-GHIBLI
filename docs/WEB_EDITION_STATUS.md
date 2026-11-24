@@ -1,3 +1,56 @@
+# Current authoritative snapshot — 2026-11-24 — PR #105 save-slot hardening
+
+This block supersedes the older branch/PR snapshots below. Historical entries are retained, but their PR #35 Draft/open and PR #42 pending descriptions no longer represent the current repository state.
+
+## Repository and review state
+
+- `main`: `e35a0ca72d8209f2a6b8295f6a1f89091b563f24`; unchanged by this run.
+- PR #35: closed and merged on 2026-11-22 at 13:56:51 UTC. The former clean-start branch `web/standalone-from-empty-2026-11-22` now points to `9cdcec813aa874532e9c4c5d3113f967a9a0a26a`; it is not the active development head.
+- Current active review: [PR #105](https://github.com/dzdfast-art/GTA-GHIBLI/pull/105), Draft/open/unmerged.
+- Active branch: `feature/web-durable-save-slots-20261124`.
+- Tested code head before this documentation-only update: `359870a666c7ceeb25f15f13aee9aa49143520d0`.
+- PR #105 is stacked on PR #104 branch `fix/web-pr50-100-tests-strict-20261124` at `34e3561699699ed3546a5a8a1b131937ffa433c7`. The stacked PRs remain open; no merge was performed.
+- All game code changed in this increment remains under `web-edition/**`. The other changes are Web CI and Web Edition documentation only. No Android/APK build, public deployment or public game download was created.
+
+## Save-system status
+
+| System | Status | Evidence and boundary |
+|---|---|---|
+| Versioned local save-slot backend | **TESTED** | JSON envelope v1, payload SHA-256, safe slot IDs, non-negative timestamps, deep-copy round-trip |
+| Atomic replacement and backup recovery | **TESTED** | Temporary-file write, previous-save backup, corrupt-primary recovery |
+| Save schema migration | **TESTED** | Version-zero payload migrates to version one |
+| Invalid/empty JSON payload handling | **TESTED** | Invalid JSON is rejected; a valid empty dictionary remains valid |
+| Process restart | **TESTED — native runner** | A writer and a separate Godot reader process restore nested player, missions, wallet, inventory, vehicle, world and activity fixture data |
+| Live-game autosave | **PARTIALLY IMPLEMENTED** | The game-root wallet-change hook stores only Mission 001 stage and wallet |
+| Whole-game state integration | **PLANNED** | Player transform/vitals, all mission progress, inventory, NPCs, active vehicles, activities and world state are not yet wired into live save/restore |
+| Browser IndexedDB reload persistence | **NOT VERIFIED** | Chromium smoke test does not reload the page or prove save survival across browser sessions |
+
+The restart fixture's nested dictionaries are test data, not proof that the live game currently captures all those systems. Godot 4.7's Web documentation states that `user://` persistence depends on IndexedDB/storage permission; private browsing or blocked storage prevents persistence. `OS.is_userfs_persistent()` can be a false positive. See the [Godot 4.7 Web export persistence note](https://docs.godotengine.org/en/4.7/tutorials/export/exporting_for_web.html#using-cookies-for-data-persistence).
+
+## Verification — code head `359870a`
+
+- Web CI [run 45372352700](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45372352700): **PASS** — Godot 4.7 import, JSON/research validation, all 59 GDScript regression tests, WebAssembly export, export-file verification, Chromium localhost/WebGL 2 smoke, package measurement and temporary cleanup.
+- Security audit [run 45372362353](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45372362353): **PASS** — Gitleaks reported no leaks.
+- The save-slot regression passed corruption recovery, invalid JSON payload rejection, empty payload round-trip, version migration and separate-process restart.
+- Chromium reported a 1280×720 canvas with WebGL 2, delivered WASD/right-mouse/map-key input, and reported no browser runtime errors or external network requests. This remains a smoke test, not full-game acceptance or a visual review.
+- The workflow rejected Godot `ERROR:` output after the parser was changed to use `JSON.parse()` result handling. The prior code head's corruption test had emitted a deliberate `ERROR: Parse JSON failed` line; that noise is absent from the passing hardened run.
+
+## Exact size measurements
+
+- Tracked `web-edition/` source: 134 files, **213,789 bytes** (0.214 MB decimal).
+- Deduplicated unique source contents: 134 contents, **213,789 bytes** (0.204 MiB).
+- Uncompressed Web export: 7 files, **40,058,343 bytes** (38.203 MiB).
+- Compressed Web ZIP: **10,428,513 bytes** (10.429 MB decimal / 9.945 MiB).
+- ZIP SHA-256: `3c569e481f45f6de126a2a103569239db01e713de78ad7408ba2c6c0a8379a06`.
+- The 4 GB target is **not reached**. These measurements are source/export/package measurements, not an APK, cache or Git-internals measurement.
+- Web CI artifact listing was empty. The separate security audit produced only its Gitleaks SARIF report; no Web export or ZIP was uploaded. The runner cleanup step completed.
+
+## Next technical step
+
+Wire the save service to the live authoritative state in bounded increments, then add a Chromium test that saves, reloads the page and verifies recovery with IndexedDB enabled, plus a clear blocked-storage behavior. Keep the PR Draft until those checks pass and do not claim full-game persistence.
+ 
+---
+
 
 ---
 
