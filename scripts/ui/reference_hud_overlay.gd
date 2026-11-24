@@ -91,6 +91,7 @@ func _build_hud() -> void:
 	weapon_panel.add_theme_stylebox_override("panel", _panel_style(Color(0.025, 0.035, 0.045, 0.88), Color(0.88, 0.86, 0.76, 0.86)))
 	_root.add_child(weapon_panel)
 	var weapon_stack := VBoxContainer.new()
+	weapon_stack.name = "WeaponStack"
 	weapon_stack.alignment = BoxContainer.ALIGNMENT_CENTER
 	weapon_stack.add_theme_constant_override("separation", 1)
 	weapon_panel.add_child(weapon_stack)
