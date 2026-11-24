@@ -89,7 +89,7 @@ jobs:
               echo "::error::${test_name} exited with status ${test_status}."
               exit "$test_status"
             fi
-            if grep -Eqi 'SCRIPT ERROR:|Parse Error:|Assertion failed|Invalid call[.]' "$test_log"; then
+            if grep -Eqi 'ERROR:|Parse Error:|Assertion failed|Invalid call[.]' "$test_log"; then
               rm -f "$test_log"
               echo "::endgroup::"
               echo "::error::${test_name} logged a GDScript/runtime assertion error."
