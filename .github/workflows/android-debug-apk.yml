@@ -190,11 +190,7 @@ jobs:
             adb wait-for-device
             test -s build/apk-badging.txt
             package_name=$(awk -F"'" '/^package: name=/ { print $2; exit }' build/apk-badging.txt)
-            if [ -z "$package_name" ]; then
-              echo "Could not parse Android package name from build/apk-badging.txt:"
-              head -n 5 build/apk-badging.txt
-              exit 1
-            fi
+            test -n "$package_name"
             echo "Launching Android package: $package_name"
             adb install -r build/GTA-GHIBLI-debug.apk
             adb shell monkey -p "$package_name" -c android.intent.category.LAUNCHER 1
@@ -205,10 +201,7 @@ jobs:
             adb shell dumpsys activity activities > build/emulator-activities.txt
             adb shell dumpsys meminfo "$package_name" > build/emulator-meminfo.txt
             adb logcat -d --pid="$app_pid" -v brief > build/emulator-logcat.txt
-            if grep -Eiq "FATAL EXCEPTION|SIGSEGV|Fatal signal" build/emulator-logcat.txt; then
-              echo "Android emulator reported a fatal app/runtime error."
-              exit 1
-            fi
+            ! grep -Eiq "FATAL EXCEPTION|SIGSEGV|Fatal signal" build/emulator-logcat.txt
 
       - name: Upload Android emulator smoke evidence
         if: always() && steps.launch-emulator.outcome == 'success'
