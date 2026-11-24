@@ -134,7 +134,25 @@ func _build_vehicle_visuals() -> void:
 	_add_box("RightSideSkirt", Vector3(0.12, 0.18, 2.45), Vector3(0.91, 0.54, 0.0), Color(0.10, 0.11, 0.12))
 	_add_box("Spoiler", Vector3(1.58, 0.10, 0.25), Vector3(0.0, 1.80, 1.70), Color(0.12, 0.13, 0.14))
 	_add_box("SpoilerSupportLeft", Vector3(0.08, 0.35, 0.08), Vector3(-0.52, 1.60, 1.68), Color(0.12, 0.13, 0.14))
+
 	_add_box("SpoilerSupportRight", Vector3(0.08, 0.35, 0.08), Vector3(0.52, 1.60, 1.68), Color(0.12, 0.13, 0.14))
+	_add_box("LeftSideWindow", Vector3(0.055, 0.40, 0.78), Vector3(-0.79, 1.63, 0.30), Color(0.10, 0.28, 0.37))
+	_add_box("RightSideWindow", Vector3(0.055, 0.40, 0.78), Vector3(0.79, 1.63, 0.30), Color(0.10, 0.28, 0.37))
+	_add_box("LeftQuarterWindow", Vector3(0.055, 0.34, 0.42), Vector3(-0.79, 1.62, 0.94), Color(0.10, 0.25, 0.34))
+	_add_box("RightQuarterWindow", Vector3(0.055, 0.34, 0.42), Vector3(0.79, 1.62, 0.94), Color(0.10, 0.25, 0.34))
+	_add_box("LeftMirrorArm", Vector3(0.22, 0.07, 0.08), Vector3(-0.90, 1.63, -0.68), Color(0.10, 0.11, 0.12))
+	_add_box("RightMirrorArm", Vector3(0.22, 0.07, 0.08), Vector3(0.90, 1.63, -0.68), Color(0.10, 0.11, 0.12))
+	_add_box("LeftMirror", Vector3(0.22, 0.16, 0.20), Vector3(-1.03, 1.67, -0.68), Color(0.12, 0.20, 0.25))
+	_add_box("RightMirror", Vector3(0.22, 0.16, 0.20), Vector3(1.03, 1.67, -0.68), Color(0.12, 0.20, 0.25))
+	_add_box("LeftDoorSeam", Vector3(0.025, 0.52, 0.025), Vector3(-0.96, 0.92, 0.18), Color(0.45, 0.035, 0.03))
+	_add_box("RightDoorSeam", Vector3(0.025, 0.52, 0.025), Vector3(0.96, 0.92, 0.18), Color(0.45, 0.035, 0.03))
+	_add_box("LeftDoorHandle", Vector3(0.08, 0.055, 0.22), Vector3(-0.98, 1.05, 0.42), Color(0.74, 0.76, 0.77))
+	_add_box("RightDoorHandle", Vector3(0.08, 0.055, 0.22), Vector3(0.98, 1.05, 0.42), Color(0.74, 0.76, 0.77))
+	_add_box("FrontSplitter", Vector3(1.95, 0.08, 0.44), Vector3(0.0, 0.39, -1.96), Color(0.045, 0.05, 0.055))
+	_add_box("LeftAirIntake", Vector3(0.32, 0.19, 0.07), Vector3(-0.66, 0.70, -1.99), Color(0.035, 0.04, 0.045))
+	_add_box("RightAirIntake", Vector3(0.32, 0.19, 0.07), Vector3(0.66, 0.70, -1.99), Color(0.035, 0.04, 0.045))
+	_add_box("LeftExhaust", Vector3(0.22, 0.12, 0.16), Vector3(-0.62, 0.42, 2.02), Color(0.54, 0.58, 0.61))
+	_add_box("RightExhaust", Vector3(0.22, 0.12, 0.16), Vector3(0.62, 0.42, 2.02), Color(0.54, 0.58, 0.61))
 	var shape := BoxShape3D.new()
 	shape.size = Vector3(1.85, 0.82, 3.85)
 	var collision := CollisionShape3D.new()
@@ -152,7 +170,14 @@ func _add_box(node_name: String, dimensions: Vector3, local_position: Vector3, t
 	visual.position = local_position
 	var material := StandardMaterial3D.new()
 	material.albedo_color = tint
-	material.roughness = 0.72
+	material.roughness = 0.34
+	material.metallic = 0.22
+	if node_name.contains("Glass") or node_name.contains("Window"):
+		material.roughness = 0.20
+		material.metallic = 0.30
+	if node_name.contains("Bumper") or node_name.contains("Diffuser") or node_name.contains("Skirt"):
+		material.roughness = 0.76
+		material.metallic = 0.08
 	visual.material_override = material
 	add_child(visual)
 
