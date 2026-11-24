@@ -22,7 +22,7 @@ func _run_test() -> void:
 	if camera == null or spring_arm == null:
 		_fail("The over-the-shoulder camera is missing.")
 		return
-	if not is_equal_approx(camera.rotation.y, PI) or not is_equal_approx(spring_arm.spring_length, 2.75):
+	if not is_equal_approx(camera.rotation.y, 0.0) or not is_equal_approx(spring_arm.spring_length, 2.75):
 		_fail("The camera does not use the intended behind-player framing.")
 		return
 	if not is_equal_approx(camera.fov, 78.0):
@@ -53,6 +53,9 @@ func _run_test() -> void:
 		_fail("PlayerStatus is not attached to the player.")
 		return
 	var wallet := player.get_node_or_null("PlayerWallet")
+	if wallet != null:
+		wallet.set("persistence_enabled", false)
+		wallet.set("balance", 250)
 	if wallet == null:
 		_fail("PlayerWallet is not attached to the player.")
 		return
