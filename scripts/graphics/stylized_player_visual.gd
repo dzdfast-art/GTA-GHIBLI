@@ -91,14 +91,14 @@ func _add_leg(side: float, pants_color: Color, shoe_white: Color,
 	add_child(pivot)
 	_leg_pivots.append(pivot)
 	_add_capsule(pivot, "TrouserLeg", 0.145, 0.76, Vector3(0.0, -0.34, 0.0), pants_color)
-	_add_box(self, "SneakerSole", Vector3(0.40, 0.07, 0.54),
-		Vector3(side * 0.18, 0.055, -0.065), shoe_red)
-	_add_box(self, "SneakerUpper", Vector3(0.38, 0.17, 0.51),
-		Vector3(side * 0.18, 0.145, -0.07), shoe_white)
-	_add_box(self, "SneakerToeAccent", Vector3(0.25, 0.055, 0.075),
-		Vector3(side * 0.18, 0.16, -0.30), shoe_red)
-	_add_box(self, "SneakerHeelAccent", Vector3(0.16, 0.085, 0.075),
-		Vector3(side * 0.18, 0.19, 0.17), shoe_red)
+	_add_box(pivot, "SneakerSole", Vector3(0.40, 0.07, 0.54),
+		Vector3(0.0, -0.61, -0.065), shoe_red)
+	_add_box(pivot, "SneakerUpper", Vector3(0.38, 0.17, 0.51),
+		Vector3(0.0, -0.51, -0.07), shoe_white)
+	_add_box(pivot, "SneakerToeAccent", Vector3(0.25, 0.055, 0.075),
+		Vector3(0.0, -0.50, -0.30), shoe_red)
+	_add_box(pivot, "SneakerHeelAccent", Vector3(0.16, 0.085, 0.075),
+		Vector3(0.0, -0.47, 0.17), shoe_red)
 
 
 func _add_arm(side: float, sleeve_color: Color, skin_color: Color) -> void:
