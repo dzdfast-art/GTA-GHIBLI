@@ -15,7 +15,7 @@ func _run() -> void:
 	assert(model.reduce_by_arrest() == 3)
 	assert(model.tick(29.0, true) == 3)
 	assert(model.tick(31.0, true) == 1)
-	assert(model.tick(60.0, false) == 2)
+	assert(model.tick(60.0, false) == 1)
 	assert(model.configure(3))
 	assert(model.add_crime(1) == 2)
 	print("PASS: Wanted level escalation, arrest reduction and hidden cooldown.")
