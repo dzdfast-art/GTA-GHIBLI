@@ -29,34 +29,38 @@ func _draw() -> void:
 	var heading := 0.0
 	if is_instance_valid(_player):
 		heading = _player.global_rotation.y
-	draw_set_transform(center, -heading, Vector2.ONE)
+	var map_origin := center
+	if is_instance_valid(_player):
+		map_origin -= Vector2(_player.global_position.x, _player.global_position.z) * 0.28
+	draw_set_transform(map_origin, -heading, Vector2.ONE)
 
-	# Park blocks and green spaces.
+	# Compact district blocks stay inside the circular map boundary.
 	var blocks := [
-		Rect2(Vector2(-85.0, -76.0), Vector2(45.0, 27.0)),
-		Rect2(Vector2(-28.0, -76.0), Vector2(52.0, 27.0)),
-		Rect2(Vector2(34.0, -76.0), Vector2(48.0, 27.0)),
-		Rect2(Vector2(-85.0, -28.0), Vector2(45.0, 36.0)),
-		Rect2(Vector2(34.0, -28.0), Vector2(48.0, 36.0)),
-		Rect2(Vector2(-85.0, 32.0), Vector2(45.0, 40.0)),
-		Rect2(Vector2(-28.0, 32.0), Vector2(52.0, 40.0)),
-		Rect2(Vector2(34.0, 32.0), Vector2(48.0, 40.0))
+		Rect2(Vector2(-66.0, -58.0), Vector2(28.0, 18.0)),
+		Rect2(Vector2(-18.0, -58.0), Vector2(30.0, 18.0)),
+		Rect2(Vector2(34.0, -55.0), Vector2(22.0, 18.0)),
+		Rect2(Vector2(-66.0, 8.0), Vector2(28.0, 23.0)),
+		Rect2(Vector2(35.0, 10.0), Vector2(22.0, 22.0)),
+		Rect2(Vector2(-18.0, 48.0), Vector2(30.0, 18.0))
 	]
 	for index in range(blocks.size()):
 		var green := Color(0.18, 0.34, 0.22, 0.96) if index % 3 == 0 else Color(0.30, 0.39, 0.29, 0.94)
 		draw_rect(blocks[index], green)
 
-	# Street grid, with a few diagonal connectors.
+	# Street grid is clipped mathematically to the circle, not a square viewport.
 	var road_color := Color(0.70, 0.73, 0.65, 0.96)
 	var road_edge := Color(0.13, 0.18, 0.16, 1.0)
-	for x in [-58.0, 0.0, 58.0]:
-		draw_line(Vector2(x, -112.0), Vector2(x, 112.0), road_edge, 15.0, true)
-		draw_line(Vector2(x, -112.0), Vector2(x, 112.0), road_color, 9.0, true)
-	for y in [-54.0, 4.0, 62.0]:
-		draw_line(Vector2(-112.0, y), Vector2(112.0, y), road_edge, 15.0, true)
-		draw_line(Vector2(-112.0, y), Vector2(112.0, y), road_color, 9.0, true)
-	draw_line(Vector2(-100.0, 88.0), Vector2(92.0, -92.0), road_color, 5.0, true)
-	draw_line(Vector2(-100.0, -92.0), Vector2(95.0, 84.0), road_color, 5.0, true)
+	var safe_radius := radius - 10.0
+	for x in [-50.0, 0.0, 50.0]:
+		var vertical_extent := sqrt(maxf(0.0, safe_radius * safe_radius - x * x))
+		draw_line(Vector2(x, -vertical_extent), Vector2(x, vertical_extent), road_edge, 14.0, true)
+		draw_line(Vector2(x, -vertical_extent), Vector2(x, vertical_extent), road_color, 8.0, true)
+	for y in [-50.0, 0.0, 50.0]:
+		var horizontal_extent := sqrt(maxf(0.0, safe_radius * safe_radius - y * y))
+		draw_line(Vector2(-horizontal_extent, y), Vector2(horizontal_extent, y), road_edge, 14.0, true)
+		draw_line(Vector2(-horizontal_extent, y), Vector2(horizontal_extent, y), road_color, 8.0, true)
+	draw_line(Vector2(-54.0, 22.0), Vector2(23.0, -54.0), road_color, 4.5, true)
+	draw_line(Vector2(-50.0, -32.0), Vector2(43.0, 50.0), road_color, 4.5, true)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 	# Player position arrow and map compass.
