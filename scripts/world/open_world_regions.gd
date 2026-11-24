@@ -60,6 +60,8 @@ func _build_region(region_id: String, region_name: String, center: Vector3,
 
 	_build_road(center)
 	_build_district_buildings(district, wall_color, roof_color)
+	if region_id == "harbor_city":
+		_build_harbor_skyline(district)
 	_build_district_details(district, region_id, ground_color)
 	_build_civilians(district, region_id, npc_names)
 
@@ -250,3 +252,83 @@ func _material(tint: Color, texture_path: String = "") -> StandardMaterial3D:
 			material.albedo_texture = texture
 			material.uv1_scale = Vector3(3.0, 3.0, 3.0)
 	return material
+
+
+func _build_harbor_skyline(district: Node3D) -> void:
+	var skyline := Node3D.new()
+	skyline.name = "GhibliSkyline"
+	skyline.position = Vector3(0.0, 0.0, -25.0)
+	district.add_child(skyline)
+
+	var tower_specs := [
+		{"name": "Tower_01", "position": Vector3(-17.0, 0.0, -3.0), "size": Vector3(9.0, 19.0, 8.0), "color": Color(0.43, 0.52, 0.58)},
+		{"name": "Tower_02", "position": Vector3(0.0, 0.0, -1.0), "size": Vector3(10.0, 25.0, 9.0), "color": Color(0.53, 0.58, 0.61)},
+		{"name": "Tower_03", "position": Vector3(17.0, 0.0, -4.0), "size": Vector3(12.0, 31.0, 10.0), "color": Color(0.39, 0.48, 0.55)},
+		{"name": "Tower_04", "position": Vector3(31.0, 0.0, -2.0), "size": Vector3(8.0, 16.0, 8.0), "color": Color(0.60, 0.57, 0.50)}
+	]
+	for spec in tower_specs:
+		var tower := Node3D.new()
+		tower.name = str(spec["name"])
+		tower.position = spec["position"]
+		skyline.add_child(tower)
+
+		var dimensions: Vector3 = spec["size"]
+		var facade := MeshInstance3D.new()
+		facade.name = "Facade"
+		var facade_mesh := BoxMesh.new()
+		facade_mesh.size = dimensions
+		facade.mesh = facade_mesh
+		facade.position.y = dimensions.y * 0.5
+		facade.material_override = _material(spec["color"], "res://assets/environment/materials/ghibli_city_glass.svg")
+		tower.add_child(facade)
+
+		var roofline := MeshInstance3D.new()
+		roofline.name = "Roofline"
+		var roof_mesh := BoxMesh.new()
+		roof_mesh.size = Vector3(dimensions.x + 0.5, 0.45, dimensions.z + 0.5)
+		roofline.mesh = roof_mesh
+		roofline.position.y = dimensions.y + 0.22
+		roofline.material_override = _material(Color(0.22, 0.27, 0.31))
+		tower.add_child(roofline)
+
+		var window_mesh := BoxMesh.new()
+		window_mesh.size = Vector3(0.68, 0.82, 0.09)
+		var windows := MultiMesh.new()
+		windows.transform_format = MultiMesh.TRANSFORM_3D
+		windows.mesh = window_mesh
+		var columns := 8
+		var rows := 12
+		windows.instance_count = columns * rows
+		windows.visible_instance_count = columns * rows
+		for row in range(rows):
+			for column in range(columns):
+				var x := -dimensions.x * 0.39 + float(column) * dimensions.x * 0.78 / float(columns - 1)
+				var y := 1.7 + float(row) * maxf(1.2, (dimensions.y - 3.0) / float(rows - 1))
+				var transform := Transform3D(Basis.IDENTITY, Vector3(x, y, -dimensions.z * 0.505))
+				windows.set_instance_transform(row * columns + column, transform)
+		var window_instances := MultiMeshInstance3D.new()
+		window_instances.name = "WindowInstances"
+		window_instances.multimesh = windows
+		var window_material := StandardMaterial3D.new()
+		window_material.albedo_color = Color(0.78, 0.84, 0.78)
+		window_material.metallic = 0.18
+		window_material.roughness = 0.24
+		window_instances.material_override = window_material
+		tower.add_child(window_instances)
+
+		var side_windows := MultiMeshInstance3D.new()
+		side_windows.name = "SideWindowInstances"
+		var side_multimesh := MultiMesh.new()
+		side_multimesh.transform_format = MultiMesh.TRANSFORM_3D
+		side_multimesh.mesh = window_mesh
+		side_multimesh.instance_count = 24
+		side_multimesh.visible_instance_count = 24
+		for index in range(24):
+			var row := index / 4
+			var column := index % 4
+			var z := -dimensions.z * 0.36 + float(column) * dimensions.z * 0.24
+			var y := 2.0 + float(row) * maxf(1.5, (dimensions.y - 3.0) / 5.0)
+			side_multimesh.set_instance_transform(index, Transform3D(Basis.IDENTITY, Vector3(dimensions.x * 0.505, y, z)))
+		side_windows.multimesh = side_multimesh
+		side_windows.material_override = window_material
+		tower.add_child(side_windows)
