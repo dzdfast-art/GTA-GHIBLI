@@ -29,10 +29,10 @@ func _run_test() -> void:
 	var camera_forward: Vector3 = -camera.global_basis.z
 	var camera_offset: Vector3 = camera.global_position - player.global_position
 	if camera_offset.dot(player_forward) >= -0.1:
-		_fail("The camera is not positioned behind the player's facing direction.")
+		_fail("Camera behind-player check failed; offset dot forward = %.3f" % camera_offset.dot(player_forward))
 		return
 	if camera_forward.dot(player_forward) < 0.92:
-		_fail("The camera is not looking forward along the player's facing direction.")
+		_fail("Camera forward check failed; direction dot player-forward = %.3f" % camera_forward.dot(player_forward))
 		return
 	if not is_equal_approx(camera.fov, 78.0):
 		_fail("The camera FOV is not set for the reference-style wide composition.")
