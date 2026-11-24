@@ -25,6 +25,15 @@ func _run_test() -> void:
 	if not is_equal_approx(camera.rotation.y, PI) or not is_equal_approx(spring_arm.spring_length, 2.75):
 		_fail("The camera does not use the intended behind-player framing.")
 		return
+	var player_forward: Vector3 = -player.global_basis.z
+	var camera_forward: Vector3 = -camera.global_basis.z
+	var camera_offset: Vector3 = camera.global_position - player.global_position
+	if camera_offset.dot(player_forward) >= -0.1:
+		_fail("The camera is not positioned behind the player's facing direction.")
+		return
+	if camera_forward.dot(player_forward) < 0.92:
+		_fail("The camera is not looking forward along the player's facing direction.")
+		return
 	if not is_equal_approx(camera.fov, 78.0):
 		_fail("The camera FOV is not set for the reference-style wide composition.")
 		return
@@ -106,6 +115,7 @@ func _run_test() -> void:
 	player_status.call("set_wanted_level", 3)
 	player_status.call("set_weapon", "rifle", 30, 120)
 	wallet.set("persistence_enabled", false)
+	wallet.set("balance", 250)
 	wallet.call("add_money", 25)
 	main.get_node("WorldClock").call("set_time", 18, 30)
 	hud.call("_refresh_values")
@@ -118,6 +128,9 @@ func _run_test() -> void:
 		return
 	if str(hud_root.get_node("GameClock").text) != "18:30":
 		_fail("The HUD clock did not update from WorldClock.")
+		return
+	if str(hud_root.get_node("WeaponPanel/VBoxContainer/WeaponName").text) != "RIFLE":
+		_fail("The HUD weapon name did not update from PlayerStatus.")
 		return
 	if str(hud_root.get_node("WeaponPanel/VBoxContainer/Ammo").text) != "30/120":
 		_fail("The HUD weapon/ammunition display did not update from PlayerStatus.")
