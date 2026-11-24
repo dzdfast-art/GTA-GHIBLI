@@ -80,7 +80,7 @@ func _run_test() -> void:
 	if crossing == null or crossing.get_child_count() != 7:
 		_fail("The harbor zebra crossing must contain seven visible stripes.")
 		return
-	if harbor_street.get_nodes_in_group("harbor_street_lamps").size() != 4:
+	if get_tree().get_nodes_in_group("harbor_street_lamps").size() != 4:
 		_fail("The harbor boulevard must contain four street lamps.")
 		return
 	if harbor_street.get_node_or_null("Sidewalk_-1.0") == null or harbor_street.get_node_or_null("Sidewalk_1.0") == null:
