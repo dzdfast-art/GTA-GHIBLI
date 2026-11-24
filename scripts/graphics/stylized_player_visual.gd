@@ -1,6 +1,8 @@
 extends MeshInstance3D
 
 const HOODIE_FABRIC_TEXTURE: Texture2D = preload("res://assets/characters/materials/ghibli_dark_hoodie_fabric.svg")
+const CARGO_TROUSER_TEXTURE: Texture2D = preload("res://assets/characters/materials/ghibli_cargo_trouser.svg")
+const PBR_HERO_SCENE: PackedScene = preload("res://assets/characters/models/ghibli_hero.gltf")
 
 ## Procedural, original third-person character art for the Android prototype.
 ## The parent Visual node remains the visibility switch used by vehicle enter/exit.
@@ -39,6 +41,69 @@ func _process(delta: float) -> void:
 
 
 func _build_character() -> void:
+	if PBR_HERO_SCENE != null:
+		var imported_hero := PBR_HERO_SCENE.instantiate() as Node3D
+		if imported_hero != null:
+			imported_hero.name = "PBR_GhibliHero"
+			add_child(imported_hero)
+			_arm_pivots.clear()
+			_leg_pivots.clear()
+			for pivot_name in ["ArmPivot_Left", "ArmPivot_Right"]:
+				var pivot := imported_hero.get_node_or_null(pivot_name) as Node3D
+				if pivot != null:
+					_arm_pivots.append(pivot)
+			for pivot_name in ["LegPivot_Left", "LegPivot_Right"]:
+				var pivot := imported_hero.get_node_or_null(pivot_name) as Node3D
+				if pivot != null:
+					_leg_pivots.append(pivot)
+			if _arm_pivots.size() == 2 and _leg_pivots.size() == 2:
+				_apply_imported_hero_materials(imported_hero)
+				_add_back_logo()
+				return
+			push_warning("Imported Ghibli hero is missing articulated pivots; using fallback visual.")
+			imported_hero.queue_free()
+		else:
+			push_warning("Imported Ghibli hero could not be instantiated; using fallback visual.")
+	_build_fallback_character()
+
+
+func _apply_imported_hero_materials(hero: Node3D) -> void:
+	var hoodie_material := StandardMaterial3D.new()
+	hoodie_material.albedo_color = Color.WHITE
+	hoodie_material.albedo_texture = HOODIE_FABRIC_TEXTURE
+	hoodie_material.uv1_scale = Vector3(3.0, 3.0, 3.0)
+	hoodie_material.roughness = 0.96
+	hoodie_material.metallic = 0.01
+	for path in ["HoodieBody", "Hood", "HoodiePocket", "HoodieZip", "HoodieDrawstrings", "ArmPivot_Left/HoodieSleeve", "ArmPivot_Right/HoodieSleeve"]:
+		var part := hero.get_node_or_null(path) as MeshInstance3D
+		if part != null:
+			part.material_override = hoodie_material
+	var trouser_material := StandardMaterial3D.new()
+	trouser_material.albedo_color = Color.WHITE
+	trouser_material.albedo_texture = CARGO_TROUSER_TEXTURE
+	trouser_material.uv1_scale = Vector3(2.0, 3.0, 2.0)
+	trouser_material.roughness = 0.94
+	for side in ["LegPivot_Left", "LegPivot_Right"]:
+		for part_name in ["TrouserLeg", "CargoPocket", "KneePanel"]:
+			var part := hero.get_node_or_null(side + "/" + part_name) as MeshInstance3D
+			if part != null:
+				part.material_override = trouser_material
+
+
+func _add_back_logo() -> void:
+	var logo := Label3D.new()
+	logo.name = "GhibliBackLogo"
+	logo.text = "GTA\nGHIBLI"
+	logo.position = Vector3(0.0, 1.14, 0.207)
+	logo.font_size = 38
+	logo.pixel_size = 0.0034
+	logo.modulate = Color(1.0, 0.94, 0.78)
+	logo.outline_size = 7
+	logo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	add_child(logo)
+
+
+func _build_fallback_character() -> void:
 	var hoodie := Color(0.055, 0.065, 0.085)
 	var hoodie_light := Color(0.12, 0.14, 0.17)
 	var pants := Color(0.12, 0.16, 0.22)
