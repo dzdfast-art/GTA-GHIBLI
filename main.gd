@@ -204,6 +204,7 @@ func _create_player_needs() -> void:
 		return
 	var wallet: Node = PLAYER_WALLET_SCRIPT.new()
 	wallet.name = "PlayerWallet"
+	wallet.set("initial_balance", 24873)
 	player.add_child(wallet)
 	var needs: Node = PLAYER_NEEDS_SCRIPT.new()
 	needs.name = "PlayerNeeds"
