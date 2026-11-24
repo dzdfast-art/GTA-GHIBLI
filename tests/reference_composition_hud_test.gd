@@ -123,7 +123,7 @@ func _run_test() -> void:
 	if float(player_status.get("health")) != 90.0 or float(player_status.get("armor")) != 0.0:
 		_fail("Player health/armor state did not process incoming damage.")
 		return
-	if str(hud_root.get_node("Money").text) != "$0000275":
+	if str(hud_root.get_node("Money").text) != "$00000275":
 		_fail("The HUD money value did not update from PlayerWallet.")
 		return
 	if str(hud_root.get_node("GameClock").text) != "18:30":
