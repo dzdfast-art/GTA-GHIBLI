@@ -24,6 +24,8 @@ const WILDLIFE_DIRECTOR_SCRIPT = preload("res://scripts/world/wildlife_director.
 const STORY_CHARACTER_DIRECTOR_SCRIPT = preload("res://scripts/characters/story_character_director.gd")
 const WORLD_WEATHER_SCRIPT = preload("res://scripts/world/world_weather.gd")
 const GRAPHICS_UPGRADE_SCRIPT = preload("res://scripts/graphics/ghibli_environment_upgrade.gd")
+const PLAYER_STATUS_SCRIPT = preload("res://scripts/systems/player_status.gd")
+const REFERENCE_HUD_SCRIPT = preload("res://scripts/ui/reference_hud_overlay.gd")
 
 func _ready() -> void:
 	_create_world()
@@ -39,6 +41,7 @@ func _ready() -> void:
 	_create_starter_car()
 	_create_starter_bicycle()
 	_create_mobile_controls()
+	_create_reference_hud()
 	_create_pause_settings_menu()
 	_create_mission_manager()
 	_create_mission_002_runtime()
@@ -131,7 +134,7 @@ func _create_player() -> void:
 func _create_starter_car() -> void:
 	var car: CharacterBody3D = STARTER_CAR_SCENE.instantiate() as CharacterBody3D
 	car.name = "StarterCar"
-	car.position = Vector3(2.4, 0.0, -18.0)
+	car.position = Vector3(5.0, 0.0, -14.6)
 	add_child(car)
 
 func _create_starter_bicycle() -> void:
@@ -208,6 +211,9 @@ func _create_player_needs() -> void:
 	var inventory: Node = CONSUMABLE_INVENTORY_SCRIPT.new()
 	inventory.name = "ConsumableInventory"
 	player.add_child(inventory)
+	var status: Node = PLAYER_STATUS_SCRIPT.new()
+	status.name = "PlayerStatus"
+	player.add_child(status)
 
 
 func _create_world_clock() -> void:
@@ -267,3 +273,9 @@ func _create_graphics_upgrade() -> void:
 	var upgrade: Node3D = GRAPHICS_UPGRADE_SCRIPT.new() as Node3D
 	upgrade.name = "GhibliVisualPass"
 	add_child(upgrade)
+
+
+func _create_reference_hud() -> void:
+	var reference_hud: CanvasLayer = REFERENCE_HUD_SCRIPT.new() as CanvasLayer
+	reference_hud.name = "ReferenceHUD"
+	add_child(reference_hud)
