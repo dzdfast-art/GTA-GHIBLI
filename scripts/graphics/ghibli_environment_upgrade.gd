@@ -58,8 +58,10 @@ func _add_tower(parent: Node3D, tower_name: String, at: Vector3,
 
 	var walls := BoxMesh.new()
 	walls.size = dimensions
-	_add_mesh(tower, "Facade", walls, Vector3(0.0, dimensions.y * 0.5, 0.0),
-		_make_material(wall_color, 0.48, 0.18))
+	var facade_material := _make_material(wall_color, 0.66, 0.12)
+	facade_material.albedo_texture = load("res://assets/environment/materials/ghibli_city_facade.svg") as Texture2D
+	facade_material.uv1_scale = Vector3(2.0, 4.0, 2.0)
+	_add_mesh(tower, "Facade", walls, Vector3(0.0, dimensions.y * 0.5, 0.0), facade_material)
 
 	var collision_shape := BoxShape3D.new()
 	collision_shape.size = dimensions
@@ -130,6 +132,8 @@ func _add_window_instances(parent: Node3D, dimensions: Vector3) -> void:
 	windows.multimesh = multi
 	var glass := StandardMaterial3D.new()
 	glass.albedo_color = Color.WHITE
+	glass.albedo_texture = load("res://assets/environment/materials/ghibli_city_glass.svg") as Texture2D
+	glass.uv1_scale = Vector3(1.0, 1.0, 1.0)
 	glass.vertex_color_use_as_albedo = true
 	glass.roughness = 0.28
 	glass.metallic = 0.18
@@ -368,8 +372,10 @@ func _build_reference_street() -> void:
 func _build_reference_road(parent: Node3D) -> void:
 	var asphalt := BoxMesh.new()
 	asphalt.size = Vector3(18.0, 0.14, 88.0)
-	_add_mesh(parent, "OpeningBoulevard", asphalt, Vector3(0.0, 0.08, 42.0),
-		_make_material(Color(0.13, 0.15, 0.16), 0.97))
+	var asphalt_material := _make_material(Color.WHITE, 0.98)
+	asphalt_material.albedo_texture = load("res://assets/environment/materials/ghibli_city_asphalt.svg") as Texture2D
+	asphalt_material.uv1_scale = Vector3(6.0, 1.0, 18.0)
+	_add_mesh(parent, "OpeningBoulevard", asphalt, Vector3(0.0, 0.08, 22.0), asphalt_material)
 	var sidewalk := BoxMesh.new()
 	sidewalk.size = Vector3(2.0, 0.25, 88.0)
 	for side in [-1.0, 1.0]:
