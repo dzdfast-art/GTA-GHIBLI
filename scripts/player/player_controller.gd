@@ -4,18 +4,26 @@ extends CharacterBody3D
 @export var acceleration: float = 18.0
 @export var gravity: float = 18.0
 @export var turn_speed: float = 12.0
+@export var jump_velocity: float = 6.2
+@export var sprint_multiplier: float = 1.45
 
 var is_driving := false
 
 @onready var camera_pivot: Node3D = $CameraPivot
+@onready var player_camera: Camera3D = $CameraPivot/SpringArm3D/Camera3D
+
+func _ready() -> void:
+	for action in ["jump", "attack", "sprint"]:
+		if not InputMap.has_action(action):
+			InputMap.add_action(action)
 
 func _physics_process(delta: float) -> void:
 	if is_driving:
 		velocity = Vector3.ZERO
 		return
 	var input_vector: Vector2 = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	var camera_right: Vector3 = camera_pivot.global_basis.x
-	var camera_forward: Vector3 = -camera_pivot.global_basis.z
+	var camera_right: Vector3 = player_camera.global_basis.x
+	var camera_forward: Vector3 = -player_camera.global_basis.z
 	camera_right.y = 0.0
 	camera_forward.y = 0.0
 	camera_right = camera_right.normalized()
@@ -27,11 +35,15 @@ func _physics_process(delta: float) -> void:
 	var needs := get_node_or_null("PlayerNeeds")
 	if needs != null and needs.has_method("get_movement_multiplier"):
 		effective_move_speed *= clampf(float(needs.call("get_movement_multiplier")), 0.4, 1.0)
+	if Input.is_action_pressed("sprint"):
+		effective_move_speed *= maxf(1.0, sprint_multiplier)
 	velocity.x = move_toward(velocity.x, move_direction.x * effective_move_speed, acceleration * delta)
 	velocity.z = move_toward(velocity.z, move_direction.z * effective_move_speed, acceleration * delta)
 	if is_on_floor():
 		if velocity.y < 0.0:
 			velocity.y = 0.0
+		if Input.is_action_just_pressed("jump"):
+			velocity.y = jump_velocity
 	else:
 		velocity.y -= gravity * delta
 	if move_direction.length_squared() > 0.001:
