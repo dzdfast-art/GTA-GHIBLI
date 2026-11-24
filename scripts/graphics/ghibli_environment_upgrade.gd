@@ -361,6 +361,7 @@ func _build_reference_street() -> void:
 	_build_reference_shop(street)
 	_build_reference_traffic(street)
 	_build_reference_aircraft(street)
+	_build_reference_clouds(street)
 	_build_reference_trees(street)
 
 
@@ -373,18 +374,18 @@ func _build_reference_road(parent: Node3D) -> void:
 	sidewalk.size = Vector3(2.0, 0.25, 88.0)
 	for side in [-1.0, 1.0]:
 		_add_mesh(parent, "BoulevardPavement", sidewalk,
-			Vector3(side * 10.0, 0.17, 42.0),
+			Vector3(side * 10.0, 0.17, 22.0),
 			_make_material(Color(0.62, 0.63, 0.58), 0.95))
 	var lane_line := BoxMesh.new()
 	lane_line.size = Vector3(0.14, 0.025, 2.1)
 	for index in range(22):
 		_add_mesh(parent, "BoulevardLaneDash_%02d" % index, lane_line,
-			Vector3(0.0, 0.17, 4.0 + float(index) * 3.7),
+			Vector3(0.0, 0.17, -17.0 + float(index) * 3.7),
 			_make_material(Color(1.0, 0.78, 0.23), 0.78))
 	var curb := BoxMesh.new()
 	curb.size = Vector3(0.25, 0.34, 88.0)
 	for side in [-1.0, 1.0]:
-		_add_mesh(parent, "BoulevardCurb", curb, Vector3(side * 9.05, 0.24, 42.0),
+		_add_mesh(parent, "BoulevardCurb", curb, Vector3(side * 9.05, 0.24, 22.0),
 			_make_material(Color(0.76, 0.72, 0.62), 0.96))
 
 
@@ -727,3 +728,24 @@ func _add_bar_between(parent: Node3D, node_name: String, start: Vector3,
 	node.quaternion = Quaternion(Vector3.UP, direction.normalized())
 	node.material_override = _make_material(tint, 0.76)
 	parent.add_child(node)
+
+
+func _build_reference_clouds(parent: Node3D) -> void:
+	var cloud_material := _make_material(Color(0.92, 0.95, 0.96), 1.0)
+	var cloud_positions := [
+		Vector3(-34.0, 31.0, 64.0), Vector3(-20.0, 36.0, 74.0),
+		Vector3(-2.0, 40.0, 72.0), Vector3(18.0, 34.0, 70.0),
+		Vector3(36.0, 31.0, 77.0), Vector3(0.0, 30.0, 98.0)
+	]
+	for index in range(cloud_positions.size()):
+		var cloud := Node3D.new()
+		cloud.name = "SkyCloud_%02d" % index
+		cloud.position = cloud_positions[index]
+		parent.add_child(cloud)
+		for puff_index in range(4):
+			var puff := SphereMesh.new()
+			puff.radius = 4.0 if puff_index == 0 else 2.7
+			puff.height = puff.radius * 1.2
+			var offset := Vector3(float(puff_index - 2) * 3.0, float(puff_index % 2) * 1.3, float(puff_index % 2) * 1.0)
+			var visual := _add_mesh(cloud, "CloudPuff_%d" % puff_index, puff, offset, cloud_material)
+			visual.scale = Vector3(1.6, 0.72, 0.82)
