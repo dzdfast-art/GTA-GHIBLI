@@ -117,4 +117,3 @@ func _run_reader_process() -> void:
 func _cleanup_probe() -> void:
 	var manager: RefCounted = load("res://scripts/world/save_slot_manager.gd").new()
 	manager.call("delete_slot", SLOT_ID)
-	manager.free()
