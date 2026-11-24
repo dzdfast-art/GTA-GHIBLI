@@ -22,8 +22,21 @@ adb shell monkey -p "$package_name" -c android.intent.category.LAUNCHER 1
 sleep 8
 
 # Android 15 may show its first-run immersive-mode confirmation above the app.
-# Dismiss it so the retained screenshot records the game, not the OS dialog.
-adb shell input tap 1680 516
+# Read the emulator's actual resolution instead of assuming fixed coordinates.
+screen_size="$(adb shell wm size | tr -d '\r' | sed -nE 's/.*([0-9]+)x([0-9]+).*/\1 \2/p' | tail -n 1)"
+if [[ -z "$screen_size" ]]; then
+  echo "Could not determine Android emulator display size."
+  exit 1
+fi
+read -r screen_width screen_height <<< "$screen_size"
+if (( screen_width < 1 || screen_height < 1 )); then
+  echo "Android emulator reported invalid display dimensions: $screen_size"
+  exit 1
+fi
+tap_x=$((screen_width * 7 / 8))
+tap_y=$((screen_height / 2))
+echo "Attempting to dismiss any first-run system prompt at $tap_x,$tap_y on ${screen_width}x${screen_height} display."
+adb shell input tap "$tap_x" "$tap_y"
 sleep 5
 
 app_pid="$(adb shell pidof "$package_name" | tr -d '\r' | awk '{ print $1 }')"
@@ -39,15 +52,23 @@ adb shell dumpsys meminfo "$package_name" > build/emulator-meminfo.txt
 adb shell screencap -p /sdcard/gta-ghibli-smoke.png
 adb pull /sdcard/gta-ghibli-smoke.png build/emulator-screenshot.png
 adb logcat -d --pid="$app_pid" -v brief > build/emulator-logcat.txt
+# Preserve the system-wide log too: immersive-mode UI belongs to SystemUI,
+# not the game's PID, so it cannot be reliably detected in the app-only log.
+adb logcat -d -v brief > build/emulator-logcat-full.txt
 
 if grep -Eiq 'FATAL EXCEPTION|SIGSEGV|Fatal signal' build/emulator-logcat.txt; then
   echo "Android emulator reported a fatal game-process error."
   exit 1
 fi
 
-if grep -Eiq 'Viewing full screen|To exit, swipe down' build/emulator-logcat.txt; then
-  echo "Unexpected OS immersive-mode prompt remains in app log."
+if [[ ! -s build/emulator-screenshot.png ]]; then
+  echo "Android emulator screenshot is missing or empty."
   exit 1
 fi
-
-echo "PASS: APK installed, launched, immersive-mode prompt dismissed, remained alive, and produced post-launch screenshot/runtime evidence."
+read -r png_width png_height < <(od -An -t u4 -j 16 -N 8 --endian=big build/emulator-screenshot.png)
+if (( png_width < 1 || png_height < 1 )); then
+  echo "Android emulator screenshot has invalid PNG dimensions: ${png_width}x${png_height}"
+  exit 1
+fi
+echo "Screenshot verified: ${png_width}x${png_height} pixels."
+echo "PASS: APK installed, launched, remained alive, and produced a valid screenshot plus app/system runtime evidence."
