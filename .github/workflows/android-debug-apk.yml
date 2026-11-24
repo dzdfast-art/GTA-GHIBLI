@@ -200,15 +200,3 @@ jobs:
             build/emulator-logcat.txt
           if-no-files-found: warn
           retention-days: 14
-      - name: Upload Android emulator smoke evidence
-        if: always() && steps.launch-emulator.outcome == 'success'
-        uses: actions/upload-artifact@v4
-        with:
-          name: GTA-GHIBLI-Android-emulator-evidence
-          path: |
-            build/emulator-app-pid.txt
-            build/emulator-activities.txt
-            build/emulator-meminfo.txt
-            build/emulator-logcat.txt
-          if-no-files-found: warn
-          retention-days: 14
