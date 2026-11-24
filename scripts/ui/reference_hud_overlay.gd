@@ -80,7 +80,7 @@ func _build_hud() -> void:
 	_place_top_right(_health_bar, -304.0, 115.0, -118.0, 132.0)
 	_root.add_child(_health_bar)
 
-	_armor_bar = _make_bar("ArmorBar", Color(0.65, 0.80, 0.88))
+	_armor_bar = _make_bar("ArmorBar", Color(0.18, 0.82, 0.30))
 	_place_top_right(_armor_bar, -304.0, 137.0, -118.0, 154.0)
 	_root.add_child(_armor_bar)
 
