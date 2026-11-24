@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/camera/third_person_camera.gd" id="2_camera"]
 [ext_resource type="Script" path="res://scripts/systems/player_interactor.gd" id="3_interactor"]
+[ext_resource type="Script" path="res://scripts/graphics/stylized_player_visual.gd" id="4_visual"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_Player"]
 radius = 0.38
@@ -20,6 +21,7 @@ height = 1.8
 script = ExtResource("1_player")
 
 [node name="Visual" type="MeshInstance3D" parent="."]
+script = ExtResource("4_visual")
 mesh = SubResource("CapsuleMesh_Player")
 material_override = SubResource("Material_Player")
 
@@ -27,17 +29,18 @@ material_override = SubResource("Material_Player")
 shape = SubResource("CapsuleShape_Player")
 
 [node name="CameraPivot" type="Node3D" parent="."]
-position = Vector3(0, 1.45, 0)
+position = Vector3(0, 1.75, 0)
 script = ExtResource("2_camera")
 
 [node name="SpringArm3D" type="SpringArm3D" parent="CameraPivot"]
-spring_length = 4.5
+spring_length = 2.75
 margin = 0.2
 collision_mask = 1
 
 [node name="Camera3D" type="Camera3D" parent="CameraPivot/SpringArm3D"]
+rotation = Vector3(0, 0, 0)
 current = true
-fov = 70.0
+fov = 78.0
 
 [node name="PlayerInteractor" type="Node" parent="."]
 script = ExtResource("3_interactor")

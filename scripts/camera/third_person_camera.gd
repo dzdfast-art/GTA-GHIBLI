@@ -5,6 +5,7 @@ extends Node3D
 ## from the player's facing direction so walking forward cannot orbit the camera.
 
 @export_range(0.001, 0.03, 0.001) var look_sensitivity: float = 0.006
+@export var initial_yaw_offset: float = 0.0
 @export_range(10.0, 85.0, 1.0) var look_down_limit_degrees: float = 55.0
 @export_range(10.0, 85.0, 1.0) var look_up_limit_degrees: float = 35.0
 
@@ -16,7 +17,7 @@ var _camera_pitch: float = 0.0
 
 func _ready() -> void:
 	add_to_group("third_person_cameras")
-	_camera_yaw = global_rotation.y
+	_camera_yaw = wrapf(global_rotation.y + initial_yaw_offset, -PI, PI)
 	_camera_pitch = global_rotation.x
 	_apply_camera_rotation()
 

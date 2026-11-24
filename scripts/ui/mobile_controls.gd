@@ -11,6 +11,8 @@ var _pedal_button: Button
 var _sprint_button: Button
 var _steer_left_button: Button
 var _steer_right_button: Button
+var _attack_button: Button
+var _jump_button: Button
 var _joystick: Control
 var _is_car_mode := false
 var _is_bicycle_mode := false
@@ -66,7 +68,7 @@ func _process(_delta: float) -> void:
 
 func _register_actions() -> void:
 	var actions := ["vehicle_brake", "bike_pedal", "bike_brake",
-		"bike_steer_left", "bike_steer_right", "sprint"]
+		"bike_steer_left", "bike_steer_right", "sprint", "jump", "attack"]
 	for action in actions:
 		if not InputMap.has_action(action):
 			InputMap.add_action(action)
@@ -98,6 +100,7 @@ func _build_hud() -> void:
 	_mode_label.position = Vector2(22.0, 18.0)
 	_mode_label.add_theme_font_size_override("font_size", 15)
 	_mode_label.add_theme_color_override("font_color", Color(1.0, 0.96, 0.82, 0.92))
+	_mode_label.visible = false
 	root.add_child(_mode_label)
 
 	_joystick = JOYSTICK_SCRIPT.new() as Control
@@ -115,7 +118,7 @@ func _build_hud() -> void:
 
 	_context_button = _make_action_button("USE", Vector2(104.0, 104.0))
 	_context_button.name = "ContextAction"
-	_set_bottom_right(_context_button, -132.0, -132.0, -24.0, -24.0)
+	_set_bottom_right(_context_button, -216.0, -96.0, -128.0, -8.0)
 	_context_button.button_down.connect(_press_action.bind(&"interact"))
 	_context_button.button_up.connect(_release_action.bind(&"interact"))
 	_context_button.tree_exiting.connect(_release_action.bind(&"interact"))
@@ -123,7 +126,7 @@ func _build_hud() -> void:
 
 	_brake_button = _make_action_button("BRAKE", Vector2(88.0, 88.0))
 	_brake_button.name = "VehicleBrake"
-	_set_bottom_right(_brake_button, -236.0, -120.0, -144.0, -28.0)
+	_set_bottom_right(_brake_button, -320.0, -112.0, -228.0, -20.0)
 	_brake_button.visible = false
 	_brake_button.button_down.connect(_on_brake_down)
 	_brake_button.button_up.connect(_on_brake_up)
@@ -132,7 +135,7 @@ func _build_hud() -> void:
 
 	_pedal_button = _make_action_button("PEDAL", Vector2(88.0, 88.0))
 	_pedal_button.name = "BikePedal"
-	_set_bottom_right(_pedal_button, -236.0, -218.0, -144.0, -126.0)
+	_set_bottom_right(_pedal_button, -320.0, -210.0, -228.0, -118.0)
 	_pedal_button.visible = false
 	_pedal_button.button_down.connect(_press_action.bind(&"bike_pedal"))
 	_pedal_button.button_up.connect(_release_action.bind(&"bike_pedal"))
@@ -141,7 +144,7 @@ func _build_hud() -> void:
 
 	_sprint_button = _make_action_button("RUN", Vector2(82.0, 82.0))
 	_sprint_button.name = "Sprint"
-	_set_bottom_right(_sprint_button, -236.0, -218.0, -150.0, -132.0)
+	_set_bottom_right(_sprint_button, -216.0, -190.0, -130.0, -104.0)
 	_sprint_button.button_down.connect(_press_action.bind(&"sprint"))
 	_sprint_button.button_up.connect(_release_action.bind(&"sprint"))
 	_sprint_button.tree_exiting.connect(_release_action.bind(&"sprint"))
@@ -164,6 +167,25 @@ func _build_hud() -> void:
 	_steer_right_button.button_up.connect(_release_action.bind(&"bike_steer_right"))
 	_steer_right_button.tree_exiting.connect(_release_action.bind(&"bike_steer_right"))
 	root.add_child(_steer_right_button)
+
+
+	_attack_button = _make_action_button("✊", Vector2(92.0, 92.0))
+	_attack_button.name = "Attack"
+	_set_bottom_right(_attack_button, -114.0, -292.0, -22.0, -200.0)
+	_attack_button.add_theme_font_size_override("font_size", 31)
+	_attack_button.button_down.connect(_press_action.bind(&"attack"))
+	_attack_button.button_up.connect(_release_action.bind(&"attack"))
+	_attack_button.tree_exiting.connect(_release_action.bind(&"attack"))
+	root.add_child(_attack_button)
+
+	_jump_button = _make_action_button("↟", Vector2(82.0, 82.0))
+	_jump_button.name = "Jump"
+	_set_bottom_right(_jump_button, -114.0, -186.0, -32.0, -104.0)
+	_jump_button.add_theme_font_size_override("font_size", 29)
+	_jump_button.button_down.connect(_press_action.bind(&"jump"))
+	_jump_button.button_up.connect(_release_action.bind(&"jump"))
+	_jump_button.tree_exiting.connect(_release_action.bind(&"jump"))
+	root.add_child(_jump_button)
 
 	_refresh_controls()
 
@@ -219,6 +241,9 @@ func _refresh_controls() -> void:
 	if _mode_label == null:
 		return
 	if _is_bicycle_mode:
+		_release_action(&"attack")
+		_release_action(&"jump")
+		_release_action(&"sprint")
 		_mode_label.text = "CYCLING"
 		_context_button.text = "EXIT BIKE"
 		_brake_button.text = "BRAKE / REV"
@@ -228,7 +253,12 @@ func _refresh_controls() -> void:
 		_pedal_button.visible = true
 		_brake_button.visible = true
 		_sprint_button.visible = false
+		_attack_button.visible = false
+		_jump_button.visible = false
 	elif _is_car_mode:
+		_release_action(&"attack")
+		_release_action(&"jump")
+		_release_action(&"sprint")
 		_mode_label.text = "DRIVING"
 		_context_button.text = "EXIT"
 		_brake_button.text = "BRAKE"
@@ -238,6 +268,8 @@ func _refresh_controls() -> void:
 		_pedal_button.visible = false
 		_brake_button.visible = true
 		_sprint_button.visible = false
+		_attack_button.visible = false
+		_jump_button.visible = false
 	else:
 		_mode_label.text = "ON FOOT"
 		_context_button.text = "USE"
@@ -248,6 +280,8 @@ func _refresh_controls() -> void:
 		_pedal_button.visible = false
 		_brake_button.visible = false
 		_sprint_button.visible = true
+		_attack_button.visible = true
+		_jump_button.visible = true
 	if _joystick != null:
 		_joystick.call("_reset_stick")
 
@@ -318,23 +352,23 @@ func _make_action_button(caption: String, button_size: Vector2) -> Button:
 	button.custom_minimum_size = button_size
 	button.focus_mode = Control.FOCUS_NONE
 	button.add_theme_font_size_override("font_size", 17)
-	button.add_theme_color_override("font_color", Color(0.10, 0.12, 0.11, 1.0))
-	button.add_theme_color_override("font_hover_color", Color(0.05, 0.07, 0.06, 1.0))
-	button.add_theme_stylebox_override("normal", _button_style(Color(0.94, 0.91, 0.80, 0.94)))
-	button.add_theme_stylebox_override("hover", _button_style(Color(1.0, 0.97, 0.87, 1.0)))
-	button.add_theme_stylebox_override("pressed", _button_style(Color(0.70, 0.76, 0.63, 1.0)))
-	button.add_theme_stylebox_override("focus", _button_style(Color(0.94, 0.91, 0.80, 0.94)))
+	button.add_theme_color_override("font_color", Color(1.0, 0.98, 0.90, 0.98))
+	button.add_theme_color_override("font_hover_color", Color(1.0, 0.90, 0.58, 1.0))
+	button.add_theme_stylebox_override("normal", _button_style(Color(0.035, 0.045, 0.055, 0.58)))
+	button.add_theme_stylebox_override("hover", _button_style(Color(0.12, 0.14, 0.15, 0.76)))
+	button.add_theme_stylebox_override("pressed", _button_style(Color(0.48, 0.36, 0.18, 0.88)))
+	button.add_theme_stylebox_override("focus", _button_style(Color(0.035, 0.045, 0.055, 0.58)))
 	return button
 
 
 func _button_style(fill_color: Color) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = fill_color
-	style.border_color = Color(0.06, 0.08, 0.07, 0.96)
-	style.set_border_width_all(4)
+	style.border_color = Color(0.76, 0.79, 0.78, 0.72)
+	style.set_border_width_all(3)
 	style.set_corner_radius_all(48)
-	style.shadow_color = Color(0.0, 0.0, 0.0, 0.35)
-	style.shadow_size = 5
+	style.shadow_color = Color(0.0, 0.0, 0.0, 0.46)
+	style.shadow_size = 7
 	return style
 
 
@@ -350,7 +384,7 @@ func set_controls_preferences(scale_value: float, opacity_value: float) -> void:
 		return
 	hud.modulate.a = clampf(opacity_value, 0.35, 1.0)
 	for node_name in ["MovementJoystick", "ContextAction", "VehicleBrake",
-			"BikePedal", "Sprint", "BikeSteerLeft", "BikeSteerRight"]:
+			"BikePedal", "Sprint", "BikeSteerLeft", "BikeSteerRight", "Attack", "Jump"]:
 		var control := hud.get_node_or_null(node_name) as Control
 		if control == null:
 			continue
