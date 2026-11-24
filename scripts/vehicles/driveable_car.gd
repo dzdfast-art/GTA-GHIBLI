@@ -131,7 +131,7 @@ func _build_vehicle_visuals() -> void:
 	add_child(_vehicle_model)
 	_wheel_nodes.clear()
 	for wheel_name in WHEEL_NODE_NAMES:
-		var wheel := _vehicle_model.get_node_or_null(wheel_name) as Node3D
+		var wheel := _vehicle_model.find_child(wheel_name, true, false) as Node3D
 		if wheel != null:
 			_wheel_nodes.append(wheel)
 	if _wheel_nodes.size() != WHEEL_NODE_NAMES.size():
