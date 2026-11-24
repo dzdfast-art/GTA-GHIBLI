@@ -172,10 +172,17 @@ func _add_box(node_name: String, dimensions: Vector3, local_position: Vector3, t
 	visual.mesh = mesh
 	visual.position = local_position
 	var material := StandardMaterial3D.new()
-	material.albedo_color = tint
+	var is_paint := node_name in ["LowerBody", "SportHood", "RearDeck", "SportRoof"]
+	material.albedo_color = Color.WHITE if is_paint else tint
 	material.roughness = 0.34
 	material.metallic = 0.22
+	if is_paint:
+		material.albedo_texture = RED_PAINT_TEXTURE
+		material.roughness = 0.27
+		material.metallic = 0.42
 	if node_name.contains("Glass") or node_name.contains("Window"):
+		material.albedo_color = Color.WHITE
+		material.albedo_texture = GLASS_TEXTURE
 		material.roughness = 0.20
 		material.metallic = 0.30
 	if node_name.contains("Bumper") or node_name.contains("Diffuser") or node_name.contains("Skirt"):
