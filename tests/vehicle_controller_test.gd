@@ -33,7 +33,7 @@ func _run_test() -> void:
 	if pbr_model == null:
 		_fail("The vehicle controller did not instantiate the PBR sport coupe asset.")
 		return
-	var front_left_wheel := pbr_model.get_node_or_null("Wheel_Front_Left") as Node3D
+	var front_left_wheel := pbr_model.find_child("Wheel_Front_Left", true, false) as Node3D
 	if front_left_wheel == null:
 		_fail("The imported PBR front-left wheel group is missing.")
 		return
