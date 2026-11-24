@@ -1,6 +1,12 @@
 extends SceneTree
 
-const MAIN_SCENE: PackedScene = preload("res://main.tscn")
+const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
+const GRAPHICS_SCRIPT = preload("res://scripts/graphics/ghibli_environment_upgrade.gd")
+const WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
+const STATUS_SCRIPT = preload("res://scripts/systems/player_status.gd")
+const CLOCK_SCRIPT = preload("res://scripts/world/world_clock.gd")
+const HUD_SCRIPT = preload("res://scripts/ui/reference_hud_overlay.gd")
+const MOBILE_CONTROLS_SCRIPT = preload("res://scripts/ui/mobile_controls.gd")
 
 
 func _initialize() -> void:
@@ -8,15 +14,75 @@ func _initialize() -> void:
 
 
 func _run_test() -> void:
-	var main := MAIN_SCENE.instantiate() as Node3D
-	root.add_child(main)
-	for _frame in range(4):
+	# Use the real player scene and real HUD/gameplay systems, while providing
+	# only the world anchors needed by the procedural graphics pass. This keeps
+	# the graphics/UI regression independent from loading all distant districts.
+	var world := Node3D.new()
+	world.name = "ReferenceHudTestWorld"
+	root.add_child(world)
+
+	var floor_body := StaticBody3D.new()
+	floor_body.name = "Ground"
+	world.add_child(floor_body)
+	var floor_collision := CollisionShape3D.new()
+	var floor_shape := BoxShape3D.new()
+	floor_shape.size = Vector3(80.0, 1.0, 80.0)
+	floor_collision.shape = floor_shape
+	floor_collision.position.y = -0.5
+	floor_body.add_child(floor_collision)
+
+	var player := PLAYER_SCENE.instantiate() as CharacterBody3D
+	player.name = "Player"
+	player.position = Vector3(0.0, 0.95, 0.0)
+	player.rotation.y = PI
+	player.add_to_group("player")
+	world.add_child(player)
+
+	var wallet := Node.new()
+	wallet.name = "PlayerWallet"
+	wallet.set_script(WALLET_SCRIPT)
+	wallet.set("persistence_enabled", false)
+	wallet.set("initial_balance", 250)
+	player.add_child(wallet)
+
+	var status := Node.new()
+	status.name = "PlayerStatus"
+	status.set_script(STATUS_SCRIPT)
+	player.add_child(status)
+
+	var clock := Node.new()
+	clock.name = "WorldClock"
+	clock.set_script(CLOCK_SCRIPT)
+	world.add_child(clock)
+
+	var regions := Node3D.new()
+	regions.name = "OpenWorldRegions"
+	world.add_child(regions)
+	var harbor := Node3D.new()
+	harbor.name = "HarborCity"
+	regions.add_child(harbor)
+
+	var village := Node3D.new()
+	village.name = "WillowVillage"
+	world.add_child(village)
+
+	var graphics := Node3D.new()
+	graphics.name = "GhibliVisualPass"
+	graphics.set_script(GRAPHICS_SCRIPT)
+	world.add_child(graphics)
+
+	var controls := MOBILE_CONTROLS_SCRIPT.new() as CanvasLayer
+	controls.name = "MobileControls"
+	world.add_child(controls)
+
+	var hud := HUD_SCRIPT.new() as CanvasLayer
+	hud.name = "ReferenceHUD"
+	world.add_child(hud)
+
+	for _frame in range(5):
 		await physics_frame
 
-	var player := main.get_node_or_null("Player") as CharacterBody3D
-	if player == null:
-		_fail("The main scene did not create the player.")
-		return
+	# Check the real spring-arm camera position and view direction.
 	var camera := player.get_node_or_null("CameraPivot/SpringArm3D/Camera3D") as Camera3D
 	var spring_arm := player.get_node_or_null("CameraPivot/SpringArm3D") as SpringArm3D
 	if camera == null or spring_arm == null:
@@ -38,11 +104,13 @@ func _run_test() -> void:
 		_fail("The camera FOV is not set for the reference-style wide composition.")
 		return
 
-	var composition := main.get_node_or_null("GhibliVisualPass/ReferenceStreetComposition") as Node3D
+	# The same graphics script wired into main.gd must generate the reference set.
+	var composition := graphics.get_node_or_null("ReferenceStreetComposition") as Node3D
 	if composition == null:
 		_fail("The in-game reference street composition was not created.")
 		return
 	for node_path in [
+		"OpeningBoulevard",
 		"OpeningSkyline",
 		"RedSuspensionBridge",
 		"GreenGhibliHill",
@@ -57,28 +125,10 @@ func _run_test() -> void:
 			_fail("Missing reference composition element: " + node_path)
 			return
 
-	var player_status := player.get_node_or_null("PlayerStatus")
-	if player_status == null:
-		_fail("PlayerStatus is not attached to the player.")
-		return
-	var wallet := player.get_node_or_null("PlayerWallet")
-	if wallet != null:
-		wallet.set("persistence_enabled", false)
-		wallet.set("balance", 250)
-	if wallet == null:
-		_fail("PlayerWallet is not attached to the player.")
-		return
-	if main.get_node_or_null("WorldClock") == null:
-		_fail("The world clock is missing.")
-		return
-
-	var hud := main.get_node_or_null("ReferenceHUD")
-	if hud == null:
-		_fail("The reference-style HUD overlay is missing.")
-		return
+	# Confirm the HUD consumes live wallet, clock and status values.
 	var hud_root := hud.get_node_or_null("ReferenceHUD") as Control
 	if hud_root == null:
-		_fail("The HUD root control is missing.")
+		_fail("The reference-style HUD overlay is missing.")
 		return
 	for node_path in [
 		"CircularMinimap",
@@ -87,7 +137,9 @@ func _run_test() -> void:
 		"WantedStars/Star_0",
 		"HealthBar",
 		"ArmorBar",
-		"WeaponPanel"
+		"WeaponPanel/VBoxContainer/WeaponIcon",
+		"WeaponPanel/VBoxContainer/WeaponName",
+		"WeaponPanel/VBoxContainer/Ammo"
 	]:
 		if hud_root.get_node_or_null(node_path) == null:
 			_fail("Missing reference HUD element: " + node_path)
@@ -97,30 +149,30 @@ func _run_test() -> void:
 		_fail("The circular minimap has not received its intended on-screen size.")
 		return
 
-	var controls := main.get_node_or_null("MobileControls/HUD") as Control
-	if controls == null:
+	# Confirm the mobile button layout, including actions that actually drive movement.
+	var controls_root := controls.get_node_or_null("HUD") as Control
+	if controls_root == null:
 		_fail("The mobile touch HUD is missing.")
 		return
 	for node_name in ["MovementJoystick", "Attack", "Jump", "Sprint", "ContextAction"]:
-		if controls.get_node_or_null(node_name) == null:
+		if controls_root.get_node_or_null(node_name) == null:
 			_fail("Missing mobile touch control: " + node_name)
 			return
 	if not InputMap.has_action("jump") or not InputMap.has_action("attack"):
 		_fail("Jump and punch controls are not registered.")
 		return
 
-	# Verify that HUD values come from the live game systems, not fixed labels.
-	player_status.call("set_armor", 20.0)
-	player_status.call("apply_damage", 30.0)
-	player_status.call("set_wanted_level", 3)
-	player_status.call("set_weapon", "rifle", 30, 120)
-	wallet.set("persistence_enabled", false)
+	# Test updates through the same live systems consumed by the HUD.
 	wallet.set("balance", 250)
+	status.call("set_armor", 20.0)
+	status.call("apply_damage", 30.0)
+	status.call("set_wanted_level", 3)
+	status.call("set_weapon", "rifle", 30, 120)
 	wallet.call("add_money", 25)
-	main.get_node("WorldClock").call("set_time", 18, 30)
+	clock.call("set_time", 18, 30)
 	hud.call("_refresh_values")
 
-	if float(player_status.get("health")) != 90.0 or float(player_status.get("armor")) != 0.0:
+	if float(status.get("health")) != 90.0 or float(status.get("armor")) != 0.0:
 		_fail("Player health/armor state did not process incoming damage.")
 		return
 	if str(hud_root.get_node("Money").text) != "$00000275":
@@ -142,18 +194,19 @@ func _run_test() -> void:
 		_fail("The health bar did not reflect the live player status.")
 		return
 
-	# Verify that the on-foot jump input changes real player vertical velocity.
+	# Exercise the actual mobile jump button signal, not a fake direct player call.
 	if not player.is_on_floor():
 		_fail("The player was not grounded at the opening spawn.")
 		return
-	Input.action_press("jump")
+	var jump_button := controls_root.get_node("Jump") as Button
+	jump_button.button_down.emit()
 	await physics_frame
-	Input.action_release("jump")
+	jump_button.button_up.emit()
 	if player.velocity.y <= 0.0:
-		_fail("The jump button did not produce upward player movement.")
+		_fail("The on-screen jump button did not produce upward player movement.")
 		return
 
-	print("PASS: reference composition, camera framing, minimap, live HUD data, touch controls and jump.")
+	print("PASS: reference composition, trailing camera, circular minimap, live HUD data, mobile buttons and jump.")
 	quit(0)
 
 
