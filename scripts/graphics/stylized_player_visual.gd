@@ -10,6 +10,9 @@ var _walk_clock := 0.0
 
 func _ready() -> void:
 	mesh = null
+	# The gameplay capsule is centered on the player origin; align the model feet
+	# with the capsule bottom instead of placing the model above the collision.
+	position.y = -0.9
 	_build_character()
 
 
