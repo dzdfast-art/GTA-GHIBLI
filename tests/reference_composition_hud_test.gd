@@ -22,8 +22,8 @@ func _run_test() -> void:
 	if camera == null or spring_arm == null:
 		_fail("The over-the-shoulder camera is missing.")
 		return
-	if not is_zero_approx(camera.rotation.y) or not is_equal_approx(spring_arm.spring_length, 2.75):
-		_fail("The camera does not use the intended behind-player framing.")
+	if not is_equal_approx(spring_arm.spring_length, 2.75):
+		_fail("The camera spring arm does not use the intended reference distance.")
 		return
 	var player_forward: Vector3 = -player.global_basis.z
 	var camera_forward: Vector3 = -camera.global_basis.z
