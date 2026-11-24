@@ -21,14 +21,25 @@ func _run_test() -> void:
 	if visual == null or visual.mesh != null:
 		_fail("The capsule placeholder was not replaced by the stylized player visual.")
 		return
-	for part_name in ["Head", "HairCap", "Hood", "GhibliBackLogo", "SneakerUpper"]:
-		if part_name == "SneakerUpper":
-			if visual.get_node_or_null("LegPivot_Left/SneakerUpper") == null:
-				_fail("Missing stylized player part: " + part_name)
-				return
-		elif visual.get_node_or_null(part_name) == null:
-			_fail("Missing stylized player part: " + part_name)
+	var imported_hero := visual.get_node_or_null("PBR_GhibliHero") as Node3D
+	if imported_hero == null:
+		_fail("The imported articulated PBR hero model was not instantiated.")
+		return
+	for part_path in [
+		"Head",
+		"HairCap",
+		"Hood",
+		"LegPivot_Left/SneakerUpper",
+		"LegPivot_Right/SneakerUpper",
+		"ArmPivot_Left/HoodieSleeve",
+		"ArmPivot_Right/HoodieSleeve"
+	]:
+		if imported_hero.get_node_or_null(part_path) == null:
+			_fail("Missing imported PBR hero part: " + part_path)
 			return
+	if visual.get_node_or_null("GhibliBackLogo") == null:
+		_fail("The GTA GHIBLI back logo was not placed on the imported hero.")
+		return
 
 	var car := main.get_node_or_null("StarterCar")
 	if car == null:
@@ -61,7 +72,7 @@ func _run_test() -> void:
 		_fail("The skyline tower does not have its expected instanced window details.")
 		return
 
-	var hoodie := visual.get_node_or_null("HoodieBody") as MeshInstance3D
+	var hoodie := imported_hero.get_node_or_null("HoodieBody") as MeshInstance3D
 	if hoodie == null or hoodie.material_override == null or (hoodie.material_override as StandardMaterial3D).albedo_texture == null:
 		_fail("The player hoodie fabric texture was not imported.")
 		return
