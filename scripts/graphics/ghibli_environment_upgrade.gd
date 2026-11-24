@@ -352,7 +352,7 @@ func _build_reference_street() -> void:
 		return
 	var street := Node3D.new()
 	street.name = "ReferenceStreetComposition"
-	game_root.add_child(street)
+	add_child(street)
 	_build_reference_road(street)
 	_build_reference_skyline(street)
 	_build_suspension_bridge(street)
