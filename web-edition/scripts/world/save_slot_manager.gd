@@ -146,7 +146,7 @@ func _read_slot_file(slot_id: String, path: String) -> Dictionary:
 	var raw: String = FileAccess.get_file_as_string(path)
 	if raw.is_empty():
 		return {}
-	var parsed: Variant = JSON.parse_string(raw)
+	var parsed: Variant = _parse_json(raw)
 	if not parsed is Dictionary:
 		return {}
 	var envelope: Dictionary = parsed
@@ -159,7 +159,7 @@ func _read_slot_file(slot_id: String, path: String) -> Dictionary:
 		return {}
 	if payload_json.is_empty() or checksum != _calculate_checksum(payload_json):
 		return {}
-	var payload_variant: Variant = JSON.parse_string(payload_json)
+	var payload_variant: Variant = _parse_json(payload_json)
 	if not payload_variant is Dictionary:
 		return {}
 	var payload: Dictionary = _migrate_payload(version, payload_variant)
@@ -169,6 +169,12 @@ func _read_slot_file(slot_id: String, path: String) -> Dictionary:
 		"version": SAVE_VERSION
 	}
 
+
+func _parse_json(raw: String) -> Variant:
+	var parser := JSON.new()
+	if parser.parse(raw) != OK:
+		return null
+	return parser.data
 
 func _migrate_payload(from_version: int, payload: Dictionary) -> Dictionary:
 	var migrated: Dictionary = payload.duplicate(true)
