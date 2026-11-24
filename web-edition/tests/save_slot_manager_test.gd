@@ -57,6 +57,38 @@ func _run() -> void:
 		_fail("Deleting a save slot did not remove its primary and recovery files.")
 		return
 
+	var invalid_payload_json: String = "{broken"
+	var invalid_payload_envelope: Dictionary = {
+		"version": 1,
+		"slot_id": "invalid_payload",
+		"timestamp": 400,
+		"payload_json": invalid_payload_json,
+		"checksum": manager.call("_calculate_checksum", invalid_payload_json)
+	}
+	var invalid_payload_file := FileAccess.open(
+		"user://gta_ghibli_web_saves/invalid_payload.json", FileAccess.WRITE
+	)
+	if invalid_payload_file == null:
+		_fail("The test could not create an invalid-payload save envelope.")
+		return
+	invalid_payload_file.store_string(JSON.stringify(invalid_payload_envelope))
+	invalid_payload_file.flush()
+	invalid_payload_file.close()
+	if not manager.call("load_slot", "invalid_payload").is_empty():
+		_fail("A payload with invalid JSON was accepted despite a matching checksum.")
+		return
+	manager.call("delete_slot", "invalid_payload")
+
+	if not bool(manager.call("save_slot", "empty_payload", {}, 401)):
+		_fail("An empty but valid dictionary payload could not be saved.")
+		return
+	var empty_record: Dictionary = manager.call("load_slot", "empty_payload")
+	if empty_record.is_empty() or not empty_record.get("payload", {}).is_empty():
+		_fail("An empty dictionary payload did not round-trip.")
+		return
+	manager.call("delete_slot", "empty_payload")
+	print("PASS: invalid JSON payloads are rejected without treating valid empty dictionaries as corrupt.")
+
 	var legacy_payload_json: String = JSON.stringify({"cash": 12})
 	var legacy_envelope: Dictionary = {
 		"version": 0,
