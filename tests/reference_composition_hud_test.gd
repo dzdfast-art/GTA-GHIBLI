@@ -204,6 +204,7 @@ func _run_test() -> void:
 		_fail("The mobile jump button did not press the jump input action.")
 		return
 	await physics_frame
+	await physics_frame
 	jump_button.button_up.emit()
 	if player.velocity.y <= 0.0:
 		_fail("The on-screen jump button did not produce upward player movement.")
