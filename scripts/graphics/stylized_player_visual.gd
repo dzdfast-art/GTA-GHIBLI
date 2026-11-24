@@ -30,7 +30,7 @@ func _process(delta: float) -> void:
 		_attack_remaining = maxf(0.0, _attack_remaining - delta)
 	if _arm_pivots.size() == 2:
 		_arm_pivots[0].rotation.x = swing
-		_arm_pivots[1].rotation.x = lerpf(1.18, -swing, clampf(1.0 - _attack_remaining / 0.26, 0.0, 1.0)) if _attack_remaining > 0.0 else -swing
+		_arm_pivots[1].rotation.x = lerpf(-swing, 1.18, clampf(_attack_remaining / 0.26, 0.0, 1.0)) if _attack_remaining > 0.0 else -swing
 	if _leg_pivots.size() == 2:
 		_leg_pivots[0].rotation.x = -swing * 0.82
 		_leg_pivots[1].rotation.x = swing * 0.82
