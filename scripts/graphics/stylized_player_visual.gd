@@ -6,6 +6,7 @@ extends MeshInstance3D
 var _arm_pivots: Array[Node3D] = []
 var _leg_pivots: Array[Node3D] = []
 var _walk_clock := 0.0
+var _attack_remaining := 0.0
 
 
 func _ready() -> void:
@@ -23,9 +24,13 @@ func _process(delta: float) -> void:
 	_walk_clock += delta
 	var speed := Vector2(player.velocity.x, player.velocity.z).length()
 	var swing := sin(_walk_clock * 9.0) * clampf(speed / 3.2, 0.0, 1.0) * 0.42
+	if Input.is_action_just_pressed("attack"):
+		_attack_remaining = 0.26
+	if _attack_remaining > 0.0:
+		_attack_remaining = maxf(0.0, _attack_remaining - delta)
 	if _arm_pivots.size() == 2:
 		_arm_pivots[0].rotation.x = swing
-		_arm_pivots[1].rotation.x = -swing
+		_arm_pivots[1].rotation.x = lerpf(1.18, -swing, clampf(1.0 - _attack_remaining / 0.26, 0.0, 1.0)) if _attack_remaining > 0.0 else -swing
 	if _leg_pivots.size() == 2:
 		_leg_pivots[0].rotation.x = -swing * 0.82
 		_leg_pivots[1].rotation.x = swing * 0.82
@@ -69,6 +74,27 @@ func _build_character() -> void:
 	_add_sphere(self, "Hood", 0.245, Vector3(0.0, 1.48, 0.20), hoodie_light,
 		Vector3(1.18, 1.0, 0.62))
 
+	# Layered fabric seams, zipper and cuffs give the hoodie a more finished silhouette.
+	_add_box(self, "HoodieChestSeam", Vector3(0.025, 0.55, 0.018),
+		Vector3(0.0, 1.10, -0.356), Color(0.25, 0.27, 0.29))
+	_add_box(self, "HoodieLeftCuff", Vector3(0.26, 0.12, 0.22),
+		Vector3(-0.43, 0.91, 0.0), hoodie_light)
+	_add_box(self, "HoodieRightCuff", Vector3(0.26, 0.12, 0.22),
+		Vector3(0.43, 0.91, 0.0), hoodie_light)
+	_add_box(self, "HoodieLeftPocket", Vector3(0.19, 0.23, 0.035),
+		Vector3(-0.25, 1.17, -0.348), hoodie_light)
+	_add_box(self, "HoodieRightPocket", Vector3(0.19, 0.23, 0.035),
+		Vector3(0.25, 1.17, -0.348), hoodie_light)
+	_add_box(self, "TrouserLeftPocket", Vector3(0.20, 0.34, 0.045),
+		Vector3(-0.29, 0.42, -0.18), Color(0.18, 0.22, 0.28))
+	_add_box(self, "TrouserRightPocket", Vector3(0.20, 0.34, 0.045),
+		Vector3(0.29, 0.42, -0.18), Color(0.18, 0.22, 0.28))
+	_add_box(self, "HoodieShoulderStripeLeft", Vector3(0.20, 0.055, 0.28),
+		Vector3(-0.32, 1.42, 0.0), hoodie_light)
+	_add_box(self, "HoodieShoulderStripeRight", Vector3(0.20, 0.055, 0.28),
+		Vector3(0.32, 1.42, 0.0), hoodie_light)
+
+
 	var logo := Label3D.new()
 	logo.name = "GhibliBackLogo"
 	logo.text = "GTA\nGHIBLI"
@@ -102,6 +128,14 @@ func _add_leg(side: float, pants_color: Color, shoe_white: Color,
 		Vector3(0.0, -0.50, -0.30), shoe_red)
 	_add_box(pivot, "SneakerHeelAccent", Vector3(0.16, 0.085, 0.075),
 		Vector3(0.0, -0.47, 0.17), shoe_red)
+
+	_add_box(pivot, "SneakerLace_1", Vector3(0.19, 0.018, 0.028),
+		Vector3(0.0, -0.46, -0.14), Color(0.78, 0.78, 0.72))
+	_add_box(pivot, "SneakerLace_2", Vector3(0.19, 0.018, 0.028),
+		Vector3(0.0, -0.43, -0.06), Color(0.78, 0.78, 0.72))
+	_add_box(pivot, "SneakerLace_3", Vector3(0.19, 0.018, 0.028),
+		Vector3(0.0, -0.40, 0.02), Color(0.78, 0.78, 0.72))
+
 
 
 func _add_arm(side: float, sleeve_color: Color, skin_color: Color) -> void:
