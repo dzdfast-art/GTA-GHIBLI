@@ -1,5 +1,8 @@
 extends CharacterBody3D
 
+const RED_PAINT_TEXTURE: Texture2D = preload("res://assets/vehicles/materials/ghibli_sports_car_red.svg")
+const GLASS_TEXTURE: Texture2D = preload("res://assets/environment/materials/ghibli_city_glass.svg")
+
 @export var max_forward_speed := 12.0
 @export var max_reverse_speed := 4.5
 @export var acceleration := 8.0
