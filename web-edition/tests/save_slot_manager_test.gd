@@ -81,7 +81,6 @@ func _run() -> void:
 
 	print("PASS: durable save slots, SHA-256 integrity, atomic replacement and corruption recovery.")
 	print("PASS: slot IDs reject path traversal; version-zero payloads migrate to version one.")
-	manager.free()
 	quit(0)
 
 
