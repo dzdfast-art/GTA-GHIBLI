@@ -13,6 +13,18 @@ func _run_test() -> void:
 	await process_frame
 	await process_frame
 
+	var world_environment := main.get_node_or_null("GhibliVisualPass/GhibliWorldEnvironment") as WorldEnvironment
+	if world_environment == null or world_environment.environment == null:
+		_fail("The Ghibli world environment was not created.")
+		return
+	if world_environment.environment.ambient_light_energy < 0.5:
+		_fail("The ambient fill light is below the configured minimum.")
+		return
+	var sun := main.get_node_or_null("GhibliVisualPass/GhibliDaylightSun") as DirectionalLight3D
+	if sun == null or not sun.shadow_enabled or sun.light_energy <= 0.0:
+		_fail("The daylight sun or its real-time shadows are missing.")
+		return
+
 	var player := main.get_node_or_null("Player") as CharacterBody3D
 	if player == null:
 		_fail("Main scene did not create the player.")
