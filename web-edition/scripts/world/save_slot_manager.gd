@@ -55,7 +55,7 @@ func delete_slot(slot_id: String) -> bool:
 	var base_path: String = _slot_path(slot_id)
 	var existed := false
 	for suffix in ["", ".bak", ".tmp", ".recover"]:
-		var path: String = base_path + suffix
+		var path: String = base_path + str(suffix)
 		if FileAccess.file_exists(path):
 			existed = true
 			var error: Error = DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
