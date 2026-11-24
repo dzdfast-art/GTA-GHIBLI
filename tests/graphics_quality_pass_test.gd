@@ -22,7 +22,11 @@ func _run_test() -> void:
 		_fail("The capsule placeholder was not replaced by the stylized player visual.")
 		return
 	for part_name in ["Head", "HairCap", "Hood", "GhibliBackLogo", "SneakerUpper"]:
-		if visual.get_node_or_null(part_name) == null:
+		if part_name == "SneakerUpper":
+			if visual.get_node_or_null("LegPivot_Left/SneakerUpper") == null:
+				_fail("Missing stylized player part: " + part_name)
+				return
+		elif visual.get_node_or_null(part_name) == null:
 			_fail("Missing stylized player part: " + part_name)
 			return
 
