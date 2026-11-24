@@ -48,6 +48,26 @@ func _run_test() -> void:
 		_fail("The skyline tower does not have its expected instanced window details.")
 		return
 
+	var hoodie := visual.get_node_or_null("HoodieBody") as MeshInstance3D
+	if hoodie == null or hoodie.material_override == null or (hoodie.material_override as StandardMaterial3D).albedo_texture == null:
+		_fail("The player hoodie fabric texture was not imported.")
+		return
+
+	var car_body := car.get_node_or_null("LowerBody") as MeshInstance3D
+	if car_body == null or car_body.material_override == null or (car_body.material_override as StandardMaterial3D).albedo_texture == null:
+		_fail("The sports-car paint texture was not imported.")
+		return
+
+	var opening_road := main.get_node_or_null("GhibliVisualPass/ReferenceStreetComposition/OpeningBoulevard") as MeshInstance3D
+	if opening_road == null or opening_road.material_override == null or (opening_road.material_override as StandardMaterial3D).albedo_texture == null:
+		_fail("The opening boulevard asphalt texture was not imported.")
+		return
+
+	var facade := main.get_node_or_null("GhibliVisualPass/ReferenceStreetComposition/OpeningSkyline/OpeningTower_Center/Facade") as MeshInstance3D
+	if facade == null or facade.material_override == null or (facade.material_override as StandardMaterial3D).albedo_texture == null:
+		_fail("The city facade texture was not imported.")
+		return
+
 	var village := main.get_node_or_null("WillowVillage/GhibliCherryBlossoms") as Node3D
 	if village == null or village.get_node_or_null("BlossomTree_01") == null:
 		_fail("The village cherry-blossom additions were not created.")
