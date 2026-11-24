@@ -137,9 +137,9 @@ func _run_test() -> void:
 		"WantedStars/Star_0",
 		"HealthBar",
 		"ArmorBar",
-		"WeaponPanel/VBoxContainer/WeaponIcon",
-		"WeaponPanel/VBoxContainer/WeaponName",
-		"WeaponPanel/VBoxContainer/Ammo"
+		"WeaponPanel/WeaponStack/WeaponIcon",
+		"WeaponPanel/WeaponStack/WeaponName",
+		"WeaponPanel/WeaponStack/Ammo"
 	]:
 		if hud_root.get_node_or_null(node_path) == null:
 			_fail("Missing reference HUD element: " + node_path)
@@ -181,10 +181,10 @@ func _run_test() -> void:
 	if str(hud_root.get_node("GameClock").text) != "18:30":
 		_fail("The HUD clock did not update from WorldClock.")
 		return
-	if str(hud_root.get_node("WeaponPanel/VBoxContainer/WeaponName").text) != "RIFLE":
+	if str(hud_root.get_node("WeaponPanel/WeaponStack/WeaponName").text) != "RIFLE":
 		_fail("The HUD weapon name did not update from PlayerStatus.")
 		return
-	if str(hud_root.get_node("WeaponPanel/VBoxContainer/Ammo").text) != "30/120":
+	if str(hud_root.get_node("WeaponPanel/WeaponStack/Ammo").text) != "30/120":
 		_fail("The HUD weapon/ammunition display did not update from PlayerStatus.")
 		return
 	if not hud_root.get_node("WantedStars/Star_2").modulate.is_equal_approx(Color(1.0, 0.82, 0.22)):
