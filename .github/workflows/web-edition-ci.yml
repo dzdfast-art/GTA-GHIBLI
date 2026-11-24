@@ -74,11 +74,31 @@ jobs:
           fi
           for test_file in "${tests[@]}"; do
             test_name="${test_file##*/}"
+            test_log="$(mktemp)"
             echo "::group::Running ${test_name}"
-            timeout 20s godot --headless --quit-after 600 --path web-edition --script "res://tests/${test_name}"
+            test_status=0
+            if timeout 20s godot --headless --quit-after 600 --path web-edition --script "res://tests/${test_name}" >"$test_log" 2>&1; then
+              test_status=0
+            else
+              test_status=$?
+            fi
+            cat "$test_log"
+            if (( test_status != 0 )); then
+              rm -f "$test_log"
+              echo "::endgroup::"
+              echo "::error::${test_name} exited with status ${test_status}."
+              exit "$test_status"
+            fi
+            if grep -Eqi 'SCRIPT ERROR:|Parse Error:|Assertion failed|Invalid call[.]' "$test_log"; then
+              rm -f "$test_log"
+              echo "::endgroup::"
+              echo "::error::${test_name} logged a GDScript/runtime assertion error."
+              exit 1
+            fi
+            rm -f "$test_log"
             echo "::endgroup::"
           done
-          echo "Executed ${#tests[@]} GDScript regression tests successfully."
+          echo "Executed ${#tests[@]} GDScript regression tests with runtime-error detection."
 
       - name: Export WebAssembly game
         run: |
