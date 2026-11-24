@@ -19,7 +19,12 @@ echo "Installing and launching Android package: $package_name"
 
 adb install -r build/GTA-GHIBLI-debug.apk
 adb shell monkey -p "$package_name" -c android.intent.category.LAUNCHER 1
-sleep 25
+sleep 8
+
+# Android 15 may show its first-run immersive-mode confirmation above the app.
+# Dismiss it so the retained screenshot records the game, not the OS dialog.
+adb shell input tap 1680 516
+sleep 5
 
 app_pid="$(adb shell pidof "$package_name" | tr -d '\r' | awk '{ print $1 }')"
 if [[ -z "$app_pid" ]]; then
@@ -40,4 +45,9 @@ if grep -Eiq 'FATAL EXCEPTION|SIGSEGV|Fatal signal' build/emulator-logcat.txt; t
   exit 1
 fi
 
-echo "PASS: APK installed, launched, remained alive for 25 seconds, and produced screenshot/runtime evidence."
+if grep -Eiq 'Viewing full screen|To exit, swipe down' build/emulator-logcat.txt; then
+  echo "Unexpected OS immersive-mode prompt remains in app log."
+  exit 1
+fi
+
+echo "PASS: APK installed, launched, immersive-mode prompt dismissed, remained alive, and produced post-launch screenshot/runtime evidence."
