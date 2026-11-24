@@ -63,6 +63,8 @@ func _build_region(region_id: String, region_name: String, center: Vector3,
 	if region_id == "harbor_city":
 		_build_harbor_skyline(district)
 	_build_district_details(district, region_id, ground_color)
+	if region_id == "harbor_city":
+		_build_harbor_street_furniture(district)
 	_build_civilians(district, region_id, npc_names)
 
 func _build_road(center: Vector3) -> void:
@@ -332,3 +334,80 @@ func _build_harbor_skyline(district: Node3D) -> void:
 		side_windows.multimesh = side_multimesh
 		side_windows.material_override = window_material
 		tower.add_child(side_windows)
+
+
+func _build_harbor_street_furniture(district: Node3D) -> void:
+	var street := Node3D.new()
+	street.name = "HarborStreetFurniture"
+	district.add_child(street)
+
+	# Raised pedestrian sidewalks along both sides of the harbor boulevard.
+	for side in [-1.0, 1.0]:
+		_add_box(street, "Sidewalk_%s" % str(side), Vector3(side * 3.15, 0.16, 0.0),
+			Vector3(1.25, 0.22, 25.0), Color(0.62, 0.61, 0.55))
+		_add_box(street, "Curb_%s" % str(side), Vector3(side * 2.52, 0.22, 0.0),
+			Vector3(0.16, 0.30, 25.0), Color(0.78, 0.75, 0.66))
+
+	# High-contrast zebra crossing, built from reusable low-poly road markings.
+	var crossing := Node3D.new()
+	crossing.name = "PedestrianCrossing"
+	crossing.position.z = 1.8
+	street.add_child(crossing)
+	for stripe_index in range(7):
+		_add_box(crossing, "ZebraStripe_%02d" % stripe_index,
+			Vector3(0.0, 0.155, -2.1 + float(stripe_index) * 0.68),
+			Vector3(4.8, 0.025, 0.34), Color(0.91, 0.90, 0.82))
+
+	# Warm street lamps with restrained light energy for mobile rendering.
+	for lamp_index in range(4):
+		var side := -1.0 if lamp_index % 2 == 0 else 1.0
+		var z_position := -9.0 + float(lamp_index / 2) * 18.0
+		var lamp := Node3D.new()
+		lamp.name = "HarborStreetLamp_%02d" % (lamp_index + 1)
+		lamp.position = Vector3(side * 3.75, 0.0, z_position)
+		lamp.add_to_group("harbor_street_lamps")
+		street.add_child(lamp)
+
+		var pole := MeshInstance3D.new()
+		pole.name = "Pole"
+		var pole_mesh := CylinderMesh.new()
+		pole_mesh.top_radius = 0.055
+		pole_mesh.bottom_radius = 0.085
+		pole_mesh.height = 4.2
+		pole.mesh = pole_mesh
+		pole.position.y = 2.1
+		pole.material_override = _material(Color(0.16, 0.19, 0.21))
+		lamp.add_child(pole)
+
+		var arm := MeshInstance3D.new()
+		arm.name = "LampArm"
+		var arm_mesh := BoxMesh.new()
+		arm_mesh.size = Vector3(0.72, 0.07, 0.08)
+		arm.mesh = arm_mesh
+		arm.position = Vector3(-side * 0.30, 4.12, 0.0)
+		arm.material_override = _material(Color(0.16, 0.19, 0.21))
+		lamp.add_child(arm)
+
+		var head := MeshInstance3D.new()
+		head.name = "LampHead"
+		var head_mesh := BoxMesh.new()
+		head_mesh.size = Vector3(0.38, 0.12, 0.28)
+		head.mesh = head_mesh
+		head.position = Vector3(-side * 0.62, 4.06, 0.0)
+		var head_material := StandardMaterial3D.new()
+		head_material.albedo_color = Color(1.0, 0.83, 0.56)
+		head_material.emission_enabled = true
+		head_material.emission = Color(1.0, 0.66, 0.32)
+		head_material.emission_energy_multiplier = 0.45
+		head_material.roughness = 0.42
+		head.material_override = head_material
+		lamp.add_child(head)
+
+		var light := OmniLight3D.new()
+		light.name = "NightLight"
+		light.position = Vector3(-side * 0.62, 3.92, 0.0)
+		light.light_color = Color(1.0, 0.78, 0.54)
+		light.light_energy = 0.35
+		light.omni_range = 5.5
+		light.shadow_enabled = false
+		lamp.add_child(light)
