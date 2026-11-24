@@ -236,3 +236,17 @@ Web CI continues to export and measure the Web package, but the PR #40 workflow 
 - Regression cases cover route choice before and after a synthetic closure, alternate-path selection, no-path reporting when all alternatives close, reopening recovery, live HUD/map route clearing/restoration, unknown edge handling and one-way direction enforcement.
 - PR #41 turn-guidance baseline passed branch-head CI run 45230635607 and Security Audit run 45230669321.
 - PR #42 is still pending Godot/Web/Chromium and security validation. The live blockout world has not yet gained a real alternate street grid; alternate route selection is tested on a controlled graph.
+
+---
+
+## Implementation snapshot — durable save slots and recovery (PR #105)
+
+The Web Edition now has a local save-slot service at `user://gta_ghibli_web_saves`. The service writes versioned JSON envelopes, calculates a SHA-256 checksum for the serialized payload, validates slot IDs, rejects negative timestamps, writes through a temporary file, preserves a previous valid save as a backup, recovers from a corrupt primary file, and migrates version-zero payloads to schema version one.
+
+Regression coverage verifies deep-copy isolation, metadata round-tripping, backup recovery after a corrupt current save, invalid JSON payload rejection even when its checksum matches, valid empty-dictionary payloads, path-traversal rejection, deletion, version migration and data recovery in a separate Godot process. CI also rejects any Godot `ERROR:` log output; malformed-save tests use the non-logging `JSON.parse()` result path rather than emitting a deliberate parser error.
+
+**Important integration boundary:** the live game currently writes only Mission 001 stage and wallet to the `autosave` slot when the wallet changes. The generic backend and two-process fixture can store player, mission, inventory, vehicle, world and activity dictionaries, but those fixtures do not prove those live gameplay systems are wired to save/restore. Player transform/vitals, complete Mission 001–004 progress, inventory, NPCs, active vehicles, activities, unlocks and world time/weather remain to be integrated and tested.
+
+**Web persistence is not yet verified across a browser reload.** The two-process regression runs on the native Godot CI runner. Godot 4.7 documents that Web `user://` persistence relies on browser IndexedDB being allowed; private browsing or blocked storage prevents persistence, and `OS.is_userfs_persistent()` can return false positives. A Chromium page-reload test with persistent storage enabled and a blocked-storage negative case remains a required follow-up: https://docs.godotengine.org/en/4.7/tutorials/export/exporting_for_web.html#using-cookies-for-data-persistence
+
+This snapshot documents an incremental save foundation, not a completed whole-game persistence system.
