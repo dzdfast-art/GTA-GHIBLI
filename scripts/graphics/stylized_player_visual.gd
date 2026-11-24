@@ -1,5 +1,7 @@
 extends MeshInstance3D
 
+const HOODIE_FABRIC_TEXTURE: Texture2D = preload("res://assets/characters/materials/ghibli_dark_hoodie_fabric.svg")
+
 ## Procedural, original third-person character art for the Android prototype.
 ## The parent Visual node remains the visibility switch used by vehicle enter/exit.
 
@@ -183,6 +185,11 @@ func _add_mesh(parent: Node3D, node_name: String, mesh_resource: Mesh,
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = 0.88
+	if node_name.begins_with("Hoodie") or node_name == "Hood":
+		material.albedo_color = Color.WHITE
+		material.albedo_texture = HOODIE_FABRIC_TEXTURE
+		material.uv1_scale = Vector3(2.0, 2.0, 2.0)
+		material.roughness = 0.96
 	instance.material_override = material
 	parent.add_child(instance)
 	return instance
