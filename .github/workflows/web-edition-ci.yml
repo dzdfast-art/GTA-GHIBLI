@@ -72,13 +72,26 @@ jobs:
             echo "No GDScript regression tests were found."
             exit 1
           fi
+          log_file="$(mktemp)"
           for test_file in "${tests[@]}"; do
             test_name="${test_file##*/}"
             echo "::group::Running ${test_name}"
-            timeout 20s godot --headless --quit-after 600 --path web-edition --script "res://tests/${test_name}"
+            if ! timeout 20s godot --headless --quit-after 600 --path web-edition --script "res://tests/${test_name}" >"$log_file" 2>&1; then
+              cat "$log_file"
+              rm -f "$log_file"
+              echo "FAILED: ${test_name} exited unsuccessfully."
+              exit 1
+            fi
+            cat "$log_file"
+            if grep -E 'SCRIPT ERROR:|Assertion failed|(^|[[:space:]])ERROR:' "$log_file"; then
+              rm -f "$log_file"
+              echo "FAILED: ${test_name} emitted a Godot script error or assertion failure."
+              exit 1
+            fi
             echo "::endgroup::"
           done
-          echo "Executed ${#tests[@]} GDScript regression tests successfully."
+          rm -f "$log_file"
+          echo "Executed ${#tests[@]} GDScript regression tests with exit-code and error-output enforcement."
 
       - name: Export WebAssembly game
         run: |
