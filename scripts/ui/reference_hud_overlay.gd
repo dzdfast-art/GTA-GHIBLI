@@ -6,7 +6,7 @@ var _root: Control
 var _minimap: Control
 var _money_label: Label
 var _clock_label: Label
-var _weapon_label: Label
+var _weapon_icon: TextureRect
 var _weapon_name_label: Label
 var _ammo_label: Label
 var _health_bar: ProgressBar
@@ -81,8 +81,8 @@ func _build_hud() -> void:
 	_place_top_right(_health_bar, -108.0, 160.0, -18.0, 177.0)
 	_root.add_child(_health_bar)
 
-	_armor_bar = _make_bar("ArmorBar", Color(0.18, 0.82, 0.30))
-	_place_top_right(_armor_bar, -304.0, 137.0, -118.0, 154.0)
+	_armor_bar = _make_bar("ArmorBar", Color(0.16, 0.78, 0.32))
+	_place_top_right(_armor_bar, -108.0, 183.0, -18.0, 200.0)
 	_root.add_child(_armor_bar)
 
 	var weapon_panel := PanelContainer.new()
@@ -94,9 +94,13 @@ func _build_hud() -> void:
 	weapon_stack.alignment = BoxContainer.ALIGNMENT_CENTER
 	weapon_stack.add_theme_constant_override("separation", 1)
 	weapon_panel.add_child(weapon_stack)
-	_weapon_label = _make_label("WeaponIcon", "✊", 36, Color(1.0, 0.98, 0.88))
-	_weapon_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	weapon_stack.add_child(_weapon_label)
+	_weapon_icon = TextureRect.new()
+	_weapon_icon.name = "WeaponIcon"
+	_weapon_icon.custom_minimum_size = Vector2(66.0, 66.0)
+	_weapon_icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	_weapon_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_weapon_icon.texture = preload("res://assets/ui/hud/hud_fist.svg")
+	weapon_stack.add_child(_weapon_icon)
 	_weapon_name_label = _make_label("WeaponName", "FIST", 11, Color(1.0, 0.88, 0.55))
 	_weapon_name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	weapon_stack.add_child(_weapon_name_label)
@@ -119,7 +123,7 @@ func _bind_player() -> void:
 
 func _refresh_values() -> void:
 	if is_instance_valid(_wallet) and _wallet.has_method("get_balance"):
-		_money_label.text = "$%07d" % int(_wallet.call("get_balance"))
+		_money_label.text = "$%08d" % int(_wallet.call("get_balance"))
 	if is_instance_valid(_clock) and _clock.has_method("get_clock_text"):
 		_clock_label.text = str(_clock.call("get_clock_text"))
 	if is_instance_valid(_status):
@@ -134,11 +138,10 @@ func _refresh_values() -> void:
 			_wanted_stars[index].modulate = Color(1.0, 0.82, 0.22) if index < wanted else Color(0.34, 0.39, 0.43, 0.75)
 		var weapon_id := str(_status.get("equipped_weapon_id"))
 		_weapon_name_label.text = _weapon_name_for(weapon_id)
+		_weapon_icon.texture = _weapon_texture_for(weapon_id)
 		if weapon_id == "fists":
-			_weapon_label.text = "✊"
 			_ammo_label.text = "MELEE"
 		else:
-			_weapon_label.text = _weapon_icon_for(weapon_id)
 			_ammo_label.text = "%d/%d" % [int(_status.get("magazine_ammo")), int(_status.get("reserve_ammo"))]
 
 
@@ -153,6 +156,15 @@ func _weapon_icon_for(weapon_id: String) -> String:
 		"knife":
 			return "╱"
 	return "•"
+
+
+func _weapon_texture_for(weapon_id: String) -> Texture2D:
+	match weapon_id:
+		"pistol":
+			return preload("res://assets/ui/hud/hud_pistol.svg")
+		"rifle", "smg", "shotgun":
+			return preload("res://assets/ui/hud/hud_rifle.svg")
+	return preload("res://assets/ui/hud/hud_fist.svg")
 
 
 func _weapon_name_for(weapon_id: String) -> String:
