@@ -99,6 +99,9 @@ jobs:
             res://scripts/world/world_weather.gd \
             res://scripts/graphics/ghibli_environment_upgrade.gd \
             res://scripts/graphics/stylized_player_visual.gd \
+            res://scripts/systems/player_status.gd \
+            res://scripts/ui/minimap_widget.gd \
+            res://scripts/ui/reference_hud_overlay.gd \
             res://scripts/missions/cinematic_director.gd
           do
             echo "Checking $script"
@@ -188,6 +191,9 @@ jobs:
 
       - name: Test Ghibli visual upgrade
         run: godot --headless --path . --script res://tests/graphics_quality_pass_test.gd
+
+      - name: Test reference composition, camera, and live HUD
+        run: godot --headless --path . --script res://tests/reference_composition_hud_test.gd
 
       - name: Run main scene smoke test
         run: godot --headless --path . --quit-after 180
