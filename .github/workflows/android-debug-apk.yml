@@ -136,7 +136,36 @@ jobs:
             exit 1
           fi
 
+      - name: Record exact raw APK size
+        shell: bash
+        run: |
+          set -euo pipefail
+          bytes=$(stat -c%s build/GTA-GHIBLI-debug.apk)
+          python3 - "$bytes" <<'PY' > build/apk-size.txt
+          import sys
+          size = int(sys.argv[1])
+          print(f"APK_BYTES={size}")
+          print(f"APK_MB_DECIMAL={size / 1_000_000:.2f}")
+          print(f"APK_MIB={size / 1_048_576:.2f}")
+          print(f"REMAINING_TO_300MB={max(0, 300_000_000 - size) / 1_000_000:.2f} MB")
+          PY
+          cat build/apk-size.txt
+
+      - name: Upload installable debug APK before emulator smoke test
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTA-GHIBLI-Android-debug-APK
+          path: |
+            build/GTA-GHIBLI-debug.apk
+            build/apk-badging.txt
+            build/apk-permissions.txt
+            build/apk-size.txt
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Launch APK in Android 15 emulator and collect runtime evidence
+        id: launch-emulator
+        timeout-minutes: 10
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -164,33 +193,15 @@ jobs:
               exit 1
             fi
 
-      - name: Record exact raw APK size
-        shell: bash
-        run: |
-          set -euo pipefail
-          bytes=$(stat -c%s build/GTA-GHIBLI-debug.apk)
-          python3 - "$bytes" <<'PY' > build/apk-size.txt
-          import sys
-          size = int(sys.argv[1])
-          print(f"APK_BYTES={size}")
-          print(f"APK_MB_DECIMAL={size / 1_000_000:.2f}")
-          print(f"APK_MIB={size / 1_048_576:.2f}")
-          print(f"REMAINING_TO_300MB={max(0, 300_000_000 - size) / 1_000_000:.2f} MB")
-          PY
-          cat build/apk-size.txt
-
-      - name: Upload installable debug APK
+      - name: Upload Android emulator smoke evidence
+        if: always() && steps.launch-emulator.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
-          name: GTA-GHIBLI-Android-debug-APK
+          name: GTA-GHIBLI-Android-emulator-evidence
           path: |
-            build/GTA-GHIBLI-debug.apk
-            build/apk-badging.txt
-            build/apk-permissions.txt
-            build/apk-size.txt
             build/emulator-app-pid.txt
             build/emulator-activities.txt
             build/emulator-meminfo.txt
             build/emulator-logcat.txt
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
