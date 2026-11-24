@@ -34,7 +34,7 @@ func _run_test() -> void:
 		"ArmPivot_Left/HoodieSleeve",
 		"ArmPivot_Right/HoodieSleeve"
 	]:
-		if imported_hero.get_node_or_null(part_path) == null:
+		if imported_hero.find_child(part_path.get_file(), true, false) == null:
 			_fail("Missing imported PBR hero part: " + part_path)
 			return
 	if visual.get_node_or_null("GhibliBackLogo") == null:
@@ -50,12 +50,12 @@ func _run_test() -> void:
 		_fail("The imported PBR sport coupe model was not instantiated.")
 		return
 	for part_name in ["Body_Painted_Shell", "Cabin_Roof_And_Pillars", "Glazing_And_Seals", "Leather_Interior", "Lighting_Units", "Front_Grille_And_Exhaust"]:
-		var part := pbr_car.get_node_or_null(part_name) as MeshInstance3D
+		var part := pbr_car.find_child(part_name, true, false) as MeshInstance3D
 		if part == null or part.mesh == null or part.mesh.get_surface_count() < 1:
 			_fail("Missing imported PBR vehicle geometry: " + part_name)
 			return
 	for wheel_name in ["Wheel_Front_Left", "Wheel_Front_Right", "Wheel_Rear_Left", "Wheel_Rear_Right"]:
-		if pbr_car.get_node_or_null(wheel_name) == null:
+		if pbr_car.find_child(wheel_name, true, false) == null:
 			_fail("Missing independently rotating PBR wheel: " + wheel_name)
 			return
 
@@ -72,7 +72,7 @@ func _run_test() -> void:
 		_fail("The skyline tower does not have its expected instanced window details.")
 		return
 
-	var hoodie := imported_hero.get_node_or_null("HoodieBody") as MeshInstance3D
+	var hoodie := imported_hero.find_child("HoodieBody", true, false) as MeshInstance3D
 	if hoodie == null or hoodie.material_override == null or (hoodie.material_override as StandardMaterial3D).albedo_texture == null:
 		_fail("The player hoodie fabric texture was not imported.")
 		return
