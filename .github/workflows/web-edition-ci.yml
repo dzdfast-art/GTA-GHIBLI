@@ -100,6 +100,33 @@ jobs:
           done
           echo "Executed ${#tests[@]} GDScript regression tests with runtime-error detection."
 
+      - name: Measure tracked Web source bytes and unique content
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import os
+          import subprocess
+
+          raw_paths = subprocess.check_output(["git", "ls-files", "-z", "web-edition"])
+          paths = [os.fsdecode(path) for path in raw_paths.split(b"\\0") if path]
+          unique_content = {}
+          tracked_bytes = 0
+          for path in paths:
+              with open(path, "rb") as handle:
+                  content = handle.read()
+              tracked_bytes += len(content)
+              unique_content.setdefault(hashlib.sha256(content).hexdigest(), len(content))
+          unique_bytes = sum(unique_content.values())
+          print(f"WEB_SOURCE_TRACKED_FILES={len(paths)}")
+          print(f"WEB_SOURCE_TRACKED_BYTES={tracked_bytes}")
+          print(f"WEB_SOURCE_TRACKED_MB_DECIMAL={tracked_bytes / 1_000_000:.3f}")
+          print(f"WEB_SOURCE_UNIQUE_CONTENTS={len(unique_content)}")
+          print(f"WEB_SOURCE_UNIQUE_BYTES={unique_bytes}")
+          print(f"WEB_SOURCE_UNIQUE_MIB={unique_bytes / 1_048_576:.3f}")
+          PY
+
       - name: Export WebAssembly game
         run: |
           mkdir -p web-edition/build/web
