@@ -5,7 +5,7 @@ extends Node3D
 ## from the player's facing direction so walking forward cannot orbit the camera.
 
 @export_range(0.001, 0.03, 0.001) var look_sensitivity: float = 0.006
-@export var initial_yaw_offset: float = -PI
+@export var initial_yaw_offset: float = 0.0
 @export_range(10.0, 85.0, 1.0) var look_down_limit_degrees: float = 55.0
 @export_range(10.0, 85.0, 1.0) var look_up_limit_degrees: float = 35.0
 
