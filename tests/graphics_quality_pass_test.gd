@@ -77,7 +77,7 @@ func _run_test() -> void:
 		_fail("The player hoodie fabric texture was not imported.")
 		return
 
-	var car_body := pbr_car.get_node_or_null("Body_Painted_Shell") as MeshInstance3D
+	var car_body := pbr_car.find_child("Body_Painted_Shell", true, false) as MeshInstance3D
 	if car_body == null or car_body.mesh == null:
 		_fail("The sports-car paint geometry was not imported.")
 		return
