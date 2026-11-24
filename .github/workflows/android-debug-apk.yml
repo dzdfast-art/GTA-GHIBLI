@@ -153,11 +153,13 @@ jobs:
             adb install -r build/GTA-GHIBLI-debug.apk
             adb shell monkey -p "$package_name" -c android.intent.category.LAUNCHER 1
             sleep 25
-            adb shell pidof "$package_name" > build/emulator-app-pid.txt
+            app_pid=$(adb shell pidof "$package_name" | tr -d "\\r")
+            test -n "$app_pid"
+            printf "%s\\n" "$app_pid" > build/emulator-app-pid.txt
             adb shell dumpsys activity activities > build/emulator-activities.txt
             adb shell dumpsys meminfo "$package_name" > build/emulator-meminfo.txt
-            adb logcat -d -v brief > build/emulator-logcat.txt
-            if grep -Eiq "FATAL EXCEPTION|Process .* has died|SIGSEGV|Fatal signal" build/emulator-logcat.txt; then
+            adb logcat -d --pid="$app_pid" -v brief > build/emulator-logcat.txt
+            if grep -Eiq "FATAL EXCEPTION|SIGSEGV|Fatal signal" build/emulator-logcat.txt; then
               echo "Android emulator reported a fatal app/runtime error."
               exit 1
             fi
