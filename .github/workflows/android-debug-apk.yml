@@ -2,6 +2,34 @@ name: Android debug APK
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "**.gd"
+      - "**.tscn"
+      - "**.tres"
+      - "**.res"
+      - "**.obj"
+      - "**.blend"
+      - "**.glb"
+      - "**.gltf"
+      - "**.fbx"
+      - "**.json"
+      - "**.godot"
+      - "**.png"
+      - "**.jpg"
+      - "**.jpeg"
+      - "**.webp"
+      - "**.svg"
+      - "**.wav"
+      - "**.ogg"
+      - "**.mp3"
+      - "**.ttf"
+      - "**.otf"
+      - "**.import"
+      - "project.godot"
+      - "export_presets.cfg"
+      - ".github/workflows/android-debug-apk.yml"
   push:
     branches: [main]
     paths:
@@ -108,6 +136,32 @@ jobs:
             exit 1
           fi
 
+      - name: Launch APK in Android 15 emulator and collect runtime evidence
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_5
+          emulator-options: -no-snapshot-load -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+          disable-animations: true
+          script: |
+            set -euo pipefail
+            adb wait-for-device
+            package_name=$(sed -n "s/^package: name='\\([^']*\\)'.*/\\1/p" build/apk-badging.txt | head -n 1)
+            test -n "$package_name"
+            adb install -r build/GTA-GHIBLI-debug.apk
+            adb shell monkey -p "$package_name" -c android.intent.category.LAUNCHER 1
+            sleep 25
+            adb shell pidof "$package_name" > build/emulator-app-pid.txt
+            adb shell dumpsys activity activities > build/emulator-activities.txt
+            adb shell dumpsys meminfo "$package_name" > build/emulator-meminfo.txt
+            adb logcat -d -v brief > build/emulator-logcat.txt
+            if grep -Eiq "FATAL EXCEPTION|Process .* has died|SIGSEGV|Fatal signal" build/emulator-logcat.txt; then
+              echo "Android emulator reported a fatal app/runtime error."
+              exit 1
+            fi
+
       - name: Record exact raw APK size
         shell: bash
         run: |
@@ -132,5 +186,9 @@ jobs:
             build/apk-badging.txt
             build/apk-permissions.txt
             build/apk-size.txt
+            build/emulator-app-pid.txt
+            build/emulator-activities.txt
+            build/emulator-meminfo.txt
+            build/emulator-logcat.txt
           if-no-files-found: error
           retention-days: 14
