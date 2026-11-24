@@ -132,7 +132,48 @@ func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: 
 		door.position = Vector3(0.0, 0.95, dimensions.z * 0.5 + 0.07)
 		door.material_override = _material(Color(0.25, 0.18, 0.13))
 		building.add_child(door)
+		_add_building_windows(building, dimensions)
 		_building_count += 1
+
+func _add_building_windows(building: StaticBody3D, dimensions: Vector3) -> void:
+	## Repeated facade glazing gives each district building readable architectural scale.
+	var transforms: Array[Transform3D] = []
+	var half_width := dimensions.x * 0.5
+	var half_depth := dimensions.z * 0.5
+	var row_heights := [1.25, dimensions.y - 1.05]
+	for y_value in row_heights:
+		var y := float(y_value)
+		for column in range(4):
+			var x := -half_width + 1.05 + float(column) * ((dimensions.x - 2.1) / 3.0)
+			transforms.append(Transform3D(Basis(), Vector3(x, y, half_depth + 0.045)))
+			transforms.append(Transform3D(Basis(), Vector3(x, y, -half_depth - 0.045)))
+		for column in range(3):
+			var z := -half_depth + 1.0 + float(column) * ((dimensions.z - 2.0) / 2.0)
+			transforms.append(Transform3D(Basis(Vector3.UP, PI * 0.5), Vector3(half_width + 0.045, y, z)))
+			transforms.append(Transform3D(Basis(Vector3.UP, -PI * 0.5), Vector3(-half_width - 0.045, y, z)))
+
+	var window_mesh := BoxMesh.new()
+	window_mesh.size = Vector3(0.72, 0.58, 0.07)
+	var instances := MultiMesh.new()
+	instances.transform_format = MultiMesh.TRANSFORM_3D
+	instances.mesh = window_mesh
+	instances.instance_count = transforms.size()
+	for index in range(transforms.size()):
+		instances.set_instance_transform(index, transforms[index])
+
+	var glass := StandardMaterial3D.new()
+	glass.albedo_color = Color(0.48, 0.72, 0.82, 1.0)
+	glass.roughness = 0.24
+	glass.metallic = 0.12
+	glass.emission_enabled = true
+	glass.emission = Color(0.10, 0.19, 0.24)
+	glass.emission_energy_multiplier = 0.16
+	var windows := MultiMeshInstance3D.new()
+	windows.name = "FacadeWindowInstances"
+	windows.multimesh = instances
+	windows.material_override = glass
+	building.add_child(windows)
+
 
 func _build_district_details(district: Node3D, region_id: String, ground_color: Color) -> void:
 	match region_id:
