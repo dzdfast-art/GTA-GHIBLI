@@ -452,7 +452,7 @@ func _build_suspension_bridge(parent: Node3D) -> void:
 			Vector3(tower_x, 21.7, 0.0),
 			_make_material(Color(0.75, 0.32, 0.25), 0.72))
 	for side in [-1.0, 1.0]:
-		var cable_z := side * 1.05
+		var cable_z: float = float(side) * 1.05
 		var previous := Vector3(-15.0, 21.5, cable_z)
 		for index in range(1, 25):
 			var t := float(index) / 24.0
@@ -715,6 +715,18 @@ func _build_reference_trees(parent: Node3D) -> void:
 		var side := -1.0 if index % 2 == 0 else 1.0
 		var at := Vector3(side * 12.5, 0.0, 6.0 + float(index) * 10.0)
 		_add_palm(parent, "BoulevardPalm_%02d" % index, at, 0.72 + float(index % 3) * 0.12)
+
+
+func _add_box(parent: Node3D, node_name: String, dimensions: Vector3,
+		at: Vector3, material_or_color: Variant) -> MeshInstance3D:
+	var box := BoxMesh.new()
+	box.size = dimensions
+	var box_material: StandardMaterial3D
+	if material_or_color is StandardMaterial3D:
+		box_material = material_or_color as StandardMaterial3D
+	else:
+		box_material = _make_material(Color(material_or_color), 0.82)
+	return _add_mesh(parent, node_name, box, at, box_material)
 
 
 func _add_bar_between(parent: Node3D, node_name: String, start: Vector3,
