@@ -200,6 +200,9 @@ func _run_test() -> void:
 		return
 	var jump_button := controls_root.get_node("Jump") as Button
 	jump_button.button_down.emit()
+	if not Input.is_action_pressed("jump"):
+		_fail("The mobile jump button did not press the jump input action.")
+		return
 	await physics_frame
 	jump_button.button_up.emit()
 	if player.velocity.y <= 0.0:
