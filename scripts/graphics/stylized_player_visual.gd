@@ -49,7 +49,7 @@ func _build_character() -> void:
 			_arm_pivots.clear()
 			_leg_pivots.clear()
 			for pivot_name in ["ArmPivot_Left", "ArmPivot_Right"]:
-				var pivot := imported_hero.find_child(pivot_name, true, false) as Node3D
+				var pivot := _find_named_node(imported_hero, pivot_name) as Node3D
 				if pivot != null:
 					_arm_pivots.append(pivot)
 			for pivot_name in ["LegPivot_Left", "LegPivot_Right"]:
@@ -60,11 +60,28 @@ func _build_character() -> void:
 				_apply_imported_hero_materials(imported_hero)
 				_add_back_logo()
 				return
-			push_warning("Imported Ghibli hero is missing articulated pivots; using fallback visual.")
+			push_warning("Imported Ghibli hero is missing articulated pivots; using fallback visual. Arms=%d Legs=%d" % [_arm_pivots.size(), _leg_pivots.size()])
+			_print_imported_node_tree(imported_hero)
 			imported_hero.queue_free()
 		else:
 			push_warning("Imported Ghibli hero could not be instantiated; using fallback visual.")
 	_build_fallback_character()
+
+
+func _find_named_node(parent: Node, target_name: String) -> Node:
+	for child in parent.get_children():
+		if str(child.name) == target_name:
+			return child
+		var nested := _find_named_node(child, target_name)
+		if nested != null:
+			return nested
+	return null
+
+
+func _print_imported_node_tree(parent: Node, prefix: String = "") -> void:
+	for child in parent.get_children():
+		print("PBR_HERO_NODE:", prefix + str(child.name), " [", child.get_class(), "]")
+		_print_imported_node_tree(child, prefix + str(child.name) + "/")
 
 
 func _apply_imported_hero_materials(hero: Node3D) -> void:
@@ -75,11 +92,11 @@ func _apply_imported_hero_materials(hero: Node3D) -> void:
 	hoodie_material.roughness = 0.96
 	hoodie_material.metallic = 0.01
 	for part_name in ["HoodieBody", "Hood", "HoodiePocket", "HoodieZip", "HoodieDrawstrings"]:
-		var part := hero.find_child(part_name, true, false) as MeshInstance3D
+		var part := _find_named_node(hero, part_name) as MeshInstance3D
 		if part != null:
 			part.material_override = hoodie_material
 	for side in ["ArmPivot_Left", "ArmPivot_Right"]:
-		var arm := hero.find_child(side, true, false) as Node3D
+		var arm := _find_named_node(hero, side) as Node3D
 		if arm != null:
 			var sleeve := arm.get_node_or_null("HoodieSleeve") as MeshInstance3D
 			if sleeve != null:
@@ -90,7 +107,7 @@ func _apply_imported_hero_materials(hero: Node3D) -> void:
 	trouser_material.uv1_scale = Vector3(2.0, 3.0, 2.0)
 	trouser_material.roughness = 0.94
 	for side in ["LegPivot_Left", "LegPivot_Right"]:
-		var leg := hero.find_child(side, true, false) as Node3D
+		var leg := _find_named_node(hero, side) as Node3D
 		if leg != null:
 			for part_name in ["TrouserLeg", "CargoPocket", "KneePanel"]:
 				var part := leg.get_node_or_null(part_name) as MeshInstance3D
