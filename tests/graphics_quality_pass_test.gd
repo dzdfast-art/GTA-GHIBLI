@@ -72,6 +72,21 @@ func _run_test() -> void:
 		_fail("The skyline tower does not have its expected instanced window details.")
 		return
 
+	var harbor_street := harbor.get_node_or_null("HarborStreetFurniture") as Node3D
+	if harbor_street == null:
+		_fail("Harbor street furniture was not created.")
+		return
+	var crossing := harbor_street.get_node_or_null("PedestrianCrossing") as Node3D
+	if crossing == null or crossing.get_child_count() != 7:
+		_fail("The harbor zebra crossing must contain seven visible stripes.")
+		return
+	if harbor_street.get_nodes_in_group("harbor_street_lamps").size() != 4:
+		_fail("The harbor boulevard must contain four street lamps.")
+		return
+	if harbor_street.get_node_or_null("Sidewalk_-1.0") == null or harbor_street.get_node_or_null("Sidewalk_1.0") == null:
+		_fail("Both raised harbor sidewalks must be present.")
+		return
+
 	var hoodie := imported_hero.find_child("HoodieBody", true, false) as MeshInstance3D
 	if hoodie == null or hoodie.material_override == null or (hoodie.material_override as StandardMaterial3D).albedo_texture == null:
 		_fail("The player hoodie fabric texture was not imported.")
