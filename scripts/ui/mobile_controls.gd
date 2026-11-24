@@ -100,6 +100,7 @@ func _build_hud() -> void:
 	_mode_label.position = Vector2(22.0, 18.0)
 	_mode_label.add_theme_font_size_override("font_size", 15)
 	_mode_label.add_theme_color_override("font_color", Color(1.0, 0.96, 0.82, 0.92))
+	_mode_label.visible = false
 	root.add_child(_mode_label)
 
 	_joystick = JOYSTICK_SCRIPT.new() as Control
@@ -125,7 +126,7 @@ func _build_hud() -> void:
 
 	_brake_button = _make_action_button("BRAKE", Vector2(88.0, 88.0))
 	_brake_button.name = "VehicleBrake"
-	_set_bottom_right(_brake_button, -236.0, -120.0, -144.0, -28.0)
+	_set_bottom_right(_brake_button, -320.0, -112.0, -228.0, -20.0)
 	_brake_button.visible = false
 	_brake_button.button_down.connect(_on_brake_down)
 	_brake_button.button_up.connect(_on_brake_up)
@@ -134,7 +135,7 @@ func _build_hud() -> void:
 
 	_pedal_button = _make_action_button("PEDAL", Vector2(88.0, 88.0))
 	_pedal_button.name = "BikePedal"
-	_set_bottom_right(_pedal_button, -236.0, -218.0, -144.0, -126.0)
+	_set_bottom_right(_pedal_button, -320.0, -210.0, -228.0, -118.0)
 	_pedal_button.visible = false
 	_pedal_button.button_down.connect(_press_action.bind(&"bike_pedal"))
 	_pedal_button.button_up.connect(_release_action.bind(&"bike_pedal"))
