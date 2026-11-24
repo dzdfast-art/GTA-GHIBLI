@@ -187,6 +187,7 @@ jobs:
           disable-animations: true
           script: |
             set -eu
+            adb wait-for-device
             test -s build/apk-badging.txt
             package_name=$(awk -F"'" '/^package: name=/ { print $2; exit }' build/apk-badging.txt)
             if [ -z "$package_name" ]; then
