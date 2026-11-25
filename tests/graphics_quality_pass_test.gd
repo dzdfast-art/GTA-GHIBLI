@@ -95,6 +95,22 @@ func _run_test() -> void:
 	if get_nodes_in_group("harbor_street_lamps").size() != 4:
 		_fail("The harbor boulevard must contain four street lamps.")
 		return
+
+	# GLES3 mobile fallback: emissive lamp housings must not create four
+	# realtime OmniLights that exceed the emulator's fragment-uniform budget.
+	if harbor_street.find_children("*", "OmniLight3D", true, false).size() != 0:
+		_fail("Harbor street lamps must use emissive materials, not realtime OmniLights, on the GLES3 mobile renderer.")
+		return
+	var emissive_lamp_count := 0
+	for lamp in harbor_street.get_children():
+		if str(lamp.name).begins_with("HarborStreetLamp_"):
+			var lamp_head := lamp.get_node_or_null("LampHead") as MeshInstance3D
+			var lamp_material := lamp_head.material_override as StandardMaterial3D if lamp_head != null else null
+			if lamp_material != null and lamp_material.emission_enabled:
+				emissive_lamp_count += 1
+	if emissive_lamp_count != 4:
+		_fail("All four harbor street lamps must retain emissive lamp heads.")
+		return
 	var sidewalk_count := 0
 	for child in harbor_street.get_children():
 		if str(child.name).begins_with("Sidewalk_"):
