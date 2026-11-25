@@ -199,6 +199,7 @@ jobs:
             build/emulator-screenshot.png
             build/emulator-screenshot-initial.png
             build/emulator-window-state.txt
+            build/emulator-ui-hierarchy.xml
             build/emulator-logcat.txt
             build/emulator-logcat-full.txt
             build/emulator-diagnostics-on-failure.txt
