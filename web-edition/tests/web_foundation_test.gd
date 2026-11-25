@@ -409,6 +409,25 @@ func _run() -> void:
 	if int(autosave_payload.get("schema_version", 0)) != 1 or int(autosave_missions.get("stage", -1)) != 2 or int(autosave_missions.get("wallet", -1)) != 600:
 		_fail("The game root did not persist Mission 001 stage and wallet in its versioned live-game autosave slot.")
 		return
+
+	var pause_save_position: Vector3 = player.global_position + Vector3(1.25, 0.0, 0.75)
+	player.global_position = pause_save_position
+	game.call("_notification", Node.NOTIFICATION_APPLICATION_PAUSED)
+	var pause_save_record: Dictionary = autosave_manager.call("load_slot", "autosave")
+	var pause_save_payload: Dictionary = pause_save_record.get("payload", {})
+	var pause_save_player: Dictionary = pause_save_payload.get("player", {})
+	var pause_saved_position: Array = pause_save_player.get("position", [])
+	if pause_saved_position.size() != 3:
+		_fail("Application pause did not flush the live player position to the autosave slot.")
+		return
+	var restored_pause_position := Vector3(
+		float(pause_saved_position[0]),
+		float(pause_saved_position[1]),
+		float(pause_saved_position[2])
+	)
+	if restored_pause_position.distance_to(pause_save_position) > 0.01:
+		_fail("Application pause autosave stored a stale player position.")
+		return
 	autosave_manager.call("delete_slot", "autosave")
 
 	var restored_manager: Node = load("res://scripts/systems/mission_manager.gd").new()
@@ -441,6 +460,7 @@ func _run() -> void:
 	print("PASS: Claire and Nora world interactions complete Mission 001 and grant $250 once.")
 	print("PASS: Mission 001 stage and $600 wallet restore through a new manager instance.")
 	print("PASS: game-root wallet changes persist the mission stage and balance in a durable autosave slot.")
+	print("PASS: application-pause notification immediately flushes the latest player position.")
 	print("NOTE: this is foundation regression coverage, not full-game acceptance.")
 	restored_manager.queue_free()
 	game.queue_free()
