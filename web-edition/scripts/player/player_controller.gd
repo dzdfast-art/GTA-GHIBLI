@@ -17,6 +17,8 @@ var _orbiting: bool = false
 var _current_target: Node3D
 var _driven_vehicle: Node3D
 var _camera_sensitivity: float = 0.0045
+var _foot_collision_layer: int = 1
+var _foot_collision_mask: int = 1
 
 
 func _ready() -> void:
@@ -25,6 +27,8 @@ func _ready() -> void:
 	_create_camera()
 	collision_layer = 1
 	collision_mask = 1
+	_foot_collision_layer = collision_layer
+	_foot_collision_mask = collision_mask
 
 
 func _process(_delta: float) -> void:
@@ -120,6 +124,7 @@ func _try_interact() -> void:
 
 func _enter_vehicle(vehicle: Node3D) -> void:
 	_driven_vehicle = vehicle
+	_set_foot_collision_enabled(false)
 	if vehicle.has_method("set_driven"):
 		vehicle.call("set_driven", true)
 	_visual.visible = false
@@ -134,6 +139,7 @@ func restore_vehicle_state(vehicle: Node3D) -> bool:
 	if vehicle == null or not vehicle.is_in_group("drivable_vehicles") or not vehicle.has_method("set_driven"):
 		return false
 	_driven_vehicle = vehicle
+	_set_foot_collision_enabled(false)
 	vehicle.call("set_driven", true)
 	if _visual != null:
 		_visual.visible = false
@@ -150,8 +156,14 @@ func _exit_vehicle() -> void:
 		vehicle.call("set_driven", false)
 	global_position = vehicle.global_position + vehicle.global_basis.x * 2.4 + Vector3(0.0, 0.03, 0.0)
 	_driven_vehicle = null
+	_set_foot_collision_enabled(true)
 	_visual.visible = true
 	vehicle_state_changed.emit(false, "")
+
+
+func _set_foot_collision_enabled(enabled: bool) -> void:
+	collision_layer = _foot_collision_layer if enabled else 0
+	collision_mask = _foot_collision_mask if enabled else 0
 
 
 func _find_nearest_target() -> Node3D:
