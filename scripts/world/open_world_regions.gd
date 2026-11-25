@@ -444,11 +444,6 @@ func _build_harbor_street_furniture(district: Node3D) -> void:
 		head.material_override = head_material
 		lamp.add_child(head)
 
-		var light := OmniLight3D.new()
-		light.name = "NightLight"
-		light.position = Vector3(-side * 0.62, 3.92, 0.0)
-		light.light_color = Color(1.0, 0.78, 0.54)
-		light.light_energy = 0.35
-		light.omni_range = 5.5
-		light.shadow_enabled = false
-		lamp.add_child(light)
+		# Use emissive lamp housing only. Four realtime OmniLights pushed the
+		# Android GLES3 scene shader beyond GL_MAX_FRAGMENT_UNIFORM_VECTORS.
+		# The warm emission keeps the lamp visibly lit without a local-light pass.
