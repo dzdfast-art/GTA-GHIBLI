@@ -66,8 +66,8 @@ func _run() -> void:
 	var officer: Node3D = Node3D.new()
 	officer.name = "TestPoliceUnit"
 	officer.add_to_group("police_units")
-	officer.global_position = player.global_position + Vector3(0.0, 0.0, 8.0)
 	game.add_child(officer)
+	officer.global_position = player.global_position + Vector3(0.0, 0.0, 8.0)
 	game.call("advance_simulation", 0.1)
 	var pursuit: RefCounted = game.call("get_runtime_system", "police_pursuit") as RefCounted
 	if str(pursuit.get("state")) != "pursuing":
