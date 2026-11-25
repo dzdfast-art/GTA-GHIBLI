@@ -197,6 +197,8 @@ jobs:
             build/emulator-activities.txt
             build/emulator-meminfo.txt
             build/emulator-screenshot.png
+            build/emulator-screenshot-initial.png
+            build/emulator-window-state.txt
             build/emulator-logcat.txt
             build/emulator-logcat-full.txt
             build/emulator-diagnostics-on-failure.txt
