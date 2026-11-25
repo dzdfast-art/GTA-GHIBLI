@@ -8,7 +8,7 @@ Current game root: `web-edition/` — Godot 4.7, single-threaded WebAssembly, Co
 - `main`: `e4c26a0e4e9d6945233b3032ed6966a7356103ab`; unchanged by this increment.
 - PR #35 was closed and merged on 2026-11-22 at 13:56:51 UTC. The original clean-start branch `web/standalone-from-empty-2026-11-22` currently points to `9cdcec813aa874532e9c4c5d3113f967a9a0a26a`; it is no longer the active review head.
 - Active Web review chain: PR #105 (durable save backend) → PR #108 (live-game state integration) → PR #109 (Chromium page-reload verification) → [PR #111](https://github.com/dzdfast-art/GTA-GHIBLI/pull/111) (storage-status feedback).
-- PR #111 is Draft/open/unmerged. Branch: `feature/web-save-persistence-warning-20261125`. Tested code head: `fb16cf06a3d6d03404bb7e58900d4b38de4f90aa`.
+- PR #111 is Draft/open/unmerged. Branch: `feature/web-save-persistence-warning-20261125`. Code changes were introduced at `fb16cf06a3d6d03404bb7e58900d4b38de4f90aa`; the last fully verified PR head before this ledger refresh was `471c6a535dc5607f93361d4498bf522057cb3b14`.
 - PR #111 is stacked on PR #109 branch `feature/web-browser-save-reload-20261125` at `bbf4959b43fd768798bdba706b592ae5dccf2925`. No merge or approval was performed.
 - The original PR #35 state supplied in the earlier request is historical, not current. No changes from this increment were written to `main`.
 - All game-code and regression-test changes in PR #111 are under `web-edition/**`; the only outside code change is the local Chromium save/reload CI helper. No Android/APK build, public deployment, Pages/Vercel hosting or public Web download was created.
@@ -36,11 +36,11 @@ Current game root: `web-edition/` — Godot 4.7, single-threaded WebAssembly, Co
 - `OS.is_userfs_persistent()` is not treated as proof by itself. Godot's documentation explicitly warns that it can give false positives. Actual page-reload restoration remains a separate CI check.
 - Godot's Web export documentation says IndexedDB must be allowed for `user://` persistence; private browsing and blocked storage prevent persistence. This specific blocked/private case remains untested in our browser gate. See [Godot 4.7 Web export — data persistence](https://docs.godotengine.org/en/4.7/tutorials/export/exporting_for_web.html#using-cookies-for-data-persistence).
 
-## Verification — tested head `fb16cf0`
+## Verification — tested PR head `471c6a5`
 
-- Web CI push [run 45598674122](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45598674122): **PASS**.
-- Web CI pull-request [run 45598811969](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45598811969): **PASS**.
-- Security audit [run 45598811902](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45598811902): **PASS** — Gitleaks found no leaked secrets.
+- Web CI push [run 45599425769](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45599425769): **PASS**.
+- Web CI pull-request [run 45599433243](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45599433243): **PASS**.
+- Security audit [run 45599433180](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45599433180): **PASS** — Gitleaks found no leaked secrets.
 - Godot 4.7 import, project JSON and research-helper validation passed.
 - **61 GDScript regression tests** ran with detection for `ERROR:`, parse errors, failed assertions and invalid calls. The new storage-status test passed.
 - WebAssembly export and HTML/JavaScript/WebAssembly/PCK verification passed.
@@ -48,19 +48,19 @@ Current game root: `web-edition/` — Godot 4.7, single-threaded WebAssembly, Co
 - The save-reload probe confirmed IndexedDB availability, read Godot's `user://` persistence flag as true before and after page reload, saved selected live-game state, reloaded the same local origin, restored the tested values, and removed its temporary autosave slot.
 - This is a repeatable Chromium page-reload test, not proof of browser-restart persistence, private/blocked-storage behavior, Firefox/Safari support, visual quality or full-game acceptance.
 
-## Exact size measurements from Web CI run 45598674122
+## Exact size measurements from Web CI run 45599433243
 
 | Measurement | Bytes | Decimal MB | MiB |
 |---|---:|---:|---:|
 | Tracked `web-edition/` source | 260,667 | 0.261 | 0.249 |
 | Deduplicated unique source content | 260,667 | 0.261 | 0.249 |
 | Uncompressed Web export | 39,995,840 | 39.996 | 38.143 |
-| Compressed Web ZIP | 10,377,708 | 10.378 | 9.897 |
+| Compressed Web ZIP | 10,377,709 | 10.378 | 9.897 |
 
 - Tracked source files: **138**; unique content blobs: **138**.
 - Export files: **8**.
-- ZIP SHA-256: `7a0fb5f90838b3f38c24ee9b4d92c95793372153c2088034db2335640d9b4432`.
-- Web export and ZIP were created on the ephemeral runner, measured and deleted. The Web CI artifact list was empty. The security workflow produced only its Gitleaks SARIF report, not a game export.
+- ZIP SHA-256: `1a8c92e9ed34d5affd3e42f88c327c404e8f85215dd8e13956d19b0b74a85e8a`.
+- Web export and ZIP were created on the ephemeral runner, measured and deleted. The Web CI artifact list for run 45599433243 was empty. The security workflow produced only its 6,772-byte Gitleaks SARIF report, not a game export.
 - The 4 GB real-content target is **NOT REACHED**. Source bytes remain small; the Web export includes the Godot runtime and current game pack and must not be described as 40 MB of unique authored game content.
 
 ## Next technical steps
