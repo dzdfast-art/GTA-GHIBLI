@@ -81,6 +81,9 @@ var _active_waypoint_id: String = ""
 var _active_waypoint_name: String = ""
 var _active_waypoint_position: Vector3 = Vector3.ZERO
 var _arrival_notified: bool = false
+var _autosave_elapsed: float = 0.0
+var _last_autosave_payload_json: String = ""
+var _is_restoring_game_state: bool = false
 
 
 func _ready() -> void:
@@ -113,6 +116,8 @@ func _ready() -> void:
 	_hud.call("set_location", _world.call("get_region_name_at", _player.global_position))
 	_hud.call("update_minimap", _player.global_position, _player.global_rotation.y, _active_waypoint_position, false)
 	_sync_runtime_hud_state()
+	_restore_game_state()
+	_sync_runtime_hud_state()
 	_record_runtime_acceptance()
 
 
@@ -135,6 +140,18 @@ func _process(delta: float) -> void:
 		if _navigation_elapsed >= 0.30:
 			_navigation_elapsed = 0.0
 			_update_navigation_route()
+	_autosave_elapsed += delta
+	if _autosave_elapsed >= 5.0:
+		_autosave_elapsed = 0.0
+		_save_game_state()
+
+
+func _notification(what: int) -> void:
+	if what != NOTIFICATION_APPLICATION_PAUSED and what != NOTIFICATION_WM_CLOSE_REQUEST:
+		return
+	if not is_instance_valid(_missions) or not is_instance_valid(_player):
+		return
+	_save_game_state(true)
 
 
 func _connect_gameplay_signals() -> void:
@@ -308,9 +325,12 @@ func _discover_nearby_landmarks() -> void:
 
 func _sync_runtime_hud_state() -> void:
 	var hud_state: RefCounted = get_runtime_system("hud_state")
-	hud_state.call("update_health", 100.0)
-	hud_state.call("add_money", _missions.call("get_wallet"))
-	hud_state.set("vehicle_mode", false)
+	var vitals: RefCounted = get_runtime_system("player_vitals")
+	hud_state.call("update_health", float(vitals.get("health")))
+	var wallet := int(_missions.call("get_wallet"))
+	var money_difference := wallet - int(hud_state.get("money"))
+	hud_state.call("add_money", money_difference)
+	hud_state.set("vehicle_mode", _player.call("get_driven_vehicle") != null)
 
 
 func _record_runtime_acceptance() -> void:
@@ -357,7 +377,10 @@ func get_web_acceptance_status() -> Dictionary:
 func set_language(language: String) -> bool:
 	if not bool(get_runtime_system("localization_registry").call("set_locale", language)):
 		return false
-	return bool(get_runtime_system("settings_profile").call("set_value", "language", language))
+	var updated := bool(get_runtime_system("settings_profile").call("set_value", "language", language))
+	if updated and not _is_restoring_game_state:
+		_save_game_state(true)
+	return updated
 
 
 func report_crime(severity: int = 1) -> int:
@@ -396,13 +419,429 @@ func _on_mission_objective_changed(text: String) -> void:
 		get_runtime_system("mission_objectives").call("add_progress", "mission_001_nora_meeting", 1)
 		get_runtime_system("mission_prerequisites").call("complete", "mission_001")
 		get_runtime_system("mission_rewards").call("settle", "mission_001", 250, 1)
+	if not _is_restoring_game_state:
+		_save_game_state(true)
 
 
 func _on_wallet_changed(amount: int) -> void:
 	var hud_state: RefCounted = get_runtime_system("hud_state")
 	var difference := amount - int(hud_state.get("money"))
 	hud_state.call("add_money", difference)
-	get_runtime_system("save_slot_manager").call("save_slot", "autosave", {"mission_stage": int(_missions.get("mission_stage")), "wallet": amount}, int(Time.get_unix_time_from_system()))
+	if not _is_restoring_game_state:
+		_save_game_state(true)
+
+
+
+func _save_game_state(force: bool = false) -> bool:
+	if _is_restoring_game_state or _missions == null or _player == null or _runtime_systems.is_empty():
+		return false
+	var payload: Dictionary = _capture_game_state()
+	var payload_json: String = JSON.stringify(payload)
+	if payload_json.is_empty():
+		return false
+	if not force and payload_json == _last_autosave_payload_json:
+		return true
+	var manager: RefCounted = get_runtime_system("save_slot_manager")
+	var saved := bool(manager.call(
+		"save_slot", "autosave", payload, int(Time.get_unix_time_from_system())
+	))
+	if saved:
+		_last_autosave_payload_json = payload_json
+	return saved
+
+
+func _capture_game_state() -> Dictionary:
+	var vitals: RefCounted = get_runtime_system("player_vitals")
+	var clock: RefCounted = get_runtime_system("world_clock_weather")
+	var weapon_inventory: RefCounted = get_runtime_system("weapon_inventory")
+	var activity_system: RefCounted = get_runtime_system("side_activity_registry")
+	var landmark_system: RefCounted = get_runtime_system("landmark_discovery")
+	var pickup_system: RefCounted = get_runtime_system("world_pickup_registry")
+	var objective_system: RefCounted = get_runtime_system("mission_objectives")
+	var reward_system: RefCounted = get_runtime_system("mission_rewards")
+	var prerequisite_system: RefCounted = get_runtime_system("mission_prerequisites")
+	var relationship_system: RefCounted = get_runtime_system("npc_relationship")
+	var wanted_system: RefCounted = get_runtime_system("wanted_level")
+	var collectible_system: RefCounted = get_runtime_system("collectible_tracker")
+	var faction_system: RefCounted = get_runtime_system("faction_reputation")
+	var economy_system: RefCounted = get_runtime_system("economy_ledger")
+	var settings_system: RefCounted = get_runtime_system("settings_profile")
+	var checkpoint_system: RefCounted = get_runtime_system("checkpoint_system")
+	var garage_upgrade_system: RefCounted = get_runtime_system("garage_upgrade_progression")
+	var safehouse_system: RefCounted = get_runtime_system("safehouse_registry")
+	var fuel_system: RefCounted = get_runtime_system("vehicle_fuel")
+	var parking_system: RefCounted = get_runtime_system("parking_registry")
+
+	var activity_records: Dictionary = activity_system.get("activities")
+	var completed_activities: Array[String] = []
+	for activity_id in activity_records:
+		if bool(activity_records[activity_id].get("completed", false)):
+			completed_activities.append(str(activity_id))
+	completed_activities.sort()
+
+	var landmark_records: Dictionary = landmark_system.get("discovered")
+	var discovered_landmarks: Array[String] = []
+	for landmark_id in landmark_records:
+		discovered_landmarks.append(str(landmark_id))
+	discovered_landmarks.sort()
+
+	var pickup_records: Dictionary = pickup_system.get("pickups")
+	var collected_pickups: Array[String] = []
+	for pickup_id in pickup_records:
+		if bool(pickup_records[pickup_id].get("collected", false)):
+			collected_pickups.append(str(pickup_id))
+	collected_pickups.sort()
+
+	var safehouse_records: Dictionary = safehouse_system.get("houses")
+	var owned_safehouses: Array[String] = []
+	for house_id in safehouse_records:
+		if bool(safehouse_records[house_id].get("owned", false)):
+			owned_safehouses.append(str(house_id))
+	owned_safehouses.sort()
+
+	var parking_records: Dictionary = parking_system.get("spaces")
+	var parking_reservations: Dictionary = {}
+	for space_id in parking_records:
+		var reserved_vehicle := str(parking_records[space_id].get("vehicle", ""))
+		if not reserved_vehicle.is_empty():
+			parking_reservations[str(space_id)] = reserved_vehicle
+
+	var vehicles: Dictionary = {}
+	var active_vehicle_id := ""
+	var active_vehicle: Node3D = _player.call("get_driven_vehicle")
+	for candidate in get_tree().get_nodes_in_group("drivable_vehicles"):
+		if not candidate is Node3D or not candidate.has_method("get_save_id"):
+			continue
+		var vehicle := candidate as Node3D
+		var vehicle_id := str(vehicle.call("get_save_id"))
+		if vehicle_id.is_empty():
+			continue
+		var vehicle_velocity := Vector3.ZERO
+		if vehicle is CharacterBody3D:
+			vehicle_velocity = (vehicle as CharacterBody3D).velocity
+		vehicles[vehicle_id] = {
+			"position": _vector3_to_array(vehicle.global_position),
+			"rotation": _vector3_to_array(vehicle.global_rotation),
+			"velocity": _vector3_to_array(vehicle_velocity)
+		}
+		if vehicle == active_vehicle:
+			active_vehicle_id = vehicle_id
+
+	var economy_entries: Array = economy_system.get("entries").duplicate(true)
+	var settings_values: Dictionary = settings_system.get("values").duplicate(true)
+	var collectible_found: Dictionary = collectible_system.get("found").duplicate(true)
+	var faction_reputation: Dictionary = faction_system.get("reputation").duplicate(true)
+	var garage_levels: Dictionary = garage_upgrade_system.get("levels").duplicate(true)
+	var relationship_scores: Dictionary = relationship_system.get("scores").duplicate(true)
+	var mission_objectives: Dictionary = objective_system.get("objectives").duplicate(true)
+	var mission_rewards: Dictionary = reward_system.get("settled").duplicate(true)
+	var mission_completed: Dictionary = prerequisite_system.get("completed").duplicate(true)
+	var weapon_state: Dictionary = {
+		"weapons": weapon_inventory.get("weapons").duplicate(true),
+		"selected": str(weapon_inventory.get("selected"))
+	}
+
+	return {
+		"schema_version": 1,
+		"player": {
+			"position": _vector3_to_array(_player.global_position),
+			"rotation": _vector3_to_array(_player.global_rotation),
+			"velocity": _vector3_to_array(_player.velocity)
+		},
+		"missions": {
+			"stage": int(_missions.get("mission_stage")),
+			"wallet": int(_missions.call("get_wallet"))
+		},
+		"vitals": {
+			"health": float(vitals.get("health")),
+			"stamina": float(vitals.get("stamina"))
+		},
+		"world": {
+			"minute_of_day": int(clock.get("minute_of_day")),
+			"weather": str(clock.get("weather"))
+		},
+		"weapons": weapon_state,
+		"mission_objectives": mission_objectives,
+		"mission_rewards": mission_rewards,
+		"mission_completed": mission_completed,
+		"landmarks_discovered": discovered_landmarks,
+		"activities_completed": completed_activities,
+		"pickups_collected": collected_pickups,
+		"npc_relationships": relationship_scores,
+		"wanted": {
+			"level": int(wanted_system.get("level")),
+			"cooldown": float(wanted_system.get("cooldown"))
+		},
+		"collectibles_found": collectible_found,
+		"faction_reputation": faction_reputation,
+		"economy": {
+			"balance": int(economy_system.get("balance")),
+			"entries": economy_entries
+		},
+		"settings": settings_values,
+		"checkpoint_index": int(checkpoint_system.get("current_index")),
+		"garage_upgrade_levels": garage_levels,
+		"safehouses_owned": owned_safehouses,
+		"vehicle_fuel": float(fuel_system.get("fuel")),
+		"parking_reservations": parking_reservations,
+		"vehicles": vehicles,
+		"active_vehicle_id": active_vehicle_id
+	}
+
+
+func _restore_game_state() -> bool:
+	if _missions == null or _player == null or _runtime_systems.is_empty():
+		return false
+	_is_restoring_game_state = true
+	var manager: RefCounted = get_runtime_system("save_slot_manager")
+	var record: Dictionary = manager.call("load_slot", "autosave")
+	var payload_value: Variant = record.get("payload", {})
+	if record.is_empty() or not payload_value is Dictionary:
+		_is_restoring_game_state = false
+		return false
+	var payload: Dictionary = payload_value
+	var payload_version := int(payload.get("schema_version", 0))
+	if payload_version == 0 and (payload.has("mission_stage") or payload.has("wallet")):
+		_missions.set("mission_stage", clampi(int(payload.get("mission_stage", 0)), 0, 2))
+		_missions.set("wallet", maxi(0, int(payload.get("wallet", 350))))
+		_hud.call("set_objective", _missions.call("get_objective"))
+		_hud.call("set_wallet", _missions.call("get_wallet"))
+		_sync_runtime_hud_state()
+		_is_restoring_game_state = false
+		_save_game_state(true)
+		return true
+	if payload_version != 1:
+		_is_restoring_game_state = false
+		return false
+
+	var player_state: Variant = payload.get("player", {})
+	if player_state is Dictionary:
+		var saved_position: Vector3 = _vector3_from_array(player_state.get("position", []), _player.global_position)
+		if _is_safe_world_position(saved_position):
+			_player.global_position = saved_position
+		_player.global_rotation = _vector3_from_array(player_state.get("rotation", []), _player.global_rotation)
+		_player.velocity = _vector3_from_array(player_state.get("velocity", []), Vector3.ZERO)
+
+	var mission_state: Variant = payload.get("missions", {})
+	if mission_state is Dictionary:
+		_missions.set("mission_stage", clampi(int(mission_state.get("stage", 0)), 0, 2))
+		_missions.set("wallet", maxi(0, int(mission_state.get("wallet", 350))))
+
+	var vitals: RefCounted = get_runtime_system("player_vitals")
+	var vitals_state: Variant = payload.get("vitals", {})
+	if vitals_state is Dictionary:
+		vitals.set("health", clampf(float(vitals_state.get("health", 100.0)), 0.0, float(vitals.get("max_health"))))
+		vitals.set("stamina", clampf(float(vitals_state.get("stamina", 100.0)), 0.0, float(vitals.get("max_stamina"))))
+
+	var clock: RefCounted = get_runtime_system("world_clock_weather")
+	var world_state: Variant = payload.get("world", {})
+	if world_state is Dictionary:
+		clock.set("minute_of_day", clampi(int(world_state.get("minute_of_day", 8 * 60)), 0, 1439))
+		clock.call("set_weather", str(world_state.get("weather", "clear")))
+
+	var weapon_inventory: RefCounted = get_runtime_system("weapon_inventory")
+	var weapon_state: Variant = payload.get("weapons", {})
+	if weapon_state is Dictionary:
+		var saved_weapons: Variant = weapon_state.get("weapons", {})
+		if saved_weapons is Dictionary:
+			var clean_weapons: Dictionary = {}
+			for weapon_id in saved_weapons:
+				var clean_id := str(weapon_id)
+				if not clean_id.is_empty():
+					clean_weapons[clean_id] = maxi(0, int(saved_weapons[weapon_id]))
+			weapon_inventory.set("weapons", clean_weapons)
+			var selected_weapon := str(weapon_state.get("selected", ""))
+			if clean_weapons.has(selected_weapon):
+				weapon_inventory.set("selected", selected_weapon)
+			else:
+				var weapon_ids: Array = clean_weapons.keys()
+				weapon_ids.sort()
+				weapon_inventory.set("selected", str(weapon_ids[0]) if not weapon_ids.is_empty() else "")
+
+	var objective_system: RefCounted = get_runtime_system("mission_objectives")
+	var saved_objectives: Variant = payload.get("mission_objectives", {})
+	if saved_objectives is Dictionary:
+		var current_objectives: Dictionary = objective_system.get("objectives")
+		for objective_id in current_objectives:
+			var saved_objective: Variant = saved_objectives.get(objective_id, {})
+			if saved_objective is Dictionary:
+				var current_entry: Dictionary = current_objectives[objective_id]
+				var target := int(current_entry.get("target", 0))
+				current_entry["progress"] = clampi(int(saved_objective.get("progress", 0)), 0, target)
+		objective_system.set("objectives", current_objectives)
+
+	var reward_system: RefCounted = get_runtime_system("mission_rewards")
+	var saved_rewards: Variant = payload.get("mission_rewards", {})
+	if saved_rewards is Dictionary:
+		reward_system.set("settled", saved_rewards.duplicate(true))
+
+	var prerequisite_system: RefCounted = get_runtime_system("mission_prerequisites")
+	var saved_completed: Variant = payload.get("mission_completed", {})
+	if saved_completed is Dictionary:
+		prerequisite_system.set("completed", saved_completed.duplicate(true))
+
+	var activity_system: RefCounted = get_runtime_system("side_activity_registry")
+	var completed_activities: Variant = payload.get("activities_completed", [])
+	if completed_activities is Array:
+		var activity_records: Dictionary = activity_system.get("activities")
+		for activity_id in activity_records:
+			var activity_record: Dictionary = activity_records[activity_id]
+			activity_record["completed"] = completed_activities.has(str(activity_id))
+
+	var landmark_system: RefCounted = get_runtime_system("landmark_discovery")
+	var saved_landmarks: Variant = payload.get("landmarks_discovered", [])
+	if saved_landmarks is Array:
+		var discovered_records: Dictionary = {}
+		for landmark_id_value in saved_landmarks:
+			var landmark_id := str(landmark_id_value)
+			for point in _points_of_interest:
+				if str(point.get("id", "")) == landmark_id and str(point.get("category", "")) == "landmark":
+					discovered_records[landmark_id] = {
+						"position": point.get("position", Vector3.ZERO),
+						"discovered_at_distance": 0.0
+					}
+					break
+		landmark_system.set("discovered", discovered_records)
+
+	var pickup_system: RefCounted = get_runtime_system("world_pickup_registry")
+	var saved_pickups: Variant = payload.get("pickups_collected", [])
+	if saved_pickups is Array:
+		var pickup_records: Dictionary = pickup_system.get("pickups")
+		for pickup_id in pickup_records:
+			var pickup_record: Dictionary = pickup_records[pickup_id]
+			pickup_record["collected"] = saved_pickups.has(str(pickup_id))
+
+	var relationship_system: RefCounted = get_runtime_system("npc_relationship")
+	var saved_relationships: Variant = payload.get("npc_relationships", {})
+	if saved_relationships is Dictionary:
+		var clean_scores: Dictionary = {}
+		for npc_id in saved_relationships:
+			clean_scores[str(npc_id)] = clampi(int(saved_relationships[npc_id]), -100, 100)
+		relationship_system.set("scores", clean_scores)
+
+	var wanted_system: RefCounted = get_runtime_system("wanted_level")
+	var wanted_state: Variant = payload.get("wanted", {})
+	if wanted_state is Dictionary:
+		wanted_system.set("level", clampi(int(wanted_state.get("level", 0)), 0, int(wanted_system.get("max_level"))))
+		wanted_system.set("cooldown", clampf(float(wanted_state.get("cooldown", 0.0)), 0.0, 30.0))
+
+	var collectible_system: RefCounted = get_runtime_system("collectible_tracker")
+	var saved_collectibles: Variant = payload.get("collectibles_found", {})
+	if saved_collectibles is Dictionary:
+		var clean_collectibles: Dictionary = {}
+		for collectible_id in saved_collectibles:
+			if bool(saved_collectibles[collectible_id]):
+				clean_collectibles[str(collectible_id)] = true
+		collectible_system.set("found", clean_collectibles)
+
+	var faction_system: RefCounted = get_runtime_system("faction_reputation")
+	var saved_factions: Variant = payload.get("faction_reputation", {})
+	if saved_factions is Dictionary:
+		var clean_reputation: Dictionary = {}
+		for faction_id in saved_factions:
+			clean_reputation[str(faction_id)] = clampi(int(saved_factions[faction_id]), -100, 100)
+		faction_system.set("reputation", clean_reputation)
+
+	var economy_system: RefCounted = get_runtime_system("economy_ledger")
+	var economy_state: Variant = payload.get("economy", {})
+	if economy_state is Dictionary:
+		economy_system.set("balance", maxi(0, int(economy_state.get("balance", 0))))
+		var clean_entries: Array[Dictionary] = []
+		var saved_entries: Variant = economy_state.get("entries", [])
+		if saved_entries is Array:
+			for entry in saved_entries:
+				if entry is Dictionary:
+					clean_entries.append(entry.duplicate(true))
+		economy_system.set("entries", clean_entries)
+
+	var settings_system: RefCounted = get_runtime_system("settings_profile")
+	var saved_settings: Variant = payload.get("settings", {})
+	if saved_settings is Dictionary:
+		for setting_id in saved_settings:
+			settings_system.call("set_value", str(setting_id), saved_settings[setting_id])
+		var language := str(settings_system.call("get_value", "language"))
+		get_runtime_system("localization_registry").call("set_locale", language)
+
+	var checkpoint_system: RefCounted = get_runtime_system("checkpoint_system")
+	var checkpoints: Array = checkpoint_system.get("checkpoints")
+	checkpoint_system.set("current_index", clampi(int(payload.get("checkpoint_index", 0)), 0, checkpoints.size()))
+
+	var garage_upgrade_system: RefCounted = get_runtime_system("garage_upgrade_progression")
+	var saved_garage_levels: Variant = payload.get("garage_upgrade_levels", {})
+	if saved_garage_levels is Dictionary:
+		var clean_levels: Dictionary = {}
+		for vehicle_id in saved_garage_levels:
+			clean_levels[str(vehicle_id)] = maxi(0, int(saved_garage_levels[vehicle_id]))
+		garage_upgrade_system.set("levels", clean_levels)
+
+	var safehouse_system: RefCounted = get_runtime_system("safehouse_registry")
+	var saved_safehouses: Variant = payload.get("safehouses_owned", [])
+	if saved_safehouses is Array:
+		var house_records: Dictionary = safehouse_system.get("houses")
+		for house_id in house_records:
+			var house_record: Dictionary = house_records[house_id]
+			house_record["owned"] = saved_safehouses.has(str(house_id))
+
+	var fuel_system: RefCounted = get_runtime_system("vehicle_fuel")
+	fuel_system.set("fuel", clampf(float(payload.get("vehicle_fuel", fuel_system.get("capacity"))), 0.0, float(fuel_system.get("capacity"))))
+
+	var parking_system: RefCounted = get_runtime_system("parking_registry")
+	var saved_parking: Variant = payload.get("parking_reservations", {})
+	if saved_parking is Dictionary:
+		var parking_records: Dictionary = parking_system.get("spaces")
+		for space_id in parking_records:
+			var parking_record: Dictionary = parking_records[space_id]
+			parking_record["vehicle"] = str(saved_parking.get(str(space_id), ""))
+
+	var saved_vehicles: Variant = payload.get("vehicles", {})
+	if saved_vehicles is Dictionary:
+		for candidate in get_tree().get_nodes_in_group("drivable_vehicles"):
+			if not candidate is Node3D or not candidate.has_method("get_save_id"):
+				continue
+			var vehicle := candidate as Node3D
+			var vehicle_id := str(vehicle.call("get_save_id"))
+			var saved_vehicle: Variant = saved_vehicles.get(vehicle_id, {})
+			if saved_vehicle is Dictionary:
+				var vehicle_position: Vector3 = _vector3_from_array(saved_vehicle.get("position", []), vehicle.global_position)
+				if _is_safe_world_position(vehicle_position):
+					vehicle.global_position = vehicle_position
+				vehicle.global_rotation = _vector3_from_array(saved_vehicle.get("rotation", []), vehicle.global_rotation)
+				if vehicle is CharacterBody3D:
+					(vehicle as CharacterBody3D).velocity = _vector3_from_array(saved_vehicle.get("velocity", []), Vector3.ZERO)
+
+	var active_vehicle_id := str(payload.get("active_vehicle_id", ""))
+	if not active_vehicle_id.is_empty():
+		for candidate in get_tree().get_nodes_in_group("drivable_vehicles"):
+			if candidate is Node3D and candidate.has_method("get_save_id") and str(candidate.call("get_save_id")) == active_vehicle_id:
+				_player.call("restore_vehicle_state", candidate)
+				break
+
+	_hud.call("set_objective", _missions.call("get_objective"))
+	_hud.call("set_wallet", _missions.call("get_wallet"))
+	_hud.call("set_location", _world.call("get_region_name_at", _player.global_position))
+	_hud.call("update_minimap", _player.global_position, _player.global_rotation.y, _active_waypoint_position, not _active_waypoint_id.is_empty())
+	_sync_runtime_hud_state()
+	_last_autosave_payload_json = JSON.stringify(_capture_game_state())
+	_autosave_elapsed = 0.0
+	_is_restoring_game_state = false
+	return true
+
+
+func _vector3_to_array(value: Vector3) -> Array[float]:
+	return [value.x, value.y, value.z]
+
+
+func _vector3_from_array(value: Variant, fallback: Vector3) -> Vector3:
+	if not value is Array or value.size() != 3:
+		return fallback
+	for component in value:
+		if typeof(component) != TYPE_FLOAT and typeof(component) != TYPE_INT:
+			return fallback
+	return Vector3(float(value[0]), float(value[1]), float(value[2]))
+
+
+func _is_safe_world_position(value: Vector3) -> bool:
+	return absf(value.x) <= 256.0 and absf(value.y) <= 100.0 and absf(value.z) <= 128.0
 
 
 func _on_vehicle_state_changed(is_driving: bool, vehicle_name: String) -> void:
@@ -413,3 +852,5 @@ func _on_vehicle_state_changed(is_driving: bool, vehicle_name: String) -> void:
 		interaction.call("enter", vehicle_name, 0.0, 3.6, false)
 	else:
 		interaction.call("exit_vehicle")
+	if not _is_restoring_game_state:
+		_save_game_state(true)
