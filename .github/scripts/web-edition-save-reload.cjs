@@ -105,6 +105,8 @@ async function main() {
       return !!canvas && canvas.width > 0 && canvas.height > 0 && !!canvas.getContext("webgl2");
     }, { timeout: 30000 });
     await waitForProbeStatus(page, "written");
+    const persistentAfterWrite = await page.locator("html").getAttribute("data-ghibli-userfs-persistent");
+    assert.equal(persistentAfterWrite, "true", "Godot reports that user:// is not persistent in the normal Chromium context");
     await page.waitForTimeout(1500);
 
     await page.evaluate(() => {
@@ -115,6 +117,8 @@ async function main() {
     await page.reload({ waitUntil: "domcontentloaded", timeout: 30000 });
     await page.waitForSelector("canvas", { state: "visible", timeout: 90000 });
     await waitForProbeStatus(page, "restored");
+    const persistentAfterReload = await page.locator("html").getAttribute("data-ghibli-userfs-persistent");
+    assert.equal(persistentAfterReload, "true", "Godot reports that user:// lost persistence after page reload");
 
     await page.evaluate(() => {
       const next = new URL(window.location.href);
@@ -127,6 +131,7 @@ async function main() {
     assert.deepEqual(externalRequests, [], "The save-probe game requested an external network resource");
     assert.deepEqual(runtimeErrors, [], "The browser reported errors during the save/reload probe");
     console.log("PASS: Chromium IndexedDB is available in the persistent browser context.");
+    console.log("PASS: Godot reports user:// persistence before and after the full page reload.");
     console.log("PASS: the actual game scene saved player, mission, vehicle, inventory, NPC and world state to user://.");
     console.log("PASS: a full page reload restored that live-game state from the same browser origin.");
     console.log("PASS: the temporary autosave slot was deleted after verification.");
