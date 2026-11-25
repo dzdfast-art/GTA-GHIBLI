@@ -146,6 +146,14 @@ func _process(delta: float) -> void:
 		_save_game_state()
 
 
+func _notification(what: int) -> void:
+	if what != NOTIFICATION_APPLICATION_PAUSED and what != NOTIFICATION_WM_CLOSE_REQUEST:
+		return
+	if not is_instance_valid(_missions) or not is_instance_valid(_player):
+		return
+	_save_game_state(true)
+
+
 func _connect_gameplay_signals() -> void:
 	_missions.objective_changed.connect(_hud.set_objective)
 	_missions.objective_changed.connect(_on_mission_objective_changed)
