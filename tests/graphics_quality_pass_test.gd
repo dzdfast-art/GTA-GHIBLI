@@ -95,8 +95,12 @@ func _run_test() -> void:
 	if get_nodes_in_group("harbor_street_lamps").size() != 4:
 		_fail("The harbor boulevard must contain four street lamps.")
 		return
-	if harbor_street.get_node_or_null("Sidewalk_-1.0") == null or harbor_street.get_node_or_null("Sidewalk_1.0") == null:
-		_fail("Both raised harbor sidewalks must be present.")
+	var sidewalk_count := 0
+	for child in harbor_street.get_children():
+		if child.name.to_string().begins_with("Sidewalk_"):
+			sidewalk_count += 1
+	if sidewalk_count != 2:
+		_fail("Both raised harbor sidewalks must be present; found %d." % sidewalk_count)
 		return
 
 	var hoodie := imported_hero.find_child("HoodieBody", true, false) as MeshInstance3D
