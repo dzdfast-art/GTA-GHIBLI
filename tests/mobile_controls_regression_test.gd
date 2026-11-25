@@ -26,6 +26,7 @@ func _run_mobile_controls_test() -> void:
 
 	var player := PLAYER_SCENE.instantiate() as CharacterBody3D
 	player.position = Vector3(0.0, 0.95, 0.0)
+	player.rotation.y = PI
 	player.add_to_group("player")
 	var vitals := Node.new()
 	vitals.name = "PlayerVitals"
@@ -62,6 +63,12 @@ func _run_mobile_controls_test() -> void:
 		return
 
 	var camera_pivot := player.get_node("CameraPivot") as Node3D
+	var follow_camera := player.get_node("CameraPivot/SpringArm3D/Camera3D") as Camera3D
+	var camera_forward := -follow_camera.global_basis.z
+	var player_forward := -player.global_basis.z
+	if camera_forward.normalized().dot(player_forward.normalized()) < 0.98:
+		_fail("The rear camera is not aimed in the same forward direction as the player.")
+		return
 	var camera_rotation_before_walk: Vector3 = camera_pivot.global_rotation
 
 	var joystick_center: Vector2 = joystick.get_global_transform_with_canvas() * (joystick.size * 0.5)
