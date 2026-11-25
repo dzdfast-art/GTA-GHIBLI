@@ -12,8 +12,8 @@ func _ready() -> void:
 
 func _build_lighting_rig() -> void:
 	## A mobile-safe daylight setup: one directional sun and controlled ambient fill.
-	## The Compatibility renderer's per-object light budget is capped in project.godot
-	## to keep GLES3 scene shaders within the Android fragment-uniform limit.
+	## Android exports use the Vulkan Mobile renderer to avoid the GLES3 uniform-link failure.
+	## Compatibility remains available for older devices with conservative light limits.
 	var world_environment := WorldEnvironment.new()
 	world_environment.name = "GhibliWorldEnvironment"
 	var environment := Environment.new()
