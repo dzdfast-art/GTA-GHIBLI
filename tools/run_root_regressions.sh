@@ -32,7 +32,7 @@ for test_file in "${tests[@]}"; do
   if (( test_status != 0 )); then
     echo "::error::$test_name exited with status $test_status."
     failed=$((failed + 1))
-  elif grep -Eqi 'SCRIPT ERROR:|Parse Error:|Assertion failed|Invalid call[.]|Failed loading resource' "$test_log"; then
+  elif grep -Eqi 'ERROR:|SCRIPT ERROR:|Parse Error:|Assertion failed|Invalid call[.]|Failed loading resource' "$test_log"; then
     echo "::error::$test_name logged a script, parser, assertion, invalid-call, or resource-load error."
     failed=$((failed + 1))
   elif ! grep -Eqi 'PASS([: |]|$)' "$test_log"; then
