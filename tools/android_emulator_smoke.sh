@@ -15,7 +15,8 @@ fi
 echo "Installing and launching Android package: $package_name"
 adb install -r build/GTA-GHIBLI-debug.apk
 adb shell monkey -p "$package_name" -c android.intent.category.LAUNCHER 1
-sleep 8
+# The opening world is created at runtime; allow Android time to finish its first render.
+sleep 20
 
 capture_failure_diagnostics() {
   local reason="$1"
@@ -98,6 +99,10 @@ printf '%s\n' "$app_pid" > build/emulator-app-pid.txt
 
 if ! adb shell dumpsys activity activities > build/emulator-activities.txt; then
   capture_failure_diagnostics "Could not read Android activity state after launch."
+  exit 1
+fi
+if ! grep -Eq "Resumed: ActivityRecord.*${package_name}" build/emulator-activities.txt; then
+  capture_failure_diagnostics "The GTA GHIBLI activity is not the resumed foreground activity."
   exit 1
 fi
 if ! adb shell dumpsys meminfo "$package_name" > build/emulator-meminfo.txt; then
