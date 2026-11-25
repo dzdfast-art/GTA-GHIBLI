@@ -9,7 +9,7 @@ func _initialize() -> void:
 
 func _run_test() -> void:
 	# Android must use the Vulkan-based Mobile renderer; Compatibility is retained as fallback.
-	var android_renderer := str(ProjectSettings.get_setting("renderer/rendering_method.mobile", ""))
+	var android_renderer := str(ProjectSettings.get_setting("rendering/renderer/rendering_method.mobile", ""))
 	if android_renderer != "mobile":
 		_fail("Android must use the Vulkan Mobile renderer to avoid the GLES3 uniform-link failure.")
 		return
