@@ -8,7 +8,13 @@ func _initialize() -> void:
 
 
 func _run_test() -> void:
-	# Keep GLES3 scene shader uniforms below the observed Android hardware cap.
+	# Android must use the Vulkan-based Mobile renderer; Compatibility is retained as fallback.
+	var android_renderer := str(ProjectSettings.get_setting("renderer/rendering_method.mobile", ""))
+	if android_renderer != "mobile":
+		_fail("Android must use the Vulkan Mobile renderer to avoid the GLES3 uniform-link failure.")
+		return
+
+	# Keep the Compatibility fallback within conservative GLES3 lighting limits.
 	var max_lights_per_object := int(ProjectSettings.get_setting("rendering/limits/opengl/max_lights_per_object", 8))
 	var max_renderable_lights := int(ProjectSettings.get_setting("rendering/limits/opengl/max_renderable_lights", 32))
 	if max_lights_per_object > 4:
