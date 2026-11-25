@@ -202,3 +202,37 @@ This is a GTA GHIBLI proposal, not a claim about Rockstar's internal tools.
 Every system follows the status vocabulary used in `docs/WEB_EDITION_STATUS.md`. A feature is `TESTED` only after a repeatable automated or documented manual test. The first browser gate remains Chromium/WebGL2; Firefox and Safari are separate unverified gates until runners and actual jobs exist. A green foundation CI run never means that the full open world, every feature, final art, complete character census or complete historical encyclopedia is finished.
 
 The long-term target for the Web package is real, unique, useful content approaching the requested 4 GB milestone. Track source bytes, uncompressed Web export bytes, and compressed package bytes separately. No duplicate or filler data. Large packages require staged/streamed loading and measured browser compatibility; do not claim 4 GB reached until actual authored content and export measurements prove it.
+
+---
+
+## Implementation snapshot — road-graph GPS increment (PR #40 candidate)
+
+The first navigable graph increment for the Web Edition is now authored on the PR #40 stack:
+
+- The world builder describes the existing east-west starter road as connected bidirectional graph edges.
+- Six registered points of interest receive access-spur edges and matching simple road-surface meshes.
+- An A* planner validates graph nodes/edges, snaps start and destination to the nearest graph node only within a bounded distance, calculates graph distance, reconstructs route geometry and returns an explicit unreachable result when no valid snap/path exists.
+- Selecting a point of interest updates the route shown on the world map and minimap. The route is recalculated periodically as the player moves.
+- This is an early road-network prototype, not a full GPS system. It does not yet model street grids, complex intersections, one-way restrictions, road closures, dynamic obstacles, walking paths, turn-by-turn prompts or voice guidance.
+- Automated regression coverage has been added for all six current point-of-interest routes, out-of-range snap rejection, road-distance calculation and map/minimap route propagation. These tests remain pending the PR #40 CI result.
+
+### Build-output handling
+Web CI continues to export and measure the Web package, but the PR #40 workflow removes the upload-artifact step and deletes the temporary build directory after measurement. This policy prevents future PR runs from leaving downloadable Actions ZIP artifacts. It does not delete the earlier PR #39 artifact already created; that artifact and its expiry are recorded in the status ledger.
+---
+
+## Implementation snapshot — starter-road GPS maneuvers (PR #41 candidate)
+
+- A* route results now include left/right bend instructions derived from consecutive route points in the map plane. Straight and near-180-degree reversal segments are not presented as turns.
+- The gameplay HUD shows the next route maneuver and Euclidean distance from the player to that maneuver. The instruction is recalculated with the route as the player moves.
+- The tests exercise both left and right cases on a controlled graph, verify the lighthouse route's right-turn instruction and check HUD delivery.
+- PR #40 road-graph routing is verified by CI run 45229951546; PR #41 maneuver changes are pending their own Godot/Web/Chromium and security checks.
+- This remains prototype guidance over the east-west starter corridor and six access spurs. It is not a complete turn-by-turn navigation system.
+---
+
+## Implementation snapshot — one-way edges and road closures (PR #42 candidate)
+
+- Road graph edges accept a direction policy: bidirectional (default), forward-only or reverse-only. Duplicate edge IDs, self-loops, invalid endpoints, non-positive costs and unsupported direction values are rejected during configuration.
+- The A* planner can block/unblock a known edge at runtime. Closed edges are ignored during expansion; the active route is recalculated when the game root receives an edge-state update.
+- Regression cases cover route choice before and after a synthetic closure, alternate-path selection, no-path reporting when all alternatives close, reopening recovery, live HUD/map route clearing/restoration, unknown edge handling and one-way direction enforcement.
+- PR #41 turn-guidance baseline passed branch-head CI run 45230635607 and Security Audit run 45230669321.
+- PR #42 is still pending Godot/Web/Chromium and security validation. The live blockout world has not yet gained a real alternate street grid; alternate route selection is tested on a controlled graph.

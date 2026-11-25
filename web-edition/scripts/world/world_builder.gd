@@ -19,6 +19,8 @@ func build_world() -> void:
 	for index in range(REGION_NAMES.size()):
 		_create_region(index)
 	_create_connected_road()
+	_create_access_roads()
+	_create_street_grid()
 	_create_landmarks()
 	_create_characters()
 	_create_starting_vehicle()
@@ -27,6 +29,194 @@ func build_world() -> void:
 func get_region_name_at(position: Vector3) -> String:
 	var index := clampi(int(floor((position.x + 128.0) / 64.0)), 0, REGION_NAMES.size() - 1)
 	return REGION_NAMES[index]
+
+
+func get_points_of_interest() -> Array[Dictionary]:
+	return [
+		{
+			"id": "marsa_al_noor",
+			"name": "Marsa Al-Noor Lighthouse",
+			"region": "Harbor City",
+			"category": "landmark",
+			"position": Vector3(-79.0, 0.0, 17.0)
+		},
+		{
+			"id": "harbor_market",
+			"name": "Harbor Market",
+			"region": "Harbor City",
+			"category": "shop",
+			"position": Vector3(-81.0, 0.0, 21.0)
+		},
+		{
+			"id": "nora_blake",
+			"name": "Nora Blake",
+			"region": "Harbor City",
+			"category": "mission",
+			"position": Vector3(-75.0, 0.0, 11.0)
+		},
+		{
+			"id": "sapphire_cafe",
+			"name": "Sapphire Coast Cafe",
+			"region": "Sapphire Coast",
+			"category": "service",
+			"position": Vector3(-50.0, 0.0, -19.0)
+		},
+		{
+			"id": "pine_cabin",
+			"name": "Pine Highlands Cabin",
+			"region": "Pine Highlands",
+			"category": "rest",
+			"position": Vector3(14.0, 0.0, -18.0)
+		},
+		{
+			"id": "amber_farm",
+			"name": "Amber Valley Farm",
+			"region": "Amber Valley",
+			"category": "farm",
+			"position": Vector3(113.0, 0.0, -18.0)
+		}
+	]
+
+
+func get_road_graph() -> Dictionary:
+	var points: Array[Dictionary] = get_points_of_interest()
+	var road_x_values: Array[float] = [-128.0, -96.0, -64.0, -32.0, 0.0, 32.0, 64.0, 96.0, 128.0]
+	for point in points:
+		var position: Vector3 = point["position"]
+		road_x_values.append(position.x)
+	road_x_values.sort()
+
+	var unique_x_values: Array[float] = []
+	for x_value in road_x_values:
+		if unique_x_values.is_empty() or absf(unique_x_values[unique_x_values.size() - 1] - x_value) > 0.01:
+			unique_x_values.append(x_value)
+
+	var nodes: Array[Dictionary] = []
+	var edges: Array[Dictionary] = []
+	var road_node_ids: Dictionary = {}
+	for x_value in unique_x_values:
+		var node_id := "road_%d" % roundi(x_value)
+		road_node_ids[roundi(x_value)] = node_id
+		nodes.append({"id": node_id, "position": Vector3(x_value, 0.0, 0.0), "kind": "road"})
+
+	for index in range(unique_x_values.size() - 1):
+		var from_x := unique_x_values[index]
+		var to_x := unique_x_values[index + 1]
+		var from_id := str(road_node_ids[roundi(from_x)])
+		var to_id := str(road_node_ids[roundi(to_x)])
+		edges.append({
+			"id": "road_segment_%02d" % index,
+			"from": from_id,
+			"to": to_id,
+			"cost": absf(to_x - from_x)
+		})
+
+	# Add a connected north/south and east/west street grid. The original
+	# east/west corridor remains the arterial road and all POI access spurs
+	# keep their stable IDs for existing closure tests.
+	var grid_x_values: Array[float] = [-96.0, -32.0, 32.0, 96.0]
+	var grid_z_values: Array[float] = [-24.0, 0.0, 24.0]
+	for grid_x in grid_x_values:
+		for grid_z in grid_z_values:
+			nodes.append({
+				"id": _grid_node_id(grid_x, grid_z),
+				"position": Vector3(grid_x, 0.0, grid_z),
+				"kind": "intersection"
+			})
+		var center_node := _grid_node_id(grid_x, 0.0)
+		edges.append({
+			"id": "grid_connector_%d" % roundi(grid_x),
+			"from": str(road_node_ids[roundi(grid_x)]),
+			"to": center_node,
+			"cost": 1.0
+		})
+		for z_index in range(grid_z_values.size() - 1):
+			var from_z: float = grid_z_values[z_index]
+			var to_z: float = grid_z_values[z_index + 1]
+			edges.append({
+				"id": "grid_vertical_%d_%d" % [roundi(grid_x), z_index],
+				"from": _grid_node_id(grid_x, from_z),
+				"to": _grid_node_id(grid_x, to_z),
+				"cost": to_z - from_z
+			})
+
+	for grid_z in [-24.0, 24.0]:
+		for x_index in range(grid_x_values.size() - 1):
+			var from_x: float = grid_x_values[x_index]
+			var to_x: float = grid_x_values[x_index + 1]
+			edges.append({
+				"id": "grid_cross_%d_%d" % [roundi(grid_z), x_index],
+				"from": _grid_node_id(from_x, grid_z),
+				"to": _grid_node_id(to_x, grid_z),
+				"cost": to_x - from_x
+			})
+
+	for point in points:
+		var point_id := str(point["id"])
+		var point_position: Vector3 = point["position"]
+		var road_node_id := str(road_node_ids[roundi(point_position.x)])
+		var poi_node_id := "poi_" + point_id
+		nodes.append({"id": poi_node_id, "position": point_position, "kind": "poi"})
+		edges.append({
+			"id": "access_" + point_id,
+			"from": road_node_id,
+			"to": poi_node_id,
+			"cost": point_position.distance_to(Vector3(point_position.x, 0.0, 0.0))
+		})
+
+	return {"nodes": nodes, "edges": edges}
+
+
+func _grid_node_id(x_value: float, z_value: float) -> String:
+	return "grid_%d_%d" % [roundi(x_value), roundi(z_value)]
+
+
+func _create_street_grid() -> void:
+	var road_material := _make_material(Color(0.14, 0.16, 0.17))
+	var marking_material := _make_material(Color(0.82, 0.75, 0.56))
+	for x_value in [-96.0, -32.0, 32.0, 96.0]:
+		var vertical_road := MeshInstance3D.new()
+		vertical_road.name = "NorthSouthStreet_%d" % roundi(x_value)
+		var vertical_mesh := BoxMesh.new()
+		vertical_mesh.size = Vector3(5.0, 0.07, 54.0)
+		vertical_road.mesh = vertical_mesh
+		vertical_road.position = Vector3(x_value, 0.052, 0.0)
+		vertical_road.material_override = road_material
+		add_child(vertical_road)
+		for z_value in [-18.0, -6.0, 6.0, 18.0]:
+			var center_line := MeshInstance3D.new()
+			var line_mesh := BoxMesh.new()
+			line_mesh.size = Vector3(0.10, 0.02, 3.0)
+			center_line.mesh = line_mesh
+			center_line.position = Vector3(x_value, 0.10, z_value)
+			center_line.material_override = marking_material
+			add_child(center_line)
+
+	for z_value in [-24.0, 24.0]:
+		var cross_road := MeshInstance3D.new()
+		cross_road.name = "EastWestStreet_%d" % roundi(z_value)
+		var cross_mesh := BoxMesh.new()
+		cross_mesh.size = Vector3(198.0, 0.07, 5.0)
+		cross_road.mesh = cross_mesh
+		cross_road.position = Vector3(0.0, 0.052, z_value)
+		cross_road.material_override = road_material
+		add_child(cross_road)
+
+
+func _create_access_roads() -> void:
+	var material := _make_material(Color(0.17, 0.18, 0.18))
+	for point in get_points_of_interest():
+		var point_position: Vector3 = point["position"]
+		if absf(point_position.z) < 0.5:
+			continue
+		var access_road := MeshInstance3D.new()
+		access_road.name = "AccessRoad_" + str(point["id"])
+		var road_mesh := BoxMesh.new()
+		road_mesh.size = Vector3(5.0, 0.08, absf(point_position.z))
+		access_road.mesh = road_mesh
+		access_road.position = Vector3(point_position.x, 0.055, point_position.z * 0.5)
+		access_road.material_override = material
+		add_child(access_road)
 
 
 func _create_region(index: int) -> void:

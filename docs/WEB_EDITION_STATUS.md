@@ -1,3 +1,87 @@
+
+---
+
+## Verified navigation baseline — PR #41 passed — 2026-11-23
+
+- PR #41: https://github.com/dzdfast-art/GTA-GHIBLI/pull/41 — Draft/open/unmerged; stacked on PR #40.
+- Tested branch-head run: https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45230635607 — PASS.
+- Security audit: https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45230669321 — PASS.
+- Tested PR #41 head: ba9396d61c0e72491c7fdc10a8e31d914b647ce0.
+- Godot import, JSON/research checks, foundation gameplay regression, WebAssembly export, export-file verification, Chromium/WebGL2 smoke test, package measurement and cleanup all passed.
+- Added regression evidence: GPS turns identified left/right on a controlled graph; the lighthouse route shows the expected right-turn prompt and HUD displays the next turn with remaining distance.
+- Chromium reported a 1280x720 Godot canvas with WebGL2, keyboard/mouse/map input delivered, no runtime errors and no external requests. This is not full-game or cross-browser acceptance.
+- PR #41 Web ZIP: 10,297,171 bytes (10.297 MB decimal / 9.820 MiB); uncompressed export: 39,893,174 bytes (38.045 MiB); seven files; SHA-256 d7e6bb4bde4868214c98639dd89bf8e3d3c7b40638a4f5f363dfe5af62a0c823.
+- CI artifact list for run 45230635607 was empty; temporary Web export directory was removed after measurement.
+
+## Next increment — PR #42 road closures and one-way edges — CI pending
+
+- PR #42 candidate branch: feature/web-gps-road-closures-20261123, stacked on PR #41 branch feature/web-gps-turn-guidance-20261123.
+- Route graph validation now supports bidirectional, forward-only and reverse-only edges; duplicate IDs and unsupported direction values are rejected.
+- The planner supports runtime edge blocking/unblocking. A* skips blocked edges and recalculates from the current position; the game root exposes set_road_edge_blocked for gameplay/world systems.
+- Regression coverage added for a live closure clearing the active HUD/map route, reopening restoring it, a synthetic alternate path selected after a closure, unreachable status when all paths close, and enforcement of a one-way edge.
+- The current actual world remains a single starter corridor with six access spurs and has no alternate street grid/closure simulation. The alternate-route test uses a controlled graph until the world topology grows.
+- PR #42 code is IMPLEMENTED — CI NOT YET VERIFIED.
+
+---
+
+## Verified navigation baseline — PR #40 passed — 2026-11-23
+
+- PR #40: https://github.com/dzdfast-art/GTA-GHIBLI/pull/40 — Draft/open/unmerged, stacked on PR #39.
+- Tested PR #40 merge-ref run: https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45229951546 — PASS.
+- Security audit: https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45229951201 — PASS.
+- Tested PR #40 head: 1b84a1e5cdb06b8180ab49d017546ff667b7e0ab.
+- Godot import, foundation regression, WebAssembly export, export-file verification, Chromium/WebGL2 localhost smoke, size/hash measurement and temporary build cleanup all passed.
+- Foundation regression specifically confirms all six POIs reachable on the starter road graph, out-of-range snap rejected, road distance and route geometry updated on full map/minimap, player movement, sedan entry/drive/exit, Mission 001 reward idempotency and mission-stage/wallet restoration.
+- Chromium confirms a 1280x720 WebGL2 canvas, keyboard/mouse/map event delivery, no runtime errors and no external requests. This is a smoke test, not complete-game or cross-browser acceptance.
+- PR #40 measured Web ZIP 10,294,008 bytes (10.294 MB decimal / 9.817 MiB); uncompressed export 39,889,958 bytes (38.042 MiB); seven export files; ZIP SHA-256 b697d7c4c1ed810299757a5b3ca28581d1842185117e97db1dd670c2220f4b11.
+- CI artifact listing for PR #40 returned no artifacts; the export folder was deleted on the runner after measurement.
+
+## Next increment — PR #41 basic turn guidance — CI pending
+
+- PR #41: https://github.com/dzdfast-art/GTA-GHIBLI/pull/41 — draft branch feature/web-gps-turn-guidance-20261123, stacked on PR #40.
+- Added route-derived left/right maneuver data to the A* result, excluding near-straight and near-reversal bends.
+- The gameplay HUD now displays the next turn instruction and its remaining distance; when the route has no remaining turn, it displays continuation guidance. Unreachable routes produce a no-connected-road-route message.
+- Regression coverage added for left and right turns in an isolated three-node graph, the lighthouse route's right turn and HUD instruction/distance.
+- This increment is IMPLEMENTED — CI NOT YET VERIFIED. It is only basic turn guidance on the tiny starter corridor/access-spur graph, not full navigation voice prompts or comprehensive step-by-step guidance.
+
+---
+
+## Authoritative status update — 2026-11-23 — PR #40 road-graph GPS (CI pending)
+
+This section is the current status snapshot for the Web Edition. Older entries below are retained as historical records and may describe earlier branches, CI runs or delivery rules.
+
+### Current branch and review stack
+- PR #39: [Add interactive world map and selectable waypoints](https://github.com/dzdfast-art/GTA-GHIBLI/pull/39), open, Draft, unmerged; head 5f3a8dd5e135feb2af0cd09c426a007cc11185d4.
+- PR #40 candidate branch: feature/web-road-graph-gps-20261123, based on the PR #39 head. PR #40 is intended to stack on PR #39 rather than repeat its entire diff against main.
+- main has not been edited or merged by this work.
+- Godot/Web edition only. No Android export or phone acceptance is included.
+
+### Verified previous baseline
+- PR #39 Web CI: [run 45221217715](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45221217715) — PASS.
+- The completed Chromium localhost step reported WebGL 2 initialisation, delivery of keyboard/mouse/map input, no browser runtime errors and no external requests.
+- The same run reported a 10,284,365-byte Web ZIP (10.284 MB decimal), an uncompressed export of 39,880,082 bytes (38.033 MiB), and ZIP SHA-256 43286ecfabf9905a519eab051bf3a4f128739a9883ad22d015796fae81590202.
+- Security audit: [run 45221217828](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45221217828) — PASS.
+- These are PR #39 measurements, not measurements for PR #40.
+
+### Navigation increment — implemented, awaiting CI
+- Added web-edition/scripts/world/route_planner.gd: a small A* route planner with graph validation, bounded nearest-node snapping, road-edge costs, reconstructed route geometry, route distance and explicit unreachable results.
+- Added road graph data in world_builder.gd: a bidirectional east-west starter corridor plus six point-of-interest access spurs.
+- Added visible access-road strips from the corridor to the six current points of interest.
+- Connected waypoint selection and player movement to route recalculation, with route geometry drawn on the full map and minimap.
+- HUD distance now identifies a road route rather than a straight-line distance.
+- Expanded web_foundation_test.gd to check graph completeness, reachability of all six points of interest, bounded-snap rejection, route distance beyond direct distance for the lighthouse route, and route propagation to both maps.
+- These code changes are IMPLEMENTED — CI NOT YET VERIFIED at the time of this status entry. Do not describe the new GPS as tested until PR #40 CI completes successfully.
+
+### Navigation limits that remain
+- This graph models only the existing straight east-west corridor and six simple access spurs.
+- Full local streets, intersections, junction turn restrictions, one-way roads, closures, alternate routes, dynamic obstacles, pedestrian paths, voice guidance and turn-by-turn instructions remain unimplemented.
+- The current bounded nearest-node snap is 36 world units for gameplay route updates. A distant start or destination can be correctly reported as unreachable; this is not a complete GPS for the eventual open world.
+
+### CI package privacy correction
+- PR #39 run 45221217715 created Actions artifact ID 14839509383, named GTA-GHIBLI-Web-Edition, size 10,284,845 bytes, with recorded expiry 2026-12-07T16:53:58Z. Because the repository is public, it must be treated as downloadable by the public until expiry.
+- The available GitHub actions in this session expose artifact listing and download, but not artifact deletion. The existing PR #39 artifact has therefore NOT been deleted; no claim of deletion is made.
+- PR #40 updates the workflow to stop uploading Actions artifacts and to remove the temporary Web export directory on the runner after measurement. This correction applies to subsequent workflow runs; it does not retroactively remove artifact ID 14839509383.
+- No Pages, Vercel or other public game deployment was created.
 # GTA GHIBLI Web Edition — Verified Status Ledger
 
 Updated: 2026-11-22 — minimap milestone under CI verification from `28d3c9acb133f8a2bd9255dd0f500433e2bd05c3`  
