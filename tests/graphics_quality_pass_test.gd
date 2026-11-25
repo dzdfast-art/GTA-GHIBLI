@@ -8,6 +8,16 @@ func _initialize() -> void:
 
 
 func _run_test() -> void:
+	# Keep GLES3 scene shader uniforms below the observed Android hardware cap.
+	var max_lights_per_object := int(ProjectSettings.get_setting("rendering/limits/opengl/max_lights_per_object", 8))
+	var max_renderable_lights := int(ProjectSettings.get_setting("rendering/limits/opengl/max_renderable_lights", 32))
+	if max_lights_per_object > 4:
+		_fail("The GLES3 per-object light budget must be 4 or lower; found %d." % max_lights_per_object)
+		return
+	if max_renderable_lights > 16:
+		_fail("The GLES3 visible-light budget must be 16 or lower; found %d." % max_renderable_lights)
+		return
+
 	var main := MAIN_SCENE.instantiate() as Node3D
 	root.add_child(main)
 	await process_frame
