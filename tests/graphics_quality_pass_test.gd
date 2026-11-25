@@ -97,7 +97,7 @@ func _run_test() -> void:
 		return
 	var sidewalk_count := 0
 	for child in harbor_street.get_children():
-		if child.name.to_string().begins_with("Sidewalk_"):
+		if str(child.name).begins_with("Sidewalk_"):
 			sidewalk_count += 1
 	if sidewalk_count != 2:
 		_fail("Both raised harbor sidewalks must be present; found %d." % sidewalk_count)
