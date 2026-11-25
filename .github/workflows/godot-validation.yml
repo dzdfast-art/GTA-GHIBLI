@@ -86,11 +86,13 @@ jobs:
             res://scripts/systems/interactable_door.gd \
             res://scripts/systems/carryable_prop.gd \
             res://scripts/systems/npc_brain.gd \
+            res://scripts/systems/player_vitals.gd \
             res://scripts/systems/player_needs.gd \
             res://scripts/systems/consumable_inventory.gd \
             res://scripts/systems/player_wallet.gd \
             res://scripts/world/consumable_shop.gd \
             res://scripts/camera/third_person_camera.gd \
+            res://scripts/ui/minimap_widget.gd \
             res://scripts/ui/mobile_controls.gd \
             res://scripts/ui/pause_settings_menu.gd \
             res://scripts/ui/virtual_joystick.gd \
