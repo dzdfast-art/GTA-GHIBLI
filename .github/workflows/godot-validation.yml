@@ -97,6 +97,7 @@ jobs:
             res://scripts/ui/mobile_controls.gd \
             res://scripts/ui/pause_settings_menu.gd \
             res://scripts/ui/virtual_joystick.gd \
+            res://scripts/world/reference_mission_marker.gd \
             res://scripts/world/willow_village.gd \
             res://scripts/characters/mira_npc.gd \
             res://scripts/characters/world_npc_actor.gd \
