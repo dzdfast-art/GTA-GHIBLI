@@ -21,8 +21,8 @@ func _run_test() -> void:
 		_fail("The ambient fill light is below the configured minimum.")
 		return
 	var sun := main.get_node_or_null("GhibliVisualPass/GhibliDaylightSun") as DirectionalLight3D
-	if sun == null or not sun.shadow_enabled or sun.light_energy <= 0.0:
-		_fail("The daylight sun or its real-time shadows are missing.")
+	if sun == null or sun.shadow_enabled or sun.light_energy <= 0.0:
+		_fail("The Android-safe daylight sun must be enabled without real-time shadows on GLES3.")
 		return
 
 	var player := main.get_node_or_null("Player") as CharacterBody3D
