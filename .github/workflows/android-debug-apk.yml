@@ -188,7 +188,7 @@ jobs:
           script: bash tools/android_emulator_smoke.sh
 
       - name: Upload Android emulator smoke evidence
-        if: always() && steps.launch-emulator.outcome == 'success'
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: GTA-GHIBLI-Android-emulator-evidence
@@ -198,5 +198,7 @@ jobs:
             build/emulator-meminfo.txt
             build/emulator-screenshot.png
             build/emulator-logcat.txt
+            build/emulator-logcat-full.txt
+            build/emulator-diagnostics-on-failure.txt
           if-no-files-found: warn
           retention-days: 14
