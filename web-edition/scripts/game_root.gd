@@ -546,7 +546,7 @@ func report_crime(severity: int = 1) -> int:
 	var level: int = get_runtime_system("wanted_level").call("add_crime", severity)
 	if level > 0:
 		var pursuit: RefCounted = get_runtime_system("police_pursuit")
-		if str(pursuit.get("state")) == "idle":
+		if str(pursuit.get("state")) in ["idle", "lost"]:
 			pursuit.call("start", _player.global_position)
 		get_runtime_system("hud_state").call("set_wanted", level)
 		_hud.call("show_notification", "Wanted level — " + "★".repeat(level))

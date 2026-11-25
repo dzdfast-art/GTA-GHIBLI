@@ -18,6 +18,18 @@ func _run() -> void:
 	if player == null or not bool(player.call("has_runtime_services")):
 		_fail("Player controller is not bound to player-vitals and camera-follow services.")
 		return
+	var camera_pivot := player.get("_camera_pivot") as Node3D
+	if camera_pivot == null or camera_pivot.get_parent() != game:
+		_fail("Camera pivot must be independent from the player so camera-follow smoothing is active.")
+		return
+	var camera_before := camera_pivot.global_position
+	player.global_position += Vector3(5.0, 0.0, 0.0)
+	player.call("_process", 0.10)
+	var camera_after := camera_pivot.global_position
+	if camera_after.x <= camera_before.x or camera_after.x >= player.global_position.x:
+		_fail("Camera-follow service did not smoothly track player translation.")
+		return
+	player.global_position -= Vector3(5.0, 0.0, 0.0)
 
 	var vehicles := game.get_tree().get_nodes_in_group("drivable_vehicles")
 	if vehicles.is_empty():
@@ -65,6 +77,14 @@ func _run() -> void:
 	game.call("advance_simulation", 0.1)
 	if str(pursuit.get("state")) != "searching":
 		_fail("Police pursuit did not transition to searching after losing visual contact.")
+		return
+	game.call("advance_simulation", 21.0)
+	if str(pursuit.get("state")) != "lost":
+		_fail("Police pursuit did not transition to lost after its search timeout.")
+		return
+	game.call("report_crime", 1)
+	if str(pursuit.get("state")) != "pursuing":
+		_fail("A new crime did not restart a completed police-pursuit state.")
 		return
 	var wanted = game.call("get_runtime_system", "wanted_level")
 	if int(wanted.call("get_level")) != int(game.call("get_runtime_system", "hud_state").get("wanted")):

@@ -252,9 +252,15 @@ func _create_character() -> void:
 func _create_camera() -> void:
 	_camera_pivot = Node3D.new()
 	_camera_pivot.name = "CameraPivot"
-	_camera_pivot.position = Vector3(0.0, 1.55, 0.0)
 	_camera_pivot.rotation.x = -0.16
-	add_child(_camera_pivot)
+	# Keep the pivot outside the player hierarchy so the follow service can smooth
+	# world-space movement instead of inheriting the player's translation instantly.
+	var camera_parent: Node = get_parent()
+	if camera_parent != null:
+		camera_parent.add_child(_camera_pivot)
+	else:
+		add_child(_camera_pivot)
+	_camera_pivot.global_position = global_position + Vector3(0.0, 1.55, 0.0)
 
 	_spring_arm = SpringArm3D.new()
 	_spring_arm.spring_length = 6.5
