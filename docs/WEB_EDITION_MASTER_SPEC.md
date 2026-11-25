@@ -259,3 +259,70 @@ The save backend is accepted only after both native process-restart coverage and
 The browser probe scene and scripts are CI-only test material and must be excluded from the normal Web delivery package. The CI workflow may temporarily select the probe scene and include test resources for its dedicated export, but it must restore the production project and export preset before measuring the main-game package and must delete both temporary exports after validation.
 
 A successful Chromium reload proves persistence only in the tested IndexedDB-enabled Chromium context. Private browsing, blocked storage, quota exhaustion, browser-process restart, Firefox and Safari remain separate acceptance gates until directly tested. Do not use `OS.is_userfs_persistent()` as sole proof of durability; Godot 4.7 documents that this check can be a false positive.
+
+
+## Browser save persistence and user-visible fallback
+
+The Web Edition must keep save slots under Godot's `user://` directory. In Web exports, Godot maps this virtual filesystem to browser-managed IndexedDB storage. This storage is local to the browser origin and must not be described as cloud or account-synced storage.
+
+The live HUD must show an explicit status rather than silently implying that every successful file write will survive a browser restart:
+
+- If `OS.is_userfs_persistent()` reports persistent storage, show that browser storage is available but may still be cleared by the browser.
+- If it reports non-persistent storage, show a session-only warning and tell the player to allow browser storage.
+- If a save write fails, show a visible save error.
+- Provide Arabic and English status messages.
+
+Important limitation: Godot documents that `OS.is_userfs_persistent()` can return false positives. It is a status hint, not the sole acceptance proof. A real browser test must save state through the actual game scene, reload the page at the same origin, and verify that the saved gameplay state is restored. The current Chromium gate does this for selected live-game fields in one persistent browser context. It does not prove a full browser close/reopen, a new browser profile, private browsing, blocked IndexedDB, storage-quota behavior, browser eviction, Firefox, or Safari.
+
+Godot's Web export documentation states that IndexedDB must be allowed for `user://` persistence; private browsing or blocked storage prevents persistence. If the game is embedded in an iframe, third-party storage restrictions may also apply. See [Godot 4.7 — Using cookies for data persistence](https://docs.godotengine.org/en/4.7/tutorials/export/exporting_for_web.html#using-cookies-for-data-persistence).
+
+The browser save status and page-reload probe are implemented in the current PR #111 review stack. Do not mark full save-system completion: the serializer covers multiple gameplay registries, but each live system still needs its own restore assertion, and the current browser probe verifies only selected state.
+
+
+## Preserved original gameplay, HUD and presentation requirements
+
+This section records the specific presentation and interaction requirements established in the earlier GTA GHIBLI brief. They remain requirements for the finished game even though the current delivery is Web-only. Where an earlier mobile control concept conflicts with the current Web keyboard/mouse acceptance scope, the control concept is retained as a deferred design requirement, not as a current test gate.
+
+### Title and pause menu
+
+- The in-game identity and title treatment must read **GTA GHIBLI**. Do not leave GTA San Andreas branding, copied logos, or stray franchise-title text in the finished interface.
+- The pause menu order is fixed: **RESUME → START NEW GAME → MAP → STATS → BRIEF → OPTIONS → QUIT GAME**.
+- Pause-menu visual treatment: black/dark background, gold typography, and a clearly visible white selection indicator.
+- The dialogue panel must use a yellow-gold treatment and integrate with the gameplay HUD rather than appearing as an unrelated debug overlay.
+
+### Gameplay HUD information hierarchy
+
+The supplied gameplay reference establishes the following information hierarchy, which must be preserved in the final responsive Web HUD even if exact anchoring changes during visual QA:
+
+- A readable minimap with player marker/heading, destination and mission markers, and road-following GPS route information.
+- World time and player wallet, with the initial wallet value of **$350**.
+- A red health indicator and a clear equipped-item/weapon indicator, including the unarmed/fist state.
+- Mission objective, contextual interaction prompt, current region/location and dialogue/notification feedback.
+- Vehicle state and vehicle-specific status while driving; irrelevant on-foot or weapon prompts must not remain visible.
+
+The earlier reference placed the minimap in the upper-left and time/money/health/equipped-item information in the upper-right. The current Web HUD is still subject to visual review; do not call the reference layout matched until a screenshot-based review confirms it.
+
+### Player, camera and contextual controls
+
+- Use a third-person camera that follows behind the playable character, with camera-relative movement.
+- In the current Web phase, keyboard/mouse controls are the acceptance target: WASD movement, Shift sprint, Space jump, E interaction, right-mouse camera orbit and mouse-wheel zoom; M toggles the map.
+- Camera look input must be isolated from locomotion input. Pressing movement keys must not cause unintended camera rotation or drift. Camera orbit/zoom must respond only to the intended look/zoom inputs, and camera collision/obstruction handling must prevent the camera entering walls or geometry.
+- Contextual prompts must reflect the player's current state: on foot, riding a bicycle, driving each vehicle class, or using a weapon/item. Show only actions that are valid in that state, including the correct enter/exit and vehicle-control prompts.
+- A generic character-outfit reference from the supplied gameplay clip was a light sleeveless top, blue trousers and dark shoes. Treat this only as a broad clothing/color reference for an original Leo Bennett design; do not recreate a protected character or copy Rockstar character assets.
+
+### Deferred touch-control design
+
+The earlier design brief also named vehicle-steering choices **ANALOG / BUTTONS / FLICK** and required the selected choice to persist. Preserve this as a future optional browser-touch control feature. It is not a current Web acceptance gate, does not require a physical phone, and must not reintroduce Android/APK or real-device testing into the current phase. Keyboard/mouse remains the required control path for this delivery.
+
+### World interaction and activity breadth
+
+The finished game must provide a coherent open-world activity loop rather than repeated decorative scenes: characters and mission interactions; multiple original mission types; cars and other supported vehicle classes; gangs/factions and territories; shops and services; enterable interiors; police/wanted response; side activities and collectibles; and meaningful interactions with vehicles, people, nature, food and world objects. These systems must use persistent, testable gameplay state. A static prop, label or menu entry alone does not count as a functional interaction.
+
+### Arabic performance and environmental audio
+
+- Important dialogue must be voiced in Arabic, not delivered only as written Arabic text. Main characters need consistent voice identities and expressive performance across joy, sadness, fear, anger, surprise and tenderness.
+- Dialogue, subtitles and localization must remain synchronized and support correct Arabic shaping and RTL layout.
+- Environmental sound must respond to time and region, including sunrise/morning ambience, realistic nature and everyday-life ambience, and distinct night ambience. Add original/appropriately licensed effects for vehicles, footsteps, doors, interactions, missions and UI.
+- Synthetic speech must be identified as synthetic; it must not be presented as human voice acting. No silent or empty audio placeholder counts as completed dubbing.
+
+These are final-game requirements, not claims that the current Web foundation already implements them. Their implementation and verification status must remain explicit in `docs/WEB_EDITION_STATUS.md`.

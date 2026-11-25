@@ -7,6 +7,21 @@ const SAVE_DIRECTORY: String = "user://gta_ghibli_web_saves"
 var slots: Dictionary = {}
 
 
+func is_storage_persistent() -> bool:
+	return OS.is_userfs_persistent()
+
+
+func get_storage_status_message(persistent: bool, is_web: bool, language: String, save_succeeded: bool) -> String:
+	var arabic := language.begins_with("ar")
+	if not save_succeeded:
+		return "تعذّر الحفظ — تحقّق من تخزين المتصفح" if arabic else "SAVE FAILED — check browser storage"
+	if not is_web:
+		return "حفظ محلي — على هذا الجهاز" if arabic else "LOCAL SAVE — stored on this device"
+	if not persistent:
+		return "حفظ مؤقت فقط — اسمح بتخزين المتصفح" if arabic else "SESSION ONLY — allow browser storage"
+	return "تخزين المتصفح متاح — قد يمسح المتصفح البيانات" if arabic else "BROWSER STORAGE — may be cleared by browser"
+
+
 func save_slot(slot_id: String, payload: Dictionary, timestamp: int) -> bool:
 	if not _is_valid_slot_id(slot_id) or timestamp < 0:
 		return false

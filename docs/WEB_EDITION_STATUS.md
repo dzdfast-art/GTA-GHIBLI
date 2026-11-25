@@ -1,54 +1,76 @@
-# Current authoritative snapshot — 2026-11-24 — PR #105 save-slot hardening
+# GTA GHIBLI Web Edition — Verified Status Ledger
 
-This block supersedes the older branch/PR snapshots below. Historical entries are retained, but their PR #35 Draft/open and PR #42 pending descriptions no longer represent the current repository state.
+Updated: 2026-11-25 — browser save-persistence feedback and Chromium reload verification  
+Current game root: `web-edition/` — Godot 4.7, single-threaded WebAssembly, Compatibility renderer / WebGL 2
 
 ## Repository and review state
 
-- `main`: `e35a0ca72d8209f2a6b8295f6a1f89091b563f24`; unchanged by this run.
-- PR #35: closed and merged on 2026-11-22 at 13:56:51 UTC. The former clean-start branch `web/standalone-from-empty-2026-11-22` now points to `9cdcec813aa874532e9c4c5d3113f967a9a0a26a`; it is not the active development head.
-- Current active review: [PR #105](https://github.com/dzdfast-art/GTA-GHIBLI/pull/105), Draft/open/unmerged.
-- Active branch: `feature/web-durable-save-slots-20261124`.
-- Tested code head before this documentation-only update: `359870a666c7ceeb25f15f13aee9aa49143520d0`.
-- PR #105 is stacked on PR #104 branch `fix/web-pr50-100-tests-strict-20261124` at `34e3561699699ed3546a5a8a1b131937ffa433c7`. The stacked PRs remain open; no merge was performed.
-- All game code changed in this increment remains under `web-edition/**`. The other changes are Web CI and Web Edition documentation only. No Android/APK build, public deployment or public game download was created.
+- `main`: `e4c26a0e4e9d6945233b3032ed6966a7356103ab`; unchanged by this increment.
+- PR #35 was closed and merged on 2026-11-22 at 13:56:51 UTC. The original clean-start branch `web/standalone-from-empty-2026-11-22` currently points to `9cdcec813aa874532e9c4c5d3113f967a9a0a26a`; it is no longer the active review head.
+- Active Web review chain: PR #105 (durable save backend) → PR #108 (live-game state integration) → PR #109 (Chromium page-reload verification) → [PR #111](https://github.com/dzdfast-art/GTA-GHIBLI/pull/111) (storage-status feedback).
+- PR #111 is Draft/open/unmerged. Branch: `feature/web-save-persistence-warning-20261125`. Code changes were introduced at `fb16cf06a3d6d03404bb7e58900d4b38de4f90aa`; the last fully verified PR head before this ledger refresh was `24ed445c5edc48d97692e91e62abe0015471dbfe`.
+- PR #111 is stacked on PR #109 branch `feature/web-browser-save-reload-20261125` at `bbf4959b43fd768798bdba706b592ae5dccf2925`. No merge or approval was performed.
+- The original PR #35 state supplied in the earlier request is historical, not current. No changes from this increment were written to `main`.
+- All game-code and regression-test changes in PR #111 are under `web-edition/**`; the only outside code change is the local Chromium save/reload CI helper. No Android/APK build, public deployment, Pages/Vercel hosting or public Web download was created.
 
-## Save-system status
+## Current save-persistence status
 
 | System | Status | Evidence and boundary |
 |---|---|---|
-| Versioned local save-slot backend | **TESTED** | JSON envelope v1, payload SHA-256, safe slot IDs, non-negative timestamps, deep-copy round-trip |
-| Atomic replacement and backup recovery | **TESTED** | Temporary-file write, previous-save backup, corrupt-primary recovery |
-| Save schema migration | **TESTED** | Version-zero payload migrates to version one |
-| Invalid/empty JSON payload handling | **TESTED** | Invalid JSON is rejected; a valid empty dictionary remains valid |
-| Process restart | **TESTED — native runner** | A writer and a separate Godot reader process restore nested player, missions, wallet, inventory, vehicle, world and activity fixture data |
-| Live-game autosave | **PARTIALLY IMPLEMENTED** | The game-root wallet-change hook stores only Mission 001 stage and wallet |
-| Whole-game state integration | **PLANNED** | Player transform/vitals, all mission progress, inventory, NPCs, active vehicles, activities and world state are not yet wired into live save/restore |
-| Browser IndexedDB reload persistence | **NOT VERIFIED** | Chromium smoke test does not reload the page or prove save survival across browser sessions |
+| Versioned `user://` save-slot backend | **TESTED** | JSON envelope v1, SHA-256 integrity, safe slot IDs, atomic replacement, backup recovery and schema migration |
+| Native process-restart fixture | **TESTED** | A separate Godot writer and reader process restore nested save data |
+| Live-game state capture/restore | **PARTIALLY IMPLEMENTED — TESTED for selected fields** | Chromium probe verifies player transform, Mission 001 stage/wallet, health/stamina, time/weather, weapon inventory, one activity, landmark discovery, NPC relationship, wanted level, mission objective/reward, language setting, vehicle transform and active-vehicle state |
+| Chromium page-reload persistence | **TESTED — same browser context and origin** | CI writes through the actual game scene, reloads the page, then checks that the same selected live-game state is restored |
+| User-visible storage status | **TESTED** | HUD distinguishes browser storage, session-only storage and write failure; English and Arabic warning strings are covered by GDScript regression tests |
+| Godot `OS.is_userfs_persistent()` signal | **TESTED as a status hint** | The Chromium probe reports `true` before and after page reload in the normal CI context; Godot documents that this method can produce false positives |
+| Private/blocked IndexedDB behavior | **NOT VERIFIED** | No browser run has yet denied IndexedDB or simulated private-mode storage restrictions |
+| Browser close/reopen or a new browser context | **NOT VERIFIED** | Current browser persistence gate reloads the page inside one persistent Playwright context; it is not a full browser restart test |
+| Complete save/restore of all gameplay systems and Missions 001–004 | **PARTIALLY IMPLEMENTED** | The live serializer covers multiple registries, but the current reload probe verifies selected fields only; not every future entity/system is integrated or proven |
 
-The restart fixture's nested dictionaries are test data, not proof that the live game currently captures all those systems. Godot 4.7's Web documentation states that `user://` persistence depends on IndexedDB/storage permission; private browsing or blocked storage prevents persistence. `OS.is_userfs_persistent()` can be a false positive. See the [Godot 4.7 Web export persistence note](https://docs.godotengine.org/en/4.7/tutorials/export/exporting_for_web.html#using-cookies-for-data-persistence).
+### User-facing storage behavior
 
-## Verification — code head `359870a`
+- If Godot reports browser persistence, the HUD says that browser storage is available but may still be cleared by the browser.
+- If Godot reports that `user://` is not persistent, the HUD warns that saves are session-only and asks the player to allow browser storage.
+- A failed save write produces an explicit save-error message.
+- Arabic and English status messages are implemented.
+- `OS.is_userfs_persistent()` is not treated as proof by itself. Godot's documentation explicitly warns that it can give false positives. Actual page-reload restoration remains a separate CI check.
+- Godot's Web export documentation says IndexedDB must be allowed for `user://` persistence; private browsing and blocked storage prevent persistence. This specific blocked/private case remains untested in our browser gate. See [Godot 4.7 Web export — data persistence](https://docs.godotengine.org/en/4.7/tutorials/export/exporting_for_web.html#using-cookies-for-data-persistence).
 
-- Web CI [run 45372352700](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45372352700): **PASS** — Godot 4.7 import, JSON/research validation, all 59 GDScript regression tests, WebAssembly export, export-file verification, Chromium localhost/WebGL 2 smoke, package measurement and temporary cleanup.
-- Security audit [run 45372362353](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45372362353): **PASS** — Gitleaks reported no leaks.
-- The save-slot regression passed corruption recovery, invalid JSON payload rejection, empty payload round-trip, version migration and separate-process restart.
-- Chromium reported a 1280×720 canvas with WebGL 2, delivered WASD/right-mouse/map-key input, and reported no browser runtime errors or external network requests. This remains a smoke test, not full-game acceptance or a visual review.
-- The workflow rejected Godot `ERROR:` output after the parser was changed to use `JSON.parse()` result handling. The prior code head's corruption test had emitted a deliberate `ERROR: Parse JSON failed` line; that noise is absent from the passing hardened run.
+## Verification — tested PR head `24ed445`
 
-## Exact size measurements
+- Web CI push [run 45600494780](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45600494780): **PASS**.
+- Web CI pull-request [run 45600505696](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45600505696): **PASS**.
+- Security audit [run 45600505678](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45600505678): **PASS** — Gitleaks found no leaked secrets.
+- Godot 4.7 import, project JSON and research-helper validation passed.
+- **61 GDScript regression tests** ran with detection for `ERROR:`, parse errors, failed assertions and invalid calls. The new storage-status test passed.
+- WebAssembly export and HTML/JavaScript/WebAssembly/PCK verification passed.
+- Chromium initialized a 1280×720 WebGL 2 canvas, delivered keyboard/mouse/map input, and reported no browser runtime errors or external network requests.
+- The save-reload probe confirmed IndexedDB availability, read Godot's `user://` persistence flag as true before and after page reload, saved selected live-game state, reloaded the same local origin, restored the tested values, and removed its temporary autosave slot.
+- This is a repeatable Chromium page-reload test, not proof of browser-restart persistence, private/blocked-storage behavior, Firefox/Safari support, visual quality or full-game acceptance.
 
-- Tracked `web-edition/` source: 134 files, **213,789 bytes** (0.214 MB decimal).
-- Deduplicated unique source contents: 134 contents, **213,789 bytes** (0.204 MiB).
-- Uncompressed Web export: 7 files, **40,058,343 bytes** (38.203 MiB).
-- Compressed Web ZIP: **10,428,513 bytes** (10.429 MB decimal / 9.945 MiB).
-- ZIP SHA-256: `3c569e481f45f6de126a2a103569239db01e713de78ad7408ba2c6c0a8379a06`.
-- The 4 GB target is **not reached**. These measurements are source/export/package measurements, not an APK, cache or Git-internals measurement.
-- Web CI artifact listing was empty. The separate security audit produced only its Gitleaks SARIF report; no Web export or ZIP was uploaded. The runner cleanup step completed.
+## Exact size measurements from Web CI run 45600505696
 
-## Next technical step
+| Measurement | Bytes | Decimal MB | MiB |
+|---|---:|---:|---:|
+| Tracked `web-edition/` source | 260,667 | 0.261 | 0.249 |
+| Deduplicated unique source content | 260,667 | 0.261 | 0.249 |
+| Uncompressed Web export | 39,995,840 | 39.996 | 38.143 |
+| Compressed Web ZIP | 10,377,709 | 10.378 | 9.897 |
 
-Wire the save service to the live authoritative state in bounded increments, then add a Chromium test that saves, reloads the page and verifies recovery with IndexedDB enabled, plus a clear blocked-storage behavior. Keep the PR Draft until those checks pass and do not claim full-game persistence.
- 
+- Tracked source files: **138**; unique content blobs: **138**.
+- Export files: **8**.
+- ZIP SHA-256: `bc58102daffa0199b04f4f5014a04fe4db688d00f34d0d9a9b29d6643a696ca3`.
+- Web export and ZIP were created on the ephemeral runner, measured and deleted. The Web CI artifact list for run 45600505696 was empty. The security workflow produced only its 6,772-byte Gitleaks SARIF report, not a game export.
+- The 4 GB real-content target is **NOT REACHED**. Source bytes remain small; the Web export includes the Godot runtime and current game pack and must not be described as 40 MB of unique authored game content.
+
+## Next technical steps
+
+1. Add a Chromium test with IndexedDB deliberately blocked and verify that the game displays the session-only warning without claiming durable saves.
+2. Add a separate browser-context close/reopen test to distinguish page reload from a fresh browser session.
+3. Continue integrating every mission, player, NPC, vehicle, inventory, activity and world-state owner into the live save/restore contract, with per-system restart assertions.
+4. Continue expanding original world geometry, interiors, roads, character rigs/animations, real mission content and locally bundled audio. The current foundation systems are not a finished game.
+5. Add Firefox and Safari jobs only when suitable runners are available; do not claim cross-browser support before those jobs pass.
+
 ---
 
 

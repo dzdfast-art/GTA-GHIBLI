@@ -118,6 +118,7 @@ func _ready() -> void:
 	_sync_runtime_hud_state()
 	_restore_game_state()
 	_sync_runtime_hud_state()
+	_refresh_save_storage_status()
 	_record_runtime_acceptance()
 
 
@@ -447,7 +448,23 @@ func _save_game_state(force: bool = false) -> bool:
 	))
 	if saved:
 		_last_autosave_payload_json = payload_json
+	_refresh_save_storage_status(saved)
 	return saved
+
+
+func _refresh_save_storage_status(save_succeeded: bool = true) -> void:
+	if _hud == null:
+		return
+	var manager: RefCounted = get_runtime_system("save_slot_manager")
+	var settings: RefCounted = get_runtime_system("settings_profile")
+	if manager == null:
+		return
+	var persistent := bool(manager.call("is_storage_persistent"))
+	var language := str(settings.call("get_value", "language")) if settings != null else "en"
+	var message := str(manager.call(
+		"get_storage_status_message", persistent, OS.has_feature("web"), language, save_succeeded
+	))
+	_hud.call("set_save_storage_status", message, persistent, save_succeeded)
 
 
 func _capture_game_state() -> Dictionary:

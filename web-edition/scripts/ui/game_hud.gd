@@ -87,6 +87,7 @@ var _location_label: Label
 var _waypoint_label: Label
 var _guidance_label: Label
 var _cash_label: Label
+var _save_status_label: Label
 var _prompt_label: Label
 var _dialogue_label: Label
 var _notice_label: Label
@@ -124,10 +125,17 @@ func _ready() -> void:
 	status_panel.offset_left = -190.0
 	status_panel.offset_right = -22.0
 	status_panel.offset_top = 20.0
-	status_panel.offset_bottom = 76.0
+	status_panel.offset_bottom = 96.0
 	root.add_child(status_panel)
+	var status_column := VBoxContainer.new()
+	status_column.add_theme_constant_override("separation", 2)
+	status_panel.add_child(status_column)
 	_cash_label = _make_label("$350", 22, Color(1.0, 0.87, 0.47))
-	status_panel.add_child(_cash_label)
+	_save_status_label = _make_label("Checking save storage…", 10, Color(0.78, 0.88, 0.82))
+	_save_status_label.custom_minimum_size = Vector2(160.0, 20.0)
+	_save_status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	status_column.add_child(_cash_label)
+	status_column.add_child(_save_status_label)
 
 	_vehicle_label = _make_label("", 16, Color(0.90, 0.93, 0.98))
 	_vehicle_label.anchor_left = 1.0
@@ -136,8 +144,8 @@ func _ready() -> void:
 	_vehicle_label.anchor_bottom = 0.0
 	_vehicle_label.offset_left = -250.0
 	_vehicle_label.offset_right = -22.0
-	_vehicle_label.offset_top = 88.0
-	_vehicle_label.offset_bottom = 118.0
+	_vehicle_label.offset_top = 102.0
+	_vehicle_label.offset_bottom = 132.0
 	_vehicle_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	root.add_child(_vehicle_label)
 
@@ -147,8 +155,8 @@ func _ready() -> void:
 	minimap_panel.anchor_right = 1.0
 	minimap_panel.offset_left = -218.0
 	minimap_panel.offset_right = -22.0
-	minimap_panel.offset_top = 132.0
-	minimap_panel.offset_bottom = 286.0
+	minimap_panel.offset_top = 144.0
+	minimap_panel.offset_bottom = 298.0
 	root.add_child(minimap_panel)
 	_minimap = MinimapCanvas.new()
 	_minimap.name = "WorldMinimap"
@@ -229,6 +237,20 @@ func set_location(text: String) -> void:
 
 func set_wallet(amount: int) -> void:
 	_cash_label.text = "$" + str(amount)
+
+
+func set_save_storage_status(message: String, persistent: bool, save_succeeded: bool) -> void:
+	if _save_status_label == null:
+		return
+	_save_status_label.text = message
+	var color := Color(0.78, 0.88, 0.82)
+	if not save_succeeded or not persistent:
+		color = Color(1.0, 0.72, 0.42)
+	_save_status_label.add_theme_color_override("font_color", color)
+
+
+func get_save_storage_status_text() -> String:
+	return _save_status_label.text if _save_status_label != null else ""
 
 
 func set_prompt(text: String) -> void:
