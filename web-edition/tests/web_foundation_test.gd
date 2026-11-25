@@ -362,6 +362,9 @@ func _run() -> void:
 	if player.get("_driven_vehicle") != vehicle:
 		_fail("E interaction did not enter the nearby starter sedan.")
 		return
+	if player.collision_layer != 0 or player.collision_mask != 0:
+		_fail("The on-foot player collision body remained active inside the sedan.")
+		return
 
 	var vehicle_start: Vector3 = vehicle.global_position
 	Input.action_press("move_forward")
@@ -375,6 +378,9 @@ func _run() -> void:
 	player.call("_try_interact")
 	if player.get("_driven_vehicle") != null:
 		_fail("E interaction did not exit the starter sedan.")
+		return
+	if player.collision_layer != 1 or player.collision_mask != 1:
+		_fail("The on-foot player collision body was not restored after exiting the sedan.")
 		return
 
 	missions.call("reset_progress")
