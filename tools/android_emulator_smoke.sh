@@ -46,7 +46,11 @@ fi
 tap_x=$((screen_width * 7 / 8))
 tap_y=$((screen_height / 2))
 echo "Attempting to dismiss any first-run system prompt at $tap_x,$tap_y on ${screen_width}x${screen_height} display."
-adb shell input tap "$tap_x" "$tap_y"
+# Dismissing the Android first-run prompt is best-effort: some emulator
+# images reject synthetic taps even though the app itself is still running.
+if ! adb shell input tap "$tap_x" "$tap_y"; then
+  echo "WARNING: emulator rejected the optional first-run prompt tap; continuing with process verification."
+fi
 sleep 5
 
 app_pid="$(adb shell pidof "$package_name" | tr -d '\r' | awk '{ print $1 }')"
