@@ -129,8 +129,12 @@ jobs:
           set -euo pipefail
           test -s build/GTA-GHIBLI-debug.apk
           unzip -t build/GTA-GHIBLI-debug.apk
-          "$ANDROID_HOME/build-tools/35.0.1/aapt" dump badging build/GTA-GHIBLI-debug.apk | tee build/apk-badging.txt
-          "$ANDROID_HOME/build-tools/35.0.1/aapt" dump permissions build/GTA-GHIBLI-debug.apk | tee build/apk-permissions.txt
+          build_tools_version="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d -printf '%f\\n' | sort -V | tail -n 1)"
+          aapt2="$ANDROID_HOME/build-tools/$build_tools_version/aapt2"
+          test -x "$aapt2"
+          echo "Inspecting APK manifest with AAPT2 build-tools $build_tools_version"
+          "$aapt2" dump badging build/GTA-GHIBLI-debug.apk | tee build/apk-badging.txt
+          "$aapt2" dump permissions build/GTA-GHIBLI-debug.apk | tee build/apk-permissions.txt
           if grep -Eiq 'android\.permission\.(CAMERA|RECORD_AUDIO|READ_MEDIA_IMAGES|READ_MEDIA_VIDEO|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE|MANAGE_EXTERNAL_STORAGE|READ_CONTACTS|WRITE_CONTACTS|GET_ACCOUNTS|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|ACCESS_BACKGROUND_LOCATION|READ_SMS|RECEIVE_SMS|SEND_SMS|READ_CALL_LOG|WRITE_CALL_LOG|READ_PHONE_STATE|CALL_PHONE)' build/apk-permissions.txt; then
             echo "Unexpected sensitive Android permission found in exported APK."
             exit 1
