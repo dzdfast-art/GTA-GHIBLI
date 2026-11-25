@@ -1,6 +1,6 @@
 extends SceneTree
 
-const MAIN_SCRIPT = preload("res://main.gd")
+
 
 
 func _initialize() -> void:
@@ -10,7 +10,11 @@ func _initialize() -> void:
 func _run_test() -> void:
 	var game := Node3D.new()
 	game.name = "GameRoot"
-	game.set_script(MAIN_SCRIPT)
+	var main_script: Script = load("res://main.gd") as Script
+	if main_script == null:
+		_fail("The main game script could not be loaded.")
+		return
+	game.set_script(main_script)
 	root.add_child(game)
 	await process_frame
 
@@ -47,6 +51,11 @@ func _run_test() -> void:
 
 	print("PASS: live world contains the rideable bicycle, caretaker house portal, red bridge mesh, ravine backdrop, and walkable deck collision.")
 	game.queue_free()
+	await process_frame
+	await process_frame
+	game = null
+	main_script = null
+	await process_frame
 	quit(0)
 
 
