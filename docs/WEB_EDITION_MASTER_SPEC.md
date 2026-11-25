@@ -259,3 +259,21 @@ The save backend is accepted only after both native process-restart coverage and
 The browser probe scene and scripts are CI-only test material and must be excluded from the normal Web delivery package. The CI workflow may temporarily select the probe scene and include test resources for its dedicated export, but it must restore the production project and export preset before measuring the main-game package and must delete both temporary exports after validation.
 
 A successful Chromium reload proves persistence only in the tested IndexedDB-enabled Chromium context. Private browsing, blocked storage, quota exhaustion, browser-process restart, Firefox and Safari remain separate acceptance gates until directly tested. Do not use `OS.is_userfs_persistent()` as sole proof of durability; Godot 4.7 documents that this check can be a false positive.
+
+
+## Browser save persistence and user-visible fallback
+
+The Web Edition must keep save slots under Godot's `user://` directory. In Web exports, Godot maps this virtual filesystem to browser-managed IndexedDB storage. This storage is local to the browser origin and must not be described as cloud or account-synced storage.
+
+The live HUD must show an explicit status rather than silently implying that every successful file write will survive a browser restart:
+
+- If `OS.is_userfs_persistent()` reports persistent storage, show that browser storage is available but may still be cleared by the browser.
+- If it reports non-persistent storage, show a session-only warning and tell the player to allow browser storage.
+- If a save write fails, show a visible save error.
+- Provide Arabic and English status messages.
+
+Important limitation: Godot documents that `OS.is_userfs_persistent()` can return false positives. It is a status hint, not the sole acceptance proof. A real browser test must save state through the actual game scene, reload the page at the same origin, and verify that the saved gameplay state is restored. The current Chromium gate does this for selected live-game fields in one persistent browser context. It does not prove a full browser close/reopen, a new browser profile, private browsing, blocked IndexedDB, storage-quota behavior, browser eviction, Firefox, or Safari.
+
+Godot's Web export documentation states that IndexedDB must be allowed for `user://` persistence; private browsing or blocked storage prevents persistence. If the game is embedded in an iframe, third-party storage restrictions may also apply. See [Godot 4.7 — Using cookies for data persistence](https://docs.godotengine.org/en/4.7/tutorials/export/exporting_for_web.html#using-cookies-for-data-persistence).
+
+The browser save status and page-reload probe are implemented in the current PR #111 review stack. Do not mark full save-system completion: the serializer covers multiple gameplay registries, but each live system still needs its own restore assertion, and the current browser probe verifies only selected state.
