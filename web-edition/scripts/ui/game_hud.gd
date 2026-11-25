@@ -87,6 +87,7 @@ var _location_label: Label
 var _waypoint_label: Label
 var _guidance_label: Label
 var _cash_label: Label
+var _runtime_status_label: Label
 var _prompt_label: Label
 var _dialogue_label: Label
 var _notice_label: Label
@@ -124,10 +125,14 @@ func _ready() -> void:
 	status_panel.offset_left = -190.0
 	status_panel.offset_right = -22.0
 	status_panel.offset_top = 20.0
-	status_panel.offset_bottom = 76.0
+	status_panel.offset_bottom = 126.0
 	root.add_child(status_panel)
+	var status_column := VBoxContainer.new()
+	status_panel.add_child(status_column)
 	_cash_label = _make_label("$350", 22, Color(1.0, 0.87, 0.47))
-	status_panel.add_child(_cash_label)
+	status_column.add_child(_cash_label)
+	_runtime_status_label = _make_label("HP 100 | STAMINA 100\nWANTED 0 | 08:00\nFUEL 60.0 L | PURSUIT IDLE", 12, Color(0.84, 0.90, 0.91))
+	status_column.add_child(_runtime_status_label)
 
 	_vehicle_label = _make_label("", 16, Color(0.90, 0.93, 0.98))
 	_vehicle_label.anchor_left = 1.0
@@ -229,6 +234,27 @@ func set_location(text: String) -> void:
 
 func set_wallet(amount: int) -> void:
 	_cash_label.text = "$" + str(amount)
+
+
+func show_runtime_status(
+	state: Dictionary,
+	stamina: float,
+	fuel: float,
+	pursuit_state: String,
+	signal_phase: String
+) -> void:
+	if _runtime_status_label == null:
+		return
+	var fuel_text := "FUEL --" if fuel < 0.0 else "FUEL %.1f L" % fuel
+	_runtime_status_label.text = "HP %d | STAMINA %d\nWANTED %d | %s\n%s | PURSUIT %s | LIGHT %s" % [
+		roundi(float(state.get("health", 100.0))),
+		roundi(stamina),
+		int(state.get("wanted", 0)),
+		str(state.get("clock", "08:00")),
+		fuel_text,
+		pursuit_state.to_upper(),
+		signal_phase.to_upper()
+	]
 
 
 func set_prompt(text: String) -> void:

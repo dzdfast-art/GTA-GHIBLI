@@ -2,7 +2,20 @@ name: Godot validation
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'fix/web-*']
+    paths:
+      - "main.gd"
+      - "project.godot"
+      - "export_presets.cfg"
+      - "assets/**"
+      - "audio/**"
+      - "data/**"
+      - "scenes/**"
+      - "scripts/**"
+      - "tests/**"
+      - "tools/**"
+      - ".github/workflows/godot-validation.yml"
+      - ".github/workflows/godot-validation.yml"
   pull_request:
     paths:
       - "main.gd"
@@ -21,6 +34,7 @@ jobs:
   validate:
     name: Import, parse, privacy-audit, and smoke-test
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -103,86 +117,9 @@ jobs:
             godot --headless --path . --check-only --script "$script"
           done
 
-      - name: Test pause menu and saved settings
-        run: godot --headless --path . --script res://tests/pause_settings_menu_test.gd
-
-      - name: Test player wallet and currency
-        run: godot --headless --path . --script res://tests/player_wallet_test.gd
-
-      - name: Test village shop purchases
-        run: godot --headless --path . --script res://tests/consumable_shop_test.gd
-
-      - name: Test food and drink inventory
-        run: godot --headless --path . --script res://tests/consumable_inventory_test.gd
-
-      - name: Test player hunger, thirst and rest
-        run: godot --headless --path . --script res://tests/player_needs_test.gd
-
-      - name: Test NPC perception and reactions
-        run: godot --headless --path . --script res://tests/npc_brain_test.gd
-
-      - name: Test named Arabic character population and interaction
-        run: godot --headless --path . --script res://tests/character_population_test.gd
-
-      - name: Test shared interaction contract
-        run: godot --headless --path . --script res://tests/interaction_system_test.gd
-
-      - name: Test interactive objects
-        run: godot --headless --path . --script res://tests/interactable_objects_test.gd
-
-      - name: Test first vehicle enter-drive-exit flow
-        run: godot --headless --path . --script res://tests/vehicle_controller_test.gd
-
-      - name: Test bicycle mount, riding controls, and dismount
-        run: godot --headless --path . --script res://tests/bicycle_controller_test.gd
-
-      - name: Test house interior entry and exit
-        run: godot --headless --path . --script res://tests/house_interior_portal_test.gd
-
-      - name: Test video-reference bicycle, house, and red bridge world integration
-        run: godot --headless --path . --script res://tests/video_reference_world_flow_test.gd
-
-      - name: Test mobile joystick, player movement, and camera touch isolation
-        run: godot --headless --path . --script res://tests/mobile_controls_regression_test.gd
-
-      - name: Test first mission objective flow
-        run: godot --headless --path . --script res://tests/mission_manager_test.gd
-
-      - name: Test rescue mission 002 progression and escape
-        run: godot --headless --path . --script res://tests/mission_002_runtime_test.gd
-
-      - name: Test harbor stealth investigation mission 003
-        run: godot --headless --path . --script res://tests/mission_003_runtime_test.gd
-
-      - name: Test last train escort mission 004
-        run: godot --headless --path . --script res://tests/mission_004_runtime_test.gd
-
-      - name: Test original ambience audio assets
-        run: godot --headless --path . --script res://tests/nature_ambience_assets_test.gd
-
-      - name: Test Arabic voice emotion and acting directions
-        run: godot --headless --path . --script res://tests/voice_performance_data_test.gd
-
-      - name: Test named audio buses and routing
-        run: godot --headless --path . --script res://tests/audio_bus_layout_test.gd
-
-      - name: Test global weather transitions
-        run: godot --headless --path . --script res://tests/world_weather_test.gd
-
-      - name: Test wildlife habitat population and feeding
-        run: godot --headless --path . --script res://tests/wildlife_director_test.gd
-
-      - name: Test four open-world districts
-        run: godot --headless --path . --script res://tests/open_world_regions_test.gd
-
-      - name: Test regional terrain expansion attachment
-        run: godot --headless --path . --script res://tests/terrain_expansion_runtime_test.gd
-
-      - name: Test world clock and day-night phases
-        run: godot --headless --path . --script res://tests/world_clock_test.gd
-
-      - name: Test optional world side activities and wallet rewards
-        run: godot --headless --path . --script res://tests/side_activity_director_test.gd
+      - name: Run all root GDScript regressions with strict log checks
+        shell: bash
+        run: bash tools/run_root_regressions.sh
 
       - name: Run main scene smoke test
         run: godot --headless --path . --quit-after 180

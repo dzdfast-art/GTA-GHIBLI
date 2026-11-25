@@ -132,6 +132,10 @@ func _run_mobile_controls_test() -> void:
 		_fail("Rotating the player body changed the camera world yaw.")
 		return
 
+	Input.action_release("ui_up")
+	world.queue_free()
+	await process_frame
+	await process_frame
 	print("PASS: joystick movement, camera stability while walking, touch isolation, and right-side camera look.")
 	quit(0)
 

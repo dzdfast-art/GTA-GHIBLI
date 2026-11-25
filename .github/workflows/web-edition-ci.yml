@@ -7,6 +7,7 @@ on:
       - main
       - web/standalone-from-empty-2026-11-22
       - 'feature/web-*'
+      - 'fix/web-*'
     paths:
       - "web-edition/**"
       - ".github/workflows/web-edition-ci.yml"
@@ -16,6 +17,7 @@ on:
     branches:
       - main
       - 'feature/web-*'
+      - 'fix/web-*'
     paths:
       - "web-edition/**"
       - ".github/workflows/web-edition-ci.yml"
@@ -89,7 +91,7 @@ jobs:
               echo "::error::${test_name} exited with status ${test_status}."
               exit "$test_status"
             fi
-            if grep -Eqi 'SCRIPT ERROR:|Parse Error:|Assertion failed|Invalid call[.]' "$test_log"; then
+            if grep -Eqi 'ERROR:|SCRIPT ERROR:|Parse Error:|Assertion failed|Invalid call[.]' "$test_log"; then
               rm -f "$test_log"
               echo "::endgroup::"
               echo "::error::${test_name} logged a GDScript/runtime assertion error."
@@ -157,6 +159,16 @@ jobs:
           print(f"WEB_EXPORT_MIB={total / 1_048_576:.3f}")
           PY
           cat web-edition/build/web-size.txt
+
+      - name: Upload playable Web build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTA-GHIBLI-Web
+          path: |
+            web-edition/build/GTA-GHIBLI-Web.zip
+            web-edition/build/web-size.txt
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Remove temporary Web export and package
         if: always()

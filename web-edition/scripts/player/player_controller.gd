@@ -17,6 +17,8 @@ var _orbiting: bool = false
 var _current_target: Node3D
 var _driven_vehicle: Node3D
 var _camera_sensitivity: float = 0.0045
+var _runtime_vitals: RefCounted
+var _camera_follow_model: RefCounted
 
 
 func _ready() -> void:
@@ -27,7 +29,35 @@ func _ready() -> void:
 	collision_mask = 1
 
 
-func _process(_delta: float) -> void:
+func set_runtime_services(vitals: RefCounted, camera_follow: RefCounted) -> void:
+	_runtime_vitals = vitals
+	_camera_follow_model = camera_follow
+	if _camera_follow_model != null:
+		_camera_follow_model.call("configure", 10.0, Vector3(0.0, 1.55, 0.0))
+		if _camera_pivot != null:
+			_camera_pivot.global_position = _camera_follow_model.call("look_target", global_position, 1.55)
+
+
+func has_runtime_services() -> bool:
+	return _runtime_vitals != null and _camera_follow_model != null
+
+
+func is_driving() -> bool:
+	return _driven_vehicle != null
+
+
+func apply_runtime_damage(amount: float) -> float:
+	if _runtime_vitals == null:
+		return 0.0
+	return float(_runtime_vitals.call("apply_damage", amount))
+
+
+func _process(delta: float) -> void:
+	if _camera_pivot != null and _camera_follow_model != null:
+		var followed_position: Vector3 = _camera_follow_model.call(
+			"next_position", _camera_pivot.global_position, global_position, delta
+		)
+		_camera_pivot.global_position = followed_position
 	if _driven_vehicle != null:
 		prompt_changed.emit("E — Exit vehicle")
 		return
@@ -59,7 +89,17 @@ func _physics_process(delta: float) -> void:
 
 	var speed := walk_speed
 	if Input.is_action_pressed("sprint"):
-		speed *= sprint_multiplier
+		var stamina_cost := 18.0 * delta
+		if _runtime_vitals == null or float(_runtime_vitals.get("stamina")) >= stamina_cost:
+			if _runtime_vitals != null:
+				_runtime_vitals.call("use_stamina", stamina_cost)
+			speed *= sprint_multiplier
+		elif _runtime_vitals != null:
+			_runtime_vitals.call("restore_stamina", 10.0 * delta)
+	elif _runtime_vitals != null:
+		_runtime_vitals.call("restore_stamina", 14.0 * delta)
+	if _runtime_vitals != null and not bool(_runtime_vitals.call("is_alive")):
+		speed = 0.0
 
 	velocity.x = move_toward(velocity.x, move_direction.x * speed, 22.0 * delta)
 	velocity.z = move_toward(velocity.z, move_direction.z * speed, 22.0 * delta)
@@ -119,6 +159,9 @@ func _try_interact() -> void:
 
 
 func _enter_vehicle(vehicle: Node3D) -> void:
+	if vehicle.has_method("can_be_driven") and not bool(vehicle.call("can_be_driven")):
+		prompt_changed.emit("Vehicle unavailable — refuel or repair it")
+		return
 	_driven_vehicle = vehicle
 	if vehicle.has_method("set_driven"):
 		vehicle.call("set_driven", true)
@@ -209,9 +252,15 @@ func _create_character() -> void:
 func _create_camera() -> void:
 	_camera_pivot = Node3D.new()
 	_camera_pivot.name = "CameraPivot"
-	_camera_pivot.position = Vector3(0.0, 1.55, 0.0)
 	_camera_pivot.rotation.x = -0.16
-	add_child(_camera_pivot)
+	# Keep the pivot outside the player hierarchy so the follow service can smooth
+	# world-space movement instead of inheriting the player's translation instantly.
+	var camera_parent: Node = get_parent()
+	if camera_parent != null:
+		camera_parent.add_child(_camera_pivot)
+	else:
+		add_child(_camera_pivot)
+	_camera_pivot.global_position = global_position + Vector3(0.0, 1.55, 0.0)
 
 	_spring_arm = SpringArm3D.new()
 	_spring_arm.spring_length = 6.5

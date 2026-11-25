@@ -54,18 +54,21 @@ var _transition_tween: Tween
 func _ready() -> void:
 	add_to_group("nature_ambience")
 	_random.randomize()
-	_player = AudioStreamPlayer.new()
-	_player.name = "ProceduralNatureAudio"
-	_player.bus = "SFX"
-	_player.volume_db = -3.0
-	var generator := AudioStreamGenerator.new()
-	generator.mix_rate = SAMPLE_RATE
-	generator.buffer_length = 0.5
-	_player.stream = generator
-	add_child(_player)
-	_player.play()
-	_playback = _player.get_stream_playback() as AudioStreamGeneratorPlayback
-	_build_field_recording_player()
+	# Asset-only validation can exercise theme selection and WAV metadata without
+	# creating live AudioServer voices that outlive a headless test process.
+	if not bool(get_meta("asset_validation_only", false)):
+		_player = AudioStreamPlayer.new()
+		_player.name = "ProceduralNatureAudio"
+		_player.bus = "SFX"
+		_player.volume_db = -3.0
+		var generator := AudioStreamGenerator.new()
+		generator.mix_rate = SAMPLE_RATE
+		generator.buffer_length = 0.5
+		_player.stream = generator
+		add_child(_player)
+		_player.play()
+		_playback = _player.get_stream_playback() as AudioStreamGeneratorPlayback
+		_build_field_recording_player()
 	_update_targets()
 	_sync_field_recording(true)
 
@@ -253,13 +256,13 @@ func _desired_field_theme() -> String:
 	return "forest_day"
 
 func _sync_field_recording(force: bool = false) -> void:
-	if _field_recording_player == null:
-		return
 	var wanted := _desired_field_theme()
 	if not force and wanted == _field_recording_theme:
 		return
 	_field_recording_theme = wanted
 	_field_recording_segment = 0
+	if _field_recording_player == null:
+		return
 	_field_recording_player.stop()
 	_play_field_recording_segment()
 
