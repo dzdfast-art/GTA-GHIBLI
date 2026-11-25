@@ -250,3 +250,12 @@ Regression coverage verifies deep-copy isolation, metadata round-tripping, backu
 **Web persistence is not yet verified across a browser reload.** The two-process regression runs on the native Godot CI runner. Godot 4.7 documents that Web `user://` persistence relies on browser IndexedDB being allowed; private browsing or blocked storage prevents persistence, and `OS.is_userfs_persistent()` can return false positives. A Chromium page-reload test with persistent storage enabled and a blocked-storage negative case remains a required follow-up: https://docs.godotengine.org/en/4.7/tutorials/export/exporting_for_web.html#using-cookies-for-data-persistence
 
 This snapshot documents an incremental save foundation, not a completed whole-game persistence system.
+
+
+## Browser persistence acceptance — 2026-11-25
+
+The save backend is accepted only after both native process-restart coverage and a real browser page-reload test. The Chromium test scene instantiates the actual playable main scene, writes deterministic live player, mission, vehicle, inventory, NPC, activity, landmark, world and language state through the production save service, reloads the document at the same localhost origin, and verifies the restored game state. The probe uses the same Godot `user://` storage path as the game.
+
+The browser probe scene and scripts are CI-only test material and must be excluded from the normal Web delivery package. The CI workflow may temporarily select the probe scene and include test resources for its dedicated export, but it must restore the production project and export preset before measuring the main-game package and must delete both temporary exports after validation.
+
+A successful Chromium reload proves persistence only in the tested IndexedDB-enabled Chromium context. Private browsing, blocked storage, quota exhaustion, browser-process restart, Firefox and Safari remain separate acceptance gates until directly tested. Do not use `OS.is_userfs_persistent()` as sole proof of durability; Godot 4.7 documents that this check can be a false positive.
