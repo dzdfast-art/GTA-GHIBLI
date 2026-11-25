@@ -60,7 +60,11 @@ func _build_region(region_id: String, region_name: String, center: Vector3,
 
 	_build_road(center)
 	_build_district_buildings(district, wall_color, roof_color)
+	if region_id == "harbor_city":
+		_build_harbor_skyline(district)
 	_build_district_details(district, region_id, ground_color)
+	if region_id == "harbor_city":
+		_build_harbor_street_furniture(district)
 	_build_civilians(district, region_id, npc_names)
 
 func _build_road(center: Vector3) -> void:
@@ -128,7 +132,48 @@ func _build_district_buildings(district: Node3D, wall_color: Color, roof_color: 
 		door.position = Vector3(0.0, 0.95, dimensions.z * 0.5 + 0.07)
 		door.material_override = _material(Color(0.25, 0.18, 0.13))
 		building.add_child(door)
+		_add_building_windows(building, dimensions)
 		_building_count += 1
+
+func _add_building_windows(building: StaticBody3D, dimensions: Vector3) -> void:
+	## Repeated facade glazing gives each district building readable architectural scale.
+	var transforms: Array[Transform3D] = []
+	var half_width := dimensions.x * 0.5
+	var half_depth := dimensions.z * 0.5
+	var row_heights := [1.25, dimensions.y - 1.05]
+	for y_value in row_heights:
+		var y := float(y_value)
+		for column in range(4):
+			var x := -half_width + 1.05 + float(column) * ((dimensions.x - 2.1) / 3.0)
+			transforms.append(Transform3D(Basis(), Vector3(x, y, half_depth + 0.045)))
+			transforms.append(Transform3D(Basis(), Vector3(x, y, -half_depth - 0.045)))
+		for column in range(3):
+			var z := -half_depth + 1.0 + float(column) * ((dimensions.z - 2.0) / 2.0)
+			transforms.append(Transform3D(Basis(Vector3.UP, PI * 0.5), Vector3(half_width + 0.045, y, z)))
+			transforms.append(Transform3D(Basis(Vector3.UP, -PI * 0.5), Vector3(-half_width - 0.045, y, z)))
+
+	var window_mesh := BoxMesh.new()
+	window_mesh.size = Vector3(0.72, 0.58, 0.07)
+	var instances := MultiMesh.new()
+	instances.transform_format = MultiMesh.TRANSFORM_3D
+	instances.mesh = window_mesh
+	instances.instance_count = transforms.size()
+	for index in range(transforms.size()):
+		instances.set_instance_transform(index, transforms[index])
+
+	var glass := StandardMaterial3D.new()
+	glass.albedo_color = Color(0.48, 0.72, 0.82, 1.0)
+	glass.roughness = 0.24
+	glass.metallic = 0.12
+	glass.emission_enabled = true
+	glass.emission = Color(0.10, 0.19, 0.24)
+	glass.emission_energy_multiplier = 0.16
+	var windows := MultiMeshInstance3D.new()
+	windows.name = "FacadeWindowInstances"
+	windows.multimesh = instances
+	windows.material_override = glass
+	building.add_child(windows)
+
 
 func _build_district_details(district: Node3D, region_id: String, ground_color: Color) -> void:
 	match region_id:
@@ -250,3 +295,155 @@ func _material(tint: Color, texture_path: String = "") -> StandardMaterial3D:
 			material.albedo_texture = texture
 			material.uv1_scale = Vector3(3.0, 3.0, 3.0)
 	return material
+
+
+func _build_harbor_skyline(district: Node3D) -> void:
+	var skyline := Node3D.new()
+	skyline.name = "GhibliSkyline"
+	skyline.position = Vector3(0.0, 0.0, -25.0)
+	district.add_child(skyline)
+
+	var tower_specs := [
+		{"name": "Tower_01", "position": Vector3(-17.0, 0.0, -3.0), "size": Vector3(9.0, 19.0, 8.0), "color": Color(0.43, 0.52, 0.58)},
+		{"name": "Tower_02", "position": Vector3(0.0, 0.0, -1.0), "size": Vector3(10.0, 25.0, 9.0), "color": Color(0.53, 0.58, 0.61)},
+		{"name": "Tower_03", "position": Vector3(17.0, 0.0, -4.0), "size": Vector3(12.0, 31.0, 10.0), "color": Color(0.39, 0.48, 0.55)},
+		{"name": "Tower_04", "position": Vector3(31.0, 0.0, -2.0), "size": Vector3(8.0, 16.0, 8.0), "color": Color(0.60, 0.57, 0.50)}
+	]
+	for spec in tower_specs:
+		var tower := Node3D.new()
+		tower.name = str(spec["name"])
+		tower.position = spec["position"]
+		skyline.add_child(tower)
+
+		var dimensions: Vector3 = spec["size"]
+		var facade := MeshInstance3D.new()
+		facade.name = "Facade"
+		var facade_mesh := BoxMesh.new()
+		facade_mesh.size = dimensions
+		facade.mesh = facade_mesh
+		facade.position.y = dimensions.y * 0.5
+		facade.material_override = _material(spec["color"], "res://assets/environment/materials/ghibli_city_glass.svg")
+		tower.add_child(facade)
+
+		var roofline := MeshInstance3D.new()
+		roofline.name = "Roofline"
+		var roof_mesh := BoxMesh.new()
+		roof_mesh.size = Vector3(dimensions.x + 0.5, 0.45, dimensions.z + 0.5)
+		roofline.mesh = roof_mesh
+		roofline.position.y = dimensions.y + 0.22
+		roofline.material_override = _material(Color(0.22, 0.27, 0.31))
+		tower.add_child(roofline)
+
+		var window_mesh := BoxMesh.new()
+		window_mesh.size = Vector3(0.68, 0.82, 0.09)
+		var windows := MultiMesh.new()
+		windows.transform_format = MultiMesh.TRANSFORM_3D
+		windows.mesh = window_mesh
+		var columns := 8
+		var rows := 12
+		windows.instance_count = columns * rows
+		windows.visible_instance_count = columns * rows
+		for row in range(rows):
+			for column in range(columns):
+				var x := -dimensions.x * 0.39 + float(column) * dimensions.x * 0.78 / float(columns - 1)
+				var y := 1.7 + float(row) * maxf(1.2, (dimensions.y - 3.0) / float(rows - 1))
+				var transform := Transform3D(Basis.IDENTITY, Vector3(x, y, -dimensions.z * 0.505))
+				windows.set_instance_transform(row * columns + column, transform)
+		var window_instances := MultiMeshInstance3D.new()
+		window_instances.name = "WindowInstances"
+		window_instances.multimesh = windows
+		var window_material := StandardMaterial3D.new()
+		window_material.albedo_color = Color(0.78, 0.84, 0.78)
+		window_material.metallic = 0.18
+		window_material.roughness = 0.24
+		window_instances.material_override = window_material
+		tower.add_child(window_instances)
+
+		var side_windows := MultiMeshInstance3D.new()
+		side_windows.name = "SideWindowInstances"
+		var side_multimesh := MultiMesh.new()
+		side_multimesh.transform_format = MultiMesh.TRANSFORM_3D
+		side_multimesh.mesh = window_mesh
+		side_multimesh.instance_count = 24
+		side_multimesh.visible_instance_count = 24
+		for index in range(24):
+			var row := index / 4
+			var column := index % 4
+			var z := -dimensions.z * 0.36 + float(column) * dimensions.z * 0.24
+			var y := 2.0 + float(row) * maxf(1.5, (dimensions.y - 3.0) / 5.0)
+			side_multimesh.set_instance_transform(index, Transform3D(Basis.IDENTITY, Vector3(dimensions.x * 0.505, y, z)))
+		side_windows.multimesh = side_multimesh
+		side_windows.material_override = window_material
+		tower.add_child(side_windows)
+
+
+func _build_harbor_street_furniture(district: Node3D) -> void:
+	var street := Node3D.new()
+	street.name = "HarborStreetFurniture"
+	district.add_child(street)
+
+	# Raised pedestrian sidewalks along both sides of the harbor boulevard.
+	for side in [-1.0, 1.0]:
+		_add_box(street, "Sidewalk_%s" % str(side), Vector3(side * 3.15, 0.16, 0.0),
+			Vector3(1.25, 0.22, 25.0), Color(0.62, 0.61, 0.55))
+		_add_box(street, "Curb_%s" % str(side), Vector3(side * 2.52, 0.22, 0.0),
+			Vector3(0.16, 0.30, 25.0), Color(0.78, 0.75, 0.66))
+
+	# High-contrast zebra crossing, built from reusable low-poly road markings.
+	var crossing := Node3D.new()
+	crossing.name = "PedestrianCrossing"
+	crossing.position.z = 1.8
+	street.add_child(crossing)
+	for stripe_index in range(7):
+		_add_box(crossing, "ZebraStripe_%02d" % stripe_index,
+			Vector3(0.0, 0.155, -2.1 + float(stripe_index) * 0.68),
+			Vector3(4.8, 0.025, 0.34), Color(0.91, 0.90, 0.82))
+
+	# Warm street lamps with restrained light energy for mobile rendering.
+	for lamp_index in range(4):
+		var side := -1.0 if lamp_index % 2 == 0 else 1.0
+		var z_position := -9.0 + float(lamp_index / 2) * 18.0
+		var lamp := Node3D.new()
+		lamp.name = "HarborStreetLamp_%02d" % (lamp_index + 1)
+		lamp.position = Vector3(side * 3.75, 0.0, z_position)
+		lamp.add_to_group("harbor_street_lamps")
+		street.add_child(lamp)
+
+		var pole := MeshInstance3D.new()
+		pole.name = "Pole"
+		var pole_mesh := CylinderMesh.new()
+		pole_mesh.top_radius = 0.055
+		pole_mesh.bottom_radius = 0.085
+		pole_mesh.height = 4.2
+		pole.mesh = pole_mesh
+		pole.position.y = 2.1
+		pole.material_override = _material(Color(0.16, 0.19, 0.21))
+		lamp.add_child(pole)
+
+		var arm := MeshInstance3D.new()
+		arm.name = "LampArm"
+		var arm_mesh := BoxMesh.new()
+		arm_mesh.size = Vector3(0.72, 0.07, 0.08)
+		arm.mesh = arm_mesh
+		arm.position = Vector3(-side * 0.30, 4.12, 0.0)
+		arm.material_override = _material(Color(0.16, 0.19, 0.21))
+		lamp.add_child(arm)
+
+		var head := MeshInstance3D.new()
+		head.name = "LampHead"
+		var head_mesh := BoxMesh.new()
+		head_mesh.size = Vector3(0.38, 0.12, 0.28)
+		head.mesh = head_mesh
+		head.position = Vector3(-side * 0.62, 4.06, 0.0)
+		var head_material := StandardMaterial3D.new()
+		head_material.albedo_color = Color(1.0, 0.83, 0.56)
+		head_material.emission_enabled = true
+		head_material.emission = Color(1.0, 0.66, 0.32)
+		head_material.emission_energy_multiplier = 0.45
+		head_material.roughness = 0.42
+		head.material_override = head_material
+		lamp.add_child(head)
+
+		# Use emissive lamp housing only. Four realtime OmniLights pushed the
+		# Android GLES3 scene shader beyond GL_MAX_FRAGMENT_UNIFORM_VECTORS.
+		# The warm emission keeps the lamp visibly lit without a local-light pass.

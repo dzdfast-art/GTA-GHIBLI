@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<defs>
+  <pattern id="twill" width="32" height="32" patternUnits="userSpaceOnUse">
+    <rect width="32" height="32" fill="#1c2634"/>
+    <path d="M-8 8L8-8M0 32L32 0M24 40L40 24" stroke="#344256" stroke-width="5" opacity=".42"/>
+    <path d="M-8 16L16-8M8 40L40 8" stroke="#101925" stroke-width="3" opacity=".72"/>
+    <path d="M0 3L29 32M-4 20L11 35" stroke="#596679" stroke-width="1" opacity=".22"/>
+  </pattern>
+  <linearGradient id="shade" x2="1" y2="1">
+    <stop stop-color="#344154" stop-opacity=".28"/>
+    <stop offset=".5" stop-color="#0b121c" stop-opacity=".06"/>
+    <stop offset="1" stop-color="#070c13" stop-opacity=".42"/>
+  </linearGradient>
+  <pattern id="grid" width="128" height="128" patternUnits="userSpaceOnUse">
+    <path d="M0 0H128M0 0V128" stroke="#718095" stroke-width="1" opacity=".12"/>
+  </pattern>
+</defs>
+<rect width="1024" height="1024" fill="url(#twill)"/>
+<rect width="1024" height="1024" fill="url(#shade)"/>
+<rect width="1024" height="1024" fill="url(#grid)"/>
+<g fill="none" stroke="#687587" opacity=".28" stroke-width="3">
+  <path d="M0 180H1024M0 512H1024M0 844H1024"/>
+  <path d="M180 0V1024M512 0V1024M844 0V1024"/>
+</g>
+<g fill="none" stroke="#101722" opacity=".86" stroke-width="10">
+  <path d="M64 64H960V960H64Z"/>
+  <path d="M96 96H928V928H96Z"/>
+</g>
+<g fill="none" stroke="#657287" opacity=".36" stroke-width="3" stroke-dasharray="5 8">
+  <path d="M110 120H914V904H110Z"/>
+</g>
+<g fill="#090f18" opacity=".22">
+  <circle cx="224" cy="244" r="22"/><circle cx="806" cy="706" r="31"/>
+  <circle cx="714" cy="224" r="18"/><circle cx="332" cy="816" r="25"/>
+</g>
+</svg>

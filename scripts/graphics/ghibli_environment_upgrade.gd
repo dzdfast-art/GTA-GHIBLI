@@ -4,9 +4,37 @@ extends Node3D
 ## Uses original, low-cost procedural meshes so the Android prototype stays lightweight.
 
 func _ready() -> void:
+	_build_lighting_rig()
 	_build_harbor_city()
 	_build_village_blossoms()
 	_build_reference_street()
+
+
+func _build_lighting_rig() -> void:
+	## A mobile-safe daylight setup: one directional sun and controlled ambient fill.
+	## Android exports use the Vulkan Mobile renderer to avoid the GLES3 uniform-link failure.
+	## Compatibility remains available for older devices with conservative light limits.
+	var world_environment := WorldEnvironment.new()
+	world_environment.name = "GhibliWorldEnvironment"
+	var environment := Environment.new()
+	environment.background_mode = Environment.BG_COLOR
+	environment.background_color = Color(0.53, 0.72, 0.84)
+	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	environment.ambient_light_color = Color(0.72, 0.79, 0.86)
+	environment.ambient_light_energy = 0.72
+	environment.reflected_light_source = Environment.REFLECTION_SOURCE_BG
+	world_environment.environment = environment
+	add_child(world_environment)
+
+	var sun := DirectionalLight3D.new()
+	sun.name = "GhibliDaylightSun"
+	sun.rotation_degrees = Vector3(-48.0, -28.0, 0.0)
+	sun.light_color = Color(1.0, 0.91, 0.78)
+	sun.light_energy = 1.15
+	# Shadow cost remains disabled during this GLES3 compatibility pass. The direct
+	# uniform-budget mitigation is the reduced OpenGL light limit in project.godot.
+	sun.shadow_enabled = false
+	add_child(sun)
 
 
 func _build_harbor_city() -> void:

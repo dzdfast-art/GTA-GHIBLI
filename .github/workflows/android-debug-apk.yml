@@ -2,6 +2,34 @@ name: Android debug APK
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "**.gd"
+      - "**.tscn"
+      - "**.tres"
+      - "**.res"
+      - "**.obj"
+      - "**.blend"
+      - "**.glb"
+      - "**.gltf"
+      - "**.fbx"
+      - "**.json"
+      - "**.godot"
+      - "**.png"
+      - "**.jpg"
+      - "**.jpeg"
+      - "**.webp"
+      - "**.svg"
+      - "**.wav"
+      - "**.ogg"
+      - "**.mp3"
+      - "**.ttf"
+      - "**.otf"
+      - "**.import"
+      - "project.godot"
+      - "export_presets.cfg"
+      - ".github/workflows/android-debug-apk.yml"
   push:
     branches: [main]
     paths:
@@ -90,7 +118,7 @@ jobs:
       - name: Import project resources
         run: godot --headless --editor --path . --quit
 
-      - name: Export ARM64 debug APK
+      - name: Export dual-ABI ARM64 and x86_64 debug APK
         run: |
           mkdir -p build
           godot --headless --path . --export-debug "Android Debug (ARM64)" build/GTA-GHIBLI-debug.apk
@@ -101,8 +129,16 @@ jobs:
           set -euo pipefail
           test -s build/GTA-GHIBLI-debug.apk
           unzip -t build/GTA-GHIBLI-debug.apk
-          "$ANDROID_HOME/build-tools/35.0.1/aapt" dump badging build/GTA-GHIBLI-debug.apk | tee build/apk-badging.txt
-          "$ANDROID_HOME/build-tools/35.0.1/aapt" dump permissions build/GTA-GHIBLI-debug.apk | tee build/apk-permissions.txt
+          # Keep ARM64 for physical Android phones and x86_64 for the CI emulator.
+          unzip -Z1 build/GTA-GHIBLI-debug.apk | grep -qx 'lib/arm64-v8a/libgodot_android.so'
+          unzip -Z1 build/GTA-GHIBLI-debug.apk | grep -qx 'lib/x86_64/libgodot_android.so'
+          echo "Verified native Godot libraries for ARM64 phones and x86_64 emulator."
+          build_tools_version="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort -V | tail -n 1)"
+          aapt2="$ANDROID_HOME/build-tools/$build_tools_version/aapt2"
+          test -x "$aapt2"
+          echo "Inspecting APK manifest with AAPT2 build-tools $build_tools_version"
+          "$aapt2" dump badging build/GTA-GHIBLI-debug.apk | tee build/apk-badging.txt
+          "$aapt2" dump permissions build/GTA-GHIBLI-debug.apk | tee build/apk-permissions.txt
           if grep -Eiq 'android\.permission\.(CAMERA|RECORD_AUDIO|READ_MEDIA_IMAGES|READ_MEDIA_VIDEO|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE|MANAGE_EXTERNAL_STORAGE|READ_CONTACTS|WRITE_CONTACTS|GET_ACCOUNTS|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|ACCESS_BACKGROUND_LOCATION|READ_SMS|RECEIVE_SMS|SEND_SMS|READ_CALL_LOG|WRITE_CALL_LOG|READ_PHONE_STATE|CALL_PHONE)' build/apk-permissions.txt; then
             echo "Unexpected sensitive Android permission found in exported APK."
             exit 1
@@ -123,7 +159,7 @@ jobs:
           PY
           cat build/apk-size.txt
 
-      - name: Upload installable debug APK
+      - name: Upload installable debug APK before emulator smoke test
         uses: actions/upload-artifact@v4
         with:
           name: GTA-GHIBLI-Android-debug-APK
@@ -133,4 +169,47 @@ jobs:
             build/apk-permissions.txt
             build/apk-size.txt
           if-no-files-found: error
+          retention-days: 14
+
+      - name: Enable KVM for the Android emulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          test -e /dev/kvm
+          ls -l /dev/kvm
+
+      - name: Launch APK in Android 15 emulator and collect runtime evidence
+        id: launch-emulator
+        timeout-minutes: 15
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_5
+          emulator-boot-timeout: 540
+          emulator-options: -no-snapshot-load -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+          disable-animations: true
+          script: bash tools/android_emulator_smoke.sh
+
+      - name: Upload Android emulator smoke evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTA-GHIBLI-Android-emulator-evidence
+          path: |
+            build/emulator-app-pid.txt
+            build/emulator-activities.txt
+            build/emulator-meminfo.txt
+            build/emulator-screenshot.png
+            build/emulator-screenshot-initial.png
+            build/emulator-window-state.txt
+            build/emulator-ui-hierarchy.xml
+            build/emulator-logcat.txt
+            build/emulator-logcat-full.txt
+            build/emulator-diagnostics-on-failure.txt
+          if-no-files-found: warn
           retention-days: 14

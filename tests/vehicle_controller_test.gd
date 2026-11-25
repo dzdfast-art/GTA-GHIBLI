@@ -29,6 +29,14 @@ func _run_test() -> void:
 	for _frame in range(3):
 		await physics_frame
 
+	var pbr_model := car.get_node_or_null("PBR_SportCoupe") as Node3D
+	if pbr_model == null:
+		_fail("The vehicle controller did not instantiate the PBR sport coupe asset.")
+		return
+	var front_left_wheel := pbr_model.find_child("Wheel_Front_Left", true, false) as Node3D
+	if front_left_wheel == null:
+		_fail("The imported PBR front-left wheel group is missing.")
+		return
 	var original_layer := player.collision_layer
 	var original_mask := player.collision_mask
 	car.call("interact")
@@ -41,12 +49,16 @@ func _run_test() -> void:
 
 	# Forward acceleration.
 	var start_z := car.global_position.z
+	var wheel_rotation_before := front_left_wheel.rotation.x
 	Input.action_press("ui_up")
 	for _frame in range(30):
 		await physics_frame
 	Input.action_release("ui_up")
 	if car.global_position.z >= start_z - 0.5:
 		_fail("Forward input did not move the vehicle.")
+		return
+	if is_equal_approx(front_left_wheel.rotation.x, wheel_rotation_before):
+		_fail("The PBR wheel groups did not rotate with the moving vehicle.")
 		return
 
 	# Reverse must move the car back along its current heading.

@@ -1,6 +1,8 @@
 extends MeshInstance3D
 
-const HOODIE_FABRIC_TEXTURE: Texture2D = preload("res://assets/characters/materials/ghibli_dark_hoodie_fabric.svg")
+const WHITE_TANK_TEXTURE: Texture2D = preload("res://assets/characters/materials/ghibli_white_tank_fabric.svg")
+const BLUE_DENIM_TEXTURE: Texture2D = preload("res://assets/characters/materials/ghibli_blue_denim.svg")
+const PBR_HERO_SCENE: PackedScene = preload("res://assets/characters/models/ghibli_hero.gltf")
 
 ## Procedural, original third-person character art for the Android prototype.
 ## The parent Visual node remains the visibility switch used by vehicle enter/exit.
@@ -39,19 +41,131 @@ func _process(delta: float) -> void:
 
 
 func _build_character() -> void:
-	var hoodie := Color(0.055, 0.065, 0.085)
-	var hoodie_light := Color(0.12, 0.14, 0.17)
-	var pants := Color(0.12, 0.16, 0.22)
+	if PBR_HERO_SCENE != null:
+		var imported_hero := PBR_HERO_SCENE.instantiate() as Node3D
+		if imported_hero != null:
+			imported_hero.name = "PBR_GhibliHero"
+			add_child(imported_hero)
+			_arm_pivots.clear()
+			_leg_pivots.clear()
+			for pivot_name in ["ArmPivot_Left", "ArmPivot_Right"]:
+				var pivot := _find_named_node(imported_hero, pivot_name) as Node3D
+				if pivot != null:
+					_arm_pivots.append(pivot)
+			for pivot_name in ["LegPivot_Left", "LegPivot_Right"]:
+				var pivot := _find_named_node(imported_hero, pivot_name) as Node3D
+				if pivot != null:
+					_leg_pivots.append(pivot)
+			if _arm_pivots.size() == 2 and _leg_pivots.size() == 2:
+				_apply_imported_hero_materials(imported_hero)
+				_add_back_logo()
+				return
+			push_warning("Imported Ghibli hero is missing articulated pivots; using fallback visual. Arms=%d Legs=%d" % [_arm_pivots.size(), _leg_pivots.size()])
+			_print_imported_node_tree(imported_hero)
+			imported_hero.queue_free()
+		else:
+			push_warning("Imported Ghibli hero could not be instantiated; using fallback visual.")
+	_build_fallback_character()
+
+
+func _find_named_node(parent: Node, target_name: String) -> Node:
+	for child in parent.get_children():
+		if str(child.name) == target_name:
+			return child
+		var nested := _find_named_node(child, target_name)
+		if nested != null:
+			return nested
+	return null
+
+
+func _print_imported_node_tree(parent: Node, prefix: String = "") -> void:
+	for child in parent.get_children():
+		print("PBR_HERO_NODE:", prefix + str(child.name), " [", child.get_class(), "]")
+		_print_imported_node_tree(child, prefix + str(child.name) + "/")
+
+
+func _apply_imported_hero_materials(hero: Node3D) -> void:
+	# The reference protagonist wears a white sleeveless shirt, blue jeans and
+	# dark shoes. Keep the original imported geometry but remove hoodie layers.
+	var tank_material := StandardMaterial3D.new()
+	tank_material.albedo_color = Color(0.98, 0.97, 0.92)
+	tank_material.albedo_texture = WHITE_TANK_TEXTURE
+	tank_material.uv1_scale = Vector3(3.0, 3.0, 3.0)
+	tank_material.roughness = 0.97
+	tank_material.metallic = 0.0
+	var torso := _find_named_node(hero, "HoodieBody") as MeshInstance3D
+	if torso != null:
+		torso.material_override = tank_material
+	for detail_name in ["Hood", "HoodiePocket", "HoodieZip", "HoodieDrawstrings"]:
+		for detail in _find_meshes_with_prefix(hero, detail_name):
+			detail.visible = false
+
+	# The glTF importer suffixes duplicate names (for example, HoodieSleeve2).
+	# Match prefixes so both arms and both legs receive the same outfit treatment.
+	for side in ["ArmPivot_Left", "ArmPivot_Right"]:
+		var arm := _find_named_node(hero, side) as Node3D
+		if arm == null:
+			continue
+		for part_name in ["HoodieSleeve", "SleeveCuff"]:
+			for clothing_part in _find_meshes_with_prefix(arm, part_name):
+				clothing_part.visible = false
+
+	var denim_material := StandardMaterial3D.new()
+	denim_material.albedo_color = Color(0.72, 0.82, 0.98)
+	denim_material.albedo_texture = BLUE_DENIM_TEXTURE
+	denim_material.uv1_scale = Vector3(2.0, 3.0, 2.0)
+	denim_material.roughness = 0.96
+	denim_material.metallic = 0.0
+
+	var shoe_material := StandardMaterial3D.new()
+	shoe_material.albedo_color = Color(0.045, 0.055, 0.072)
+	shoe_material.roughness = 0.86
+	shoe_material.metallic = 0.0
+
+	for side in ["LegPivot_Left", "LegPivot_Right"]:
+		var leg := _find_named_node(hero, side) as Node3D
+		if leg == null:
+			continue
+		for trouser in _find_meshes_with_prefix(leg, "TrouserLeg"):
+			trouser.material_override = denim_material
+		for detail_name in ["CargoPocket", "KneePanel"]:
+			for detail in _find_meshes_with_prefix(leg, detail_name):
+				detail.visible = false
+		for shoe_part_name in ["SneakerSole", "SneakerUpper", "SneakerToeAccent", "SneakerHeelAccent", "SneakerLaces"]:
+			for shoe_part in _find_meshes_with_prefix(leg, shoe_part_name):
+				shoe_part.material_override = shoe_material
+
+
+func _find_meshes_with_prefix(parent: Node, name_prefix: String) -> Array[MeshInstance3D]:
+	var matches: Array[MeshInstance3D] = []
+	for child in parent.get_children():
+		if child is MeshInstance3D and str(child.name).begins_with(name_prefix):
+			matches.append(child as MeshInstance3D)
+		matches.append_array(_find_meshes_with_prefix(child, name_prefix))
+	return matches
+
+
+func _add_back_logo() -> void:
+	var logo := Label3D.new()
+	logo.name = "GhibliBackLogo"
+	logo.text = "GTA\nGHIBLI"
+	logo.position = Vector3(0.0, 1.14, 0.207)
+	logo.font_size = 38
+	logo.pixel_size = 0.0034
+	logo.modulate = Color(1.0, 0.94, 0.78)
+	logo.outline_size = 7
+	logo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	add_child(logo)
+
+
+func _build_fallback_character() -> void:
+	var shirt := Color(0.96, 0.95, 0.90)
+	var pants := Color(0.22, 0.39, 0.68)
 	var skin := Color(0.78, 0.56, 0.40)
 	var hair := Color(0.055, 0.045, 0.04)
-	var white := Color(0.92, 0.93, 0.88)
-	var red := Color(0.82, 0.075, 0.065)
+	var dark_shoe := Color(0.045, 0.055, 0.072)
 
-	_add_capsule(self, "HoodieBody", 0.35, 0.92, Vector3(0.0, 1.05, 0.0), hoodie)
-	_add_box(self, "HoodiePocket", Vector3(0.43, 0.13, 0.025),
-		Vector3(0.0, 0.82, -0.337), hoodie_light)
-	_add_box(self, "HoodieSeam", Vector3(0.025, 0.52, 0.025),
-		Vector3(0.0, 1.08, -0.35), Color(0.22, 0.23, 0.25))
+	_add_capsule(self, "WhiteSleevelessShirt", 0.35, 0.92, Vector3(0.0, 1.05, 0.0), shirt)
 
 	_add_sphere(self, "Neck", 0.105, Vector3(0.0, 1.52, 0.0), skin)
 	_add_sphere(self, "Head", 0.235, Vector3(0.0, 1.66, -0.01), skin)
@@ -73,28 +187,12 @@ func _build_character() -> void:
 	_add_box(self, "Mouth", Vector3(0.065, 0.018, 0.018),
 		Vector3(0.0, 1.57, -0.235), Color(0.34, 0.12, 0.10))
 
-	_add_sphere(self, "Hood", 0.245, Vector3(0.0, 1.48, 0.20), hoodie_light,
-		Vector3(1.18, 1.0, 0.62))
 
-	# Layered fabric seams, zipper and cuffs give the hoodie a more finished silhouette.
-	_add_box(self, "HoodieChestSeam", Vector3(0.025, 0.55, 0.018),
-		Vector3(0.0, 1.10, -0.356), Color(0.25, 0.27, 0.29))
-	_add_box(self, "HoodieLeftCuff", Vector3(0.26, 0.12, 0.22),
-		Vector3(-0.43, 0.91, 0.0), hoodie_light)
-	_add_box(self, "HoodieRightCuff", Vector3(0.26, 0.12, 0.22),
-		Vector3(0.43, 0.91, 0.0), hoodie_light)
-	_add_box(self, "HoodieLeftPocket", Vector3(0.19, 0.23, 0.035),
-		Vector3(-0.25, 1.17, -0.348), hoodie_light)
-	_add_box(self, "HoodieRightPocket", Vector3(0.19, 0.23, 0.035),
-		Vector3(0.25, 1.17, -0.348), hoodie_light)
 	_add_box(self, "TrouserLeftPocket", Vector3(0.20, 0.34, 0.045),
 		Vector3(-0.29, 0.42, -0.18), Color(0.18, 0.22, 0.28))
 	_add_box(self, "TrouserRightPocket", Vector3(0.20, 0.34, 0.045),
 		Vector3(0.29, 0.42, -0.18), Color(0.18, 0.22, 0.28))
-	_add_box(self, "HoodieShoulderStripeLeft", Vector3(0.20, 0.055, 0.28),
-		Vector3(-0.32, 1.42, 0.0), hoodie_light)
-	_add_box(self, "HoodieShoulderStripeRight", Vector3(0.20, 0.055, 0.28),
-		Vector3(0.32, 1.42, 0.0), hoodie_light)
+
 
 
 	var logo := Label3D.new()
@@ -108,14 +206,13 @@ func _build_character() -> void:
 	logo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	add_child(logo)
 
-	_add_leg(-1.0, pants, white, red)
-	_add_leg(1.0, pants, white, red)
-	_add_arm(-1.0, hoodie, skin)
-	_add_arm(1.0, hoodie, skin)
+	_add_leg(-1.0, pants, dark_shoe)
+	_add_leg(1.0, pants, dark_shoe)
+	_add_arm(-1.0, skin)
+	_add_arm(1.0, skin)
 
 
-func _add_leg(side: float, pants_color: Color, shoe_white: Color,
-		shoe_red: Color) -> void:
+func _add_leg(side: float, pants_color: Color, shoe_color: Color) -> void:
 	var pivot := Node3D.new()
 	pivot.name = "LegPivot_Left" if side < 0.0 else "LegPivot_Right"
 	pivot.position = Vector3(side * 0.18, 0.70, 0.0)
@@ -123,31 +220,31 @@ func _add_leg(side: float, pants_color: Color, shoe_white: Color,
 	_leg_pivots.append(pivot)
 	_add_capsule(pivot, "TrouserLeg", 0.145, 0.76, Vector3(0.0, -0.34, 0.0), pants_color)
 	_add_box(pivot, "SneakerSole", Vector3(0.40, 0.07, 0.54),
-		Vector3(0.0, -0.61, -0.065), shoe_red)
+		Vector3(0.0, -0.61, -0.065), shoe_color)
 	_add_box(pivot, "SneakerUpper", Vector3(0.38, 0.17, 0.51),
-		Vector3(0.0, -0.51, -0.07), shoe_white)
+		Vector3(0.0, -0.51, -0.07), shoe_color)
 	_add_box(pivot, "SneakerToeAccent", Vector3(0.25, 0.055, 0.075),
-		Vector3(0.0, -0.50, -0.30), shoe_red)
+		Vector3(0.0, -0.50, -0.30), shoe_color)
 	_add_box(pivot, "SneakerHeelAccent", Vector3(0.16, 0.085, 0.075),
-		Vector3(0.0, -0.47, 0.17), shoe_red)
+		Vector3(0.0, -0.47, 0.17), shoe_color)
 
 	_add_box(pivot, "SneakerLace_1", Vector3(0.19, 0.018, 0.028),
-		Vector3(0.0, -0.46, -0.14), Color(0.78, 0.78, 0.72))
+		Vector3(0.0, -0.46, -0.14), shoe_color.lightened(0.18))
 	_add_box(pivot, "SneakerLace_2", Vector3(0.19, 0.018, 0.028),
-		Vector3(0.0, -0.43, -0.06), Color(0.78, 0.78, 0.72))
+		Vector3(0.0, -0.43, -0.06), shoe_color.lightened(0.18))
 	_add_box(pivot, "SneakerLace_3", Vector3(0.19, 0.018, 0.028),
-		Vector3(0.0, -0.40, 0.02), Color(0.78, 0.78, 0.72))
+		Vector3(0.0, -0.40, 0.02), shoe_color.lightened(0.18))
 
 
 
-func _add_arm(side: float, sleeve_color: Color, skin_color: Color) -> void:
+func _add_arm(side: float, skin_color: Color) -> void:
 	var pivot := Node3D.new()
 	pivot.name = "ArmPivot_Left" if side < 0.0 else "ArmPivot_Right"
 	pivot.position = Vector3(side * 0.43, 1.28, 0.0)
 	add_child(pivot)
 	_arm_pivots.append(pivot)
-	_add_capsule(pivot, "HoodieSleeve", 0.115, 0.76,
-		Vector3(0.0, -0.29, 0.0), sleeve_color)
+	_add_capsule(pivot, "BareArm", 0.115, 0.76,
+		Vector3(0.0, -0.29, 0.0), skin_color)
 	_add_sphere(pivot, "Hand", 0.105, Vector3(0.0, -0.70, -0.015), skin_color)
 
 
@@ -185,10 +282,15 @@ func _add_mesh(parent: Node3D, node_name: String, mesh_resource: Mesh,
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = 0.88
-	if node_name.begins_with("Hoodie") or node_name == "Hood":
+	if node_name == "WhiteSleevelessShirt":
 		material.albedo_color = Color.WHITE
-		material.albedo_texture = HOODIE_FABRIC_TEXTURE
+		material.albedo_texture = WHITE_TANK_TEXTURE
 		material.uv1_scale = Vector3(2.0, 2.0, 2.0)
+		material.roughness = 0.97
+	elif node_name.begins_with("Trouser"):
+		material.albedo_color = Color(0.72, 0.82, 0.98)
+		material.albedo_texture = BLUE_DENIM_TEXTURE
+		material.uv1_scale = Vector3(2.0, 3.0, 2.0)
 		material.roughness = 0.96
 	instance.material_override = material
 	parent.add_child(instance)
