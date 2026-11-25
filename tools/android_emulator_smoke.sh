@@ -70,7 +70,10 @@ if adb shell dumpsys window windows 2>/dev/null | grep -q 'ImmersiveModeConfirma
   sleep 3
 fi
 
-adb shell dumpsys window windows > build/emulator-window-state.txt
+if ! adb shell dumpsys window windows > build/emulator-window-state.txt; then
+  capture_failure_diagnostics "Could not read Android window state after attempting to dismiss the immersive prompt."
+  exit 1
+fi
 if grep -q 'ImmersiveModeConfirmation' build/emulator-window-state.txt; then
   capture_failure_diagnostics "Android immersive-mode confirmation still covers the game screen."
   exit 1
