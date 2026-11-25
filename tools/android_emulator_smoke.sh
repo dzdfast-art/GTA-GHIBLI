@@ -174,7 +174,7 @@ import zlib
 
 path = sys.argv[1]
 data = open(path, "rb").read()
-if data[:8] != b"\\x89PNG\\r\\n\\x1a\\n":
+if data[:8] != b"\x89PNG\r\n\x1a\n":
     raise SystemExit("FAIL: screenshot is not a PNG")
 pos = 8
 compressed = bytearray()
