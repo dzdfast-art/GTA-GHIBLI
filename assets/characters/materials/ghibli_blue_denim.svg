@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs>
+  <pattern id="denim" width="20" height="20" patternUnits="userSpaceOnUse">
+    <rect width="20" height="20" fill="#315b91"/>
+    <path d="M-5 5L5 -5M0 20L20 0M15 25L25 15" stroke="#7798bf" stroke-width="2" opacity=".38"/>
+    <path d="M-5 12L8 -1M6 26L26 6" stroke="#162f58" stroke-width="2" opacity=".36"/>
+    <path d="M0 3L17 20M-3 15L5 23" stroke="#a7bad0" stroke-width=".8" opacity=".16"/>
+  </pattern>
+  <linearGradient id="shade" x2="1" y2="1">
+    <stop stop-color="#ffffff" stop-opacity=".12"/>
+    <stop offset=".5" stop-color="#315b91" stop-opacity="0"/>
+    <stop offset="1" stop-color="#071b39" stop-opacity=".2"/>
+  </linearGradient>
+</defs>
+<rect width="512" height="512" fill="url(#denim)"/>
+<rect width="512" height="512" fill="url(#shade)"/>
+<g fill="none" stroke="#9cb4cf" stroke-width="2" opacity=".18">
+  <path d="M64 0V512M448 0V512"/>
+  <path d="M0 64H512M0 448H512"/>
+</g>
+</svg>
