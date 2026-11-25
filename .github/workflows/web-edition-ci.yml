@@ -11,6 +11,7 @@ on:
       - "web-edition/**"
       - ".github/workflows/web-edition-ci.yml"
       - ".github/scripts/web-edition-browser-smoke.cjs"
+      - ".github/scripts/web-edition-save-reload.cjs"
       - "docs/WEB_EDITION_*.md"
   pull_request:
     branches:
@@ -20,6 +21,7 @@ on:
       - "web-edition/**"
       - ".github/workflows/web-edition-ci.yml"
       - ".github/scripts/web-edition-browser-smoke.cjs"
+      - ".github/scripts/web-edition-save-reload.cjs"
       - "docs/WEB_EDITION_*.md"
 
 permissions:
@@ -143,6 +145,16 @@ jobs:
           test -n "$wasm_file"
           test -n "$pck_file"
           test -n "$js_file"
+          python3 - "$pck_file" <<'PY'
+          import sys
+          from pathlib import Path
+          pack = Path(sys.argv[1]).read_bytes()
+          forbidden = (b"tests/web_save_probe.gd", b"tests/web_save_probe.tscn", b"WebSaveReloadProbe")
+          leaked = [marker.decode("ascii") for marker in forbidden if marker in pack]
+          if leaked:
+              raise SystemExit("CI-only browser probe leaked into the normal game PCK: " + ", ".join(leaked))
+          print("PASS: CI-only browser probe scene and script are excluded from the normal game PCK.")
+          PY
           echo "HTML, JavaScript, WebAssembly and PCK are present."
 
       - name: Install pinned Chromium
@@ -155,6 +167,49 @@ jobs:
         env:
           NODE_PATH: /tmp/gta-ghibli-playwright/node_modules
         run: node .github/scripts/web-edition-browser-smoke.cjs
+
+      - name: Export temporary live-game save-reload probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          original_project="${RUNNER_TEMP}/gta-ghibli-project.godot"
+          original_preset="${RUNNER_TEMP}/gta-ghibli-export-presets.cfg"
+          cp web-edition/project.godot "$original_project"
+          cp web-edition/export_presets.cfg "$original_preset"
+          restore_project() {
+            cp "$original_project" web-edition/project.godot
+            cp "$original_preset" web-edition/export_presets.cfg
+          }
+          trap restore_project EXIT
+          python3 - <<'PY'
+          from pathlib import Path
+          project_path = Path("web-edition/project.godot")
+          project = project_path.read_text(encoding="utf-8")
+          old_scene = 'run/main_scene="res://scenes/main.tscn"'
+          new_scene = 'run/main_scene="res://tests/web_save_probe.tscn"'
+          if project.count(old_scene) != 1:
+              raise SystemExit("Could not safely select the temporary save-probe main scene.")
+          project_path.write_text(project.replace(old_scene, new_scene), encoding="utf-8")
+
+          preset_path = Path("web-edition/export_presets.cfg")
+          preset = preset_path.read_text(encoding="utf-8")
+          excluded_tests = 'exclude_filter="tests/*"'
+          include_probe = 'exclude_filter=""'
+          if preset.count(excluded_tests) != 1:
+              raise SystemExit("Could not safely include the temporary probe scene in its CI-only export.")
+          preset_path.write_text(preset.replace(excluded_tests, include_probe), encoding="utf-8")
+          PY
+          godot --headless --editor --path web-edition --quit
+          mkdir -p web-edition/build/save-probe
+          godot --headless --path web-edition --export-release "Web" build/save-probe/index.html
+          test -s web-edition/build/save-probe/index.html
+          restore_project
+          trap - EXIT
+
+      - name: Verify live-game save across Chromium page reload
+        env:
+          NODE_PATH: /tmp/gta-ghibli-playwright/node_modules
+        run: node .github/scripts/web-edition-save-reload.cjs
 
       - name: Package Web export and record exact size and hash
         shell: bash
