@@ -17,6 +17,16 @@ var _orbiting: bool = false
 var _current_target: Node3D
 var _driven_vehicle: Node3D
 var _camera_sensitivity: float = 0.0045
+var runtime_vitals: RefCounted
+var runtime_camera_follow: RefCounted
+
+
+func configure_runtime_services(vitals: RefCounted, camera_follow: RefCounted) -> bool:
+	if vitals == null or camera_follow == null:
+		return false
+	runtime_vitals = vitals
+	runtime_camera_follow = camera_follow
+	return bool(runtime_camera_follow.call("configure", 12.0, Vector3(0.0, 1.55, 0.0)))
 
 
 func _ready() -> void:
@@ -27,7 +37,11 @@ func _ready() -> void:
 	collision_mask = 1
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	if _camera_pivot != null and runtime_camera_follow != null:
+		_camera_pivot.global_position = runtime_camera_follow.call(
+			"next_position", _camera_pivot.global_position, global_position, delta
+		)
 	if _driven_vehicle != null:
 		prompt_changed.emit("E — Exit vehicle")
 		return
@@ -44,6 +58,8 @@ func _physics_process(delta: float) -> void:
 	if _driven_vehicle != null:
 		global_position = _driven_vehicle.global_position
 		velocity = Vector3.ZERO
+		if runtime_vitals != null:
+			runtime_vitals.call("restore_stamina", 12.0 * delta)
 		return
 
 	var input_axis := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
@@ -58,7 +74,16 @@ func _physics_process(delta: float) -> void:
 		move_direction = move_direction.normalized()
 
 	var speed := walk_speed
-	if Input.is_action_pressed("sprint"):
+	var sprint_requested := Input.is_action_pressed("sprint") and input_axis.length_squared() > 0.001
+	var sprint_allowed := sprint_requested
+	if runtime_vitals != null:
+		var available_stamina := float(runtime_vitals.get("stamina"))
+		sprint_allowed = sprint_requested and available_stamina > 0.01
+		if sprint_allowed:
+			runtime_vitals.call("use_stamina", minf(18.0 * delta, available_stamina))
+		else:
+			runtime_vitals.call("restore_stamina", 12.0 * delta)
+	if sprint_allowed:
 		speed *= sprint_multiplier
 
 	velocity.x = move_toward(velocity.x, move_direction.x * speed, 22.0 * delta)
@@ -102,6 +127,25 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("toggle_map"):
 		map_toggled.emit()
 		get_viewport().set_input_as_handled()
+
+
+func apply_runtime_damage(amount: float) -> float:
+	if runtime_vitals == null or amount <= 0.0:
+		return 0.0
+	var applied: float = float(runtime_vitals.call("apply_damage", amount))
+	if not bool(runtime_vitals.call("is_alive")):
+		velocity = Vector3.ZERO
+	return applied
+
+
+func get_runtime_vitals_snapshot() -> Dictionary:
+	if runtime_vitals == null:
+		return {}
+	return {
+		"health": float(runtime_vitals.get("health")),
+		"stamina": float(runtime_vitals.get("stamina")),
+		"alive": bool(runtime_vitals.call("is_alive"))
+	}
 
 
 func _try_interact() -> void:

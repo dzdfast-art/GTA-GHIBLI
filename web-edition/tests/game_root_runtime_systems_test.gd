@@ -12,15 +12,19 @@ func _run() -> void:
 	root.add_child(game)
 
 	var system_ids: Array[String] = game.call("get_runtime_system_ids")
-	if system_ids.size() != 52:
+	if system_ids.size() != 56:
 		_fail("The game root did not initialize the complete runtime systems registry.")
 		return
 	if game.call("get_runtime_system", "wanted_level") == null or game.call("get_runtime_system", "police_pursuit") == null:
 		_fail("Core wanted-level and police-pursuit services are not exposed by the game root.")
 		return
+	for service_id in ["vehicle_damage_model", "vehicle_dynamics", "vehicle_profile", "traffic_signal_controller"]:
+		if game.call("get_runtime_system", service_id) == null:
+			_fail("Missing runtime vehicle or traffic service: " + service_id)
+			return
 
 	var health: Dictionary = game.call("get_runtime_health_report")
-	if int(health.get("total", 0)) != 58 or int(health.get("passed", 0)) != 58 or not bool(health.get("healthy", false)):
+	if int(health.get("total", 0)) != 62 or int(health.get("passed", 0)) != 62 or not bool(health.get("healthy", false)):
 		_fail("Runtime integration health checks did not pass: " + str(health))
 		return
 	var acceptance: Dictionary = game.call("get_web_acceptance_status")

@@ -15,12 +15,14 @@ on:
       - "scripts/**"
       - "tests/**"
       - "tools/**"
+      - ".github/workflows/godot-validation.yml"
   workflow_dispatch:
 
 jobs:
   validate:
     name: Import, parse, privacy-audit, and smoke-test
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -186,3 +188,6 @@ jobs:
 
       - name: Run main scene smoke test
         run: godot --headless --path . --quit-after 180
+
+      - name: Discover and run every root regression test with strict log checks
+        run: bash tools/run_root_regressions.sh

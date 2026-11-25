@@ -87,6 +87,7 @@ var _location_label: Label
 var _waypoint_label: Label
 var _guidance_label: Label
 var _cash_label: Label
+var _runtime_label: Label
 var _prompt_label: Label
 var _dialogue_label: Label
 var _notice_label: Label
@@ -124,10 +125,14 @@ func _ready() -> void:
 	status_panel.offset_left = -190.0
 	status_panel.offset_right = -22.0
 	status_panel.offset_top = 20.0
-	status_panel.offset_bottom = 76.0
+	status_panel.offset_bottom = 112.0
 	root.add_child(status_panel)
+	var status_column := VBoxContainer.new()
+	status_panel.add_child(status_column)
 	_cash_label = _make_label("$350", 22, Color(1.0, 0.87, 0.47))
-	status_panel.add_child(_cash_label)
+	status_column.add_child(_cash_label)
+	_runtime_label = _make_label("HP 100 | STA 100 | 08:00", 12, Color(0.82, 0.88, 0.89))
+	status_column.add_child(_runtime_label)
 
 	_vehicle_label = _make_label("", 16, Color(0.90, 0.93, 0.98))
 	_vehicle_label.anchor_left = 1.0
@@ -229,6 +234,23 @@ func set_location(text: String) -> void:
 
 func set_wallet(amount: int) -> void:
 	_cash_label.text = "$" + str(amount)
+
+
+func set_runtime_status(snapshot: Dictionary, stamina: float, fuel: float, condition: float, pursuit_state: String) -> void:
+	var wanted_level := clampi(int(snapshot.get("wanted", 0)), 0, 5)
+	var wanted_text := "WANTED " + ("★".repeat(wanted_level) if wanted_level > 0 else "—")
+	var fuel_text := "FUEL —" if fuel < 0.0 else "FUEL %.1f L" % fuel
+	var condition_text := "CAR —" if condition < 0.0 else "CAR %.0f%%" % (condition * 100.0)
+	var clock_text := str(snapshot.get("clock", "08:00"))
+	var pursuit_text := " • " + pursuit_state.to_upper() if pursuit_state in ["pursuing", "searching"] else ""
+	_runtime_label.text = "HP %d | STA %d | %s | %s | %s%s" % [
+		int(round(float(snapshot.get("health", 100.0)))),
+		int(round(stamina)),
+		clock_text,
+		wanted_text,
+		fuel_text + " " + condition_text,
+		pursuit_text
+	]
 
 
 func set_prompt(text: String) -> void:

@@ -1,12 +1,63 @@
 extends CharacterBody3D
 class_name GhibliCarController
 
+const VEHICLE_PROFILE_SCRIPT = preload("res://scripts/vehicles/vehicle_profile.gd")
+
 @export var max_speed: float = 22.0
 @export var acceleration: float = 12.0
 @export var braking_force: float = 24.0
 @export var steering_rate: float = 1.8
 
 var _is_driven: bool = false
+var _dynamics: RefCounted
+var _damage_model: RefCounted
+var _fuel_model: RefCounted
+var _profile: Dictionary = {}
+var _impact_cooldown: float = 0.0
+
+
+func configure_runtime_services(dynamics: RefCounted, damage_model: RefCounted, fuel_model: RefCounted) -> bool:
+	if dynamics == null or damage_model == null or fuel_model == null:
+		return false
+	_dynamics = dynamics
+	_damage_model = damage_model
+	_fuel_model = fuel_model
+	_profile = VEHICLE_PROFILE_SCRIPT.get_profile("sedan")
+	if _profile.is_empty():
+		return false
+	max_speed = float(_profile.get("max_forward_speed", max_speed))
+	acceleration = float(_profile.get("acceleration", acceleration))
+	braking_force = float(_profile.get("braking", braking_force))
+	steering_rate = float(_profile.get("steering_rate", steering_rate))
+	var dynamics_ok: bool = bool(_dynamics.call("configure", _profile))
+	var damage_ok: bool = bool(_damage_model.call("configure", {}))
+	var fuel_ok: bool = bool(_fuel_model.call("configure", 60.0, 0.12))
+	return dynamics_ok and damage_ok and fuel_ok
+
+
+func is_driven() -> bool:
+	return _is_driven
+
+
+func get_runtime_vehicle_status() -> Dictionary:
+	return {
+		"fuel": float(_fuel_model.get("fuel")) if _fuel_model != null else -1.0,
+		"condition": float(_damage_model.call("get_condition_ratio")) if _damage_model != null else -1.0,
+		"durability": float(_damage_model.get("durability")) if _damage_model != null else -1.0,
+		"driven": _is_driven
+	}
+
+
+func apply_impact(relative_speed: float) -> Dictionary:
+	if _damage_model == null:
+		return {"valid": false, "damage": 0.0}
+	return _damage_model.call("apply_impact", relative_speed)
+
+
+func repair_vehicle(amount: float) -> float:
+	if _damage_model == null:
+		return 0.0
+	return float(_damage_model.call("repair", amount))
 
 
 func _ready() -> void:
@@ -25,6 +76,7 @@ func get_vehicle_label() -> String:
 
 
 func _physics_process(delta: float) -> void:
+	_impact_cooldown = maxf(0.0, _impact_cooldown - delta)
 	if not _is_driven:
 		velocity = Vector3.ZERO
 		return
@@ -34,8 +86,12 @@ func _physics_process(delta: float) -> void:
 	var brake_pressed := Input.is_action_pressed("vehicle_brake")
 	var forward := -global_basis.z
 	var current_speed := velocity.dot(forward)
+	if _fuel_model != null and throttle > 0.0 and not bool(_fuel_model.call("can_drive")):
+		throttle = 0.0
 
-	if brake_pressed:
+	if _dynamics != null:
+		current_speed = float(_dynamics.call("step_speed", current_speed, throttle, brake_pressed, delta))
+	elif brake_pressed:
 		current_speed = move_toward(current_speed, 0.0, braking_force * delta)
 	else:
 		current_speed = move_toward(current_speed, throttle * max_speed, acceleration * delta)
@@ -43,6 +99,7 @@ func _physics_process(delta: float) -> void:
 	if absf(current_speed) > 0.25:
 		rotation.y -= steering * steering_rate * delta * signf(current_speed)
 
+	var previous_position := global_position
 	forward = -global_basis.z
 	velocity.x = forward.x * current_speed
 	velocity.z = forward.z * current_speed
@@ -51,6 +108,21 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y -= 18.0 * delta
 	move_and_slide()
+
+	if _fuel_model != null:
+		var distance_km := previous_position.distance_to(global_position) / 1000.0
+		_fuel_model.call("travel", distance_km)
+
+	if _damage_model != null and _impact_cooldown <= 0.0 and get_slide_collision_count() > 0:
+		for collision_index in range(get_slide_collision_count()):
+			var collision := get_slide_collision(collision_index)
+			if absf(collision.get_normal().y) < 0.65:
+				var remaining_speed := absf(velocity.dot(forward))
+				var impact_speed := maxf(0.0, absf(current_speed) - remaining_speed)
+				if impact_speed > 4.0:
+					apply_impact(impact_speed)
+					_impact_cooldown = 0.65
+				break
 
 
 func _create_collision_and_visuals() -> void:
