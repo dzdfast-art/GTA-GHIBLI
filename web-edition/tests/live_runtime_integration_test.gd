@@ -9,12 +9,12 @@ func _run() -> void:
 	if game_script == null:
 		_fail("Game root failed to load.")
 		return
-	var game := game_script.new()
+	var game: Node = game_script.new()
 	root.add_child(game)
 	await process_frame
 	await process_frame
 
-	var player := game.get_node_or_null("Player")
+	var player: Node3D = game.get_node_or_null("Player") as Node3D
 	if player == null or not bool(player.call("has_runtime_services")):
 		_fail("Player controller is not bound to player-vitals and camera-follow services.")
 		return
@@ -31,11 +31,11 @@ func _run() -> void:
 		return
 	player.global_position -= Vector3(5.0, 0.0, 0.0)
 
-	var vehicles := game.get_tree().get_nodes_in_group("drivable_vehicles")
+	var vehicles: Array[Node] = game.get_tree().get_nodes_in_group("drivable_vehicles")
 	if vehicles.is_empty():
 		_fail("The live world did not create a drivable vehicle.")
 		return
-	var vehicle = vehicles[0]
+	var vehicle: Node3D = vehicles[0] as Node3D
 	if not bool(vehicle.call("has_runtime_models")):
 		_fail("The live vehicle is not bound to profile, dynamics, fuel and damage models.")
 		return
@@ -55,7 +55,7 @@ func _run() -> void:
 		return
 
 	var ticks_before := int(game.call("get_simulation_ticks"))
-	var signals = game.call("get_runtime_system", "traffic_signal_controller")
+	var signals: RefCounted = game.call("get_runtime_system", "traffic_signal_controller") as RefCounted
 	signals.call("configure", {"green_duration": 0.01, "amber_duration": 0.02, "red_duration": 0.03})
 	game.call("advance_simulation", 0.02)
 	if int(game.call("get_simulation_ticks")) != ticks_before + 1 or str(signals.call("get_phase")) != "amber":
@@ -63,13 +63,13 @@ func _run() -> void:
 		return
 
 	game.call("report_crime", 1)
-	var officer := Node3D.new()
+	var officer: Node3D = Node3D.new()
 	officer.name = "TestPoliceUnit"
 	officer.add_to_group("police_units")
 	officer.global_position = player.global_position + Vector3(0.0, 0.0, 8.0)
 	game.add_child(officer)
 	game.call("advance_simulation", 0.1)
-	var pursuit = game.call("get_runtime_system", "police_pursuit")
+	var pursuit: RefCounted = game.call("get_runtime_system", "police_pursuit") as RefCounted
 	if str(pursuit.get("state")) != "pursuing":
 		_fail("Police-pursuit service did not receive the visible player position from the live simulation.")
 		return
@@ -87,7 +87,7 @@ func _run() -> void:
 	if str(pursuit.get("state")) != "pursuing":
 		_fail("A new crime did not restart a completed police-pursuit state.")
 		return
-	var wanted = game.call("get_runtime_system", "wanted_level")
+	var wanted: RefCounted = game.call("get_runtime_system", "wanted_level") as RefCounted
 	if int(wanted.call("get_level")) != int(game.call("get_runtime_system", "hud_state").get("wanted")):
 		_fail("Wanted level and rendered HUD state are not synchronized.")
 		return
@@ -95,13 +95,13 @@ func _run() -> void:
 	if not bool(game.call("save_runtime_checkpoint")):
 		_fail("The runtime save manager could not persist an autosave checkpoint.")
 		return
-	var save_manager = game.call("get_runtime_system", "save_slot_manager")
-	var loaded := save_manager.call("load_slot", "autosave")
+	var save_manager: RefCounted = game.call("get_runtime_system", "save_slot_manager") as RefCounted
+	var loaded: Dictionary = save_manager.call("load_slot", "autosave")
 	if not loaded.has("payload") or not loaded.payload.has("player_position"):
 		_fail("The persisted autosave did not retain the live player checkpoint.")
 		return
-	var fresh_manager = load("res://scripts/world/save_slot_manager.gd").new()
-	var restored := fresh_manager.call("load_slot", "autosave")
+	var fresh_manager: RefCounted = load("res://scripts/world/save_slot_manager.gd").new() as RefCounted
+	var restored: Dictionary = fresh_manager.call("load_slot", "autosave")
 	if not restored.has("payload") or restored.payload.get("player_position") != player.global_position:
 		_fail("A new save-slot manager instance could not reload the saved checkpoint from disk.")
 		return
