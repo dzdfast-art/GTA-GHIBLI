@@ -136,9 +136,12 @@ func _run_test() -> void:
 			_fail("The imported hero is missing arm pivot: " + side)
 			return
 		for arm_clothing_name in ["HoodieSleeve", "SleeveCuff"]:
-			var arm_clothing := arm.get_node_or_null(arm_clothing_name) as MeshInstance3D
+			var arm_clothing := arm.find_child(arm_clothing_name, true, false) as MeshInstance3D
 			if arm_clothing == null or arm_clothing.visible:
-				_fail("The reference sleeveless outfit must hide " + side + "/" + arm_clothing_name)
+				var child_names: Array[String] = []
+				for child in arm.get_children():
+					child_names.append(str(child.name) + ":" + child.get_class())
+				_fail("The reference sleeveless outfit must hide " + side + "/" + arm_clothing_name + ". Immediate children: " + ", ".join(child_names))
 				return
 	var left_trouser := imported_hero.get_node_or_null("LegPivot_Left/TrouserLeg") as MeshInstance3D
 	var trouser_material := left_trouser.material_override as StandardMaterial3D if left_trouser != null else null
