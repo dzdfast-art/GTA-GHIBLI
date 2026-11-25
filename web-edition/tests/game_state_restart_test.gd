@@ -167,8 +167,23 @@ func _run_reader_process() -> void:
 		_fail("The reader process did not find the starter sedan.")
 		return
 	var vehicle: Node3D = vehicles[0] as Node3D
+	var diagnostic_manager: RefCounted = load("res://scripts/world/save_slot_manager.gd").new()
+	var diagnostic_record: Dictionary = diagnostic_manager.call("load_slot", SLOT_ID)
+	var diagnostic_payload: Dictionary = diagnostic_record.get("payload", {})
+	var diagnostic_player: Dictionary = diagnostic_payload.get("player", {})
+	var diagnostic_vehicles: Dictionary = diagnostic_payload.get("vehicles", {})
+	print("RESTORE_DIAGNOSTIC: player_expected=%s player_actual=%s vehicle_expected=%s vehicle_actual=%s active_vehicle_id=%s" % [
+		SAVED_VEHICLE_POSITION,
+		player.global_position,
+		diagnostic_player.get("position", []),
+		vehicle.global_position,
+		diagnostic_payload.get("active_vehicle_id", "")
+	])
 	if player.global_position.distance_to(SAVED_VEHICLE_POSITION) > 0.05:
-		_fail("The fresh game did not restore the saved player position.")
+		_fail("The fresh game did not restore the saved player position; actual=%s saved_payload=%s" % [
+			player.global_position,
+			diagnostic_player.get("position", [])
+		])
 		return
 	if absf(player.global_rotation.y - 0.72) > 0.01:
 		_fail("The fresh game did not restore the saved player rotation.")
