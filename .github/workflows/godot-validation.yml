@@ -2,7 +2,20 @@ name: Godot validation
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'fix/web-*']
+    paths:
+      - "main.gd"
+      - "project.godot"
+      - "export_presets.cfg"
+      - "assets/**"
+      - "audio/**"
+      - "data/**"
+      - "scenes/**"
+      - "scripts/**"
+      - "tests/**"
+      - "tools/**"
+      - ".github/workflows/godot-validation.yml"
+      - ".github/workflows/godot-validation.yml"
   pull_request:
     paths:
       - "main.gd"
