@@ -129,7 +129,7 @@ jobs:
           set -euo pipefail
           test -s build/GTA-GHIBLI-debug.apk
           unzip -t build/GTA-GHIBLI-debug.apk
-          build_tools_version="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d -printf '%f\\n' | sort -V | tail -n 1)"
+          build_tools_version="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort -V | tail -n 1)"
           aapt2="$ANDROID_HOME/build-tools/$build_tools_version/aapt2"
           test -x "$aapt2"
           echo "Inspecting APK manifest with AAPT2 build-tools $build_tools_version"
