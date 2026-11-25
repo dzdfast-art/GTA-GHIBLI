@@ -167,6 +167,19 @@ func _run_reader_process() -> void:
 		_fail("The reader process did not find the starter sedan.")
 		return
 	var vehicle: Node3D = vehicles[0] as Node3D
+	var diagnostic_manager: RefCounted = load("res://scripts/world/save_slot_manager.gd").new()
+	var diagnostic_record: Dictionary = diagnostic_manager.call("load_slot", SLOT_ID)
+	var diagnostic_payload: Dictionary = diagnostic_record.get("payload", {})
+	var diagnostic_player: Dictionary = diagnostic_payload.get("player", {})
+	var diagnostic_vehicles: Dictionary = diagnostic_payload.get("vehicles", {})
+	print("RESTORE_DIAGNOSTIC=" + JSON.stringify({
+		"saved_player_position": diagnostic_player.get("position", []),
+		"saved_vehicle": diagnostic_vehicles.get("harbor_sedan", {}),
+		"saved_active_vehicle_id": diagnostic_payload.get("active_vehicle_id", ""),
+		"actual_player_position": [player.global_position.x, player.global_position.y, player.global_position.z],
+		"actual_vehicle_position": [vehicle.global_position.x, vehicle.global_position.y, vehicle.global_position.z],
+		"actual_active_vehicle": str(player.call("get_driven_vehicle"))
+	}))
 	var player_horizontal_delta := Vector2(
 		player.global_position.x - SAVED_VEHICLE_POSITION.x,
 		player.global_position.z - SAVED_VEHICLE_POSITION.z
