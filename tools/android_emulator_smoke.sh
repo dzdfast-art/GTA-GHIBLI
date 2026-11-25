@@ -71,6 +71,20 @@ if adb shell dumpsys window windows 2>/dev/null | grep -q 'ImmersiveModeConfirma
   sleep 3
 fi
 
+# Reject Android system/application ANR overlays instead of treating them as a game screenshot.
+if ! adb shell uiautomator dump /sdcard/gta-ghibli-ui.xml >/dev/null 2>&1; then
+  capture_failure_diagnostics "Could not inspect the Android foreground UI hierarchy."
+  exit 1
+fi
+if ! adb pull /sdcard/gta-ghibli-ui.xml build/emulator-ui-hierarchy.xml >/dev/null; then
+  capture_failure_diagnostics "Could not retrieve the Android foreground UI hierarchy."
+  exit 1
+fi
+if grep -Eiq "isn't responding|is not responding|Application Not Responding" build/emulator-ui-hierarchy.xml; then
+  capture_failure_diagnostics "Android displayed a not-responding dialog; the captured frame is not valid gameplay evidence."
+  exit 1
+fi
+
 if ! adb shell dumpsys window windows > build/emulator-window-state.txt; then
   capture_failure_diagnostics "Could not read Android window state after attempting to dismiss the immersive prompt."
   exit 1
