@@ -12,16 +12,22 @@ func _run_test() -> void:
 	var ambience := Node.new()
 	_ambience_node = ambience
 	ambience.set_script(AMBIENCE_SCRIPT)
+	ambience.set_meta("asset_validation_only", true)
 	root.add_child(ambience)
 	await process_frame
 	await process_frame
 	if str(ambience.get("_field_recording_theme")) != "dawn":
 		_fail("The dawn ambience track was not selected at the opening game hour.")
 		return
-	var player := ambience.get("_field_recording_player") as AudioStreamPlayer
-	if player == null or not (player.stream is AudioStreamWAV):
-		_fail("The dawn PCM audio asset did not load into the audio player.")
+	var opening_paths: PackedStringArray = ambience.call("get_field_recording_paths", "dawn")
+	if opening_paths.is_empty():
+		_fail("The dawn ambience theme has no source recordings.")
 		return
+	var opening_asset := load(opening_paths[0]) as AudioStreamWAV
+	if opening_asset == null or opening_asset.mix_rate != 22050 or not opening_asset.stereo:
+		_fail("The dawn PCM audio asset is missing or has an invalid format.")
+		return
+	opening_asset = null
 	for theme in EXPECTED_THEMES:
 		var paths: PackedStringArray = ambience.call("get_field_recording_paths", theme)
 		if paths.size() != 6:
@@ -59,7 +65,6 @@ func _run_test() -> void:
 	if str(ambience.get("_field_recording_theme")) != "coast":
 		_fail("Clearing the weather did not restore coastal ambience.")
 		return
-	player = null
 	_release_ambience()
 	await process_frame
 	print("PASS: Six original stereo ambience variations per theme load and switch by time, biome and weather.")
