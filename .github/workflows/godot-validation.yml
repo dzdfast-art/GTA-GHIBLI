@@ -77,6 +77,7 @@ jobs:
           for script in \
             res://main.gd \
             res://scripts/audio/nature_ambience.gd \
+            res://scripts/player/player_visual_animator.gd \
             res://scripts/player/player_controller.gd \
             res://scripts/vehicles/driveable_car.gd \
             res://scripts/vehicles/bicycle_controller.gd \
