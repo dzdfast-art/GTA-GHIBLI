@@ -106,7 +106,7 @@ func _apply_imported_hero_materials(hero: Node3D) -> void:
 		var arm := _find_named_node(hero, side) as Node3D
 		if arm != null:
 			for part_name in ["HoodieSleeve", "SleeveCuff"]:
-				var clothing_part := arm.get_node_or_null(part_name) as MeshInstance3D
+				var clothing_part := _find_named_node(arm, part_name) as MeshInstance3D
 				if clothing_part != null:
 					clothing_part.visible = false
 
