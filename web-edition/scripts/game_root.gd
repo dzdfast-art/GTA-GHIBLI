@@ -59,7 +59,11 @@ const RUNTIME_SYSTEM_SCRIPTS := {
 	"accessibility_options": preload("res://scripts/world/accessibility_options.gd"),
 	"integration_health": preload("res://scripts/world/integration_health.gd"),
 	"web_acceptance_gate": preload("res://scripts/world/web_acceptance_gate.gd"),
-	"route_progress": preload("res://scripts/world/route_progress.gd")
+	"route_progress": preload("res://scripts/world/route_progress.gd"),
+	"vehicle_damage_model": preload("res://scripts/vehicles/vehicle_damage_model.gd"),
+	"vehicle_dynamics": preload("res://scripts/vehicles/vehicle_dynamics.gd"),
+	"vehicle_profile": preload("res://scripts/vehicles/vehicle_profile.gd"),
+	"traffic_signal_controller": preload("res://scripts/world/traffic_signal_controller.gd")
 }
 
 var _world: Node3D
@@ -81,6 +85,9 @@ var _active_waypoint_id: String = ""
 var _active_waypoint_name: String = ""
 var _active_waypoint_position: Vector3 = Vector3.ZERO
 var _arrival_notified: bool = false
+var _simulation_ticks: int = 0
+var _runtime_status_elapsed: float = 0.0
+var _runtime_autosave_elapsed: float = 0.0
 
 
 func _ready() -> void:
@@ -103,6 +110,9 @@ func _ready() -> void:
 	_player.name = "Player"
 	add_child(_player)
 	_player.global_position = _world.get("spawn_position")
+	_bind_player_runtime_services()
+	_bind_vehicle_runtime_services()
+	_restore_runtime_autosave()
 	_hud = HUD_SCRIPT.new()
 	_hud.name = "GameplayHUD"
 	add_child(_hud)
@@ -117,6 +127,15 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	advance_simulation(delta)
+	_runtime_status_elapsed += delta
+	if _runtime_status_elapsed >= 0.20:
+		_runtime_status_elapsed = 0.0
+		_update_runtime_hud()
+	_runtime_autosave_elapsed += delta
+	if _runtime_autosave_elapsed >= 30.0:
+		_runtime_autosave_elapsed = 0.0
+		_save_runtime_autosave()
 	_update_runtime_world_context(delta)
 	_landmark_check_elapsed += delta
 	if _landmark_check_elapsed >= 0.5:
@@ -308,9 +327,172 @@ func _discover_nearby_landmarks() -> void:
 
 func _sync_runtime_hud_state() -> void:
 	var hud_state: RefCounted = get_runtime_system("hud_state")
-	hud_state.call("update_health", 100.0)
-	hud_state.call("add_money", _missions.call("get_wallet"))
+	var vitals: RefCounted = get_runtime_system("player_vitals")
+	var wanted: RefCounted = get_runtime_system("wanted_level")
+	hud_state.call("update_health", float(vitals.get("health")))
+	hud_state.set("money", int(_missions.call("get_wallet")))
+	hud_state.call("set_wanted", int(wanted.call("get_level")))
 	hud_state.set("vehicle_mode", false)
+	_update_runtime_hud()
+
+
+func _bind_player_runtime_services() -> void:
+	var vitals: RefCounted = get_runtime_system("player_vitals")
+	var camera_follow: RefCounted = get_runtime_system("camera_follow")
+	camera_follow.call("configure", 10.0, Vector3(0.0, 1.55, 0.0))
+	_player.call("set_runtime_services", vitals, camera_follow)
+
+
+func _bind_vehicle_runtime_services() -> void:
+	var vehicle := _get_runtime_vehicle()
+	if vehicle == null:
+		push_warning("Runtime vehicle services could not bind: no drivable vehicle is present.")
+		return
+	var profile_service: RefCounted = get_runtime_system("vehicle_profile")
+	var profile: Dictionary = profile_service.call("get_profile", "sedan")
+	var dynamics: RefCounted = get_runtime_system("vehicle_dynamics")
+	var fuel: RefCounted = get_runtime_system("vehicle_fuel")
+	var damage: RefCounted = get_runtime_system("vehicle_damage_model")
+	dynamics.call("configure", profile)
+	fuel.call("configure", 60.0, 0.12)
+	damage.call("configure", {})
+	vehicle.call("configure_runtime", profile, dynamics, fuel, damage)
+
+
+func _get_runtime_vehicle() -> Node3D:
+	for candidate in get_tree().get_nodes_in_group("drivable_vehicles"):
+		if candidate is Node3D and is_instance_valid(candidate):
+			return candidate as Node3D
+	return null
+
+
+func advance_simulation(delta: float) -> int:
+	if delta <= 0.0 or _runtime_systems.is_empty():
+		return _simulation_ticks
+	var step := minf(delta, 0.25)
+	var signals: RefCounted = get_runtime_system("traffic_signal_controller")
+	signals.call("advance", step)
+	var wanted: RefCounted = get_runtime_system("wanted_level")
+	var pursuit: RefCounted = get_runtime_system("police_pursuit")
+	var wanted_level := int(wanted.call("get_level"))
+	if wanted_level > 0 and _player != null:
+		var pursuit_state := str(pursuit.get("state"))
+		if pursuit_state != "lost":
+			pursuit_state = str(pursuit.call(
+				"update_sighting",
+				_player.global_position,
+				_is_player_visible_to_police(),
+				step
+			))
+		if pursuit_state == "lost":
+			wanted_level = int(wanted.call("tick", step, true))
+		get_runtime_system("hud_state").call("set_wanted", wanted_level)
+	elif wanted_level == 0 and str(pursuit.get("state")) != "idle":
+		pursuit.call("reset")
+	_simulation_ticks += 1
+	return _simulation_ticks
+
+
+func _is_player_visible_to_police() -> bool:
+	if _player == null:
+		return false
+	for officer in get_tree().get_nodes_in_group("police_units"):
+		if officer is Node3D and is_instance_valid(officer):
+			if (officer as Node3D).global_position.distance_to(_player.global_position) <= 45.0:
+				return true
+	return false
+
+
+func _update_runtime_hud() -> void:
+	if _hud == null or _player == null or _missions == null:
+		return
+	var vitals: RefCounted = get_runtime_system("player_vitals")
+	var hud_state: RefCounted = get_runtime_system("hud_state")
+	var clock: RefCounted = get_runtime_system("world_clock_weather")
+	var wanted: RefCounted = get_runtime_system("wanted_level")
+	var pursuit: RefCounted = get_runtime_system("police_pursuit")
+	var minutes := int(clock.get("minute_of_day"))
+	hud_state.call("update_health", float(vitals.get("health")))
+	hud_state.call("set_wanted", int(wanted.call("get_level")))
+	hud_state.call("set_clock", int(minutes / 60), minutes % 60)
+	hud_state.set("vehicle_mode", bool(_player.call("is_driving")))
+	var vehicle := _get_runtime_vehicle()
+	var fuel_level := -1.0
+	if vehicle != null and vehicle.has_method("get_fuel_remaining"):
+		fuel_level = float(vehicle.call("get_fuel_remaining"))
+	_hud.call(
+		"show_runtime_status",
+		hud_state.call("snapshot"),
+		float(vitals.get("stamina")),
+		fuel_level,
+		str(pursuit.get("state")),
+		str(get_runtime_system("traffic_signal_controller").call("get_phase"))
+	)
+
+
+func _save_runtime_autosave() -> bool:
+	if _player == null or _missions == null:
+		return false
+	var payload := {
+		"mission_stage": int(_missions.get("mission_stage")),
+		"wallet": int(_missions.call("get_wallet")),
+		"player_position": _player.global_position,
+		"player_health": float(get_runtime_system("player_vitals").get("health")),
+		"player_stamina": float(get_runtime_system("player_vitals").get("stamina")),
+		"wanted_level": int(get_runtime_system("wanted_level").call("get_level"))
+	}
+	var vehicle := _get_runtime_vehicle()
+	if vehicle != null:
+		payload["vehicle_position"] = vehicle.global_position
+		payload["vehicle_fuel"] = float(vehicle.call("get_fuel_remaining"))
+		payload["vehicle_durability"] = float(vehicle.call("get_durability"))
+	return bool(get_runtime_system("save_slot_manager").call(
+		"save_slot", "autosave", payload, int(Time.get_unix_time_from_system())
+	))
+
+
+func _restore_runtime_autosave() -> void:
+	var slot: Dictionary = get_runtime_system("save_slot_manager").call("load_slot", "autosave")
+	var payload: Dictionary = slot.get("payload", {})
+	if payload.is_empty():
+		return
+	var saved_position: Variant = payload.get("player_position", null)
+	if saved_position is Vector3:
+		_player.global_position = saved_position
+	var vitals: RefCounted = get_runtime_system("player_vitals")
+	vitals.set("health", clampf(float(payload.get("player_health", vitals.get("health"))), 0.0, float(vitals.get("max_health"))))
+	vitals.set("stamina", clampf(float(payload.get("player_stamina", vitals.get("stamina"))), 0.0, float(vitals.get("max_stamina"))))
+	var wanted: RefCounted = get_runtime_system("wanted_level")
+	wanted.set("level", clampi(int(payload.get("wanted_level", 0)), 0, int(wanted.get("max_level"))))
+	var vehicle := _get_runtime_vehicle()
+	if vehicle != null:
+		var vehicle_position: Variant = payload.get("vehicle_position", null)
+		if vehicle_position is Vector3:
+			vehicle.global_position = vehicle_position
+		if payload.has("vehicle_fuel"):
+			get_runtime_system("vehicle_fuel").set("fuel", clampf(float(payload.vehicle_fuel), 0.0, float(get_runtime_system("vehicle_fuel").get("capacity"))))
+		if payload.has("vehicle_durability"):
+			get_runtime_system("vehicle_damage_model").set("durability", clampf(float(payload.vehicle_durability), 0.0, float(get_runtime_system("vehicle_damage_model").get("max_durability"))))
+
+
+func get_simulation_ticks() -> int:
+	return _simulation_ticks
+
+
+func save_runtime_checkpoint() -> bool:
+	return _save_runtime_autosave()
+
+
+func get_runtime_status_report() -> Dictionary:
+	return {
+		"simulation_ticks": _simulation_ticks,
+		"health": float(get_runtime_system("player_vitals").get("health")),
+		"stamina": float(get_runtime_system("player_vitals").get("stamina")),
+		"wanted_level": int(get_runtime_system("wanted_level").call("get_level")),
+		"pursuit_state": str(get_runtime_system("police_pursuit").get("state")),
+		"traffic_signal_phase": str(get_runtime_system("traffic_signal_controller").call("get_phase")),
+		"vehicle_bound": _get_runtime_vehicle() != null
+	}
 
 
 func _record_runtime_acceptance() -> void:
@@ -322,7 +504,7 @@ func _record_runtime_acceptance() -> void:
 	health.call("record_check", "player", _player != null, "player controller attached")
 	health.call("record_check", "gps", _route_planner != null, "road graph route planner initialized")
 	health.call("record_check", "hud", _hud != null, "gameplay HUD attached")
-	health.call("record_check", "save", _missions != null and _missions.has_method("get_wallet"), "mission save manager available")
+	health.call("record_check", "save", get_runtime_system("save_slot_manager") != null and get_runtime_system("save_slot_manager").has_method("save_slot"), "persistent runtime save manager available")
 	var has_vehicle := not get_tree().get_nodes_in_group("drivable_vehicles").is_empty()
 	health.call("record_check", "vehicle", has_vehicle, "starting drivable vehicle present")
 	gate.call("record", "world", _world != null)
@@ -330,7 +512,7 @@ func _record_runtime_acceptance() -> void:
 	gate.call("record", "vehicle", has_vehicle)
 	gate.call("record", "gps", _route_planner != null)
 	gate.call("record", "hud", _hud != null)
-	gate.call("record", "save", _missions != null and _missions.has_method("get_wallet"))
+	gate.call("record", "save", get_runtime_system("save_slot_manager") != null and get_runtime_system("save_slot_manager").has_method("save_slot"))
 
 
 func get_runtime_system(system_id: String) -> RefCounted:
@@ -396,13 +578,14 @@ func _on_mission_objective_changed(text: String) -> void:
 		get_runtime_system("mission_objectives").call("add_progress", "mission_001_nora_meeting", 1)
 		get_runtime_system("mission_prerequisites").call("complete", "mission_001")
 		get_runtime_system("mission_rewards").call("settle", "mission_001", 250, 1)
+	_save_runtime_autosave()
 
 
 func _on_wallet_changed(amount: int) -> void:
 	var hud_state: RefCounted = get_runtime_system("hud_state")
 	var difference := amount - int(hud_state.get("money"))
 	hud_state.call("add_money", difference)
-	get_runtime_system("save_slot_manager").call("save_slot", "autosave", {"mission_stage": int(_missions.get("mission_stage")), "wallet": amount}, int(Time.get_unix_time_from_system()))
+	_save_runtime_autosave()
 
 
 func _on_vehicle_state_changed(is_driving: bool, vehicle_name: String) -> void:
@@ -413,3 +596,4 @@ func _on_vehicle_state_changed(is_driving: bool, vehicle_name: String) -> void:
 		interaction.call("enter", vehicle_name, 0.0, 3.6, false)
 	else:
 		interaction.call("exit_vehicle")
+	_update_runtime_hud()
