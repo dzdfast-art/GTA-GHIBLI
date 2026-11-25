@@ -220,6 +220,9 @@ func _run_reader_process() -> void:
 	if player.call("get_driven_vehicle") != vehicle:
 		_fail("The fresh game did not restore the active vehicle entry state.")
 		return
+	if player.collision_layer != 0 or player.collision_mask != 0:
+		_fail("The restored seated player still participates in world collisions.")
+		return
 
 	_cleanup_save()
 	print("PASS: fresh game restored player transform/vitals, mission progress/rewards, active vehicle, weapon inventory, world time/weather, activity, landmark, relationship, wanted state and Arabic setting.")
