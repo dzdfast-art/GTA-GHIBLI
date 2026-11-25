@@ -8,6 +8,7 @@ const GROUND_Y := 0.03
 
 func _ready() -> void:
 	_build_mira()
+	_build_reference_mission_marker()
 	_build_square()
 	_build_paths()
 	_build_reference_street()
@@ -440,3 +441,12 @@ func _build_reference_street() -> void:
 			fixture.height = 0.22
 			_add_mesh(lamp, "LampFixture", fixture,
 				Vector3(-side * 0.65, 4.02, 0.0), Color(0.96, 0.83, 0.55))
+
+
+func _build_reference_mission_marker() -> void:
+	var marker_script = preload("res://scripts/world/reference_mission_marker.gd")
+	var marker := Node3D.new()
+	marker.name = "ReferenceMissionMarker"
+	marker.position = Vector3(5.6, 0.04, -8.0)
+	marker.set_script(marker_script)
+	add_child(marker)
