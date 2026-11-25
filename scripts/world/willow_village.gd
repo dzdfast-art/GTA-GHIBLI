@@ -438,7 +438,5 @@ func _build_reference_street() -> void:
 			var fixture := SphereMesh.new()
 			fixture.radius = 0.16
 			fixture.height = 0.22
-			var fixture_material := _material(Color(0.96, 0.83, 0.55))
-			fixture_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 			_add_mesh(lamp, "LampFixture", fixture,
 				Vector3(-side * 0.65, 4.02, 0.0), Color(0.96, 0.83, 0.55))
