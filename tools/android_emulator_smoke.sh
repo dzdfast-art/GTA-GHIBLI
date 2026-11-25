@@ -140,6 +140,16 @@ if ! adb logcat -d -v brief > build/emulator-logcat-full.txt; then
   exit 1
 fi
 
+# Fail on a Vulkan presentation failure; process liveness alone is not a rendering test.
+if grep -Eiq "Couldn't present to Vulkan queue|VK_ERROR_DEVICE_LOST|VK_ERROR_OUT_OF_DATE_KHR" build/emulator-logcat.txt; then
+  capture_failure_diagnostics "Godot failed to present a Vulkan frame on the Android emulator."
+  exit 1
+fi
+if ! grep -Eiq 'Vulkan .*Forward Mobile|OpenGL ES .*Compatibility' build/emulator-logcat.txt; then
+  capture_failure_diagnostics "The game did not report a successfully initialized Android renderer."
+  exit 1
+fi
+
 # Reject the known GLES3 shader-limit error instead of accepting a bad render.
 if grep -Eiq 'Fragment shader active uniforms exceed GL_MAX_FRAGMENT_UNIFORM_VECTORS|SceneShaderGLES3: Program linking failed' build/emulator-logcat.txt; then
   capture_failure_diagnostics "Godot emitted a GLES3 scene-shader compilation failure."
@@ -154,6 +164,88 @@ if (( png_width < 1 || png_height < 1 )); then
   capture_failure_diagnostics "Android screenshot has invalid dimensions: $png_width x $png_height"
   exit 1
 fi
+
+# Decode the PNG and reject a black/near-black frame. The app must render the world,
+# not merely stay alive and return a valid PNG header.
+python3 - "$PWD/build/emulator-screenshot.png" <<'PY'
+import struct
+import sys
+import zlib
+
+path = sys.argv[1]
+data = open(path, "rb").read()
+if data[:8] != b"\\x89PNG\\r\\n\\x1a\\n":
+    raise SystemExit("FAIL: screenshot is not a PNG")
+pos = 8
+compressed = bytearray()
+width = height = bit_depth = color_type = None
+while pos < len(data):
+    length = struct.unpack(">I", data[pos:pos + 4])[0]
+    kind = data[pos + 4:pos + 8]
+    payload = data[pos + 8:pos + 8 + length]
+    pos += 12 + length
+    if kind == b"IHDR":
+        width, height, bit_depth, color_type, compression, filtering, interlace = struct.unpack(">IIBBBBB", payload)
+        if bit_depth != 8 or color_type not in (2, 6) or interlace != 0:
+            raise SystemExit(f"FAIL: unsupported screenshot PNG format: depth={bit_depth}, color={color_type}, interlace={interlace}")
+    elif kind == b"IDAT":
+        compressed.extend(payload)
+    elif kind == b"IEND":
+        break
+if not width or not height:
+    raise SystemExit("FAIL: screenshot PNG has no valid dimensions")
+channels = 4 if color_type == 6 else 3
+stride = width * channels
+raw = zlib.decompress(compressed)
+previous = bytearray(stride)
+offset = 0
+visible = 0
+sum_luma = 0
+sum_luma_sq = 0
+pixels = width * height
+
+def paeth(a, b, c):
+    p = a + b - c
+    pa, pb, pc = abs(p-a), abs(p-b), abs(p-c)
+    return a if pa <= pb and pa <= pc else (b if pb <= pc else c)
+
+for _ in range(height):
+    filt = raw[offset]
+    scan = raw[offset + 1:offset + 1 + stride]
+    offset += stride + 1
+    row = bytearray(stride)
+    for i, value in enumerate(scan):
+        left = row[i - channels] if i >= channels else 0
+        up = previous[i]
+        upper_left = previous[i - channels] if i >= channels else 0
+        if filt == 0:
+            predictor = 0
+        elif filt == 1:
+            predictor = left
+        elif filt == 2:
+            predictor = up
+        elif filt == 3:
+            predictor = (left + up) // 2
+        elif filt == 4:
+            predictor = paeth(left, up, upper_left)
+        else:
+            raise SystemExit(f"FAIL: unsupported PNG filter {filt}")
+        row[i] = (value + predictor) & 255
+    for i in range(0, stride, channels):
+        r, g, b = row[i], row[i + 1], row[i + 2]
+        luma = (r * 2126 + g * 7152 + b * 722) // 10000
+        sum_luma += luma
+        sum_luma_sq += luma * luma
+        if luma > 22:
+            visible += 1
+    previous = row
+mean = sum_luma / pixels
+variance = max(0.0, sum_luma_sq / pixels - mean * mean)
+ratio = visible / pixels
+print(f"Rendered-frame analysis: {width}x{height}, visible_pixels={ratio:.1%}, luminance_stddev={variance ** 0.5:.1f}")
+if ratio < 0.05 or variance ** 0.5 < 8.0:
+    raise SystemExit("FAIL: Android screenshot is black/near-black; gameplay frame was not rendered")
+PY
 
 # Confirm the process remains alive after screenshot and log collection.
 final_pid="$(adb shell pidof "$package_name" 2>/dev/null | tr -d '\r' | awk '{ print $1 }' || true)"
