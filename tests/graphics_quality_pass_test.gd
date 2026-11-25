@@ -136,23 +136,37 @@ func _run_test() -> void:
 			_fail("The imported hero is missing arm pivot: " + side)
 			return
 		for arm_clothing_name in ["HoodieSleeve", "SleeveCuff"]:
-			var arm_clothing := arm.find_child(arm_clothing_name, true, false) as MeshInstance3D
-			if arm_clothing == null or arm_clothing.visible:
-				var child_names: Array[String] = []
-				for child in arm.get_children():
-					child_names.append(str(child.name) + ":" + child.get_class())
-				_fail("The reference sleeveless outfit must hide " + side + "/" + arm_clothing_name + ". Immediate children: " + ", ".join(child_names))
+			var arm_clothing_parts := arm.find_children(arm_clothing_name + "*", "MeshInstance3D", true, false)
+			if arm_clothing_parts.is_empty():
+				_fail("The imported arm is missing the expected clothing mesh prefix: " + side + "/" + arm_clothing_name)
 				return
-	var left_trouser := imported_hero.get_node_or_null("LegPivot_Left/TrouserLeg") as MeshInstance3D
-	var trouser_material := left_trouser.material_override as StandardMaterial3D if left_trouser != null else null
-	if trouser_material == null or trouser_material.albedo_texture == null or trouser_material.albedo_texture.resource_path != "res://assets/characters/materials/ghibli_blue_denim.svg":
-		_fail("The player is missing the blue denim trouser material.")
-		return
-	var left_shoe := imported_hero.get_node_or_null("LegPivot_Left/SneakerUpper") as MeshInstance3D
-	var shoe_material := left_shoe.material_override as StandardMaterial3D if left_shoe != null else null
-	if shoe_material == null or shoe_material.albedo_color.get_luminance() > 0.20:
-		_fail("The player footwear is not using the required dark shoe material.")
-		return
+			for arm_clothing in arm_clothing_parts:
+				if (arm_clothing as MeshInstance3D).visible:
+					_fail("The reference sleeveless outfit still shows " + side + "/" + str(arm_clothing.name))
+					return
+	for side in ["LegPivot_Left", "LegPivot_Right"]:
+		var leg := imported_hero.find_child(side, true, false) as Node3D
+		if leg == null:
+			_fail("The imported hero is missing leg pivot: " + side)
+			return
+		var trouser_parts := leg.find_children("TrouserLeg*", "MeshInstance3D", true, false)
+		if trouser_parts.is_empty():
+			_fail("The imported leg is missing its trouser mesh: " + side)
+			return
+		for trouser_part in trouser_parts:
+			var trouser_material := (trouser_part as MeshInstance3D).material_override as StandardMaterial3D
+			if trouser_material == null or trouser_material.albedo_texture == null or trouser_material.albedo_texture.resource_path != "res://assets/characters/materials/ghibli_blue_denim.svg":
+				_fail("The player leg is missing the blue denim material: " + side + "/" + str(trouser_part.name))
+				return
+		var shoe_parts := leg.find_children("SneakerUpper*", "MeshInstance3D", true, false)
+		if shoe_parts.is_empty():
+			_fail("The imported leg is missing its shoe upper: " + side)
+			return
+		for shoe_part in shoe_parts:
+			var shoe_material := (shoe_part as MeshInstance3D).material_override as StandardMaterial3D
+			if shoe_material == null or shoe_material.albedo_color.get_luminance() > 0.20:
+				_fail("The player shoe is not using the required dark material: " + side + "/" + str(shoe_part.name))
+				return
 
 	var car_body := pbr_car.find_child("Body_Painted_Shell", true, false) as MeshInstance3D
 	if car_body == null or car_body.mesh == null:
