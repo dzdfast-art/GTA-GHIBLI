@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs>
+  <pattern id="cotton" width="24" height="24" patternUnits="userSpaceOnUse">
+    <rect width="24" height="24" fill="#f2f0e7"/>
+    <path d="M0 4H24M0 16H24" stroke="#ffffff" stroke-width="1.2" opacity=".56"/>
+    <path d="M4 0V24M16 0V24" stroke="#d7d8d1" stroke-width=".9" opacity=".42"/>
+    <path d="M-6 6L6 -6M0 24L24 0M18 30L30 18" stroke="#c9cbc5" stroke-width=".55" opacity=".22"/>
+  </pattern>
+  <linearGradient id="soft" x2="0" y2="1">
+    <stop stop-color="#ffffff" stop-opacity=".34"/>
+    <stop offset="1" stop-color="#b9bcb7" stop-opacity=".14"/>
+  </linearGradient>
+</defs>
+<rect width="512" height="512" fill="url(#cotton)"/>
+<rect width="512" height="512" fill="url(#soft)"/>
+<g fill="none" stroke="#c8c9c1" stroke-width="2" opacity=".42">
+  <path d="M44 84H468M44 428H468"/>
+  <path d="M84 44V468M428 44V468"/>
+</g>
+</svg>
