@@ -118,7 +118,7 @@ jobs:
       - name: Import project resources
         run: godot --headless --editor --path . --quit
 
-      - name: Export ARM64 debug APK
+      - name: Export dual-ABI ARM64 and x86_64 debug APK
         run: |
           mkdir -p build
           godot --headless --path . --export-debug "Android Debug (ARM64)" build/GTA-GHIBLI-debug.apk
@@ -129,6 +129,10 @@ jobs:
           set -euo pipefail
           test -s build/GTA-GHIBLI-debug.apk
           unzip -t build/GTA-GHIBLI-debug.apk
+          # Keep ARM64 for physical Android phones and x86_64 for the CI emulator.
+          unzip -Z1 build/GTA-GHIBLI-debug.apk | grep -qx 'lib/arm64-v8a/libgodot_android.so'
+          unzip -Z1 build/GTA-GHIBLI-debug.apk | grep -qx 'lib/x86_64/libgodot_android.so'
+          echo "Verified native Godot libraries for ARM64 phones and x86_64 emulator."
           build_tools_version="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort -V | tail -n 1)"
           aapt2="$ANDROID_HOME/build-tools/$build_tools_version/aapt2"
           test -x "$aapt2"
