@@ -1,27 +1,102 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/camera/third_person_camera.gd" id="2_camera"]
 [ext_resource type="Script" path="res://scripts/systems/player_interactor.gd" id="3_interactor"]
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_Player"]
-radius = 0.38
-height = 1.8
-
-[sub_resource type="StandardMaterial3D" id="Material_Player"]
-albedo_color = Color(0.24, 0.38, 0.72, 1)
-roughness = 0.9
-
 [sub_resource type="CapsuleShape3D" id="CapsuleShape_Player"]
 radius = 0.38
 height = 1.8
 
+[sub_resource type="CapsuleMesh" id="TorsoMesh"]
+radius = 0.29
+height = 0.78
+radial_segments = 12
+rings = 6
+
+[sub_resource type="CapsuleMesh" id="HeadMesh"]
+radius = 0.205
+height = 0.43
+radial_segments = 12
+rings = 6
+
+[sub_resource type="CapsuleMesh" id="ArmMesh"]
+radius = 0.085
+height = 0.62
+radial_segments = 8
+rings = 4
+
+[sub_resource type="CapsuleMesh" id="LegMesh"]
+radius = 0.125
+height = 0.72
+radial_segments = 8
+rings = 4
+
+[sub_resource type="BoxMesh" id="ShoeMesh"]
+size = Vector3(0.22, 0.12, 0.34)
+
+[sub_resource type="StandardMaterial3D" id="ShirtMaterial"]
+albedo_color = Color(0.92, 0.91, 0.85, 1)
+roughness = 0.88
+
+[sub_resource type="StandardMaterial3D" id="SkinMaterial"]
+albedo_color = Color(0.72, 0.48, 0.34, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="PantsMaterial"]
+albedo_color = Color(0.12, 0.25, 0.58, 1)
+roughness = 0.94
+
+[sub_resource type="StandardMaterial3D" id="ShoesMaterial"]
+albedo_color = Color(0.075, 0.075, 0.085, 1)
+roughness = 0.9
+
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_player")
 
-[node name="Visual" type="MeshInstance3D" parent="."]
-mesh = SubResource("CapsuleMesh_Player")
-material_override = SubResource("Material_Player")
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="WhiteSleevelessShirt" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 1.13, 0)
+mesh = SubResource("TorsoMesh")
+material_override = SubResource("ShirtMaterial")
+
+[node name="Head" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 1.72, 0)
+mesh = SubResource("HeadMesh")
+material_override = SubResource("SkinMaterial")
+
+[node name="LeftArm" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.36, 1.12, 0)
+rotation_degrees = Vector3(0, 0, 9)
+mesh = SubResource("ArmMesh")
+material_override = SubResource("SkinMaterial")
+
+[node name="RightArm" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.36, 1.12, 0)
+rotation_degrees = Vector3(0, 0, -9)
+mesh = SubResource("ArmMesh")
+material_override = SubResource("SkinMaterial")
+
+[node name="LeftLeg" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.14, 0.49, 0)
+mesh = SubResource("LegMesh")
+material_override = SubResource("PantsMaterial")
+
+[node name="RightLeg" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.14, 0.49, 0)
+mesh = SubResource("LegMesh")
+material_override = SubResource("PantsMaterial")
+
+[node name="LeftShoe" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.14, 0.09, -0.065)
+mesh = SubResource("ShoeMesh")
+material_override = SubResource("ShoesMaterial")
+
+[node name="RightShoe" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.14, 0.09, -0.065)
+mesh = SubResource("ShoeMesh")
+material_override = SubResource("ShoesMaterial")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape_Player")
