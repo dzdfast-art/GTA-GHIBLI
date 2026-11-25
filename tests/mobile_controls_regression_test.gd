@@ -62,6 +62,10 @@ func _run_mobile_controls_test() -> void:
 		_fail("The HUD health bar did not follow the player's health component.")
 		return
 
+	var left_shoe := player.get_node("Visual/LeftShoe") as MeshInstance3D
+	if left_shoe.global_position.y < 0.0 or left_shoe.global_position.y > 0.5:
+		_fail("The player's shoe is not aligned near the ground plane.")
+		return
 	var camera_pivot := player.get_node("CameraPivot") as Node3D
 	var follow_camera := player.get_node("CameraPivot/SpringArm3D/Camera3D") as Camera3D
 	var camera_forward := -follow_camera.global_basis.z
