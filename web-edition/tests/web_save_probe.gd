@@ -28,6 +28,7 @@ func _run_probe() -> void:
 	add_child(game)
 	await get_tree().process_frame
 	await get_tree().process_frame
+	_publish_storage_persistence()
 	if mode == "write":
 		_write_live_game_state(game)
 	else:
@@ -163,6 +164,11 @@ func _verify_live_game_state(game: Node) -> void:
 		_fail("active_vehicle_state_not_restored")
 		return
 	_publish("restored")
+
+
+func _publish_storage_persistence() -> void:
+	var persistent_literal := JSON.stringify(OS.is_userfs_persistent())
+	JavaScriptBridge.eval("document.documentElement.setAttribute('data-ghibli-userfs-persistent', " + persistent_literal + ");")
 
 
 func _publish(status: String) -> void:
