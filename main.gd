@@ -136,7 +136,7 @@ func _create_starter_car() -> void:
 func _create_starter_bicycle() -> void:
 	var bicycle: CharacterBody3D = STARTER_BICYCLE_SCENE.instantiate() as CharacterBody3D
 	bicycle.name = "StarterBicycle"
-	bicycle.position = Vector3(6.3, 0.08, -14.5)
+	bicycle.position = Vector3(6.0, 0.08, -15.0)
 	bicycle.rotation.y = PI
 	add_child(bicycle)
 
