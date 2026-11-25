@@ -140,9 +140,6 @@ func _run_writer_process() -> void:
 	if not bool(game.call("_save_game_state", true)):
 		_fail("The game root did not persist its live gameplay snapshot.")
 		return
-	var writer_snapshot: Dictionary = game.call("_capture_game_state")
-	print("WRITER_STATE=" + JSON.stringify(writer_snapshot))
-
 	print("PASS: writer process saved live player, mission, vehicle, inventory and world state.")
 	quit(0)
 
@@ -170,13 +167,6 @@ func _run_reader_process() -> void:
 		_fail("The reader process did not find the starter sedan.")
 		return
 	var vehicle: Node3D = vehicles[0] as Node3D
-	var diagnostic_manager: RefCounted = load("res://scripts/world/save_slot_manager.gd").new()
-	var diagnostic_record: Dictionary = diagnostic_manager.call("load_slot", SLOT_ID)
-	print("LOADED_PAYLOAD=" + JSON.stringify(diagnostic_record.get("payload", {})))
-	print("INITIAL_READER_PLAYER=" + str(player.global_position) + " VEHICLE=" + str(vehicle.global_position) + " ACTIVE=" + str(player.call("get_driven_vehicle")))
-	print("SECOND_RESTORE_RESULT=" + str(game.call("_restore_game_state")))
-	print("RESTORED_READER_PLAYER=" + str(player.global_position) + " VEHICLE=" + str(vehicle.global_position) + " ACTIVE=" + str(player.call("get_driven_vehicle")))
-
 	if player.global_position.distance_to(SAVED_VEHICLE_POSITION) > 0.05:
 		_fail("The fresh game did not restore the saved player position.")
 		return

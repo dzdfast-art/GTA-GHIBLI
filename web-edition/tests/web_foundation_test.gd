@@ -399,8 +399,9 @@ func _run() -> void:
 	var autosave_manager: RefCounted = load("res://scripts/world/save_slot_manager.gd").new()
 	var autosave_record: Dictionary = autosave_manager.call("load_slot", "autosave")
 	var autosave_payload: Dictionary = autosave_record.get("payload", {})
-	if int(autosave_payload.get("mission_stage", -1)) != 2 or int(autosave_payload.get("wallet", -1)) != 600:
-		_fail("The game root did not persist Mission 001 stage and wallet in its durable autosave slot.")
+	var autosave_missions: Dictionary = autosave_payload.get("missions", {})
+	if int(autosave_payload.get("schema_version", 0)) != 1 or int(autosave_missions.get("stage", -1)) != 2 or int(autosave_missions.get("wallet", -1)) != 600:
+		_fail("The game root did not persist Mission 001 stage and wallet in its versioned live-game autosave slot.")
 		return
 	autosave_manager.call("delete_slot", "autosave")
 
