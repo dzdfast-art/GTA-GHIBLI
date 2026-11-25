@@ -78,7 +78,8 @@ func _run() -> void:
 	if str(pursuit.get("state")) != "searching":
 		_fail("Police pursuit did not transition to searching after losing visual contact.")
 		return
-	game.call("advance_simulation", 21.0)
+	pursuit.call("configure", 0.2)
+	game.call("advance_simulation", 0.25)
 	if str(pursuit.get("state")) != "lost":
 		_fail("Police pursuit did not transition to lost after its search timeout.")
 		return
