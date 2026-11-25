@@ -65,7 +65,8 @@ func _create_collision_and_visuals() -> void:
 	var body_shape := BoxShape3D.new()
 	body_shape.size = Vector3(2.0, 0.9, 3.8)
 	body_collision.shape = body_shape
-	body_collision.position = Vector3(0.0, 0.58, 0.0)
+	# The box collider must rest on the world floor at y=0; the old 0.58 offset left a 0.13 m gap.
+	body_collision.position = Vector3(0.0, 0.45, 0.0)
 	add_child(body_collision)
 
 	var body_mesh := MeshInstance3D.new()
