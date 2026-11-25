@@ -11,7 +11,9 @@ func _ready() -> void:
 
 
 func _build_lighting_rig() -> void:
-	## A mobile-friendly daylight setup: one shadow-casting sun and controlled ambient fill.
+	## A mobile-safe daylight setup: one directional sun and controlled ambient fill.
+	## GLES3 mobile scene shaders exceeded the emulator's 256 fragment-uniform limit
+	## with real-time shadows enabled, so use stable ambient fill without a shadow atlas.
 	var world_environment := WorldEnvironment.new()
 	world_environment.name = "GhibliWorldEnvironment"
 	var environment := Environment.new()
@@ -29,11 +31,9 @@ func _build_lighting_rig() -> void:
 	sun.rotation_degrees = Vector3(-48.0, -28.0, 0.0)
 	sun.light_color = Color(1.0, 0.91, 0.78)
 	sun.light_energy = 1.15
-	sun.shadow_enabled = true
-	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
-	sun.directional_shadow_max_distance = 90.0
-	sun.shadow_bias = 0.045
-	sun.shadow_normal_bias = 1.4
+	# Real-time shadow variants exceed GL_MAX_FRAGMENT_UNIFORM_VECTORS on
+	# the tested GLES3 Android emulator (261 > 256). Keep the sun unshadowed.
+	sun.shadow_enabled = false
 	add_child(sun)
 
 
