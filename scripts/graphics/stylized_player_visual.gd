@@ -97,18 +97,18 @@ func _apply_imported_hero_materials(hero: Node3D) -> void:
 	if torso != null:
 		torso.material_override = tank_material
 	for detail_name in ["Hood", "HoodiePocket", "HoodieZip", "HoodieDrawstrings"]:
-		var detail := _find_named_node(hero, detail_name) as MeshInstance3D
-		if detail != null:
+		for detail in _find_meshes_with_prefix(hero, detail_name):
 			detail.visible = false
 
-	# Expose the upper arms instead of retaining long hoodie sleeves and cuffs.
+	# The glTF importer suffixes duplicate names (for example, HoodieSleeve2).
+	# Match prefixes so both arms and both legs receive the same outfit treatment.
 	for side in ["ArmPivot_Left", "ArmPivot_Right"]:
 		var arm := _find_named_node(hero, side) as Node3D
-		if arm != null:
-			for part_name in ["HoodieSleeve", "SleeveCuff"]:
-				var clothing_part := _find_named_node(arm, part_name) as MeshInstance3D
-				if clothing_part != null:
-					clothing_part.visible = false
+		if arm == null:
+			continue
+		for part_name in ["HoodieSleeve", "SleeveCuff"]:
+			for clothing_part in _find_meshes_with_prefix(arm, part_name):
+				clothing_part.visible = false
 
 	var denim_material := StandardMaterial3D.new()
 	denim_material.albedo_color = Color(0.72, 0.82, 0.98)
@@ -126,17 +126,23 @@ func _apply_imported_hero_materials(hero: Node3D) -> void:
 		var leg := _find_named_node(hero, side) as Node3D
 		if leg == null:
 			continue
-		var trouser := leg.get_node_or_null("TrouserLeg") as MeshInstance3D
-		if trouser != null:
+		for trouser in _find_meshes_with_prefix(leg, "TrouserLeg"):
 			trouser.material_override = denim_material
 		for detail_name in ["CargoPocket", "KneePanel"]:
-			var detail := leg.get_node_or_null(detail_name) as MeshInstance3D
-			if detail != null:
+			for detail in _find_meshes_with_prefix(leg, detail_name):
 				detail.visible = false
 		for shoe_part_name in ["SneakerSole", "SneakerUpper", "SneakerToeAccent", "SneakerHeelAccent", "SneakerLaces"]:
-			var shoe_part := leg.get_node_or_null(shoe_part_name) as MeshInstance3D
-			if shoe_part != null:
+			for shoe_part in _find_meshes_with_prefix(leg, shoe_part_name):
 				shoe_part.material_override = shoe_material
+
+
+func _find_meshes_with_prefix(parent: Node, name_prefix: String) -> Array[MeshInstance3D]:
+	var matches: Array[MeshInstance3D] = []
+	for child in parent.get_children():
+		if child is MeshInstance3D and str(child.name).begins_with(name_prefix):
+			matches.append(child as MeshInstance3D)
+		matches.append_array(_find_meshes_with_prefix(child, name_prefix))
+	return matches
 
 
 func _add_back_logo() -> void:
