@@ -18,6 +18,7 @@ const WORLD_CLOCK_SCRIPT = preload("res://scripts/world/world_clock.gd")
 const OPEN_WORLD_REGIONS_SCRIPT = preload("res://scripts/world/open_world_regions.gd")
 const TERRAIN_EXPANSION_SCRIPT = preload("res://scripts/world/terrain_expansion_runtime.gd")
 const PLAYER_NEEDS_SCRIPT = preload("res://scripts/systems/player_needs.gd")
+const PLAYER_VITALS_SCRIPT = preload("res://scripts/systems/player_vitals.gd")
 const CONSUMABLE_INVENTORY_SCRIPT = preload("res://scripts/systems/consumable_inventory.gd")
 const PLAYER_WALLET_SCRIPT = preload("res://scripts/systems/player_wallet.gd")
 const WILDLIFE_DIRECTOR_SCRIPT = preload("res://scripts/world/wildlife_director.gd")
@@ -197,6 +198,9 @@ func _create_player_needs() -> void:
 	var player := get_node_or_null("Player") as CharacterBody3D
 	if player == null:
 		return
+	var vitals: Node = PLAYER_VITALS_SCRIPT.new()
+	vitals.name = "PlayerVitals"
+	player.add_child(vitals)
 	var wallet: Node = PLAYER_WALLET_SCRIPT.new()
 	wallet.name = "PlayerWallet"
 	player.add_child(wallet)
