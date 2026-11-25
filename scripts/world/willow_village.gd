@@ -10,6 +10,7 @@ func _ready() -> void:
 	_build_mira()
 	_build_square()
 	_build_paths()
+	_build_reference_street()
 	_build_houses()
 	_build_house_portal()
 	_build_garden()
@@ -335,3 +336,109 @@ func _build_consumable_shop() -> void:
 	shop.position = Vector3(-11.0, 0.0, -5.2)
 	shop.set_script(shop_script)
 	add_child(shop)
+
+
+func _build_reference_street() -> void:
+	# A paved residential street and raised sidewalks frame the initial spawn,
+	# matching the road/sidewalk composition in the supplied mobile reference.
+	var road_mesh := BoxMesh.new()
+	road_mesh.size = Vector3(10.4, 0.06, 58.0)
+	var road := MeshInstance3D.new()
+	road.name = "ReferenceResidentialRoad"
+	road.mesh = road_mesh
+	road.position = Vector3(0.0, 0.025, -15.0)
+	var asphalt := _material(Color(0.92, 0.94, 0.95))
+	var asphalt_texture := load("res://assets/environment/materials/hd_district_asphalt.svg") as Texture2D
+	if asphalt_texture != null:
+		asphalt.albedo_texture = asphalt_texture
+		asphalt.uv1_scale = Vector3(4.0, 4.0, 4.0)
+	road.material_override = asphalt
+	add_child(road)
+
+	for side in [-1.0, 1.0]:
+		var sidewalk_mesh := BoxMesh.new()
+		sidewalk_mesh.size = Vector3(3.0, 0.08, 58.0)
+		var sidewalk := MeshInstance3D.new()
+		sidewalk.name = "ResidentialSidewalk_%s" % ("West" if side < 0.0 else "East")
+		sidewalk.mesh = sidewalk_mesh
+		sidewalk.position = Vector3(side * 6.9, 0.045, -15.0)
+		var pavement := _material(Color(0.83, 0.84, 0.80))
+		var pavement_texture := load("res://assets/environment/materials/harbor_paving_atlas.svg") as Texture2D
+		if pavement_texture != null:
+			pavement.albedo_texture = pavement_texture
+			pavement.uv1_scale = Vector3(3.0, 3.0, 3.0)
+		sidewalk.material_override = pavement
+		add_child(sidewalk)
+
+		var curb_mesh := BoxMesh.new()
+		curb_mesh.size = Vector3(0.22, 0.17, 58.0)
+		var curb := MeshInstance3D.new()
+		curb.name = "ResidentialCurb_%s" % ("West" if side < 0.0 else "East")
+		curb.mesh = curb_mesh
+		curb.position = Vector3(side * 5.22, 0.12, -15.0)
+		curb.material_override = _material(Color(0.55, 0.57, 0.55))
+		add_child(curb)
+
+	# Broken center line, lane edge guidance and a pedestrian crossing.
+	for index in range(9):
+		var dash := BoxMesh.new()
+		dash.size = Vector3(0.13, 0.012, 2.4)
+		_add_mesh(self, "RoadCenterDash_%02d" % index, dash,
+			Vector3(0.0, 0.064, -41.0 + float(index) * 6.2),
+			Color(0.91, 0.89, 0.77))
+	for x_index in range(9):
+		var stripe := BoxMesh.new()
+		stripe.size = Vector3(0.58, 0.014, 2.8)
+		_add_mesh(self, "PedestrianCrossing_%02d" % x_index, stripe,
+			Vector3(-4.0 + float(x_index) * 1.0, 0.068, -5.5),
+			Color(0.92, 0.91, 0.83))
+
+	# Trees and street lamps give the first camera view a recognizable sidewalk edge.
+	for index in range(3):
+		var z_position := -34.0 + float(index) * 17.0
+		for side in [-1.0, 1.0]:
+			var tree := Node3D.new()
+			tree.name = "ResidentialTree_%02d_%s" % [index, "W" if side < 0.0 else "E"]
+			tree.position = Vector3(side * 8.9, 0.0, z_position)
+			add_child(tree)
+			var trunk := CylinderMesh.new()
+			trunk.top_radius = 0.15
+			trunk.bottom_radius = 0.23
+			trunk.height = 2.5
+			_add_mesh(tree, "Trunk", trunk, Vector3(0.0, 1.25, 0.0),
+				Color(0.32, 0.22, 0.14))
+			var canopy := SphereMesh.new()
+			canopy.radius = 1.18
+			canopy.height = 2.0
+			_add_mesh(tree, "Canopy", canopy, Vector3(0.0, 2.85, 0.0),
+				Color(0.23, 0.43, 0.25))
+			var canopy_cluster := SphereMesh.new()
+			canopy_cluster.radius = 0.78
+			canopy_cluster.height = 1.25
+			_add_mesh(tree, "CanopyCluster", canopy_cluster,
+				Vector3(0.48, 3.15, 0.22), Color(0.31, 0.52, 0.30))
+
+	for index in range(3):
+		var z_position := -30.0 + float(index) * 18.0
+		for side in [-1.0, 1.0]:
+			var lamp := Node3D.new()
+			lamp.name = "ResidentialStreetLamp_%02d_%s" % [index, "W" if side < 0.0 else "E"]
+			lamp.position = Vector3(side * 8.0, 0.0, z_position)
+			add_child(lamp)
+			var pole := CylinderMesh.new()
+			pole.top_radius = 0.055
+			pole.bottom_radius = 0.085
+			pole.height = 4.2
+			_add_mesh(lamp, "Pole", pole, Vector3(0.0, 2.1, 0.0),
+				Color(0.18, 0.20, 0.19))
+			var arm := BoxMesh.new()
+			arm.size = Vector3(0.8, 0.08, 0.08)
+			_add_mesh(lamp, "Arm", arm, Vector3(-side * 0.32, 4.12, 0.0),
+				Color(0.18, 0.20, 0.19))
+			var fixture := SphereMesh.new()
+			fixture.radius = 0.16
+			fixture.height = 0.22
+			var fixture_material := _material(Color(0.96, 0.83, 0.55))
+			fixture_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			_add_mesh(lamp, "LampFixture", fixture,
+				Vector3(-side * 0.65, 4.02, 0.0), Color(0.96, 0.83, 0.55))
