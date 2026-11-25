@@ -24,6 +24,10 @@ func get_vehicle_label() -> String:
 	return "Harbor Sedan"
 
 
+func get_save_id() -> String:
+	return "harbor_sedan"
+
+
 func _physics_process(delta: float) -> void:
 	if not _is_driven:
 		velocity = Vector3.ZERO

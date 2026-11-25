@@ -126,6 +126,22 @@ func _enter_vehicle(vehicle: Node3D) -> void:
 	vehicle_state_changed.emit(true, str(vehicle.call("get_vehicle_label")))
 
 
+func get_driven_vehicle() -> Node3D:
+	return _driven_vehicle
+
+
+func restore_vehicle_state(vehicle: Node3D) -> bool:
+	if vehicle == null or not vehicle.is_in_group("drivable_vehicles") or not vehicle.has_method("set_driven"):
+		return false
+	_driven_vehicle = vehicle
+	vehicle.call("set_driven", true)
+	if _visual != null:
+		_visual.visible = false
+	global_position = vehicle.global_position
+	vehicle_state_changed.emit(true, str(vehicle.call("get_vehicle_label")))
+	return true
+
+
 func _exit_vehicle() -> void:
 	if _driven_vehicle == null:
 		return
