@@ -160,6 +160,16 @@ jobs:
           PY
           cat web-edition/build/web-size.txt
 
+      - name: Upload playable Web build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTA-GHIBLI-Web
+          path: |
+            web-edition/build/GTA-GHIBLI-Web.zip
+            web-edition/build/web-size.txt
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Remove temporary Web export and package
         if: always()
         run: rm -rf web-edition/build
