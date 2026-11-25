@@ -72,11 +72,15 @@ func _release_ambience() -> void:
 	var transition: Tween = _ambience_node.get("_transition_tween") as Tween
 	if transition != null and transition.is_running():
 		transition.kill()
+	_ambience_node.set("_transition_tween", null)
+	_ambience_node.set("_playback", null)
 	for property_name in ["_field_recording_player", "_player"]:
 		var audio_player: AudioStreamPlayer = _ambience_node.get(property_name) as AudioStreamPlayer
 		if audio_player != null:
 			audio_player.stop()
 			audio_player.stream = null
+			audio_player.queue_free()
+		_ambience_node.set(property_name, null)
 	_ambience_node.free()
 	_ambience_node = null
 
