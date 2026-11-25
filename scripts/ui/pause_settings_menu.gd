@@ -148,12 +148,12 @@ func _build_interface() -> void:
 	var pause_button := _make_button("Ⅱ", 22)
 	_pause_touch_button = pause_button
 	pause_button.name = "PauseTouchButton"
-	pause_button.anchor_left = 1.0
-	pause_button.anchor_right = 1.0
-	pause_button.offset_left = -82.0
-	pause_button.offset_top = 18.0
-	pause_button.offset_right = -18.0
-	pause_button.offset_bottom = 82.0
+	pause_button.anchor_left = 0.5
+	pause_button.anchor_right = 0.5
+	pause_button.offset_left = -32.0
+	pause_button.offset_top = 14.0
+	pause_button.offset_right = 32.0
+	pause_button.offset_bottom = 78.0
 	pause_button.custom_minimum_size = Vector2(64.0, 64.0)
 	pause_button.pressed.connect(toggle_pause)
 	add_child(pause_button)
