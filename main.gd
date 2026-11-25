@@ -123,7 +123,7 @@ func _create_player() -> void:
 	var player: CharacterBody3D = PLAYER_SCENE.instantiate() as CharacterBody3D
 	player.name = "Player"
 	player.add_to_group("player")
-	player.position = Vector3(0.0, 0.95, -18.0)
+	player.position = Vector3(5.6, 1.0, -18.0)
 	player.rotation.y = PI
 	add_child(player)
 
@@ -136,7 +136,7 @@ func _create_starter_car() -> void:
 func _create_starter_bicycle() -> void:
 	var bicycle: CharacterBody3D = STARTER_BICYCLE_SCENE.instantiate() as CharacterBody3D
 	bicycle.name = "StarterBicycle"
-	bicycle.position = Vector3(-2.6, 0.0, -18.0)
+	bicycle.position = Vector3(6.3, 0.08, -14.5)
 	bicycle.rotation.y = PI
 	add_child(bicycle)
 
