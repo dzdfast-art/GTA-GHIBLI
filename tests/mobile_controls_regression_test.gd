@@ -4,6 +4,7 @@ extends SceneTree
 
 const PLAYER_SCENE: PackedScene = preload("res://scenes/player/player.tscn")
 const MOBILE_CONTROLS_SCRIPT = preload("res://scripts/ui/mobile_controls.gd")
+const PLAYER_VITALS_SCRIPT = preload("res://scripts/systems/player_vitals.gd")
 
 
 func _initialize() -> void:
@@ -25,6 +26,11 @@ func _run_mobile_controls_test() -> void:
 
 	var player := PLAYER_SCENE.instantiate() as CharacterBody3D
 	player.position = Vector3(0.0, 0.95, 0.0)
+	player.add_to_group("player")
+	var vitals := Node.new()
+	vitals.name = "PlayerVitals"
+	vitals.set_script(PLAYER_VITALS_SCRIPT)
+	player.add_child(vitals)
 	world.add_child(player)
 
 	var controls: CanvasLayer = MOBILE_CONTROLS_SCRIPT.new() as CanvasLayer
@@ -35,6 +41,24 @@ func _run_mobile_controls_test() -> void:
 	var joystick := controls.get_node("HUD/MovementJoystick") as Control
 	if joystick.size.x < 100.0 or joystick.size.y < 100.0:
 		_fail("The on-screen joystick did not receive a usable layout size.")
+		return
+
+	var minimap := controls.get_node_or_null("HUD/Minimap") as Control
+	if minimap == null or minimap.custom_minimum_size.x < 150.0:
+		_fail("The reference-style minimap is missing or undersized.")
+		return
+	var status_panel := controls.get_node_or_null("HUD/StatusPanel")
+	if status_panel == null or controls.get_node_or_null("HUD/StatusPanel/StatusStack/TimeAndMoney/TimeLabel") == null:
+		_fail("The top-right time and money HUD panel was not built.")
+		return
+	var health_bar := controls.get_node_or_null("HUD/StatusPanel/StatusStack/HealthRow/HealthBar") as ProgressBar
+	if health_bar == null:
+		_fail("The player health bar is missing from the HUD.")
+		return
+	vitals.call("take_damage", 30.0)
+	await process_frame
+	if not is_equal_approx(health_bar.value, 70.0):
+		_fail("The HUD health bar did not follow the player's health component.")
 		return
 
 	var camera_pivot := player.get_node("CameraPivot") as Node3D
