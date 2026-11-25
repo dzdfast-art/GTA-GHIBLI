@@ -1,8 +1,9 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/camera/third_person_camera.gd" id="2_camera"]
 [ext_resource type="Script" path="res://scripts/systems/player_interactor.gd" id="3_interactor"]
+[ext_resource type="Script" path="res://scripts/player/player_visual_animator.gd" id="4_animator"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape_Player"]
 radius = 0.38
@@ -51,10 +52,37 @@ roughness = 0.94
 albedo_color = Color(0.075, 0.075, 0.085, 1)
 roughness = 0.9
 
+[sub_resource type="SphereMesh" id="HairMesh"]
+radius = 0.23
+height = 0.22
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="EyeMesh"]
+radius = 0.028
+height = 0.04
+radial_segments = 8
+rings = 4
+
+[sub_resource type="SphereMesh" id="EarMesh"]
+radius = 0.055
+height = 0.10
+radial_segments = 8
+rings = 4
+
+[sub_resource type="StandardMaterial3D" id="HairMaterial"]
+albedo_color = Color(0.10, 0.075, 0.06, 1)
+roughness = 0.86
+
+[sub_resource type="StandardMaterial3D" id="EyeMaterial"]
+albedo_color = Color(0.035, 0.028, 0.025, 1)
+roughness = 0.7
+
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_player")
 
 [node name="Visual" type="Node3D" parent="."]
+script = ExtResource("4_animator")
 
 [node name="WhiteSleevelessShirt" type="MeshInstance3D" parent="Visual"]
 position = Vector3(0, 1.13, 0)
@@ -64,6 +92,31 @@ material_override = SubResource("ShirtMaterial")
 [node name="Head" type="MeshInstance3D" parent="Visual"]
 position = Vector3(0, 1.72, 0)
 mesh = SubResource("HeadMesh")
+material_override = SubResource("SkinMaterial")
+
+[node name="HairCap" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 1.89, -0.01)
+mesh = SubResource("HairMesh")
+material_override = SubResource("HairMaterial")
+
+[node name="LeftEye" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.07, 1.75, -0.19)
+mesh = SubResource("EyeMesh")
+material_override = SubResource("EyeMaterial")
+
+[node name="RightEye" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.07, 1.75, -0.19)
+mesh = SubResource("EyeMesh")
+material_override = SubResource("EyeMaterial")
+
+[node name="LeftEar" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.195, 1.72, 0)
+mesh = SubResource("EarMesh")
+material_override = SubResource("SkinMaterial")
+
+[node name="RightEar" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.195, 1.72, 0)
+mesh = SubResource("EarMesh")
 material_override = SubResource("SkinMaterial")
 
 [node name="LeftArm" type="MeshInstance3D" parent="Visual"]
