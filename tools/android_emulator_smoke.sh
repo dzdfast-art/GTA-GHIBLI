@@ -23,7 +23,17 @@ sleep 8
 
 # Android 15 may show its first-run immersive-mode confirmation above the app.
 # Read the emulator's actual resolution instead of assuming fixed coordinates.
-screen_size="$(adb shell wm size | tr -d '\r' | sed -nE 's/.*([0-9]+)x([0-9]+).*/\1 \2/p' | tail -n 1)"
+# Match the first digit of each dimension; a greedy prefix can incorrectly
+# capture only the final digit (for example, 0x2340 from 1080x2340).
+screen_size="$(adb shell wm size | tr -d '\r' | awk '
+  match($0, /[0-9]+x[0-9]+/) {
+    size = substr($0, RSTART, RLENGTH)
+    split(size, dimensions, "x")
+    if (dimensions[1] > 0 && dimensions[2] > 0) {
+      print dimensions[1], dimensions[2]
+    }
+  }
+' | tail -n 1)"
 if [[ -z "$screen_size" ]]; then
   echo "Could not determine Android emulator display size."
   exit 1
