@@ -29,8 +29,8 @@ func _run() -> void:
 		return
 
 	var markers: Array = game.call("get_runtime_system", "map_marker_manager").call("get_markers")
-	if markers.size() != 6:
-		_fail("World points of interest were not registered in the runtime marker manager.")
+	if markers.size() != 7:
+		_fail("The original points of interest and Harbor Market mission noticeboard were not registered in the runtime marker manager.")
 		return
 	if str(game.call("get_runtime_system", "region_registry").call("find_region", Vector2(-114.0, 0.0))) != "harbor_city":
 		_fail("The active world region was not registered with the runtime region service.")

@@ -117,6 +117,8 @@ func _ready() -> void:
 	_hud.call("update_minimap", _player.global_position, _player.global_rotation.y, _active_waypoint_position, false)
 	_sync_runtime_hud_state()
 	_restore_game_state()
+	_synchronize_campaign_runtime_from_manager()
+	_update_mission_waypoint()
 	_sync_runtime_hud_state()
 	_refresh_save_storage_status()
 	_record_runtime_acceptance()
@@ -158,6 +160,9 @@ func _notification(what: int) -> void:
 func _connect_gameplay_signals() -> void:
 	_missions.objective_changed.connect(_hud.set_objective)
 	_missions.objective_changed.connect(_on_mission_objective_changed)
+	_missions.mission_step_completed.connect(_on_mission_step_completed)
+	_missions.mission_completed.connect(_on_mission_completed)
+	_missions.progress_reset.connect(_on_mission_progress_reset)
 	_missions.connect("notification_requested", Callable(_hud, "show_notification"))
 	_missions.dialogue_changed.connect(_hud.show_dialogue)
 	_missions.wallet_changed.connect(_hud.set_wallet)
@@ -254,6 +259,9 @@ func _initialize_runtime_systems() -> void:
 	get_runtime_system("mission_prerequisites").call("define", "mission_002", mission_one)
 	get_runtime_system("mission_objectives").call("add_objective", "mission_001_claire_contact", 1)
 	get_runtime_system("mission_objectives").call("add_objective", "mission_001_nora_meeting", 1)
+	get_runtime_system("mission_objectives").call("add_objective", "mission_002_nora_start", 1)
+	get_runtime_system("mission_objectives").call("add_objective", "mission_002_noticeboard", 1)
+	get_runtime_system("mission_objectives").call("add_objective", "mission_002_return_to_nora", 1)
 	get_runtime_system("checkpoint_system").call("set_checkpoints", [Vector3(-114.0, 0.0, 0.0), Vector3(-75.0, 0.0, 11.0)])
 	get_runtime_system("traffic_spawn_budget").call("configure", 24)
 	get_runtime_system("performance_budget").call("configure", "npcs", 40)
@@ -413,15 +421,127 @@ func release_traffic_vehicle(count: int = 1) -> int:
 	return int(get_runtime_system("traffic_spawn_budget").call("despawn", count))
 
 
-func _on_mission_objective_changed(text: String) -> void:
-	if text.contains("قابل Nora") or text.contains("Marsa Al-Noor"):
-		get_runtime_system("mission_objectives").call("add_progress", "mission_001_claire_contact", 1)
-	elif text.contains("مكتملة"):
-		get_runtime_system("mission_objectives").call("add_progress", "mission_001_nora_meeting", 1)
-		get_runtime_system("mission_prerequisites").call("complete", "mission_001")
-		get_runtime_system("mission_rewards").call("settle", "mission_001", 250, 1)
+func _on_mission_objective_changed(_text: String) -> void:
+	_update_mission_waypoint()
 	if not _is_restoring_game_state:
 		_save_game_state(true)
+
+
+func _on_mission_step_completed(mission_id: String, step_id: String) -> void:
+	var objective_id := ""
+	match mission_id:
+		"mission_001":
+			match step_id:
+				"speak_to_claire":
+					objective_id = "mission_001_claire_contact"
+				"meet_nora":
+					objective_id = "mission_001_nora_meeting"
+		"mission_002":
+			match step_id:
+				"start_at_nora":
+					objective_id = "mission_002_nora_start"
+				"inspect_noticeboard":
+					objective_id = "mission_002_noticeboard"
+				"return_to_nora":
+					objective_id = "mission_002_return_to_nora"
+	if objective_id.is_empty():
+		return
+	var objectives: RefCounted = get_runtime_system("mission_objectives")
+	if not bool(objectives.call("add_progress", objective_id, 1)):
+		push_warning("Could not record mission objective progress: %s" % objective_id)
+
+
+func _on_mission_completed(mission_id: String) -> void:
+	var reward_values: Dictionary = {
+		"mission_001": {"cash": 250, "respect": 1},
+		"mission_002": {"cash": 300, "respect": 2}
+	}
+	if not reward_values.has(mission_id):
+		return
+	var prerequisites: RefCounted = get_runtime_system("mission_prerequisites")
+	var completed: Dictionary = prerequisites.get("completed")
+	if not completed.has(mission_id) and not bool(prerequisites.call("complete", mission_id)):
+		push_warning("Mission prerequisite completion was rejected: %s" % mission_id)
+	var rewards: RefCounted = get_runtime_system("mission_rewards")
+	var reward: Dictionary = reward_values[mission_id]
+	if not bool(rewards.call("is_settled", mission_id)):
+		var settlement: Dictionary = rewards.call(
+			"settle", mission_id, int(reward.cash), int(reward.respect)
+		)
+		if not bool(settlement.get("ok", false)):
+			push_warning("Mission reward ledger rejected settlement: %s" % mission_id)
+
+
+func _on_mission_progress_reset() -> void:
+	var objectives: RefCounted = get_runtime_system("mission_objectives")
+	var objective_records: Dictionary = objectives.get("objectives")
+	for objective_id in objective_records:
+		var record: Dictionary = objective_records[objective_id]
+		record["progress"] = 0
+	objectives.set("objectives", objective_records)
+	get_runtime_system("mission_rewards").set("settled", {})
+	get_runtime_system("mission_prerequisites").set("completed", {})
+
+
+func _synchronize_campaign_runtime_from_manager() -> void:
+	if _missions == null:
+		return
+	var stage := int(_missions.get("mission_stage"))
+	var objectives: RefCounted = get_runtime_system("mission_objectives")
+	var prerequisites: RefCounted = get_runtime_system("mission_prerequisites")
+	var completed: Dictionary = prerequisites.get("completed")
+	var rewards: RefCounted = get_runtime_system("mission_rewards")
+	if stage >= 1:
+		objectives.call("add_progress", "mission_001_claire_contact", 1)
+	if stage >= 2:
+		objectives.call("add_progress", "mission_001_nora_meeting", 1)
+		if not completed.has("mission_001"):
+			prerequisites.call("complete", "mission_001")
+		if not bool(rewards.call("is_settled", "mission_001")):
+			rewards.call("settle", "mission_001", 250, 1)
+	if stage >= 3:
+		objectives.call("add_progress", "mission_002_nora_start", 1)
+	if stage >= 4:
+		objectives.call("add_progress", "mission_002_noticeboard", 1)
+	if stage >= 5:
+		objectives.call("add_progress", "mission_002_return_to_nora", 1)
+		completed = prerequisites.get("completed")
+		if not completed.has("mission_002"):
+			prerequisites.call("complete", "mission_002")
+		if not bool(rewards.call("is_settled", "mission_002")):
+			rewards.call("settle", "mission_002", 300, 2)
+
+
+func _update_mission_waypoint() -> void:
+	if _missions == null or _player == null or _hud == null:
+		return
+	var stage := int(_missions.get("mission_stage"))
+	var target_id := ""
+	if stage == 1 or stage == 2 or stage == 4:
+		target_id = "nora_blake"
+	elif stage == 3:
+		target_id = "harbor_market_noticeboard"
+	if target_id.is_empty():
+		if _active_waypoint_id == "nora_blake" or _active_waypoint_id == "harbor_market_noticeboard":
+			_active_waypoint_id = ""
+			_active_waypoint_name = ""
+			_active_waypoint_position = Vector3.ZERO
+			_active_route = {}
+			_hud.call("set_navigation_route", {})
+			_hud.call("set_waypoint_status", "", 0.0, false)
+			_hud.call("set_navigation_guidance", "Mission complete — explore the world")
+		return
+	if _active_waypoint_id == target_id:
+		return
+	for point in _points_of_interest:
+		if str(point.get("id", "")) != target_id:
+			continue
+		_active_waypoint_id = target_id
+		_active_waypoint_name = str(point.get("name", target_id))
+		_active_waypoint_position = point.get("position", Vector3.ZERO)
+		_arrival_notified = false
+		_update_navigation_route()
+		return
 
 
 func _on_wallet_changed(amount: int) -> void:

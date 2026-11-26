@@ -397,17 +397,55 @@ func _run() -> void:
 		_fail("Mission 001 reward was not added.")
 		return
 
+	var prerequisites: RefCounted = game.call("get_runtime_system", "mission_prerequisites")
+	var rewards: RefCounted = game.call("get_runtime_system", "mission_rewards")
+	var objectives: RefCounted = game.call("get_runtime_system", "mission_objectives")
+	if not bool(prerequisites.call("is_available", "mission_002")):
+		_fail("Mission 002 did not unlock after Mission 001 completion.")
+		return
+	if not bool(rewards.call("is_settled", "mission_001")) or int(rewards.call("get_reward", "mission_001").get("cash", 0)) != 250:
+		_fail("Mission 001 reward settlement was not recorded exactly once.")
+		return
+	if not bool(objectives.call("is_complete", "mission_001_claire_contact")) or not bool(objectives.call("is_complete", "mission_001_nora_meeting")):
+		_fail("Mission 001 objective progress was not recorded.")
+		return
+
 	nora.call("activate")
-	if int(missions.call("get_wallet")) != 600:
-		_fail("Mission 001 reward was not idempotent.")
+	if int(missions.get("mission_stage")) != 3 or str(game.get("_active_waypoint_id")) != "harbor_market_noticeboard":
+		_fail("Nora did not start Mission 002 and route the player to the market noticeboard.")
+		return
+	var market_noticeboard := world.get_node_or_null("HarborMarketNoticeboard")
+	if market_noticeboard == null:
+		_fail("The Harbor Market noticeboard interaction is missing from the world.")
+		return
+	market_noticeboard.call("activate")
+	if int(missions.get("mission_stage")) != 4 or str(game.get("_active_waypoint_id")) != "nora_blake":
+		_fail("Inspecting the market noticeboard did not advance Mission 002 and route back to Nora.")
+		return
+	nora.call("activate")
+	if int(missions.get("mission_stage")) != 5 or int(missions.call("get_wallet")) != 900:
+		_fail("Returning to Nora did not complete Mission 002 and grant its $300 reward.")
+		return
+	nora.call("activate")
+	if int(missions.call("get_wallet")) != 900:
+		_fail("Mission 002 reward was not idempotent after campaign completion.")
+		return
+	if not bool(objectives.call("is_complete", "mission_002_nora_start")) or not bool(objectives.call("is_complete", "mission_002_noticeboard")) or not bool(objectives.call("is_complete", "mission_002_return_to_nora")):
+		_fail("Mission 002 objective progress was not recorded.")
+		return
+	if not bool(rewards.call("is_settled", "mission_002")) or int(rewards.call("get_reward", "mission_002").get("cash", 0)) != 300:
+		_fail("Mission 002 reward settlement was not recorded.")
+		return
+	if bool(prerequisites.call("is_available", "mission_002")):
+		_fail("Completed Mission 002 remained available.")
 		return
 
 	var autosave_manager: RefCounted = load("res://scripts/world/save_slot_manager.gd").new()
 	var autosave_record: Dictionary = autosave_manager.call("load_slot", "autosave")
 	var autosave_payload: Dictionary = autosave_record.get("payload", {})
 	var autosave_missions: Dictionary = autosave_payload.get("missions", {})
-	if int(autosave_payload.get("schema_version", 0)) != 1 or int(autosave_missions.get("stage", -1)) != 2 or int(autosave_missions.get("wallet", -1)) != 600:
-		_fail("The game root did not persist Mission 001 stage and wallet in its versioned live-game autosave slot.")
+	if int(autosave_payload.get("schema_version", 0)) != 1 or int(autosave_missions.get("stage", -1)) != 5 or int(autosave_missions.get("wallet", -1)) != 900:
+		_fail("The game root did not persist Mission 002 stage and wallet in its versioned live-game autosave slot.")
 		return
 
 	var pause_save_position: Vector3 = player.global_position + Vector3(1.25, 0.0, 0.75)
@@ -433,10 +471,10 @@ func _run() -> void:
 	var restored_manager: Node = load("res://scripts/systems/mission_manager.gd").new()
 	root.add_child(restored_manager)
 	await process_frame
-	if int(restored_manager.get("mission_stage")) != 2:
-		_fail("Mission 001 progress was not restored by a new manager instance.")
+	if int(restored_manager.get("mission_stage")) != 5:
+		_fail("Mission 002 progress was not restored by a new manager instance.")
 		return
-	if int(restored_manager.call("get_wallet")) != 600:
+	if int(restored_manager.call("get_wallet")) != 900:
 		_fail("The wallet balance was not restored by a new manager instance.")
 		return
 
@@ -457,8 +495,10 @@ func _run() -> void:
 	print("PASS: malformed junction restrictions referencing unknown roads are rejected.")
 	print("PASS: keyboard movement moves the player.")
 	print("PASS: nearby E interaction enters the starter sedan; driving and E exit work.")
-	print("PASS: Claire and Nora world interactions complete Mission 001 and grant $250 once.")
-	print("PASS: Mission 001 stage and $600 wallet restore through a new manager instance.")
+	print("PASS: Claire and Nora complete Mission 001; its $250 reward and prerequisite are recorded.")
+	print("PASS: Nora, the Harbor Market noticeboard and Nora complete Mission 002 with a $300 one-time reward.")
+	print("PASS: both mission objective sets, reward ledgers and prerequisite state are integrated.")
+	print("PASS: Mission 002 stage and $900 wallet restore through a new manager instance.")
 	print("PASS: game-root wallet changes persist the mission stage and balance in a durable autosave slot.")
 	print("PASS: application-pause notification immediately flushes the latest player position.")
 	print("NOTE: this is foundation regression coverage, not full-game acceptance.")

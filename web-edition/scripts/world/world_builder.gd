@@ -23,6 +23,7 @@ func build_world() -> void:
 	_create_street_grid()
 	_create_landmarks()
 	_create_characters()
+	_create_market_noticeboard()
 	_create_starting_vehicle()
 
 
@@ -46,6 +47,13 @@ func get_points_of_interest() -> Array[Dictionary]:
 			"region": "Harbor City",
 			"category": "shop",
 			"position": Vector3(-81.0, 0.0, 21.0)
+		},
+		{
+			"id": "harbor_market_noticeboard",
+			"name": "Harbor Market Noticeboard",
+			"region": "Harbor City",
+			"category": "mission",
+			"position": Vector3(-74.8, 0.0, 19.0)
 		},
 		{
 			"id": "nora_blake",
@@ -456,6 +464,57 @@ func _create_person(node_name: String, label: String, action_id: String, world_p
 	title.modulate = Color(1.0, 0.96, 0.84)
 	title.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	actor.add_child(title)
+
+
+func _create_market_noticeboard() -> void:
+	var board := INTERACTABLE_SCRIPT.new() as Node3D
+	board.name = "HarborMarketNoticeboard"
+	board.set("action_id", "market_notice")
+	board.set("display_name", "Harbor Market noticeboard")
+	board.set("interaction_text", "E — Inspect noticeboard")
+	board.position = Vector3(-74.8, 0.0, 19.0)
+	add_child(board)
+
+	var frame := MeshInstance3D.new()
+	var frame_mesh := BoxMesh.new()
+	frame_mesh.size = Vector3(1.75, 1.55, 0.16)
+	frame.mesh = frame_mesh
+	frame.position = Vector3(0.0, 1.15, 0.0)
+	frame.material_override = _make_material(Color(0.24, 0.16, 0.11))
+	board.add_child(frame)
+
+	var notice_panel := MeshInstance3D.new()
+	var panel_mesh := BoxMesh.new()
+	panel_mesh.size = Vector3(1.48, 1.28, 0.055)
+	notice_panel.mesh = panel_mesh
+	notice_panel.position = Vector3(0.0, 1.15, -0.11)
+	notice_panel.material_override = _make_material(Color(0.82, 0.73, 0.54))
+	board.add_child(notice_panel)
+
+	for post_x in [-0.58, 0.58]:
+		var post := MeshInstance3D.new()
+		var post_mesh := BoxMesh.new()
+		post_mesh.size = Vector3(0.13, 1.0, 0.13)
+		post.mesh = post_mesh
+		post.position = Vector3(post_x, 0.5, 0.0)
+		post.material_override = _make_material(Color(0.31, 0.21, 0.14))
+		board.add_child(post)
+
+	var heading := Label3D.new()
+	heading.text = "HARBOR MARKET"
+	heading.position = Vector3(0.0, 1.48, -0.15)
+	heading.font_size = 20
+	heading.outline_size = 3
+	heading.modulate = Color(0.20, 0.16, 0.12)
+	board.add_child(heading)
+
+	var notice := Label3D.new()
+	notice.text = "SHIPPING NOTICE\nCHECK WITH NORA"
+	notice.position = Vector3(0.0, 0.95, -0.15)
+	notice.font_size = 15
+	notice.outline_size = 2
+	notice.modulate = Color(0.25, 0.20, 0.14)
+	board.add_child(notice)
 
 
 func _create_starting_vehicle() -> void:
