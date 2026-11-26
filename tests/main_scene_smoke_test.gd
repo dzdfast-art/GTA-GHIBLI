@@ -33,6 +33,8 @@ func _run_smoke_test() -> void:
 	game.free()
 	game = null
 	packed_scene = null
+	# Give AudioServer a mix window to release stopped generator/WAV playback.
+	await create_timer(0.5).timeout
 	await process_frame
 	await process_frame
 	quit(0)
