@@ -17,6 +17,9 @@ func _run_probe() -> void:
 		manager.call("delete_slot", SLOT_ID)
 		_publish("cleaned")
 		return
+	if mode == "session":
+		await _run_session_only_probe()
+		return
 	if mode != "write" and mode != "read":
 		_fail("invalid_mode")
 		return
@@ -33,6 +36,44 @@ func _run_probe() -> void:
 		_write_live_game_state(game)
 	else:
 		_verify_live_game_state(game)
+
+
+func _run_session_only_probe() -> void:
+	var game: Node = GAME_SCENE.instantiate()
+	if game == null:
+		_fail("session_game_scene_missing")
+		return
+	add_child(game)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_publish_storage_persistence()
+
+	if OS.is_userfs_persistent():
+		_fail("indexeddb_block_did_not_disable_persistence")
+		return
+	var hud := game.get_node_or_null("GameplayHUD")
+	if hud == null:
+		_fail("session_hud_missing")
+		return
+
+	var save_succeeded := bool(game.call("_save_game_state", true))
+	var status_text := str(hud.call("get_save_storage_status_text"))
+	if save_succeeded:
+		if status_text != "SESSION ONLY — allow browser storage":
+			_fail("successful_session_save_was_not_labelled_session_only")
+			return
+		var manager: RefCounted = SAVE_MANAGER_SCRIPT.new()
+		var record: Dictionary = manager.call("load_slot", SLOT_ID)
+		if record.is_empty() or not record.get("payload", {}) is Dictionary:
+			_fail("session_save_could_not_be_read_back_in_the_same_page")
+			return
+	else:
+		if status_text != "SAVE FAILED — check browser storage":
+			_fail("failed_session_save_was_not_reported_as_failed")
+			return
+
+	_publish_storage_status(save_succeeded, status_text)
+	_publish("session_only")
 
 
 func _write_live_game_state(game: Node) -> void:
@@ -169,6 +210,15 @@ func _verify_live_game_state(game: Node) -> void:
 func _publish_storage_persistence() -> void:
 	var persistent_literal := JSON.stringify(OS.is_userfs_persistent())
 	JavaScriptBridge.eval("document.documentElement.setAttribute('data-ghibli-userfs-persistent', " + persistent_literal + ");")
+
+
+func _publish_storage_status(save_succeeded: bool, status_text: String) -> void:
+	var success_literal := JSON.stringify(save_succeeded)
+	var status_literal := JSON.stringify(status_text)
+	JavaScriptBridge.eval(
+		"document.documentElement.setAttribute('data-ghibli-save-succeeded', " + success_literal + ");" +
+		"document.documentElement.setAttribute('data-ghibli-save-status', " + status_literal + ");"
+	)
 
 
 func _publish(status: String) -> void:
