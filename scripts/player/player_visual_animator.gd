@@ -12,6 +12,8 @@ var _left_leg: MeshInstance3D
 var _right_leg: MeshInstance3D
 var _left_arm: MeshInstance3D
 var _right_arm: MeshInstance3D
+var _left_shoe: MeshInstance3D
+var _right_shoe: MeshInstance3D
 var _torso: MeshInstance3D
 var _torso_rest_y := 1.13
 
@@ -21,6 +23,8 @@ func _ready() -> void:
 	_right_leg = get_node_or_null("RightLeg") as MeshInstance3D
 	_left_arm = get_node_or_null("LeftArm") as MeshInstance3D
 	_right_arm = get_node_or_null("RightArm") as MeshInstance3D
+	_left_shoe = get_node_or_null("LeftShoe") as MeshInstance3D
+	_right_shoe = get_node_or_null("RightShoe") as MeshInstance3D
 	_torso = get_node_or_null("WhiteSleevelessShirt") as MeshInstance3D
 	if _torso != null:
 		_torso_rest_y = _torso.position.y
@@ -49,6 +53,16 @@ func _process(delta: float) -> void:
 		_left_arm.rotation.x = -stride * (arm_swing_radians / maxf(0.01, leg_swing_radians))
 	if _right_arm != null:
 		_right_arm.rotation.x = -counter_stride * (arm_swing_radians / maxf(0.01, leg_swing_radians))
+	# Keep the shoes attached visually to the moving feet instead of sliding
+	# independently along the ground during the procedural stride.
+	if _left_shoe != null:
+		_left_shoe.position.y = -0.05 - 0.76 * cos(stride)
+		_left_shoe.position.z = -0.065 - 0.76 * sin(stride)
+		_left_shoe.rotation.x = stride * 0.55
+	if _right_shoe != null:
+		_right_shoe.position.y = -0.05 - 0.76 * cos(counter_stride)
+		_right_shoe.position.z = -0.065 - 0.76 * sin(counter_stride)
+		_right_shoe.rotation.x = counter_stride * 0.55
 	if _torso != null:
 		var breathing := sin(_elapsed * 2.1) * 0.008
 		var step_bob := absf(sin(_phase * 2.0)) * 0.028 * intensity
