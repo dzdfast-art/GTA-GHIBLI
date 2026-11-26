@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=25 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/camera/third_person_camera.gd" id="2_camera"]
@@ -78,6 +78,29 @@ roughness = 0.86
 albedo_color = Color(0.035, 0.028, 0.025, 1)
 roughness = 0.7
 
+[sub_resource type="CylinderMesh" id="NeckMesh"]
+top_radius = 0.11
+bottom_radius = 0.12
+height = 0.20
+radial_segments = 12
+
+[sub_resource type="SphereMesh" id="HandMesh"]
+radius = 0.09
+height = 0.15
+radial_segments = 12
+rings = 8
+
+[sub_resource type="BoxMesh" id="SoleMesh"]
+size = Vector3(0.245, 0.035, 0.37)
+
+[sub_resource type="BoxMesh" id="LaceMesh"]
+size = Vector3(0.12, 0.018, 0.025)
+
+[sub_resource type="StandardMaterial3D" id="BuckleMaterial"]
+albedo_color = Color(0.72, 0.62, 0.35, 1)
+metallic = 0.65
+roughness = 0.38
+
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_player")
 
@@ -119,6 +142,11 @@ position = Vector3(0.195, 0.82, 0)
 mesh = SubResource("EarMesh")
 material_override = SubResource("SkinMaterial")
 
+[node name="Neck" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.64, 0)
+mesh = SubResource("NeckMesh")
+material_override = SubResource("SkinMaterial")
+
 [node name="LeftArm" type="MeshInstance3D" parent="Visual"]
 position = Vector3(-0.36, 0.22, 0)
 rotation_degrees = Vector3(0, 0, 9)
@@ -129,6 +157,16 @@ material_override = SubResource("SkinMaterial")
 position = Vector3(0.36, 0.22, 0)
 rotation_degrees = Vector3(0, 0, -9)
 mesh = SubResource("ArmMesh")
+material_override = SubResource("SkinMaterial")
+
+[node name="LeftHand" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.36, -0.11, 0)
+mesh = SubResource("HandMesh")
+material_override = SubResource("SkinMaterial")
+
+[node name="RightHand" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.36, -0.11, 0)
+mesh = SubResource("HandMesh")
 material_override = SubResource("SkinMaterial")
 
 [node name="LeftLeg" type="MeshInstance3D" parent="Visual"]
@@ -150,6 +188,46 @@ material_override = SubResource("ShoesMaterial")
 position = Vector3(0.14, -0.81, -0.065)
 mesh = SubResource("ShoeMesh")
 material_override = SubResource("ShoesMaterial")
+
+[node name="LeftSole" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.14, -0.875, -0.065)
+mesh = SubResource("SoleMesh")
+material_override = SubResource("ShoesMaterial")
+
+[node name="RightSole" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.14, -0.875, -0.065)
+mesh = SubResource("SoleMesh")
+material_override = SubResource("ShoesMaterial")
+
+[node name="LeftLaceFront" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.14, -0.742, -0.16)
+mesh = SubResource("LaceMesh")
+material_override = SubResource("ShirtMaterial")
+
+[node name="LeftLaceMid" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.14, -0.742, -0.08)
+mesh = SubResource("LaceMesh")
+material_override = SubResource("ShirtMaterial")
+
+[node name="LeftLaceBack" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.14, -0.742, 0.00)
+mesh = SubResource("LaceMesh")
+material_override = SubResource("ShirtMaterial")
+
+[node name="RightLaceFront" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.14, -0.742, -0.16)
+mesh = SubResource("LaceMesh")
+material_override = SubResource("ShirtMaterial")
+
+[node name="RightLaceMid" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.14, -0.742, -0.08)
+mesh = SubResource("LaceMesh")
+material_override = SubResource("ShirtMaterial")
+
+[node name="RightLaceBack" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.14, -0.742, 0.00)
+mesh = SubResource("LaceMesh")
+material_override = SubResource("ShirtMaterial")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape_Player")
