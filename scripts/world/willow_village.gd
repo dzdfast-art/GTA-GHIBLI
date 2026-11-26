@@ -6,8 +6,10 @@ extends Node3D
 const GROUND_Y := 0.03
 const FOLIAGE_VISUAL_BUILDER = preload("res://scripts/world/foliage_visual_builder.gd")
 const VILLAGE_LIFE_BUILDER = preload("res://scripts/world/village_life_builder.gd")
-const ROOF_TILE_TEXTURE: Texture2D = preload("res://assets/environment/materials/willow_roof_tiles.svg")
-const STUCCO_TEXTURE: Texture2D = preload("res://assets/environment/materials/willow_stucco_detail.svg")
+const ROOF_TILE_TEXTURE: Texture2D = preload("res://assets/environment/materials/willow_reference_terracotta.svg")
+const STUCCO_TEXTURE: Texture2D = preload("res://assets/environment/materials/willow_reference_stucco.svg")
+const ASPHALT_TEXTURE: Texture2D = preload("res://assets/environment/materials/willow_reference_asphalt.svg")
+const SIDEWALK_TEXTURE: Texture2D = preload("res://assets/environment/materials/willow_reference_sidewalk.svg")
 
 
 func _ready() -> void:
@@ -469,11 +471,8 @@ func _build_reference_street() -> void:
 	road.name = "ReferenceResidentialRoad"
 	road.mesh = road_mesh
 	road.position = Vector3(0.0, 0.025, -15.0)
-	var asphalt := _material(Color(0.92, 0.94, 0.95))
-	var asphalt_texture := load("res://assets/environment/materials/hd_district_asphalt.svg") as Texture2D
-	if asphalt_texture != null:
-		asphalt.albedo_texture = asphalt_texture
-		asphalt.uv1_scale = Vector3(4.0, 4.0, 4.0)
+	var asphalt := _material(Color(0.92, 0.94, 0.95), ASPHALT_TEXTURE)
+	asphalt.uv1_scale = Vector3(4.0, 4.0, 4.0)
 	road.material_override = asphalt
 	add_child(road)
 
@@ -484,11 +483,8 @@ func _build_reference_street() -> void:
 		sidewalk.name = "ResidentialSidewalk_%s" % ("West" if side < 0.0 else "East")
 		sidewalk.mesh = sidewalk_mesh
 		sidewalk.position = Vector3(side * 6.9, 0.045, -15.0)
-		var pavement := _material(Color(0.83, 0.84, 0.80))
-		var pavement_texture := load("res://assets/environment/materials/harbor_paving_atlas.svg") as Texture2D
-		if pavement_texture != null:
-			pavement.albedo_texture = pavement_texture
-			pavement.uv1_scale = Vector3(3.0, 3.0, 3.0)
+		var pavement := _material(Color(0.83, 0.84, 0.80), SIDEWALK_TEXTURE)
+		pavement.uv1_scale = Vector3(3.0, 3.0, 3.0)
 		sidewalk.material_override = pavement
 		add_child(sidewalk)
 

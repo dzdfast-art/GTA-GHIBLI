@@ -211,6 +211,16 @@ func _validate_reference_world(game: Node3D) -> String:
 			or controls.get_node_or_null("HUD/StatusPanel") == null:
 		return "The reference mobile minimap or status HUD is missing."
 
+	var reference_road := village.get_node_or_null("ReferenceResidentialRoad") as MeshInstance3D
+	var road_material := reference_road.material_override as StandardMaterial3D if reference_road != null else null
+	if road_material == null or road_material.albedo_texture == null:
+		return "The opening residential road has no imported asphalt detail texture."
+	for sidewalk_name in ["ResidentialSidewalk_West", "ResidentialSidewalk_East"]:
+		var sidewalk := village.get_node_or_null(sidewalk_name) as MeshInstance3D
+		var sidewalk_material := sidewalk.material_override as StandardMaterial3D if sidewalk != null else null
+		if sidewalk_material == null or sidewalk_material.albedo_texture == null:
+			return "The residential sidewalk material is missing: " + sidewalk_name
+
 	var portal := game.get_node_or_null("WillowVillage/CaretakerHousePortal") as Node3D
 	if portal == null or not portal.is_in_group("building_portals"):
 		return "The caretaker house portal is not connected to Willow Village."
