@@ -106,6 +106,16 @@ func _run() -> void:
 
 	var route_planner = load("res://scripts/world/route_planner.gd").new()
 	var road_graph: Dictionary = world.call("get_road_graph")
+	var nearby_market_road_x: Array[float] = []
+	for road_node in road_graph.get("nodes", []):
+		if str(road_node.get("kind", "")) != "road":
+			continue
+		var road_position: Vector3 = road_node.get("position", Vector3.ZERO)
+		if absf(road_position.x + 75.0) < 0.3:
+			nearby_market_road_x.append(road_position.x)
+	if nearby_market_road_x.size() != 2 or absf(nearby_market_road_x[0] - nearby_market_road_x[1]) < 0.01:
+		_fail("The Nora and Harbor Market noticeboard road access nodes were collapsed by rounded coordinates.")
+		return
 	if not bool(route_planner.call("configure", road_graph)):
 		_fail("The connected starter-road graph could not be configured.")
 		return

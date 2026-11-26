@@ -102,16 +102,17 @@ func get_road_graph() -> Dictionary:
 	var nodes: Array[Dictionary] = []
 	var edges: Array[Dictionary] = []
 	var road_node_ids: Dictionary = {}
-	for x_value in unique_x_values:
-		var node_id := "road_%d" % roundi(x_value)
-		road_node_ids[roundi(x_value)] = node_id
+	for index in range(unique_x_values.size()):
+		var x_value: float = unique_x_values[index]
+		var node_id := "road_%03d" % index
+		road_node_ids[x_value] = node_id
 		nodes.append({"id": node_id, "position": Vector3(x_value, 0.0, 0.0), "kind": "road"})
 
 	for index in range(unique_x_values.size() - 1):
 		var from_x := unique_x_values[index]
 		var to_x := unique_x_values[index + 1]
-		var from_id := str(road_node_ids[roundi(from_x)])
-		var to_id := str(road_node_ids[roundi(to_x)])
+		var from_id := str(road_node_ids[from_x])
+		var to_id := str(road_node_ids[to_x])
 		edges.append({
 			"id": "road_segment_%02d" % index,
 			"from": from_id,
@@ -134,7 +135,7 @@ func get_road_graph() -> Dictionary:
 		var center_node := _grid_node_id(grid_x, 0.0)
 		edges.append({
 			"id": "grid_connector_%d" % roundi(grid_x),
-			"from": str(road_node_ids[roundi(grid_x)]),
+			"from": str(road_node_ids[grid_x]),
 			"to": center_node,
 			"cost": 1.0
 		})
@@ -162,7 +163,7 @@ func get_road_graph() -> Dictionary:
 	for point in points:
 		var point_id := str(point["id"])
 		var point_position: Vector3 = point["position"]
-		var road_node_id := str(road_node_ids[roundi(point_position.x)])
+		var road_node_id := str(road_node_ids[point_position.x])
 		var poi_node_id := "poi_" + point_id
 		nodes.append({"id": poi_node_id, "position": point_position, "kind": "poi"})
 		edges.append({
