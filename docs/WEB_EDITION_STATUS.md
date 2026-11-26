@@ -371,3 +371,74 @@ PR #35: https://github.com/dzdfast-art/GTA-GHIBLI/pull/35
 
 ### Final current boundary
 This release is a playable Web foundation with a researched implementation reference package—not the finished San Andreas-scale open world and not a completed 4,700-entry historical encyclopedia. The four required research registries remain at 140 / 4,700 actual numbered entries, the physics registry has 19 proposed systems and the character subset has four named PS2-manual entries. The exact gaps above remain open.
+
+## Authoritative Web development update — 2026-11-26 — Mission 002 first playable pass
+
+### Repository and PR state at this run
+- `main` was observed at `e4c26a0e4e9d6945233b3032ed6966a7356103ab` and was not modified by this run.
+- The original clean-project branch `web/standalone-from-empty-2026-11-22` still exists at `9cdcec813aa874532e9c4c5d3113f967a9a0a26a`.
+- PR #35 is **closed and merged** (2026-11-22 13:56:51 UTC); it is not an open Draft. This merge predates this run.
+- PR #114 remains Draft/open and supplies the tested Web save-persistence foundation.
+- PR #115 is Draft/open, stacked on PR #114, and contains this Mission 002 slice. Current source commit before this status-only follow-up: `8f2f20d4360c027fb21f3753309e68f9da867127`.
+- No PR was merged or closed by this run. No changes were made to `main`, repository visibility or repository settings.
+
+### What was implemented
+- Added structured `web-edition/data/missions/mission_002.json` for the provisional original chapter `إشعار السوق`.
+- Added a visible procedural Harbor Market noticeboard with a real `market_notice` interaction and a seventh point-of-interest/mission marker.
+- Extended the playable mission state machine to stages 0–5:
+  - Mission 001: Claire → Nora, $250.
+  - Mission 002: Nora → inspect the Harbor Market noticeboard → Nora, $300.
+- Added explicit mission-step and mission-completed signals, mission objective progress, prerequisite completion, idempotent reward settlement, automatic mission waypoint selection, and stage/wallet persistence.
+- Added reset handling so a new game clears mission objective, reward and prerequisite registries.
+- Replaced the previous text-based inference of mission objective progress with explicit step IDs.
+- The road graph originally rejected the new board point because `-75.0` and `-74.8` rounded to the same node ID. The final implementation assigns stable index-based road node IDs and has a regression assertion that the two nearby coordinates remain distinct.
+- Updated this master specification, the Web README, the asset provenance register and CI JSON validation.
+
+### Exact validation evidence
+- Final code commit tested: `8f2f20d4360c027fb21f3753309e68f9da867127`.
+- Web CI [#45801655909 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45801655909).
+- Security audit [#45801722751 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45801722751).
+- Godot 4.7 project import and JSON validation passed.
+- **62 GDScript regression tests passed**, including the new two-mission campaign test and full game-root mission integration.
+- WebAssembly export and required HTML/JavaScript/WASM/PCK validation passed.
+- Chromium started the exported game on `127.0.0.1` with WebGL 2 at 1280×720. WASD, right-mouse drag and map-key events were delivered; no browser runtime errors or external runtime requests were observed.
+- Chromium save acceptance passed for same-origin page reload and a separate browser-process restart using the same persistent profile. The tested live-game payload included player, mission, vehicle, inventory, NPC and world state.
+- With IndexedDB unavailable before runtime initialization, the game retained its WebGL 2 canvas, reported non-persistent storage, kept a successful save readable in the active page session and did not claim durable browser storage.
+- The earlier failed attempt [#45801411315](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45801411315) is retained in history; it detected the duplicate rounded road-node ID. It is not counted as a pass. The corrected final head above passed.
+
+### Exact source and Web export measurements
+| Measurement | Result |
+|---|---:|
+| Tracked Web source files | 140 |
+| Tracked Web source bytes | 279,043 bytes (0.279 MB) |
+| Unique tracked content items | 140 |
+| Unique tracked content bytes | 279,043 bytes (0.266 MiB) |
+| Temporary Web export files | 8 |
+| Uncompressed Web export | 40,003,704 bytes (40.004 MB; 38.151 MiB) |
+| Compressed Web ZIP | 10,384,700 bytes (10.385 MB; 9.904 MiB) |
+| ZIP SHA-256 | `b103ba412f2a441d59dd4bfdcdb5296717b4efe86eb8303983394c33a9deb381` |
+
+The export and ZIP were created only on the ephemeral runner, measured and deleted. The Actions artifact list is empty. These measurements include the Godot Web runtime and current game pack; they are not 40 MB of unique authored art. The long-term 4 GB genuine-content target is **NOT REACHED**.
+
+### System status after this increment
+| System | Status | Evidence / limit |
+|---|---|---|
+| Godot 4.7 import and WebAssembly export | **TESTED** | CI #45801655909 |
+| Chromium WebGL 2 runtime and keyboard/mouse delivery | **TESTED** | 1280×720 local browser smoke |
+| Mission 001 | **TESTED — first playable pass** | Claire → Nora; $250; objective/prerequisite/reward record |
+| Mission 002 | **TESTED — first playable pass** | Nora → physical noticeboard → Nora; $300; one-time reward |
+| Mission save restoration | **TESTED — selected live-game state** | Mission stage 5 and $900 wallet in GDScript; player/mission/vehicle/inventory/NPC/world in Chromium reload and process-restart probe |
+| Browser storage degradation | **TESTED — controlled IndexedDB-unavailable simulation** | Session-only save remains readable in current page; no durable claim |
+| World map and GPS | **PARTIALLY IMPLEMENTED** | Seven POIs and small connected prototype road graph; not a complete road network |
+| Four world regions | **PARTIALLY IMPLEMENTED** | Connected blockout geometry, not final detailed terrain/interiors |
+| Leo/Claire/Mia/Nora character presentation | **PARTIALLY IMPLEMENTED** | Temporary placeholders; final rigs, facial animation and acting absent |
+| Vehicles | **PARTIALLY IMPLEMENTED** | One playable sedan; other classes and full handling/audio remain incomplete |
+| Pedestrian, traffic and police simulation | **PARTIALLY IMPLEMENTED** | Service/controller tests exist; complete live open-world simulation is not established |
+| Arabic dialogue voice acting and environmental audio | **PLANNED / NOT IMPLEMENTED** | Dialogue is text-only; no actual voice/audio asset is claimed |
+| Full campaign, fail/retry, cinematics | **PLANNED** | Only the first two provisional mission slices are playable |
+| 4 GB unique Web content | **NOT REACHED** | Current source/export measurements above; no filler or duplicated files counted |
+
+### Remaining limits and next technical increment
+The Mission 002 story beat is a provisional original proposal, not a maintainer-approved final narrative. It has no fail/retry branch, cinematic scene or voiced dialogue. The noticeboard interaction is tested through the Godot world-signal path, but a human visual/playthrough review is still outstanding. The world remains blockout-scale, character models remain placeholders, the road network is small, and the game is not complete. Firefox/Safari, private-browsing/storage-quota edge cases and complete visual acceptance are not verified.
+
+Next: build a third mission slice only after the current two-mission save/waypoint flow is stable, then expand the Harbor City market block with a real enterable shop interior and persistent shop transactions, with browser reload coverage.

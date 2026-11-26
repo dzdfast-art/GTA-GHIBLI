@@ -493,7 +493,7 @@ func _run() -> void:
 	print("PASS: minimap maps world bounds correctly and receives the live player position.")
 	print("PASS: world-map POIs have unique IDs and correct region coordinates.")
 	print("PASS: the expanded north-south and cross-street grid connects across multiple regions.")
-	print("PASS: all six points of interest are reachable through the connected road graph.")
+	print("PASS: all seven points of interest are reachable through the connected road graph.")
 	print("PASS: off-network starts are reported unreachable beyond the configured snap distance.")
 	print("PASS: selecting a map marker produces a road-following route, distance and map/minimap polyline.")
 	print("PASS: GPS derives the next-turn instruction and remaining distance for the HUD.")
