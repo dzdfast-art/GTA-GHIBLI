@@ -326,3 +326,26 @@ The finished game must provide a coherent open-world activity loop rather than r
 - Synthetic speech must be identified as synthetic; it must not be presented as human voice acting. No silent or empty audio placeholder counts as completed dubbing.
 
 These are final-game requirements, not claims that the current Web foundation already implements them. Their implementation and verification status must remain explicit in `docs/WEB_EDITION_STATUS.md`.
+
+## Web save persistence and degraded-storage acceptance
+
+The Web edition must distinguish durable browser storage from a save that exists only for the current page session. Godot's `user://` filesystem on Web is browser-managed and uses IndexedDB for persistence; `OS.is_userfs_persistent()` reports whether Godot considers that filesystem persistent, but the flag alone is not proof that a save survives a reload. See the [Godot Web data-path documentation](https://docs.godotengine.org/en/4.7/tutorials/io/data_paths.html) and [OS API documentation](https://docs.godotengine.org/en/4.7/classes/class_os.html#class-os-method-is-userfs-persistent).
+
+Required runtime behavior:
+
+1. If the browser-backed filesystem is available and a write succeeds, the HUD may describe browser storage as available but must warn that the browser can still clear it.
+2. If the filesystem is non-persistent but a write succeeds, the HUD must clearly say that the save is **session-only**. The game may read the save again during the current page session, but it must not claim that the save will survive reload or a new browser session.
+3. If a write fails, the HUD must display an explicit save-failure message. It must not report a successful session-only or durable save.
+4. The status must be available in Arabic and English and must be refreshed after save attempts.
+
+Required Web CI coverage:
+
+- Keep the normal Chromium same-origin page-reload test for selected live gameplay state. This is separate from checking Godot's persistence flag.
+- Run a second Chromium context with the IndexedDB API unavailable **before** the Godot Web runtime initializes.
+- Verify that the WebGL 2 game still starts, `OS.is_userfs_persistent()` reports non-persistent storage, and the HUD does not claim durable browser storage.
+- If a save succeeds in the degraded context, verify that it can be read during the same active page session and that the HUD says session-only. If it fails, verify that the HUD explicitly says save failed.
+- Require no external network requests and no browser runtime errors in both tests.
+- Keep CI-only save-probe scenes/scripts excluded from the normal game PCK. Export probes only in the temporary runner workspace and delete the export/package after measurement.
+
+A Chromium test that removes `window.indexedDB` is a controlled API-unavailable simulation. It does not establish behavior for every private-browsing mode, storage quota exhaustion, enterprise browser policy, browser shutdown/reopen, Firefox or Safari. Those cases remain separate acceptance gates until tested.
+
