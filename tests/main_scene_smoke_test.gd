@@ -34,7 +34,7 @@ func _run_smoke_test() -> void:
 		if game.get_node_or_null(required_path) == null:
 			missing_paths.append(required_path)
 	if not missing_paths.is_empty():
-		_fail("Main scene is missing required gameplay nodes: " + ", ".join(missing_paths))
+		_fail("Main scene is missing required gameplay nodes: " + ", str(missing_paths))
 		return
 
 	var village := game.get_node("WillowVillage") as Node3D
