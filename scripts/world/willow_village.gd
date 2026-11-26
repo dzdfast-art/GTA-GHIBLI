@@ -80,9 +80,33 @@ func _add_house(house_name: String, origin: Vector3,
 	wall_shape.size = walls.size
 	_add_collision(house, wall_shape, Vector3(0.0, 1.5, 0.0))
 
+	# A shallow roof deck supports two sloped planes instead of the old flat box.
 	var roof := BoxMesh.new()
-	roof.size = Vector3(5.8, 0.65, 5.2)
-	_add_mesh(house, "Roof", roof, Vector3(0.0, 3.25, 0.0), roof_color)
+	roof.size = Vector3(5.8, 0.14, 4.6)
+	_add_mesh(house, "Roof", roof, Vector3(0.0, 3.05, 0.0), roof_color)
+	var roof_slope_mesh := BoxMesh.new()
+	roof_slope_mesh.size = Vector3(5.95, 0.16, 2.12)
+	for roof_side in [-1.0, 1.0]:
+		var roof_slope := MeshInstance3D.new()
+		roof_slope.name = "RoofSlope_%s" % ("Front" if roof_side > 0.0 else "Rear")
+		roof_slope.mesh = roof_slope_mesh
+		roof_slope.position = Vector3(0.0, 3.35, roof_side * 1.06)
+		roof_slope.rotation_degrees.x = 18.4 * roof_side
+		roof_slope.material_override = _material(roof_color.darkened(0.04))
+		house.add_child(roof_slope)
+	var roof_ridge := BoxMesh.new()
+	roof_ridge.size = Vector3(5.98, 0.12, 0.18)
+	_add_mesh(house, "RoofRidge", roof_ridge, Vector3(0.0, 3.73, 0.0),
+		roof_color.darkened(0.18))
+
+	# Close the two triangular gable ends so the roof does not look hollow.
+	for gable_front in [false, true]:
+		var gable := MeshInstance3D.new()
+		gable.name = "FrontGable" if gable_front else "RearGable"
+		gable.mesh = _build_house_gable_mesh(gable_front)
+		gable.position = Vector3(0.0, 3.0, 2.255 if gable_front else -2.255)
+		gable.material_override = _material(wall_color.darkened(0.025))
+		house.add_child(gable)
 
 	var door := BoxMesh.new()
 	door.size = Vector3(0.95, 1.9, 0.10)
@@ -101,10 +125,14 @@ func _add_house(house_name: String, origin: Vector3,
 		Color(0.43, 0.40, 0.34))
 	var foundation_node := house.get_node("StoneFoundation") as MeshInstance3D
 	(foundation_node.mesh as BoxMesh).size = Vector3(5.18, 0.36, 4.68)
-	_add_mesh(house, "RoofFrontFascia", BoxMesh.new(), Vector3(0.0, 2.94, 2.58),
+	_add_mesh(house, "RoofFrontFascia", BoxMesh.new(), Vector3(0.0, 3.02, 2.16),
 		Color(0.34, 0.25, 0.19))
 	var fascia_node := house.get_node("RoofFrontFascia") as MeshInstance3D
-	(fascia_node.mesh as BoxMesh).size = Vector3(5.92, 0.16, 0.16)
+	(fascia_node.mesh as BoxMesh).size = Vector3(5.96, 0.16, 0.16)
+	_add_mesh(house, "RoofRearFascia", BoxMesh.new(), Vector3(0.0, 3.02, -2.16),
+		Color(0.34, 0.25, 0.19))
+	var rear_fascia := house.get_node("RoofRearFascia") as MeshInstance3D
+	(rear_fascia.mesh as BoxMesh).size = Vector3(5.96, 0.16, 0.16)
 	_add_mesh(house, "DoorFrame", BoxMesh.new(), Vector3(0.0, 0.98, 2.37),
 		Color(0.66, 0.53, 0.37))
 	var door_frame := house.get_node("DoorFrame") as MeshInstance3D
@@ -165,6 +193,30 @@ func _add_house(house_name: String, origin: Vector3,
 	drainpipe.height = 2.75
 	_add_mesh(house, "RainDownpipe", drainpipe, Vector3(-2.39, 1.43, 2.12),
 		Color(0.34, 0.38, 0.38))
+
+
+
+func _build_house_gable_mesh(front: bool) -> ArrayMesh:
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var vertices := PackedVector3Array()
+	if front:
+		vertices = PackedVector3Array([
+			Vector3(-2.5, 0.0, 0.0),
+			Vector3(2.5, 0.0, 0.0),
+			Vector3(0.0, 0.70, 0.0)
+		])
+		surface.set_normal(Vector3.BACK)
+	else:
+		vertices = PackedVector3Array([
+			Vector3(2.5, 0.0, 0.0),
+			Vector3(-2.5, 0.0, 0.0),
+			Vector3(0.0, 0.70, 0.0)
+		])
+		surface.set_normal(Vector3.FORWARD)
+	for vertex in vertices:
+		surface.add_vertex(vertex)
+	return surface.commit()
 
 
 func _build_house_portal() -> void:
