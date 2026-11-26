@@ -446,9 +446,11 @@ func _add_collision(parent: Node3D, shape: Shape3D, position: Vector3) -> void:
 	parent.add_child(collision)
 
 
-func _material(color: Color) -> StandardMaterial3D:
+func _material(color: Color, texture: Texture2D = null) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
+	if texture != null:
+		material.albedo_texture = texture
 	material.roughness = 0.92
 	return material
 
