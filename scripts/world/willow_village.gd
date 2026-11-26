@@ -5,6 +5,7 @@ extends Node3D
 
 const GROUND_Y := 0.03
 const FOLIAGE_VISUAL_BUILDER = preload("res://scripts/world/foliage_visual_builder.gd")
+const VILLAGE_LIFE_BUILDER = preload("res://scripts/world/village_life_builder.gd")
 const ROOF_TILE_TEXTURE: Texture2D = preload("res://assets/environment/materials/willow_roof_tiles.svg")
 const STUCCO_TEXTURE: Texture2D = preload("res://assets/environment/materials/willow_stucco_detail.svg")
 
@@ -25,6 +26,7 @@ func _ready() -> void:
 	_build_consumable_shop()
 	_build_flora_details()
 	_build_ground_cover_details()
+	VILLAGE_LIFE_BUILDER.build(self)
 
 
 func _build_mira() -> void:

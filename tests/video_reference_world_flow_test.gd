@@ -146,6 +146,44 @@ func _validate_reference_world(game: Node3D) -> String:
 			or roadside_grass.multimesh.instance_count != 84:
 		return "The instanced roadside ground-cover detail is missing or incomplete."
 
+
+	var village_life := village.get_node_or_null("VillageLifeDetails") as Node3D
+	if village_life == null:
+		return "The village public-space visual builder did not run."
+	var paving := village_life.get_node_or_null("VillageSquarePaving") as MeshInstance3D
+	var paving_material := paving.material_override as StandardMaterial3D if paving != null else null
+	if paving_material == null or paving_material.albedo_texture == null:
+		return "The square paving atlas did not load on the plaza surface."
+	for bench_name in ["VillageBench_00", "VillageBench_01"]:
+		var bench := village_life.get_node_or_null(bench_name) as StaticBody3D
+		if bench == null or bench.get_node_or_null("SeatPlank_00") == null \
+				or bench.get_node_or_null("CollisionShape3D") == null:
+			return "A collidable public-space bench is missing or incomplete: " + bench_name
+	if village_life.get_node_or_null("VillageWasteBin_00/BinBody") == null:
+		return "The village square waste bin is missing."
+
+	var grocery := village.get_node_or_null("VillageGrocery") as Node3D
+	if grocery == null:
+		return "The interactive village grocery stall is missing."
+	var grocery_counter := grocery.get_node_or_null("GroceryCounter") as MeshInstance3D
+	var counter_material := grocery_counter.material_override as StandardMaterial3D if grocery_counter != null else null
+	var grocery_awning := grocery.get_node_or_null("GroceryAwning") as MeshInstance3D
+	var awning_material := grocery_awning.material_override as StandardMaterial3D if grocery_awning != null else null
+	if counter_material == null or counter_material.albedo_texture == null:
+		return "The market counter did not load its wood material."
+	if awning_material == null or awning_material.albedo_texture == null:
+		return "The market canopy did not load its woven canvas material."
+	for crate_index in range(3):
+		var crate := grocery.get_node_or_null("ProduceCrate_%02d" % crate_index) as Node3D
+		var fruit_batch := crate.get_node_or_null("FruitBatch") as MultiMeshInstance3D if crate != null else null
+		if fruit_batch == null or fruit_batch.multimesh == null \
+				or fruit_batch.multimesh.instance_count != 6:
+			return "A market produce display is missing or incomplete: crate %d" % crate_index
+	if grocery.get_node_or_null("MarketBarrel/BarrelBody") == null \
+			or grocery.get_node_or_null("GroceryChalkboard") == null \
+			or grocery.get_node_or_null("ArabicMarketList") == null:
+		return "The market barrel or Arabic chalkboard display is missing."
+
 	var controls := game.get_node_or_null("MobileControls")
 	if controls == null or controls.get_node_or_null("HUD/Minimap") == null \
 			or controls.get_node_or_null("HUD/StatusPanel") == null:
