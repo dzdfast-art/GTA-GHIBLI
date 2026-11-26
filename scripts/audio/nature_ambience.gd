@@ -72,6 +72,26 @@ func _ready() -> void:
 	_update_targets()
 	_sync_field_recording(true)
 
+func _exit_tree() -> void:
+	_stop_audio_players()
+
+
+func _stop_audio_players() -> void:
+	if _transition_tween != null:
+		if _transition_tween.is_running():
+			_transition_tween.kill()
+		_transition_tween = null
+	if _player != null:
+		_player.stop()
+		_player.stream = null
+		_playback = null
+		_player = null
+	if _field_recording_player != null:
+		_field_recording_player.stop()
+		_field_recording_player.stream = null
+		_field_recording_player = null
+
+
 func _process(delta: float) -> void:
 	elapsed_game_seconds += delta
 	_update_targets()
