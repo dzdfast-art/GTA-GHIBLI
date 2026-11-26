@@ -86,6 +86,20 @@ func _run_test() -> void:
 		_fail("Closing pause did not resume the game.")
 		return
 	print("PASS: pause menu, settings page, pause/resume and save.")
+
+	# Release the temporary UI and world nodes before the headless test exits.
+	map_markers.clear()
+	map_canvas = null
+	map_page = null
+	menu.free()
+	world.free()
+	sun.free()
+	menu = null
+	world = null
+	sun = null
+	movement_event = null
+	await process_frame
+	await process_frame
 	quit(0)
 
 func _fail(message: String) -> void:
