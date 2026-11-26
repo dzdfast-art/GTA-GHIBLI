@@ -94,6 +94,33 @@ func _add_house(house_name: String, origin: Vector3,
 		roof_slope.rotation_degrees.x = 18.4 * roof_side
 		roof_slope.material_override = _material(roof_color.darkened(0.04))
 		house.add_child(roof_slope)
+		var tile_mesh := BoxMesh.new()
+		tile_mesh.size = Vector3(0.43, 0.035, 0.31)
+		var tile_material := StandardMaterial3D.new()
+		tile_material.albedo_color = roof_color.lightened(0.08)
+		tile_material.vertex_color_use_as_albedo = true
+		tile_material.roughness = 0.96
+		tile_mesh.material = tile_material
+		var roof_tiles := MultiMeshInstance3D.new()
+		roof_tiles.name = "RoofTileCourses"
+		var tile_instances := MultiMesh.new()
+		tile_instances.transform_format = MultiMesh.TRANSFORM_3D
+		tile_instances.use_colors = true
+		tile_instances.mesh = tile_mesh
+		tile_instances.instance_count = 78
+		for tile_index in range(tile_instances.instance_count):
+			var tile_row := int(tile_index / 13)
+			var tile_column := tile_index % 13
+			var tile_x := -2.76 + float(tile_column) * 0.46 + (0.18 if tile_row % 2 == 1 else 0.0)
+			var tile_z := roof_side * (-0.90 + float(tile_row) * 0.34)
+			var tile_basis := Basis(Vector3.UP, 0.0)
+			tile_instances.set_instance_transform(tile_index,
+				Transform3D(tile_basis, Vector3(tile_x, 0.10, tile_z)))
+			var shade := 0.90 + fposmod(float(tile_index) * 0.173, 1.0) * 0.12
+			tile_instances.set_instance_color(tile_index,
+				Color(shade, shade * 0.98, shade * 0.94, 1.0))
+		roof_tiles.multimesh = tile_instances
+		roof_slope.add_child(roof_tiles)
 	var roof_ridge := BoxMesh.new()
 	roof_ridge.size = Vector3(5.98, 0.12, 0.18)
 	_add_mesh(house, "RoofRidge", roof_ridge, Vector3(0.0, 3.73, 0.0),
