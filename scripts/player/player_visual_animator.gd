@@ -14,6 +14,8 @@ var _left_arm: MeshInstance3D
 var _right_arm: MeshInstance3D
 var _left_shoe: MeshInstance3D
 var _right_shoe: MeshInstance3D
+var _left_hand: MeshInstance3D
+var _right_hand: MeshInstance3D
 var _torso: MeshInstance3D
 var _torso_rest_y := 1.13
 
@@ -25,6 +27,8 @@ func _ready() -> void:
 	_right_arm = get_node_or_null("RightArm") as MeshInstance3D
 	_left_shoe = get_node_or_null("LeftShoe") as MeshInstance3D
 	_right_shoe = get_node_or_null("RightShoe") as MeshInstance3D
+	_left_hand = get_node_or_null("LeftHand") as MeshInstance3D
+	_right_hand = get_node_or_null("RightHand") as MeshInstance3D
 	_torso = get_node_or_null("WhiteSleevelessShirt") as MeshInstance3D
 	if _torso != null:
 		_torso_rest_y = _torso.position.y
@@ -63,6 +67,14 @@ func _process(delta: float) -> void:
 		_right_shoe.position.y = -0.05 - 0.76 * cos(counter_stride)
 		_right_shoe.position.z = -0.065 - 0.76 * sin(counter_stride)
 		_right_shoe.rotation.x = counter_stride * 0.55
+	var left_arm_angle := -stride * (arm_swing_radians / maxf(0.01, leg_swing_radians))
+	var right_arm_angle := -counter_stride * (arm_swing_radians / maxf(0.01, leg_swing_radians))
+	if _left_hand != null:
+		_left_hand.position.y = 0.5 - 0.62 * cos(left_arm_angle)
+		_left_hand.position.z = -0.62 * sin(left_arm_angle)
+	if _right_hand != null:
+		_right_hand.position.y = 0.5 - 0.62 * cos(right_arm_angle)
+		_right_hand.position.z = -0.62 * sin(right_arm_angle)
 	if _torso != null:
 		var breathing := sin(_elapsed * 2.1) * 0.008
 		var step_bob := absf(sin(_phase * 2.0)) * 0.028 * intensity
