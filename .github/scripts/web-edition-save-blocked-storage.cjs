@@ -7,7 +7,7 @@ const { chromium } = require("playwright");
 const ROOT = path.resolve("web-edition/build/save-probe");
 const HOST = "127.0.0.1";
 const PORT = 4189;
-const BASE_URL = \`http://\${HOST}:\${PORT}\`;
+const BASE_URL = `http://${HOST}:${PORT}`;
 const SESSION_ONLY_MESSAGE = "SESSION ONLY — allow browser storage";
 const SAVE_FAILED_MESSAGE = "SAVE FAILED — check browser storage";
 
@@ -28,7 +28,7 @@ function createServer() {
       const decoded = decodeURIComponent(requestUrl.pathname);
       const file = decoded === "/"
         ? path.join(ROOT, "index.html")
-        : path.resolve(ROOT, \`.\${decoded}\`);
+        : path.resolve(ROOT, `.${decoded}`);
 
       if (file !== path.join(ROOT, "index.html") && !file.startsWith(ROOT + path.sep)) {
         response.writeHead(403).end("Forbidden");
@@ -101,7 +101,7 @@ async function main() {
       }
     });
 
-    const response = await page.goto(\`\${BASE_URL}/?save_probe=session\`, {
+    const response = await page.goto(`${BASE_URL}/?save_probe=session`, {
       waitUntil: "domcontentloaded",
       timeout: 30000
     });
