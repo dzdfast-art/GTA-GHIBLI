@@ -67,6 +67,12 @@ func _run_test() -> void:
 		_fail("The reference camera framing distance or field of view is not applied.")
 		return
 
+	var configured_icon := str(ProjectSettings.get_setting("application/config/icon", ""))
+	var app_icon := load("res://assets/ui/gta_ghibli_app_icon.svg") as Texture2D
+	if configured_icon != "res://assets/ui/gta_ghibli_app_icon.svg" or app_icon == null:
+		_fail("The GTA GHIBLI application icon is not configured or imported.")
+		return
+
 	var village := game.get_node_or_null("WillowVillage") as Node3D
 	if village == null or village.get_node_or_null("ReferenceResidentialRoad") == null \
 			or village.get_node_or_null("ResidentialSidewalk_East") == null \
@@ -79,6 +85,11 @@ func _run_test() -> void:
 		if house == null:
 			_fail("A reference residential building is missing: " + house_name)
 			return
+		var wall_mesh := house.get_node_or_null("Walls") as MeshInstance3D
+		var wall_material := wall_mesh.material_override as StandardMaterial3D if wall_mesh != null else null
+		if wall_material == null or wall_material.albedo_texture == null:
+			_fail("The textured stucco facade did not load on " + house_name)
+			return
 		for roof_part in ["RoofSlope_Front", "RoofSlope_Rear", "RoofRidge",
 				"FrontGable", "RearGable"]:
 			var roof_mesh := house.get_node_or_null(roof_part) as MeshInstance3D
@@ -87,6 +98,10 @@ func _run_test() -> void:
 				return
 		for roof_side in ["RoofSlope_Front", "RoofSlope_Rear"]:
 			var slope := house.get_node_or_null(roof_side) as MeshInstance3D
+			var roof_material := slope.material_override as StandardMaterial3D if slope != null else null
+			if roof_material == null or roof_material.albedo_texture == null:
+				_fail("The textured terracotta roof surface did not load on %s/%s." % [house_name, roof_side])
+				return
 			var tile_batch := slope.get_node_or_null("RoofTileCourses") as MultiMeshInstance3D if slope != null else null
 			if tile_batch == null or tile_batch.multimesh == null \
 					or tile_batch.multimesh.instance_count != 78:
