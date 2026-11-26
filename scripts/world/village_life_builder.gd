@@ -47,6 +47,7 @@ static func _build_benches(parent: Node3D) -> void:
 		bench.collision_mask = 1
 		parent.add_child(bench)
 		var collision := CollisionShape3D.new()
+		collision.name = "BenchCollision"
 		var collision_shape := BoxShape3D.new()
 		collision_shape.size = Vector3(1.92, 1.08, 0.82)
 		collision.shape = collision_shape

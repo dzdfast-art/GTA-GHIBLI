@@ -157,7 +157,7 @@ func _validate_reference_world(game: Node3D) -> String:
 	for bench_name in ["VillageBench_00", "VillageBench_01"]:
 		var bench := village_life.get_node_or_null(bench_name) as StaticBody3D
 		if bench == null or bench.get_node_or_null("SeatPlank_00") == null \
-				or bench.get_node_or_null("CollisionShape3D") == null:
+				or bench.get_node_or_null("BenchCollision") == null:
 			return "A collidable public-space bench is missing or incomplete: " + bench_name
 	if village_life.get_node_or_null("VillageWasteBin_00/BinBody") == null:
 		return "The village square waste bin is missing."
