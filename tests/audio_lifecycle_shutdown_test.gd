@@ -26,6 +26,7 @@ func _run_test() -> void:
 		return
 
 	ambience.call("_stop_audio_players")
+	await create_timer(0.5).timeout
 	if procedural_player.playing or procedural_player.stream != null:
 		_fail("Procedural ambience did not stop and release its stream.")
 		return
@@ -52,6 +53,7 @@ func _run_test() -> void:
 		_fail("The wildlife voice test could not start playback.")
 		return
 	wildlife_voice.call("_stop_voice")
+	await create_timer(0.5).timeout
 	if wildlife_voice.playing or wildlife_voice.stream != null:
 		_fail("Wildlife voice did not stop and release its stream.")
 		return
