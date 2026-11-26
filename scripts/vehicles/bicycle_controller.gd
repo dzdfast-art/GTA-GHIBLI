@@ -205,6 +205,21 @@ func _create_wheel(node_name: String, center: Vector3,
 	hub.rotation.z = PI * 0.5
 	hub.material_override = hub_material
 	wheel_root.add_child(hub)
+
+	# Thin crossed spokes make both wheels read as bicycle wheels in close view.
+	for side in [-1.0, 1.0]:
+		for spoke_index in range(8):
+			var angle := TAU * float(spoke_index) / 8.0
+			var endpoint := Vector3(0.0, cos(angle) * 0.425, sin(angle) * 0.425)
+			var spoke := MeshInstance3D.new()
+			spoke.name = "Spoke_%s_%02d" % ["Left" if side < 0.0 else "Right", spoke_index]
+			var spoke_mesh := BoxMesh.new()
+			spoke_mesh.size = Vector3(0.018, 0.018, 0.425)
+			spoke.mesh = spoke_mesh
+			spoke.position = endpoint * 0.5 + Vector3(side * 0.045, 0.0, 0.0)
+			spoke.rotation.x = -atan2(endpoint.y, endpoint.z)
+			spoke.material_override = hub_material
+			wheel_root.add_child(spoke)
 	return wheel_root
 
 
