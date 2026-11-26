@@ -12,6 +12,7 @@ on:
       - ".github/workflows/web-edition-ci.yml"
       - ".github/scripts/web-edition-browser-smoke.cjs"
       - ".github/scripts/web-edition-save-reload.cjs"
+      - ".github/scripts/web-edition-save-blocked-storage.cjs"
       - "docs/WEB_EDITION_*.md"
   pull_request:
     branches:
@@ -22,6 +23,7 @@ on:
       - ".github/workflows/web-edition-ci.yml"
       - ".github/scripts/web-edition-browser-smoke.cjs"
       - ".github/scripts/web-edition-save-reload.cjs"
+      - ".github/scripts/web-edition-save-blocked-storage.cjs"
       - "docs/WEB_EDITION_*.md"
 
 permissions:
@@ -210,6 +212,11 @@ jobs:
         env:
           NODE_PATH: /tmp/gta-ghibli-playwright/node_modules
         run: node .github/scripts/web-edition-save-reload.cjs
+
+      - name: Verify session-only behavior when IndexedDB is blocked
+        env:
+          NODE_PATH: /tmp/gta-ghibli-playwright/node_modules
+        run: node .github/scripts/web-edition-save-blocked-storage.cjs
 
       - name: Package Web export and record exact size and hash
         shell: bash
