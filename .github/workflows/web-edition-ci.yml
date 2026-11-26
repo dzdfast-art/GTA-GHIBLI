@@ -13,6 +13,7 @@ on:
       - ".github/scripts/web-edition-browser-smoke.cjs"
       - ".github/scripts/web-edition-save-reload.cjs"
       - ".github/scripts/web-edition-save-blocked-storage.cjs"
+      - ".github/scripts/web-edition-save-browser-restart.cjs"
       - "docs/WEB_EDITION_*.md"
   pull_request:
     branches:
@@ -24,6 +25,7 @@ on:
       - ".github/scripts/web-edition-browser-smoke.cjs"
       - ".github/scripts/web-edition-save-reload.cjs"
       - ".github/scripts/web-edition-save-blocked-storage.cjs"
+      - ".github/scripts/web-edition-save-browser-restart.cjs"
       - "docs/WEB_EDITION_*.md"
 
 permissions:
@@ -212,6 +214,11 @@ jobs:
         env:
           NODE_PATH: /tmp/gta-ghibli-playwright/node_modules
         run: node .github/scripts/web-edition-save-reload.cjs
+
+      - name: Verify live-game saves across Chromium process restart
+        env:
+          NODE_PATH: /tmp/gta-ghibli-playwright/node_modules
+        run: node .github/scripts/web-edition-save-browser-restart.cjs
 
       - name: Verify session-only behavior when IndexedDB is blocked
         env:
