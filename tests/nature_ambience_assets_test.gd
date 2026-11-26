@@ -30,7 +30,7 @@ func _run_test() -> void:
 	opening_asset = null
 	for theme in EXPECTED_THEMES:
 		var paths: PackedStringArray = ambience.call("get_field_recording_paths", theme)
-		if paths.size() != 6:
+		if paths.size() != 7:
 			_fail("Expected six sequential ambience variations for theme: " + theme)
 			return
 		for path in paths:
