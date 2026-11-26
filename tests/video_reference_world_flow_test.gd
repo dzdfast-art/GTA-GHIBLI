@@ -29,7 +29,7 @@ func _run_test() -> void:
 			or player.get_node_or_null("Visual/LeftShoe") == null \
 			or player.get_node_or_null("Visual/Neck") == null \
 			or player.get_node_or_null("Visual/LeftHand") == null \
-			or player.get_node_or_null("Visual/LeftSole") == null:
+			or player.get_node_or_null("Visual/LeftShoe/LeftSole") == null:
 		_fail("The reference character outfit, hands or footwear details are incomplete.")
 		return
 	var visual_animator := player.get_node("Visual") as Node3D
