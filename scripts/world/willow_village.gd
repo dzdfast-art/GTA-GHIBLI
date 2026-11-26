@@ -112,7 +112,7 @@ func _add_house(house_name: String, origin: Vector3,
 			var tile_row := int(tile_index / 13)
 			var tile_column := tile_index % 13
 			var tile_x := -2.58 + float(tile_column) * 0.43 + (0.12 if tile_row % 2 == 1 else 0.0)
-			var tile_z := roof_side * (-0.90 + float(tile_row) * 0.34)
+			var tile_z: float = float(roof_side) * (-0.90 + float(tile_row) * 0.34)
 			var tile_basis := Basis(Vector3.UP, 0.0)
 			tile_instances.set_instance_transform(tile_index,
 				Transform3D(tile_basis, Vector3(tile_x, 0.10, tile_z)))
