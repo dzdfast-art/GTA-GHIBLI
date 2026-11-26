@@ -118,6 +118,51 @@ func _add_house(house_name: String, origin: Vector3,
 		crossbar.size = Vector3(0.06, 0.76, 0.06)
 		_add_mesh(house, "WindowMullion_%s" % str(window_x), crossbar,
 			Vector3(window_x, 1.9, 2.46), Color(0.78, 0.69, 0.52))
+		var sill := BoxMesh.new()
+		sill.size = Vector3(1.12, 0.10, 0.20)
+		_add_mesh(house, "WindowSill_%s" % str(window_x), sill,
+			Vector3(window_x, 1.40, 2.42), Color(0.79, 0.73, 0.62))
+		var shutter := BoxMesh.new()
+		shutter.size = Vector3(0.16, 0.86, 0.12)
+		for shutter_side in [-1.0, 1.0]:
+			_add_mesh(house, "WindowShutter_%s_%s" % [str(window_x), str(shutter_side)],
+				shutter, Vector3(window_x + shutter_side * 0.59, 1.9, 2.42),
+				roof_color.darkened(0.10))
+
+	# A small porch, steps, chimney and drainpipe break up the flat box-house silhouette.
+	var porch_roof := BoxMesh.new()
+	porch_roof.size = Vector3(2.25, 0.14, 1.05)
+	_add_mesh(house, "PorchCanopy", porch_roof, Vector3(0.0, 2.43, 2.78),
+		roof_color.darkened(0.12))
+	var porch_column := CylinderMesh.new()
+	porch_column.top_radius = 0.065
+	porch_column.bottom_radius = 0.085
+	porch_column.height = 2.25
+	for column_x in [-0.96, 0.96]:
+		_add_mesh(house, "PorchColumn_%s" % str(column_x), porch_column,
+			Vector3(column_x, 1.16, 3.16), Color(0.83, 0.77, 0.65))
+	var upper_step := BoxMesh.new()
+	upper_step.size = Vector3(1.55, 0.16, 0.48)
+	_add_mesh(house, "FrontStepUpper", upper_step, Vector3(0.0, 0.11, 2.73),
+		Color(0.59, 0.56, 0.49))
+	var lower_step := BoxMesh.new()
+	lower_step.size = Vector3(1.82, 0.12, 0.58)
+	_add_mesh(house, "FrontStepLower", lower_step, Vector3(0.0, 0.06, 3.08),
+		Color(0.67, 0.63, 0.55))
+	var chimney := BoxMesh.new()
+	chimney.size = Vector3(0.55, 1.25, 0.58)
+	_add_mesh(house, "Chimney", chimney, Vector3(1.62, 3.92, -1.20),
+		roof_color.darkened(0.24))
+	var chimney_cap := BoxMesh.new()
+	chimney_cap.size = Vector3(0.72, 0.12, 0.72)
+	_add_mesh(house, "ChimneyCap", chimney_cap, Vector3(1.62, 4.60, -1.20),
+		Color(0.35, 0.28, 0.23))
+	var drainpipe := CylinderMesh.new()
+	drainpipe.top_radius = 0.045
+	drainpipe.bottom_radius = 0.045
+	drainpipe.height = 2.75
+	_add_mesh(house, "RainDownpipe", drainpipe, Vector3(-2.39, 1.43, 2.12),
+		Color(0.34, 0.38, 0.38))
 
 
 func _build_house_portal() -> void:
@@ -393,6 +438,29 @@ func _build_reference_street() -> void:
 		_add_mesh(self, "PedestrianCrossing_%02d" % x_index, stripe,
 			Vector3(-4.0 + float(x_index) * 1.0, 0.068, -5.5),
 			Color(0.92, 0.91, 0.83))
+
+	# Expansion joints and storm drains add scale cues to the sidewalk and curb.
+	var sidewalk_joint := BoxMesh.new()
+	sidewalk_joint.size = Vector3(2.88, 0.012, 0.035)
+	var drain_cover := BoxMesh.new()
+	drain_cover.size = Vector3(0.52, 0.018, 0.72)
+	for side in [-1.0, 1.0]:
+		for joint_index in range(14):
+			_add_mesh(self, "SidewalkJoint_%s_%02d" % [str(side), joint_index],
+				sidewalk_joint, Vector3(side * 6.9, 0.091,
+					-42.0 + float(joint_index) * 4.1), Color(0.59, 0.60, 0.57))
+		for drain_index in range(3):
+			var drain_z := -36.0 + float(drain_index) * 18.0
+			_add_mesh(self, "StormDrain_%s_%d" % [str(side), drain_index],
+				drain_cover, Vector3(side * 5.04, 0.091, drain_z),
+				Color(0.19, 0.22, 0.22))
+			for grate_index in range(5):
+				var grate_bar := BoxMesh.new()
+				grate_bar.size = Vector3(0.42, 0.022, 0.035)
+				_add_mesh(self, "StormDrainBar_%s_%d_%d" % [str(side), drain_index, grate_index],
+					grate_bar, Vector3(side * 5.04, 0.105,
+						drain_z - 0.27 + float(grate_index) * 0.135),
+					Color(0.48, 0.52, 0.52))
 
 	# Trees and street lamps give the first camera view a recognizable sidewalk edge.
 	for index in range(3):
