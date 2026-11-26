@@ -64,10 +64,19 @@ func _run_test() -> void:
 		if child is MeshInstance3D and child.name.begins_with("FoliageCluster_"):
 			foliage_cluster_count += 1
 	var textured_trunk := detailed_tree.get_node_or_null("TexturedTrunk") as MeshInstance3D
-	var bark_material := textured_trunk.material_override as StandardMaterial3D if textured_trunk != null else null
-	var foliage_material := detailed_tree.get_node_or_null("FoliageCluster_00").material_override as StandardMaterial3D if detailed_tree.get_node_or_null("FoliageCluster_00") != null else null
-	if foliage_cluster_count < 9 or bark_material == null or bark_material.albedo_texture == null \\
-			or foliage_material == null or foliage_material.albedo_texture == null:
+	var bark_material: StandardMaterial3D = null
+	if textured_trunk != null:
+		bark_material = textured_trunk.material_override as StandardMaterial3D
+	var first_foliage_cluster := detailed_tree.get_node_or_null("FoliageCluster_00") as MeshInstance3D
+	var foliage_material: StandardMaterial3D = null
+	if first_foliage_cluster != null:
+		foliage_material = first_foliage_cluster.material_override as StandardMaterial3D
+	var has_detailed_tree_materials := foliage_cluster_count >= 9
+	has_detailed_tree_materials = has_detailed_tree_materials and bark_material != null
+	has_detailed_tree_materials = has_detailed_tree_materials and bark_material.albedo_texture != null
+	has_detailed_tree_materials = has_detailed_tree_materials and foliage_material != null
+	has_detailed_tree_materials = has_detailed_tree_materials and foliage_material.albedo_texture != null
+	if not has_detailed_tree_materials:
 		_fail("The detailed foliage clusters or textured bark/leaf materials did not load.")
 		return
 	var street_tree := village.get_node_or_null("ResidentialTree_00_W") as Node3D
