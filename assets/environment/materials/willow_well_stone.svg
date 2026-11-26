@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2048" height="2048" viewBox="0 0 2048 2048">
+<title>GTA GHIBLI weathered village limestone</title>
+<desc>Original warm limestone blocks with chipped edges, mineral grain, mortar joints and subtle weathering for Willow Village.</desc>
+<defs>
+  <linearGradient id="stone" x1="0" y1="0" x2="0.16" y2="1">
+    <stop stop-color="#d4c9af"/><stop offset=".46" stop-color="#b9ad92"/><stop offset="1" stop-color="#91846d"/>
+  </linearGradient>
+  <pattern id="masonry" width="512" height="256" patternUnits="userSpaceOnUse">
+    <rect width="512" height="256" fill="#746a59"/>
+    <path d="M5 5H252V121H5Z M260 5H507V121H260Z M-123 133H123V251H-123Z M131 133H379V251H131Z M387 133H635V251H387Z" fill="url(#stone)" stroke="#756a57" stroke-width="9"/>
+    <path d="M18 17H238 M273 17H490 M-108 145H108 M147 145H361 M403 145H617" fill="none" stroke="#eee4ce" stroke-width="7" opacity=".30"/>
+    <path d="M16 107H240 M270 107H493 M-110 238H110 M145 238H365 M402 238H620" fill="none" stroke="#5c5345" stroke-width="5" opacity=".28"/>
+    <path d="M22 48q44 -10 80 0t85 -3 M290 75q50 -9 86 0t82 -2 M165 181q44 -10 84 0t88 -3" fill="none" stroke="#f1e6d0" stroke-width="3" opacity=".23"/>
+  </pattern>
+  <filter id="mineral">
+    <feTurbulence type="fractalNoise" baseFrequency=".028 .041" numOctaves="4" seed="63"/>
+    <feColorMatrix values=".30 0 0 0 .32 0 .27 0 0 .28 0 0 .20 0 .22 0 0 0 .22 0"/>
+  </filter>
+  <filter id="chips">
+    <feTurbulence type="fractalNoise" baseFrequency=".12" numOctaves="2" seed="11"/>
+    <feColorMatrix values=".45 0 0 0 .37 0 .38 0 0 .33 0 0 .28 0 .25 0 0 0 .10 0"/>
+  </filter>
+</defs>
+<rect width="2048" height="2048" fill="url(#masonry)"/>
+<g fill="none" stroke="#625846" stroke-width="4" opacity=".32">
+  <path d="M40 320q90 -35 180 -8t180 -4 M820 470q75 -28 145 -5t190 -6 M1320 260q90 -30 185 -3t180 -5"/>
+  <path d="M190 880q100 -38 205 -6t200 -4 M910 1090q110 -34 205 -3t220 -8 M1400 1500q100 -38 210 -8t200 -5"/>
+  <path d="M100 1740l85 -28 50 12 60 -25 M1080 1830l95 -25 65 14 72 -24"/>
+</g>
+<rect width="2048" height="2048" filter="url(#mineral)" opacity=".52"/>
+<rect width="2048" height="2048" filter="url(#chips)" opacity=".26"/>
+</svg>

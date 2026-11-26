@@ -184,6 +184,28 @@ func _validate_reference_world(game: Node3D) -> String:
 			or grocery.get_node_or_null("ArabicMarketList") == null:
 		return "The market barrel or Arabic chalkboard display is missing."
 
+
+	var well_details := village_life.get_node_or_null("VillageWellEnhancement") as Node3D
+	if well_details == null or well_details.get_node_or_null("TexturedStoneCoping") == null \
+			or well_details.get_node_or_null("WellWater") == null:
+		return "The enhanced village well stone coping or visible water surface is missing."
+	var well_frame := well_details.get_node_or_null("TimberFrame") as StaticBody3D
+	if well_frame == null or well_frame.get_node_or_null("PulleyWheel") == null \
+			or well_frame.get_node_or_null("WellRope") == null \
+			or well_frame.get_node_or_null("WaterBucket") == null:
+		return "The village well pulley, rope or bucket assembly is incomplete."
+	for collision_name in ["TimberPostCollision_Left", "TimberPostCollision_Right",
+			"PulleyCrossbeamCollision", "RoofCollision_Left", "RoofCollision_Right"]:
+		var frame_collision := well_frame.get_node_or_null(collision_name) as CollisionShape3D
+		if frame_collision == null or frame_collision.shape == null:
+			return "A collision shape is missing from the covered well frame: " + collision_name
+	for roof_name in ["RoofSlope_Left", "RoofSlope_Right"]:
+		var roof_panel := well_frame.get_node_or_null(roof_name) as MeshInstance3D
+		var shingle_batch := roof_panel.get_node_or_null("TerracottaShingles") as MultiMeshInstance3D if roof_panel != null else null
+		if shingle_batch == null or shingle_batch.multimesh == null \
+				or shingle_batch.multimesh.instance_count != 15:
+			return "A well roof slope is missing its instanced terracotta shingles: " + roof_name
+
 	var controls := game.get_node_or_null("MobileControls")
 	if controls == null or controls.get_node_or_null("HUD/Minimap") == null \
 			or controls.get_node_or_null("HUD/StatusPanel") == null:
