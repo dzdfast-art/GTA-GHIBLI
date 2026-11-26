@@ -44,8 +44,27 @@ func _run_test() -> void:
 	if not is_equal_approx(left_shoe.position.z, -0.065):
 		_fail("The character's left shoe did not return to its idle position.")
 		return
-	if player.get_node_or_null("CameraPivot/SpringArm3D/Camera3D") == null:
+	var jeans_hips := player.get_node_or_null("Visual/JeansHips") as MeshInstance3D
+	var rear_belt := player.get_node_or_null("Visual/RearBelt") as MeshInstance3D
+	var left_rear_pocket := player.get_node_or_null("Visual/RearPocketLeft") as MeshInstance3D
+	var right_rear_pocket := player.get_node_or_null("Visual/RearPocketRight") as MeshInstance3D
+	if jeans_hips == null or jeans_hips.mesh == null or rear_belt == null \
+			or left_rear_pocket == null or right_rear_pocket == null:
+		_fail("The character's denim hip silhouette, rear belt or jeans pockets are missing.")
+		return
+	if player.get_node_or_null("Visual/BeltBuckle") == null \
+			or player.get_node_or_null("Visual/RearPocketStitchLeft") == null:
+		_fail("The character's belt buckle or rear-pocket seam detail is missing.")
+		return
+
+	var follow_spring := player.get_node("CameraPivot/SpringArm3D") as SpringArm3D
+	var follow_camera := player.get_node("CameraPivot/SpringArm3D/Camera3D") as Camera3D
+	if follow_camera == null:
 		_fail("The third-person follow camera is missing.")
+		return
+	if not is_equal_approx(follow_spring.spring_length, 4.0) \
+			or not is_equal_approx(follow_camera.fov, 67.0):
+		_fail("The reference camera framing distance or field of view is not applied.")
 		return
 
 	var village := game.get_node_or_null("WillowVillage") as Node3D
