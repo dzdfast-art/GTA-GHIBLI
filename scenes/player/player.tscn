@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3]
+[gd_scene load_steps=35 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/camera/third_person_camera.gd" id="2_camera"]
@@ -96,6 +96,42 @@ size = Vector3(0.245, 0.035, 0.37)
 [sub_resource type="BoxMesh" id="LaceMesh"]
 size = Vector3(0.12, 0.018, 0.025)
 
+[sub_resource type="CapsuleMesh" id="JeansHipMesh"]
+radius = 0.27
+height = 0.52
+radial_segments = 12
+rings = 6
+
+[sub_resource type="BoxMesh" id="RearPocketMesh"]
+size = Vector3(0.16, 0.15, 0.025)
+
+[sub_resource type="BoxMesh" id="PocketSeamMesh"]
+size = Vector3(0.17, 0.012, 0.012)
+
+[sub_resource type="BoxMesh" id="BackBeltMesh"]
+size = Vector3(0.43, 0.065, 0.035)
+
+[sub_resource type="BoxMesh" id="SideBeltMesh"]
+size = Vector3(0.035, 0.065, 0.31)
+
+[sub_resource type="BoxMesh" id="FrontBeltMesh"]
+size = Vector3(0.36, 0.065, 0.035)
+
+[sub_resource type="BoxMesh" id="BeltBuckleMesh"]
+size = Vector3(0.09, 0.065, 0.018)
+
+[sub_resource type="StandardMaterial3D" id="DenimDetailMaterial"]
+albedo_color = Color(0.075, 0.16, 0.38, 1)
+roughness = 0.96
+
+[sub_resource type="StandardMaterial3D" id="BeltMaterial"]
+albedo_color = Color(0.045, 0.048, 0.055, 1)
+roughness = 0.88
+
+[sub_resource type="StandardMaterial3D" id="DenimStitchMaterial"]
+albedo_color = Color(0.34, 0.43, 0.58, 1)
+roughness = 0.95
+
 [sub_resource type="StandardMaterial3D" id="BuckleMaterial"]
 albedo_color = Color(0.72, 0.62, 0.35, 1)
 metallic = 0.65
@@ -179,6 +215,56 @@ position = Vector3(0.14, -0.41, 0)
 mesh = SubResource("LegMesh")
 material_override = SubResource("PantsMaterial")
 
+[node name="JeansHips" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, -0.13, 0)
+mesh = SubResource("JeansHipMesh")
+material_override = SubResource("PantsMaterial")
+
+[node name="RearPocketLeft" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.13, -0.25, 0.205)
+mesh = SubResource("RearPocketMesh")
+material_override = SubResource("DenimDetailMaterial")
+
+[node name="RearPocketRight" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.13, -0.25, 0.205)
+mesh = SubResource("RearPocketMesh")
+material_override = SubResource("DenimDetailMaterial")
+
+[node name="RearPocketStitchLeft" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.13, -0.17, 0.221)
+mesh = SubResource("PocketSeamMesh")
+material_override = SubResource("DenimStitchMaterial")
+
+[node name="RearPocketStitchRight" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.13, -0.17, 0.221)
+mesh = SubResource("PocketSeamMesh")
+material_override = SubResource("DenimStitchMaterial")
+
+[node name="RearBelt" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, -0.015, 0.235)
+mesh = SubResource("BackBeltMesh")
+material_override = SubResource("BeltMaterial")
+
+[node name="LeftSideBelt" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.225, -0.015, 0)
+mesh = SubResource("SideBeltMesh")
+material_override = SubResource("BeltMaterial")
+
+[node name="RightSideBelt" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.225, -0.015, 0)
+mesh = SubResource("SideBeltMesh")
+material_override = SubResource("BeltMaterial")
+
+[node name="FrontBelt" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, -0.015, -0.235)
+mesh = SubResource("FrontBeltMesh")
+material_override = SubResource("BeltMaterial")
+
+[node name="BeltBuckle" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, -0.015, -0.258)
+mesh = SubResource("BeltBuckleMesh")
+material_override = SubResource("BuckleMaterial")
+
 [node name="LeftShoe" type="MeshInstance3D" parent="Visual"]
 position = Vector3(-0.14, -0.81, -0.065)
 mesh = SubResource("ShoeMesh")
@@ -237,14 +323,14 @@ position = Vector3(0, 1.45, 0)
 script = ExtResource("2_camera")
 
 [node name="SpringArm3D" type="SpringArm3D" parent="CameraPivot"]
-spring_length = 4.5
+spring_length = 4.0
 margin = 0.2
 collision_mask = 1
 
 [node name="Camera3D" type="Camera3D" parent="CameraPivot/SpringArm3D"]
 rotation_degrees = Vector3(-10.0, 0.0, 0.0)
 current = true
-fov = 70.0
+fov = 67.0
 
 [node name="PlayerInteractor" type="Node" parent="."]
 script = ExtResource("3_interactor")
