@@ -176,14 +176,20 @@ func _run_test() -> void:
 		return
 
 	print("PASS: reference character, third-person camera, street, blue marker, mobile HUD, rideable bicycle, house portal, red bridge and walkable deck are present.")
-	game.queue_free()
-	await process_frame
-	await process_frame
-	# Clear every borrowed Node/Resource reference before the strict leak check.
+	# Stop and free the complete test world synchronously, then release all
+	# borrowed Resource references before Godot performs its shutdown audit.
+	game.free()
 	bicycle = null
 	player = null
 	visual_animator = null
 	left_shoe = null
+	jeans_hips = null
+	rear_belt = null
+	left_rear_pocket = null
+	right_rear_pocket = null
+	follow_spring = null
+	follow_camera = null
+	app_icon = null
 	village = null
 	controls = null
 	portal = null
@@ -192,8 +198,14 @@ func _run_test() -> void:
 	bridge_mesh = null
 	ravine = null
 	deck = null
-	game = null
+	textured_trunk = null
+	bark_material = null
+	first_foliage_cluster = null
+	foliage_material = null
+	street_tree = null
+	roadside_grass = null
 	main_script = null
+	game = null
 	await process_frame
 	await process_frame
 	quit(0)
