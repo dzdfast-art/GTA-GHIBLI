@@ -22,6 +22,7 @@ func _ready() -> void:
 	_build_interactive_objects()
 	_build_consumable_shop()
 	_build_flora_details()
+	_build_ground_cover_details()
 
 
 func _build_mira() -> void:
@@ -483,3 +484,42 @@ func _build_reference_mission_marker() -> void:
 	marker.position = Vector3(5.6, 0.04, -8.0)
 	marker.set_script(marker_script)
 	add_child(marker)
+
+
+
+func _build_ground_cover_details() -> void:
+	# Instanced roadside grass breaks up the hard sidewalk/terrain boundary
+	# while keeping draw calls low for Android.
+	var blade_mesh := CylinderMesh.new()
+	blade_mesh.top_radius = 0.006
+	blade_mesh.bottom_radius = 0.034
+	blade_mesh.height = 0.34
+	blade_mesh.radial_segments = 5
+	var grass_material := StandardMaterial3D.new()
+	grass_material.albedo_color = Color(0.72, 0.86, 0.48)
+	grass_material.vertex_color_use_as_albedo = true
+	grass_material.roughness = 1.0
+	blade_mesh.material = grass_material
+
+	for side in [-1.0, 1.0]:
+		var grass := MultiMeshInstance3D.new()
+		grass.name = "RoadsideGrass_%s" % ("West" if side < 0.0 else "East")
+		grass.position = Vector3(side * 8.55, 0.06, -21.0)
+		var instances := MultiMesh.new()
+		instances.transform_format = MultiMesh.TRANSFORM_3D
+		instances.use_colors = true
+		instances.mesh = blade_mesh
+		instances.instance_count = 84
+		for index in range(instances.instance_count):
+			var x_offset := fposmod(float(index) * 0.6180339, 1.0) * 1.15 - 0.575
+			var z_offset := fposmod(float(index) * 0.7548777, 1.0) * 34.0 - 17.0
+			var height_scale := 0.62 + fposmod(float(index) * 0.381966, 1.0) * 0.78
+			var width_scale := 0.72 + fposmod(float(index) * 0.271828, 1.0) * 0.62
+			var yaw := fposmod(float(index) * 2.399963, TAU)
+			var basis := Basis(Vector3.UP, yaw).scaled(Vector3(width_scale, height_scale, width_scale))
+			instances.set_instance_transform(index,
+				Transform3D(basis, Vector3(x_offset, 0.17 * height_scale, z_offset)))
+			var green := 0.78 + fposmod(float(index) * 0.173, 1.0) * 0.22
+			instances.set_instance_color(index, Color(0.55 * green, green, 0.34 * green, 1.0))
+		grass.multimesh = instances
+		add_child(grass)
