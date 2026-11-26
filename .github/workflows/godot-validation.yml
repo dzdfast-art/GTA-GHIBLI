@@ -15,7 +15,6 @@ on:
       - "tests/**"
       - "tools/**"
       - ".github/workflows/godot-validation.yml"
-      - ".github/workflows/godot-validation.yml"
   pull_request:
     paths:
       - "main.gd"
@@ -125,5 +124,5 @@ jobs:
         shell: bash
         run: bash tools/run_root_regressions.sh
 
-      - name: Run main scene smoke test
-        run: godot --headless --path . --quit-after 180
+      - name: Run main scene smoke test with clean teardown
+        run: godot --headless --path . --script res://tests/main_scene_smoke_test.gd
