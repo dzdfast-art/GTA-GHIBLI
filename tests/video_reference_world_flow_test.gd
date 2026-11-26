@@ -74,6 +74,18 @@ func _run_test() -> void:
 		_fail("The road, sidewalk or blue mission marker is missing from the opening village.")
 		return
 
+	for house_name in ["BakerHouse", "BlueHouse", "CaretakerHouse", "Workshop"]:
+		var house := village.get_node_or_null(house_name) as StaticBody3D
+		if house == null:
+			_fail("A reference residential building is missing: " + house_name)
+			return
+		for roof_part in ["RoofSlope_Front", "RoofSlope_Rear", "RoofRidge",
+				"FrontGable", "RearGable"]:
+			var roof_mesh := house.get_node_or_null(roof_part) as MeshInstance3D
+			if roof_mesh == null or roof_mesh.mesh == null:
+				_fail("The sloped roof component %s is missing from %s." % [roof_part, house_name])
+				return
+
 	var detailed_tree := village.get_node_or_null("WillowTree_00") as Node3D
 	if detailed_tree == null:
 		_fail("The detailed village tree is missing.")
