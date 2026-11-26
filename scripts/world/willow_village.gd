@@ -5,6 +5,8 @@ extends Node3D
 
 const GROUND_Y := 0.03
 const FOLIAGE_VISUAL_BUILDER = preload("res://scripts/world/foliage_visual_builder.gd")
+const ROOF_TILE_TEXTURE: Texture2D = preload("res://assets/environment/materials/willow_roof_tiles.svg")
+const STUCCO_TEXTURE: Texture2D = preload("res://assets/environment/materials/willow_stucco_detail.svg")
 
 
 func _ready() -> void:
@@ -75,6 +77,11 @@ func _add_house(house_name: String, origin: Vector3,
 	var walls := BoxMesh.new()
 	walls.size = Vector3(5.0, 3.0, 4.5)
 	_add_mesh(house, "Walls", walls, Vector3(0.0, 1.5, 0.0), wall_color)
+	var wall_surface := _material(wall_color)
+	wall_surface.albedo_texture = STUCCO_TEXTURE
+	wall_surface.uv1_scale = Vector3(2.4, 2.4, 2.4)
+	wall_surface.roughness = 0.98
+	(house.get_node("Walls") as MeshInstance3D).material_override = wall_surface
 
 	var wall_shape := BoxShape3D.new()
 	wall_shape.size = walls.size
@@ -92,7 +99,12 @@ func _add_house(house_name: String, origin: Vector3,
 		roof_slope.mesh = roof_slope_mesh
 		roof_slope.position = Vector3(0.0, 3.35, roof_side * 1.06)
 		roof_slope.rotation_degrees.x = 18.4 * roof_side
-		roof_slope.material_override = _material(roof_color.darkened(0.04))
+		var roof_surface := StandardMaterial3D.new()
+		roof_surface.albedo_color = roof_color.darkened(0.04)
+		roof_surface.albedo_texture = ROOF_TILE_TEXTURE
+		roof_surface.uv1_scale = Vector3(2.8, 2.8, 2.8)
+		roof_surface.roughness = 0.97
+		roof_slope.material_override = roof_surface
 		house.add_child(roof_slope)
 		var tile_mesh := BoxMesh.new()
 		tile_mesh.size = Vector3(0.42, 0.035, 0.31)
