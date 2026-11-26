@@ -1,7 +1,34 @@
 # GTA GHIBLI Web Edition — Verified Status Ledger
 
-Updated: 2026-11-25 — browser save-persistence feedback and Chromium reload verification  
+Updated: 2026-11-26 — blocked IndexedDB session-only behavior verified  
 Current game root: `web-edition/` — Godot 4.7, single-threaded WebAssembly, Compatibility renderer / WebGL 2
+
+## Latest verified increment — PR #114 — 2026-11-26
+
+- PR #114: https://github.com/dzdfast-art/GTA-GHIBLI/pull/114 — Draft/open/unmerged; branch `fix/web-indexeddb-blocked-session-only-20261126`, stacked on PR #111 branch `feature/web-save-persistence-warning-20261125`.
+- Tested functional-code head: `ebf6b01ad4e01b201838cfbb07fa750980d18613`; base head: `2c62e183ef6c05e1398bac8e483a4a9245d9c849`.
+- Web CI [run 45796853793](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45796853793): **PASS**. Security audit [run 45796853567](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45796853567): **PASS** — Gitleaks found no leaked secrets.
+- The functional change set at the tested code head comprised three files: the CI-only Chromium blocked-storage helper, its Web CI step/path filter, and the CI-only probe mode in `web-edition/tests/web_save_probe.gd`. No legacy game scenes, scripts or assets were changed. This ledger/spec refresh adds documentation only.
+- Godot 4.7 import, JSON/research-helper checks, all **61 GDScript regression tests**, WebAssembly export, HTML/JavaScript/WASM/PCK verification, normal Chromium smoke, live-game page-reload persistence and the new blocked-IndexedDB test all passed.
+- The blocked-storage test removed `window.indexedDB` before the Godot runtime started. Chromium still initialized the 1280×720 WebGL 2 canvas. Godot reported `user://` as non-persistent. A successful write was readable again in the same active page session and the HUD displayed **SESSION ONLY — allow browser storage**; it did not claim durable browser storage. No external requests or browser runtime errors were observed.
+- The normal Chromium context still passed the separate full-page reload test for the selected live-game fields. The two tests cover different storage states and must not be conflated.
+- First CI attempt [run 45796460729](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45796460729) failed before executing the new test because the helper contained escaped JavaScript template-literal delimiters. The helper was corrected in `ebf6b01`; the subsequent complete Web CI run passed.
+- Exact measurements from successful run 45796853793:
+
+| Measurement | Bytes | Decimal MB | MiB |
+|---|---:|---:|---:|
+| Tracked `web-edition/` source | 262,378 | 0.262 | 0.250 |
+| Deduplicated unique source content | 262,378 | 0.262 | 0.250 |
+| Uncompressed Web export | 39,995,840 | 39.996 | 38.143 |
+| Compressed Web ZIP | 10,377,709 | 10.378 | 9.897 |
+
+- Tracked Web source files: **138**; unique content blobs: **138**; exported files: **8**.
+- ZIP SHA-256: `0ce749defaffd66370f375ef75f6f36450fbc1e1b9842169070784f76bcd893d`.
+- Web export and ZIP were created only on the ephemeral Actions runner, measured and deleted. The artifact list for run 45796853793 was empty. No Android/APK workflow ran for PR #114.
+- The 4 GB real-content target is **NOT REACHED**. The 40 MB export includes the Godot Web runtime and current game pack; it must not be described as 40 MB of unique authored game assets.
+- Remaining boundaries: this test removes the IndexedDB API in Chromium; it is not a full private-browsing, quota-exhaustion or browser-policy test. Browser close/reopen, Firefox/Safari, visual review and complete game acceptance remain unverified.
+
+---
 
 ## Repository and review state
 
