@@ -55,6 +55,26 @@ func _run_test() -> void:
 		_fail("The road, sidewalk or blue mission marker is missing from the opening village.")
 		return
 
+	var detailed_tree := village.get_node_or_null("WillowTree_00") as Node3D
+	if detailed_tree == null:
+		_fail("The detailed village tree is missing.")
+		return
+	var foliage_cluster_count := 0
+	for child in detailed_tree.get_children():
+		if child is MeshInstance3D and child.name.begins_with("FoliageCluster_"):
+			foliage_cluster_count += 1
+	var textured_trunk := detailed_tree.get_node_or_null("TexturedTrunk") as MeshInstance3D
+	var bark_material := textured_trunk.material_override as StandardMaterial3D if textured_trunk != null else null
+	var foliage_material := detailed_tree.get_node_or_null("FoliageCluster_00").material_override as StandardMaterial3D if detailed_tree.get_node_or_null("FoliageCluster_00") != null else null
+	if foliage_cluster_count < 9 or bark_material == null or bark_material.albedo_texture == null \\
+			or foliage_material == null or foliage_material.albedo_texture == null:
+		_fail("The detailed foliage clusters or textured bark/leaf materials did not load.")
+		return
+	var street_tree := village.get_node_or_null("ResidentialTree_00_W") as Node3D
+	if street_tree == null or street_tree.get_node_or_null("FoliageCluster_08") == null:
+		_fail("The reference street is not using the upgraded layered tree assets.")
+		return
+
 	var controls := game.get_node_or_null("MobileControls")
 	if controls == null or controls.get_node_or_null("HUD/Minimap") == null \
 			or controls.get_node_or_null("HUD/StatusPanel") == null:
