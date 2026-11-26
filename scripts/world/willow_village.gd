@@ -4,6 +4,7 @@ extends Node3D
 ## All geometry is procedural and intentionally lightweight for mobile.
 
 const GROUND_Y := 0.03
+const FOLIAGE_VISUAL_BUILDER = preload("res://scripts/world/foliage_visual_builder.gd")
 
 
 func _ready() -> void:
@@ -220,27 +221,8 @@ func _add_tree(tree_name: String, origin: Vector3, scale_factor: float) -> void:
 	tree.position = origin
 	tree.scale = Vector3.ONE * scale_factor
 	add_child(tree)
-
-	var trunk := CylinderMesh.new()
-	trunk.top_radius = 0.24
-	trunk.bottom_radius = 0.38
-	trunk.height = 2.8
-	_add_mesh(tree, "Trunk", trunk, Vector3(0.0, 1.4, 0.0),
-		Color(0.34, 0.23, 0.15))
-
-	var crown := SphereMesh.new()
-	crown.radius = 1.65
-	crown.height = 3.0
-	_add_mesh(tree, "Canopy", crown, Vector3(0.0, 3.2, 0.0),
-		Color(0.30, 0.52, 0.29))
-	var canopy_colors := [Color(0.34, 0.58, 0.32), Color(0.26, 0.47, 0.28)]
-	for index in range(2):
-		var cluster := SphereMesh.new()
-		cluster.radius = 1.05
-		cluster.height = 1.85
-		var offset := Vector3(-0.82 if index == 0 else 0.82, 3.05, 0.18)
-		_add_mesh(tree, "CanopyCluster_%d" % index, cluster, offset,
-			canopy_colors[index])
+	var variant := int(absf(origin.x * 3.0 + origin.z)) % 9
+	FOLIAGE_VISUAL_BUILDER.build_tree_geometry(tree, variant)
 
 
 func _build_well() -> void:
@@ -466,26 +448,9 @@ func _build_reference_street() -> void:
 	for index in range(3):
 		var z_position := -34.0 + float(index) * 17.0
 		for side in [-1.0, 1.0]:
-			var tree := Node3D.new()
-			tree.name = "ResidentialTree_%02d_%s" % [index, "W" if side < 0.0 else "E"]
-			tree.position = Vector3(side * 8.9, 0.0, z_position)
-			add_child(tree)
-			var trunk := CylinderMesh.new()
-			trunk.top_radius = 0.15
-			trunk.bottom_radius = 0.23
-			trunk.height = 2.5
-			_add_mesh(tree, "Trunk", trunk, Vector3(0.0, 1.25, 0.0),
-				Color(0.32, 0.22, 0.14))
-			var canopy := SphereMesh.new()
-			canopy.radius = 1.18
-			canopy.height = 2.0
-			_add_mesh(tree, "Canopy", canopy, Vector3(0.0, 2.85, 0.0),
-				Color(0.23, 0.43, 0.25))
-			var canopy_cluster := SphereMesh.new()
-			canopy_cluster.radius = 0.78
-			canopy_cluster.height = 1.25
-			_add_mesh(tree, "CanopyCluster", canopy_cluster,
-				Vector3(0.48, 3.15, 0.22), Color(0.31, 0.52, 0.30))
+			var tree_name := "ResidentialTree_%02d_%s" % [index, "W" if side < 0.0 else "E"]
+			_add_tree(tree_name, Vector3(side * 8.9, 0.0, z_position),
+				0.88 + float(index % 2) * 0.06)
 
 	for index in range(3):
 		var z_position := -30.0 + float(index) * 18.0
