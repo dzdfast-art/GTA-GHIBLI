@@ -94,6 +94,8 @@ func _run_test() -> void:
 	# Clear every borrowed Node/Resource reference before the strict leak check.
 	bicycle = null
 	player = null
+	visual_animator = null
+	left_shoe = null
 	village = null
 	controls = null
 	portal = null
