@@ -95,7 +95,7 @@ func _add_house(house_name: String, origin: Vector3,
 		roof_slope.material_override = _material(roof_color.darkened(0.04))
 		house.add_child(roof_slope)
 		var tile_mesh := BoxMesh.new()
-		tile_mesh.size = Vector3(0.43, 0.035, 0.31)
+		tile_mesh.size = Vector3(0.42, 0.035, 0.31)
 		var tile_material := StandardMaterial3D.new()
 		tile_material.albedo_color = roof_color.lightened(0.08)
 		tile_material.vertex_color_use_as_albedo = true
@@ -111,7 +111,7 @@ func _add_house(house_name: String, origin: Vector3,
 		for tile_index in range(tile_instances.instance_count):
 			var tile_row := int(tile_index / 13)
 			var tile_column := tile_index % 13
-			var tile_x := -2.76 + float(tile_column) * 0.46 + (0.18 if tile_row % 2 == 1 else 0.0)
+			var tile_x := -2.58 + float(tile_column) * 0.43 + (0.12 if tile_row % 2 == 1 else 0.0)
 			var tile_z := roof_side * (-0.90 + float(tile_row) * 0.34)
 			var tile_basis := Basis(Vector3.UP, 0.0)
 			tile_instances.set_instance_transform(tile_index,
