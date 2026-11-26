@@ -189,43 +189,43 @@ position = Vector3(0.14, -0.81, -0.065)
 mesh = SubResource("ShoeMesh")
 material_override = SubResource("ShoesMaterial")
 
-[node name="LeftSole" type="MeshInstance3D" parent="Visual"]
-position = Vector3(-0.14, -0.875, -0.065)
+[node name="LeftSole" type="MeshInstance3D" parent="Visual/LeftShoe"]
+position = Vector3(0, -0.065, 0)
 mesh = SubResource("SoleMesh")
 material_override = SubResource("ShoesMaterial")
 
-[node name="RightSole" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0.14, -0.875, -0.065)
+[node name="RightSole" type="MeshInstance3D" parent="Visual/RightShoe"]
+position = Vector3(0, -0.065, 0)
 mesh = SubResource("SoleMesh")
 material_override = SubResource("ShoesMaterial")
 
-[node name="LeftLaceFront" type="MeshInstance3D" parent="Visual"]
-position = Vector3(-0.14, -0.742, -0.16)
+[node name="LeftLaceFront" type="MeshInstance3D" parent="Visual/LeftShoe"]
+position = Vector3(0, 0.068, -0.095)
 mesh = SubResource("LaceMesh")
 material_override = SubResource("ShirtMaterial")
 
-[node name="LeftLaceMid" type="MeshInstance3D" parent="Visual"]
-position = Vector3(-0.14, -0.742, -0.08)
+[node name="LeftLaceMid" type="MeshInstance3D" parent="Visual/LeftShoe"]
+position = Vector3(0, 0.068, -0.015)
 mesh = SubResource("LaceMesh")
 material_override = SubResource("ShirtMaterial")
 
-[node name="LeftLaceBack" type="MeshInstance3D" parent="Visual"]
-position = Vector3(-0.14, -0.742, 0.00)
+[node name="LeftLaceBack" type="MeshInstance3D" parent="Visual/LeftShoe"]
+position = Vector3(0, 0.068, 0.065)
 mesh = SubResource("LaceMesh")
 material_override = SubResource("ShirtMaterial")
 
-[node name="RightLaceFront" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0.14, -0.742, -0.16)
+[node name="RightLaceFront" type="MeshInstance3D" parent="Visual/RightShoe"]
+position = Vector3(0, 0.068, -0.095)
 mesh = SubResource("LaceMesh")
 material_override = SubResource("ShirtMaterial")
 
-[node name="RightLaceMid" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0.14, -0.742, -0.08)
+[node name="RightLaceMid" type="MeshInstance3D" parent="Visual/RightShoe"]
+position = Vector3(0, 0.068, -0.015)
 mesh = SubResource("LaceMesh")
 material_override = SubResource("ShirtMaterial")
 
-[node name="RightLaceBack" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0.14, -0.742, 0.00)
+[node name="RightLaceBack" type="MeshInstance3D" parent="Visual/RightShoe"]
+position = Vector3(0, 0.068, 0.065)
 mesh = SubResource("LaceMesh")
 material_override = SubResource("ShirtMaterial")
 
