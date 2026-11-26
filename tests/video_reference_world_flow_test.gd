@@ -19,14 +19,30 @@ func _run_test() -> void:
 	if bicycle == null or not bicycle.is_in_group("bicycles"):
 		_fail("The starter bicycle is not present in the live world.")
 		return
-	if bicycle.get_node_or_null("BicycleVisuals/FrontWheel/Tire") == null:
-		_fail("The bicycle frame and wheel visuals are missing.")
+	if bicycle.get_node_or_null("BicycleVisuals/FrontWheel/Tire") == null \
+			or bicycle.get_node_or_null("BicycleVisuals/FrontWheel/Spoke_Left_00") == null:
+		_fail("The bicycle frame, tire or wheel spokes are missing.")
 		return
 
 	var player := game.get_node_or_null("Player") as CharacterBody3D
 	if player == null or player.get_node_or_null("Visual/WhiteSleevelessShirt") == null \
-			or player.get_node_or_null("Visual/LeftShoe") == null:
-		_fail("The reference character outfit is incomplete.")
+			or player.get_node_or_null("Visual/LeftShoe") == null \
+			or player.get_node_or_null("Visual/Neck") == null \
+			or player.get_node_or_null("Visual/LeftHand") == null \
+			or player.get_node_or_null("Visual/LeftSole") == null:
+		_fail("The reference character outfit, hands or footwear details are incomplete.")
+		return
+	var visual_animator := player.get_node("Visual") as Node3D
+	var left_shoe := player.get_node("Visual/LeftShoe") as MeshInstance3D
+	player.velocity = Vector3(0.0, 0.0, -5.0)
+	visual_animator.call("_process", 0.10)
+	if is_equal_approx(left_shoe.position.z, -0.065):
+		_fail("The character's left shoe did not follow the walking gait.")
+		return
+	player.velocity = Vector3.ZERO
+	visual_animator.call("_process", 0.10)
+	if not is_equal_approx(left_shoe.position.z, -0.065):
+		_fail("The character's left shoe did not return to its idle position.")
 		return
 	if player.get_node_or_null("CameraPivot/SpringArm3D/Camera3D") == null:
 		_fail("The third-person follow camera is missing.")
