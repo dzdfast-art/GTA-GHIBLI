@@ -120,9 +120,9 @@ jobs:
             godot --headless --path . --check-only --script "$script"
           done
 
+      - name: Run main scene smoke test with clean teardown
+        run: bash tools/run_main_scene_smoke.sh
+
       - name: Run all root GDScript regressions with strict log checks
         shell: bash
         run: bash tools/run_root_regressions.sh
-
-      - name: Run main scene smoke test with clean teardown
-        run: bash tools/run_main_scene_smoke.sh
