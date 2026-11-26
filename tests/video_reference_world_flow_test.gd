@@ -85,6 +85,13 @@ func _run_test() -> void:
 			if roof_mesh == null or roof_mesh.mesh == null:
 				_fail("The sloped roof component %s is missing from %s." % [roof_part, house_name])
 				return
+		for roof_side in ["RoofSlope_Front", "RoofSlope_Rear"]:
+			var slope := house.get_node_or_null(roof_side) as MeshInstance3D
+			var tile_batch := slope.get_node_or_null("RoofTileCourses") as MultiMeshInstance3D if slope != null else null
+			if tile_batch == null or tile_batch.multimesh == null \
+					or tile_batch.multimesh.instance_count != 78:
+				_fail("The roof tile batch is missing or incomplete on %s/%s." % [house_name, roof_side])
+				return
 
 	var detailed_tree := village.get_node_or_null("WillowTree_00") as Node3D
 	if detailed_tree == null:
