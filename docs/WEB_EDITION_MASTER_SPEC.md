@@ -349,3 +349,14 @@ Required Web CI coverage:
 
 A Chromium test that removes `window.indexedDB` is a controlled API-unavailable simulation. It does not establish behavior for every private-browsing mode, storage quota exhaustion, enterprise browser policy, browser shutdown/reopen, Firefox or Safari. Those cases remain separate acceptance gates until tested.
 
+## Original campaign implementation slice — Missions 001 and 002
+
+The opening campaign must remain original and provisional until the maintainer approves the full story outline. The first two playable mission slices establish this testable progression contract:
+
+- **Mission 001 — رسالة عند المرسى:** speak to Claire Bennett, meet Nora Blake at the lighthouse, receive $250.
+- **Mission 002 — إشعار السوق:** after Mission 001, speak to Nora again, inspect the physical Harbor Market noticeboard, return to Nora, receive $300.
+- The mission state machine uses stages 0–5, with explicit step-completed and mission-completed signals. Objective progress, prerequisite completion, reward settlement, mission GPS targets and save restoration must remain synchronized.
+- The market noticeboard must be a real in-world interactable, not only a HUD label or map marker. Its point of interest must be reachable by the road graph.
+- Both mission rewards must be idempotent. A repeated interaction after a mission is complete must never pay the same reward twice.
+- Save and restore must preserve the active stage and wallet, including stage 3/4 of Mission 002. Legacy stage values must be clamped only to the expanded valid range, not silently collapsed to Mission 001.
+- The current dialogue remains text-only and the story remains a provisional original proposal. Expressive Arabic voice performance, fail/retry branches, cinematic presentation and the full campaign remain separate requirements and must not be marked complete.

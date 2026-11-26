@@ -16,6 +16,7 @@ Add one row for every externally sourced, commissioned, generated, or contributo
 
 | Asset / file path | Type | Creator / source | Creation or acquisition date | Licence / written permission | Evidence link or record | Release cleared? |
 |---|---|---|---|---|---|---|
+| `web-edition/scripts/world/world_builder.gd` — Harbor Market noticeboard | Procedural 3D scene geometry and text labels | Original in-repository Godot code; no external model or texture imported | 2026-11-26 | Original project source; maintainer review required before release | Mission 002 implementation commit and source script | No |
 | Example: `assets/characters/hero.glb` | 3D model | Project creator / named artist | YYYY-MM-DD | Original / contract / licence name | Commit, source file, contract reference | No |
 
 ## Evidence to preserve

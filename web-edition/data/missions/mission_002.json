@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "id": "mission_002",
+  "title": "إشعار السوق",
+  "status": "implemented_first_playable_pass",
+  "story_status": "provisional_original_story",
+  "prerequisites": ["mission_001"],
+  "starting_condition": "Complete Mission 001, then speak to Nora Blake again near the Marsa Al-Noor lighthouse.",
+  "stages": [
+    {
+      "id": "start_at_nora",
+      "interaction": "nora",
+      "objective": "Speak to Nora after Mission 001 to start the next chapter."
+    },
+    {
+      "id": "inspect_noticeboard",
+      "interaction": "market_notice",
+      "objective": "Inspect the Harbor Market shipping noticeboard."
+    },
+    {
+      "id": "return_to_nora",
+      "interaction": "nora",
+      "objective": "Return to Nora near the lighthouse and report what the notice says."
+    },
+    {
+      "id": "complete",
+      "objective": "Receive the $300 reward and continue exploring."
+    }
+  ],
+  "reward": {
+    "currency": 300,
+    "respect": 2
+  },
+  "notes": [
+    "This is a provisional original story proposal and not a final approved chapter outline.",
+    "Mission progression, objective tracking, prerequisite state, reward settlement, GPS target selection and local save restoration are implemented for this first playable pass.",
+    "Dialogue is currently text-only. No Arabic voice performance is claimed."
+  ]
+}
