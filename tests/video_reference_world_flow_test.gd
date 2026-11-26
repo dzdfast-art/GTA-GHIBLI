@@ -84,6 +84,12 @@ func _run_test() -> void:
 		_fail("The reference street is not using the upgraded layered tree assets.")
 		return
 
+	var roadside_grass := village.get_node_or_null("RoadsideGrass_East") as MultiMeshInstance3D
+	if roadside_grass == null or roadside_grass.multimesh == null \
+			or roadside_grass.multimesh.instance_count != 84:
+		_fail("The instanced roadside ground-cover detail is missing or incomplete.")
+		return
+
 	var controls := game.get_node_or_null("MobileControls")
 	if controls == null or controls.get_node_or_null("HUD/Minimap") == null \
 			or controls.get_node_or_null("HUD/StatusPanel") == null:
