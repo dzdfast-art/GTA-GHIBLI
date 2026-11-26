@@ -12,6 +12,10 @@ func _ready()->void:
 	unit_size=7.0
 	_timer=_rng.randf_range(2,8)
 func _exit_tree() -> void:
+	_stop_voice()
+
+
+func _stop_voice() -> void:
 	stop()
 	stream = null
 
