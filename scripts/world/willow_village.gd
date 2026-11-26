@@ -4,12 +4,20 @@ extends Node3D
 ## All geometry is procedural and intentionally lightweight for mobile.
 
 const GROUND_Y := 0.03
+const FOLIAGE_VISUAL_BUILDER = preload("res://scripts/world/foliage_visual_builder.gd")
+const VILLAGE_LIFE_BUILDER = preload("res://scripts/world/village_life_builder.gd")
+const ROOF_TILE_TEXTURE: Texture2D = preload("res://assets/environment/materials/willow_reference_terracotta.svg")
+const STUCCO_TEXTURE: Texture2D = preload("res://assets/environment/materials/willow_reference_stucco.svg")
+const ASPHALT_TEXTURE: Texture2D = preload("res://assets/environment/materials/willow_reference_asphalt.svg")
+const SIDEWALK_TEXTURE: Texture2D = preload("res://assets/environment/materials/willow_reference_sidewalk.svg")
 
 
 func _ready() -> void:
 	_build_mira()
+	_build_reference_mission_marker()
 	_build_square()
 	_build_paths()
+	_build_reference_street()
 	_build_houses()
 	_build_house_portal()
 	_build_garden()
@@ -19,6 +27,8 @@ func _ready() -> void:
 	_build_interactive_objects()
 	_build_consumable_shop()
 	_build_flora_details()
+	_build_ground_cover_details()
+	VILLAGE_LIFE_BUILDER.build(self)
 
 
 func _build_mira() -> void:
@@ -71,14 +81,75 @@ func _add_house(house_name: String, origin: Vector3,
 	var walls := BoxMesh.new()
 	walls.size = Vector3(5.0, 3.0, 4.5)
 	_add_mesh(house, "Walls", walls, Vector3(0.0, 1.5, 0.0), wall_color)
+	var wall_surface := _material(wall_color)
+	wall_surface.albedo_texture = STUCCO_TEXTURE
+	wall_surface.uv1_scale = Vector3(2.4, 2.4, 2.4)
+	wall_surface.roughness = 0.98
+	(house.get_node("Walls") as MeshInstance3D).material_override = wall_surface
 
 	var wall_shape := BoxShape3D.new()
 	wall_shape.size = walls.size
 	_add_collision(house, wall_shape, Vector3(0.0, 1.5, 0.0))
 
+	# A shallow roof deck supports two sloped planes instead of the old flat box.
 	var roof := BoxMesh.new()
-	roof.size = Vector3(5.8, 0.65, 5.2)
-	_add_mesh(house, "Roof", roof, Vector3(0.0, 3.25, 0.0), roof_color)
+	roof.size = Vector3(5.8, 0.14, 4.6)
+	_add_mesh(house, "Roof", roof, Vector3(0.0, 3.05, 0.0), roof_color)
+	var roof_slope_mesh := BoxMesh.new()
+	roof_slope_mesh.size = Vector3(5.95, 0.16, 2.12)
+	for roof_side in [-1.0, 1.0]:
+		var roof_slope := MeshInstance3D.new()
+		roof_slope.name = "RoofSlope_%s" % ("Front" if roof_side > 0.0 else "Rear")
+		roof_slope.mesh = roof_slope_mesh
+		roof_slope.position = Vector3(0.0, 3.35, roof_side * 1.06)
+		roof_slope.rotation_degrees.x = 18.4 * roof_side
+		var roof_surface := StandardMaterial3D.new()
+		roof_surface.albedo_color = roof_color.darkened(0.04)
+		roof_surface.albedo_texture = ROOF_TILE_TEXTURE
+		roof_surface.uv1_scale = Vector3(2.8, 2.8, 2.8)
+		roof_surface.roughness = 0.97
+		roof_slope.material_override = roof_surface
+		house.add_child(roof_slope)
+		var tile_mesh := BoxMesh.new()
+		tile_mesh.size = Vector3(0.42, 0.035, 0.31)
+		var tile_material := StandardMaterial3D.new()
+		tile_material.albedo_color = roof_color.lightened(0.08)
+		tile_material.vertex_color_use_as_albedo = true
+		tile_material.roughness = 0.96
+		tile_mesh.material = tile_material
+		var roof_tiles := MultiMeshInstance3D.new()
+		roof_tiles.name = "RoofTileCourses"
+		var tile_instances := MultiMesh.new()
+		tile_instances.transform_format = MultiMesh.TRANSFORM_3D
+		tile_instances.use_colors = true
+		tile_instances.mesh = tile_mesh
+		tile_instances.instance_count = 78
+		for tile_index in range(tile_instances.instance_count):
+			var tile_row := int(tile_index / 13)
+			var tile_column := tile_index % 13
+			var tile_x := -2.58 + float(tile_column) * 0.43 + (0.12 if tile_row % 2 == 1 else 0.0)
+			var tile_z: float = float(roof_side) * (-0.90 + float(tile_row) * 0.34)
+			var tile_basis := Basis(Vector3.UP, 0.0)
+			tile_instances.set_instance_transform(tile_index,
+				Transform3D(tile_basis, Vector3(tile_x, 0.10, tile_z)))
+			var shade := 0.90 + fposmod(float(tile_index) * 0.173, 1.0) * 0.12
+			tile_instances.set_instance_color(tile_index,
+				Color(shade, shade * 0.98, shade * 0.94, 1.0))
+		roof_tiles.multimesh = tile_instances
+		roof_slope.add_child(roof_tiles)
+	var roof_ridge := BoxMesh.new()
+	roof_ridge.size = Vector3(5.98, 0.12, 0.18)
+	_add_mesh(house, "RoofRidge", roof_ridge, Vector3(0.0, 3.73, 0.0),
+		roof_color.darkened(0.18))
+
+	# Close the two triangular gable ends so the roof does not look hollow.
+	for gable_front in [false, true]:
+		var gable := MeshInstance3D.new()
+		gable.name = "FrontGable" if gable_front else "RearGable"
+		gable.mesh = _build_house_gable_mesh(gable_front)
+		gable.position = Vector3(0.0, 3.0, 2.255 if gable_front else -2.255)
+		gable.material_override = _material(wall_color.darkened(0.025))
+		house.add_child(gable)
 
 	var door := BoxMesh.new()
 	door.size = Vector3(0.95, 1.9, 0.10)
@@ -97,10 +168,14 @@ func _add_house(house_name: String, origin: Vector3,
 		Color(0.43, 0.40, 0.34))
 	var foundation_node := house.get_node("StoneFoundation") as MeshInstance3D
 	(foundation_node.mesh as BoxMesh).size = Vector3(5.18, 0.36, 4.68)
-	_add_mesh(house, "RoofFrontFascia", BoxMesh.new(), Vector3(0.0, 2.94, 2.58),
+	_add_mesh(house, "RoofFrontFascia", BoxMesh.new(), Vector3(0.0, 3.02, 2.16),
 		Color(0.34, 0.25, 0.19))
 	var fascia_node := house.get_node("RoofFrontFascia") as MeshInstance3D
-	(fascia_node.mesh as BoxMesh).size = Vector3(5.92, 0.16, 0.16)
+	(fascia_node.mesh as BoxMesh).size = Vector3(5.96, 0.16, 0.16)
+	_add_mesh(house, "RoofRearFascia", BoxMesh.new(), Vector3(0.0, 3.02, -2.16),
+		Color(0.34, 0.25, 0.19))
+	var rear_fascia := house.get_node("RoofRearFascia") as MeshInstance3D
+	(rear_fascia.mesh as BoxMesh).size = Vector3(5.96, 0.16, 0.16)
 	_add_mesh(house, "DoorFrame", BoxMesh.new(), Vector3(0.0, 0.98, 2.37),
 		Color(0.66, 0.53, 0.37))
 	var door_frame := house.get_node("DoorFrame") as MeshInstance3D
@@ -116,6 +191,75 @@ func _add_house(house_name: String, origin: Vector3,
 		crossbar.size = Vector3(0.06, 0.76, 0.06)
 		_add_mesh(house, "WindowMullion_%s" % str(window_x), crossbar,
 			Vector3(window_x, 1.9, 2.46), Color(0.78, 0.69, 0.52))
+		var sill := BoxMesh.new()
+		sill.size = Vector3(1.12, 0.10, 0.20)
+		_add_mesh(house, "WindowSill_%s" % str(window_x), sill,
+			Vector3(window_x, 1.40, 2.42), Color(0.79, 0.73, 0.62))
+		var shutter := BoxMesh.new()
+		shutter.size = Vector3(0.16, 0.86, 0.12)
+		for shutter_side in [-1.0, 1.0]:
+			_add_mesh(house, "WindowShutter_%s_%s" % [str(window_x), str(shutter_side)],
+				shutter, Vector3(window_x + shutter_side * 0.59, 1.9, 2.42),
+				roof_color.darkened(0.10))
+
+	# A small porch, steps, chimney and drainpipe break up the flat box-house silhouette.
+	var porch_roof := BoxMesh.new()
+	porch_roof.size = Vector3(2.25, 0.14, 1.05)
+	_add_mesh(house, "PorchCanopy", porch_roof, Vector3(0.0, 2.43, 2.78),
+		roof_color.darkened(0.12))
+	var porch_column := CylinderMesh.new()
+	porch_column.top_radius = 0.065
+	porch_column.bottom_radius = 0.085
+	porch_column.height = 2.25
+	for column_x in [-0.96, 0.96]:
+		_add_mesh(house, "PorchColumn_%s" % str(column_x), porch_column,
+			Vector3(column_x, 1.16, 3.16), Color(0.83, 0.77, 0.65))
+	var upper_step := BoxMesh.new()
+	upper_step.size = Vector3(1.55, 0.16, 0.48)
+	_add_mesh(house, "FrontStepUpper", upper_step, Vector3(0.0, 0.11, 2.73),
+		Color(0.59, 0.56, 0.49))
+	var lower_step := BoxMesh.new()
+	lower_step.size = Vector3(1.82, 0.12, 0.58)
+	_add_mesh(house, "FrontStepLower", lower_step, Vector3(0.0, 0.06, 3.08),
+		Color(0.67, 0.63, 0.55))
+	var chimney := BoxMesh.new()
+	chimney.size = Vector3(0.55, 1.25, 0.58)
+	_add_mesh(house, "Chimney", chimney, Vector3(1.62, 3.92, -1.20),
+		roof_color.darkened(0.24))
+	var chimney_cap := BoxMesh.new()
+	chimney_cap.size = Vector3(0.72, 0.12, 0.72)
+	_add_mesh(house, "ChimneyCap", chimney_cap, Vector3(1.62, 4.60, -1.20),
+		Color(0.35, 0.28, 0.23))
+	var drainpipe := CylinderMesh.new()
+	drainpipe.top_radius = 0.045
+	drainpipe.bottom_radius = 0.045
+	drainpipe.height = 2.75
+	_add_mesh(house, "RainDownpipe", drainpipe, Vector3(-2.39, 1.43, 2.12),
+		Color(0.34, 0.38, 0.38))
+
+
+
+func _build_house_gable_mesh(front: bool) -> ArrayMesh:
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var vertices := PackedVector3Array()
+	if front:
+		vertices = PackedVector3Array([
+			Vector3(-2.5, 0.0, 0.0),
+			Vector3(2.5, 0.0, 0.0),
+			Vector3(0.0, 0.70, 0.0)
+		])
+		surface.set_normal(Vector3.BACK)
+	else:
+		vertices = PackedVector3Array([
+			Vector3(2.5, 0.0, 0.0),
+			Vector3(-2.5, 0.0, 0.0),
+			Vector3(0.0, 0.70, 0.0)
+		])
+		surface.set_normal(Vector3.FORWARD)
+	for vertex in vertices:
+		surface.add_vertex(vertex)
+	return surface.commit()
 
 
 func _build_house_portal() -> void:
@@ -173,27 +317,8 @@ func _add_tree(tree_name: String, origin: Vector3, scale_factor: float) -> void:
 	tree.position = origin
 	tree.scale = Vector3.ONE * scale_factor
 	add_child(tree)
-
-	var trunk := CylinderMesh.new()
-	trunk.top_radius = 0.24
-	trunk.bottom_radius = 0.38
-	trunk.height = 2.8
-	_add_mesh(tree, "Trunk", trunk, Vector3(0.0, 1.4, 0.0),
-		Color(0.34, 0.23, 0.15))
-
-	var crown := SphereMesh.new()
-	crown.radius = 1.65
-	crown.height = 3.0
-	_add_mesh(tree, "Canopy", crown, Vector3(0.0, 3.2, 0.0),
-		Color(0.30, 0.52, 0.29))
-	var canopy_colors := [Color(0.34, 0.58, 0.32), Color(0.26, 0.47, 0.28)]
-	for index in range(2):
-		var cluster := SphereMesh.new()
-		cluster.radius = 1.05
-		cluster.height = 1.85
-		var offset := Vector3(-0.82 if index == 0 else 0.82, 3.05, 0.18)
-		_add_mesh(tree, "CanopyCluster_%d" % index, cluster, offset,
-			canopy_colors[index])
+	var variant := int(absf(origin.x * 3.0 + origin.z)) % 9
+	FOLIAGE_VISUAL_BUILDER.build_tree_geometry(tree, variant)
 
 
 func _build_well() -> void:
@@ -321,9 +446,11 @@ func _add_collision(parent: Node3D, shape: Shape3D, position: Vector3) -> void:
 	parent.add_child(collision)
 
 
-func _material(color: Color) -> StandardMaterial3D:
+func _material(color: Color, texture: Texture2D = null) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
+	if texture != null:
+		material.albedo_texture = texture
 	material.roughness = 0.92
 	return material
 
@@ -335,3 +462,155 @@ func _build_consumable_shop() -> void:
 	shop.position = Vector3(-11.0, 0.0, -5.2)
 	shop.set_script(shop_script)
 	add_child(shop)
+
+
+func _build_reference_street() -> void:
+	# A paved residential street and raised sidewalks frame the initial spawn,
+	# matching the road/sidewalk composition in the supplied mobile reference.
+	var road_mesh := BoxMesh.new()
+	road_mesh.size = Vector3(10.4, 0.06, 58.0)
+	var road := MeshInstance3D.new()
+	road.name = "ReferenceResidentialRoad"
+	road.mesh = road_mesh
+	road.position = Vector3(0.0, 0.025, -15.0)
+	var asphalt := _material(Color(0.92, 0.94, 0.95), ASPHALT_TEXTURE)
+	asphalt.uv1_scale = Vector3(4.0, 4.0, 4.0)
+	road.material_override = asphalt
+	add_child(road)
+
+	for side in [-1.0, 1.0]:
+		var sidewalk_mesh := BoxMesh.new()
+		sidewalk_mesh.size = Vector3(3.0, 0.08, 58.0)
+		var sidewalk := MeshInstance3D.new()
+		sidewalk.name = "ResidentialSidewalk_%s" % ("West" if side < 0.0 else "East")
+		sidewalk.mesh = sidewalk_mesh
+		sidewalk.position = Vector3(side * 6.9, 0.045, -15.0)
+		var pavement := _material(Color(0.83, 0.84, 0.80), SIDEWALK_TEXTURE)
+		pavement.uv1_scale = Vector3(3.0, 3.0, 3.0)
+		sidewalk.material_override = pavement
+		add_child(sidewalk)
+
+		var curb_mesh := BoxMesh.new()
+		curb_mesh.size = Vector3(0.22, 0.17, 58.0)
+		var curb := MeshInstance3D.new()
+		curb.name = "ResidentialCurb_%s" % ("West" if side < 0.0 else "East")
+		curb.mesh = curb_mesh
+		curb.position = Vector3(side * 5.22, 0.12, -15.0)
+		curb.material_override = _material(Color(0.55, 0.57, 0.55))
+		add_child(curb)
+
+	# Broken center line, lane edge guidance and a pedestrian crossing.
+	for index in range(9):
+		var dash := BoxMesh.new()
+		dash.size = Vector3(0.13, 0.012, 2.4)
+		_add_mesh(self, "RoadCenterDash_%02d" % index, dash,
+			Vector3(0.0, 0.064, -41.0 + float(index) * 6.2),
+			Color(0.91, 0.89, 0.77))
+	for x_index in range(9):
+		var stripe := BoxMesh.new()
+		stripe.size = Vector3(0.58, 0.014, 2.8)
+		_add_mesh(self, "PedestrianCrossing_%02d" % x_index, stripe,
+			Vector3(-4.0 + float(x_index) * 1.0, 0.068, -5.5),
+			Color(0.92, 0.91, 0.83))
+
+	# Expansion joints and storm drains add scale cues to the sidewalk and curb.
+	var sidewalk_joint := BoxMesh.new()
+	sidewalk_joint.size = Vector3(2.88, 0.012, 0.035)
+	var drain_cover := BoxMesh.new()
+	drain_cover.size = Vector3(0.52, 0.018, 0.72)
+	for side in [-1.0, 1.0]:
+		for joint_index in range(14):
+			_add_mesh(self, "SidewalkJoint_%s_%02d" % [str(side), joint_index],
+				sidewalk_joint, Vector3(side * 6.9, 0.091,
+					-42.0 + float(joint_index) * 4.1), Color(0.59, 0.60, 0.57))
+		for drain_index in range(3):
+			var drain_z := -36.0 + float(drain_index) * 18.0
+			_add_mesh(self, "StormDrain_%s_%d" % [str(side), drain_index],
+				drain_cover, Vector3(side * 5.04, 0.091, drain_z),
+				Color(0.19, 0.22, 0.22))
+			for grate_index in range(5):
+				var grate_bar := BoxMesh.new()
+				grate_bar.size = Vector3(0.42, 0.022, 0.035)
+				_add_mesh(self, "StormDrainBar_%s_%d_%d" % [str(side), drain_index, grate_index],
+					grate_bar, Vector3(side * 5.04, 0.105,
+						drain_z - 0.27 + float(grate_index) * 0.135),
+					Color(0.48, 0.52, 0.52))
+
+	# Trees and street lamps give the first camera view a recognizable sidewalk edge.
+	for index in range(3):
+		var z_position := -34.0 + float(index) * 17.0
+		for side in [-1.0, 1.0]:
+			var tree_name := "ResidentialTree_%02d_%s" % [index, "W" if side < 0.0 else "E"]
+			_add_tree(tree_name, Vector3(side * 8.9, 0.0, z_position),
+				0.88 + float(index % 2) * 0.06)
+
+	for index in range(3):
+		var z_position := -30.0 + float(index) * 18.0
+		for side in [-1.0, 1.0]:
+			var lamp := Node3D.new()
+			lamp.name = "ResidentialStreetLamp_%02d_%s" % [index, "W" if side < 0.0 else "E"]
+			lamp.position = Vector3(side * 8.0, 0.0, z_position)
+			add_child(lamp)
+			var pole := CylinderMesh.new()
+			pole.top_radius = 0.055
+			pole.bottom_radius = 0.085
+			pole.height = 4.2
+			_add_mesh(lamp, "Pole", pole, Vector3(0.0, 2.1, 0.0),
+				Color(0.18, 0.20, 0.19))
+			var arm := BoxMesh.new()
+			arm.size = Vector3(0.8, 0.08, 0.08)
+			_add_mesh(lamp, "Arm", arm, Vector3(-side * 0.32, 4.12, 0.0),
+				Color(0.18, 0.20, 0.19))
+			var fixture := SphereMesh.new()
+			fixture.radius = 0.16
+			fixture.height = 0.22
+			_add_mesh(lamp, "LampFixture", fixture,
+				Vector3(-side * 0.65, 4.02, 0.0), Color(0.96, 0.83, 0.55))
+
+
+func _build_reference_mission_marker() -> void:
+	var marker_script = preload("res://scripts/world/reference_mission_marker.gd")
+	var marker := Node3D.new()
+	marker.name = "ReferenceMissionMarker"
+	marker.position = Vector3(5.6, 0.04, -8.0)
+	marker.set_script(marker_script)
+	add_child(marker)
+
+
+
+func _build_ground_cover_details() -> void:
+	# Instanced roadside grass breaks up the hard sidewalk/terrain boundary
+	# while keeping draw calls low for Android.
+	var blade_mesh := CylinderMesh.new()
+	blade_mesh.top_radius = 0.006
+	blade_mesh.bottom_radius = 0.034
+	blade_mesh.height = 0.34
+	blade_mesh.radial_segments = 5
+	var grass_material := StandardMaterial3D.new()
+	grass_material.albedo_color = Color(0.72, 0.86, 0.48)
+	grass_material.vertex_color_use_as_albedo = true
+	grass_material.roughness = 1.0
+	blade_mesh.material = grass_material
+
+	for side in [-1.0, 1.0]:
+		var grass := MultiMeshInstance3D.new()
+		grass.name = "RoadsideGrass_%s" % ("West" if side < 0.0 else "East")
+		grass.position = Vector3(side * 8.55, 0.06, -21.0)
+		var instances := MultiMesh.new()
+		instances.transform_format = MultiMesh.TRANSFORM_3D
+		instances.use_colors = true
+		instances.mesh = blade_mesh
+		instances.instance_count = 84
+		for index in range(instances.instance_count):
+			var x_offset := fposmod(float(index) * 0.6180339, 1.0) * 1.15 - 0.575
+			var z_offset := fposmod(float(index) * 0.7548777, 1.0) * 34.0 - 17.0
+			var height_scale := 0.62 + fposmod(float(index) * 0.381966, 1.0) * 0.78
+			var width_scale := 0.72 + fposmod(float(index) * 0.271828, 1.0) * 0.62
+			var yaw := fposmod(float(index) * 2.399963, TAU)
+			var basis := Basis(Vector3.UP, yaw).scaled(Vector3(width_scale, height_scale, width_scale))
+			instances.set_instance_transform(index,
+				Transform3D(basis, Vector3(x_offset, 0.17 * height_scale, z_offset)))
+			var green := 0.78 + fposmod(float(index) * 0.173, 1.0) * 0.22
+			instances.set_instance_color(index, Color(0.55 * green, green, 0.34 * green, 1.0))
+		grass.multimesh = instances
+		add_child(grass)

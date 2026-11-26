@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<title>GTA GHIBLI application icon</title>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#202a32"/><stop offset=".55" stop-color="#10171d"/><stop offset="1" stop-color="#090e12"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f2d68a"/><stop offset=".48" stop-color="#c69a42"/><stop offset="1" stop-color="#8d6425"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6"/></filter>
+</defs>
+<rect width="512" height="512" rx="94" fill="url(#bg)"/>
+<rect x="18" y="18" width="476" height="476" rx="78" fill="none" stroke="#c39a4c" stroke-width="5"/>
+<rect x="32" y="32" width="448" height="448" rx="66" fill="none" stroke="#f1d38a" stroke-opacity=".25" stroke-width="2"/>
+<path d="M256 62l148 85v170l-148 85-148-85V147Z" fill="#0e151a" stroke="url(#gold)" stroke-width="8"/>
+<path d="M256 91l119 69v144l-119 69-119-69V160Z" fill="none" stroke="#c59b4d" stroke-opacity=".25" stroke-width="3"/>
+<text x="256" y="278" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="150" font-weight="900" fill="#05090c" filter="url(#shadow)">G</text>
+<text x="256" y="270" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="150" font-weight="900" fill="url(#gold)" stroke="#6e4b19" stroke-width="2">G</text>
+<path d="M92 341h328v58H92Z" fill="#111a20" stroke="#c59a49" stroke-width="2"/>
+<text x="256" y="379" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="39" font-weight="900" letter-spacing="2" fill="#f0d18a">GTA GHIBLI</text>
+<text x="256" y="438" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" letter-spacing="5" fill="#b5c0c3">OPEN WORLD</text>
+</svg>

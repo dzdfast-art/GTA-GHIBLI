@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 const JOYSTICK_SCRIPT = preload("res://scripts/ui/virtual_joystick.gd")
+const MINIMAP_SCRIPT = preload("res://scripts/ui/minimap_widget.gd")
 const JOYSTICK_SIZE := Vector2(176.0, 176.0)
 
 var _active_actions: Array[StringName] = []
@@ -16,6 +17,11 @@ var _is_car_mode := false
 var _is_bicycle_mode := false
 var _bike_steering_mode := "analog"
 var _flick_touch_index := -1
+var _time_label: Label
+var _money_label: Label
+var _health_bar: ProgressBar
+var _health_value_label: Label
+var _weapon_label: Label
 
 
 func _ready() -> void:
@@ -26,6 +32,7 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
+	_update_status_hud()
 	if _context_button == null or _is_car_mode or _is_bicycle_mode:
 		return
 	var player := get_tree().get_first_node_in_group("player") as Node3D
@@ -93,9 +100,17 @@ func _build_hud() -> void:
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
 
+	var minimap := MINIMAP_SCRIPT.new() as Control
+	minimap.name = "Minimap"
+	minimap.position = Vector2(18.0, 18.0)
+	minimap.custom_minimum_size = Vector2(168.0, 126.0)
+	root.add_child(minimap)
+	_build_status_hud(root)
+
 	_mode_label = Label.new()
+	_mode_label.name = "PlayerModeLabel"
 	_mode_label.text = "ON FOOT"
-	_mode_label.position = Vector2(22.0, 18.0)
+	_mode_label.position = Vector2(22.0, 150.0)
 	_mode_label.add_theme_font_size_override("font_size", 15)
 	_mode_label.add_theme_color_override("font_color", Color(1.0, 0.96, 0.82, 0.92))
 	root.add_child(_mode_label)
@@ -166,6 +181,100 @@ func _build_hud() -> void:
 	root.add_child(_steer_right_button)
 
 	_refresh_controls()
+
+
+func _build_status_hud(root: Control) -> void:
+	var panel := PanelContainer.new()
+	panel.name = "StatusPanel"
+	panel.anchor_left = 1.0
+	panel.anchor_right = 1.0
+	panel.offset_left = -246.0
+	panel.offset_top = 16.0
+	panel.offset_right = -16.0
+	panel.offset_bottom = 142.0
+	panel.custom_minimum_size = Vector2(230.0, 126.0)
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.018, 0.025, 0.032, 0.82)
+	panel_style.border_color = Color(0.78, 0.66, 0.36, 0.9)
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(7)
+	panel_style.content_margin_left = 10.0
+	panel_style.content_margin_right = 10.0
+	panel_style.content_margin_top = 7.0
+	panel_style.content_margin_bottom = 7.0
+	panel.add_theme_stylebox_override("panel", panel_style)
+	root.add_child(panel)
+
+	var stack := VBoxContainer.new()
+	stack.name = "StatusStack"
+	stack.add_theme_constant_override("separation", 4)
+	panel.add_child(stack)
+
+	var top_row := HBoxContainer.new()
+	top_row.name = "TimeAndMoney"
+	stack.add_child(top_row)
+	_time_label = _make_status_label("05:00", 19, Color(0.98, 0.94, 0.81, 1.0))
+	_time_label.name = "TimeLabel"
+	top_row.add_child(_time_label)
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top_row.add_child(spacer)
+	_money_label = _make_status_label("$250", 19, Color(0.70, 0.91, 0.59, 1.0))
+	_money_label.name = "MoneyLabel"
+	top_row.add_child(_money_label)
+
+	var health_row := HBoxContainer.new()
+	health_row.name = "HealthRow"
+	stack.add_child(health_row)
+	var health_caption := _make_status_label("HP", 13, Color(0.96, 0.92, 0.84, 1.0))
+	health_row.add_child(health_caption)
+	_health_bar = ProgressBar.new()
+	_health_bar.name = "HealthBar"
+	_health_bar.min_value = 0.0
+	_health_bar.max_value = 100.0
+	_health_bar.value = 100.0
+	_health_bar.show_percentage = false
+	_health_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_health_bar.custom_minimum_size = Vector2(110.0, 16.0)
+	health_row.add_child(_health_bar)
+	_health_value_label = _make_status_label("100", 13, Color(0.97, 0.91, 0.80, 1.0))
+	_health_value_label.name = "HealthValue"
+	health_row.add_child(_health_value_label)
+
+	_weapon_label = _make_status_label("✊  FIST", 14, Color(0.91, 0.89, 0.80, 1.0))
+	_weapon_label.name = "WeaponLabel"
+	stack.add_child(_weapon_label)
+
+
+func _make_status_label(caption: String, font_size: int, tint: Color) -> Label:
+	var label := Label.new()
+	label.text = caption
+	label.add_theme_font_size_override("font_size", font_size)
+	label.add_theme_color_override("font_color", tint)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return label
+
+
+func _update_status_hud() -> void:
+	if _time_label == null:
+		return
+	var clock := get_tree().get_first_node_in_group("world_clock")
+	if clock != null and clock.has_method("get_clock_text"):
+		_time_label.text = str(clock.call("get_clock_text"))
+	var player := get_tree().get_first_node_in_group("player") as Node3D
+	if player == null:
+		return
+	var wallet := player.get_node_or_null("PlayerWallet")
+	if wallet != null and wallet.has_method("get_balance"):
+		_money_label.text = "$%d" % int(wallet.call("get_balance"))
+	var vitals := player.get_node_or_null("PlayerVitals")
+	if vitals != null and vitals.has_method("get_health") and vitals.has_method("get_max_health"):
+		var maximum := maxf(1.0, float(vitals.call("get_max_health")))
+		var health := clampf(float(vitals.call("get_health")), 0.0, maximum)
+		_health_bar.max_value = maximum
+		_health_bar.value = health
+		_health_value_label.text = "%d" % roundi(health)
 
 
 func _set_bottom_right(button: Control, left: float, top: float,

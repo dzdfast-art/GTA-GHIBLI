@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="512" viewBox="0 0 1024 512">
+<title>GTA GHIBLI market awning woven canvas</title>
+<desc>Original weathered striped market cloth with stitched hems and subtle woven fibre texture.</desc>
+<defs>
+  <pattern id="stripes" width="256" height="512" patternUnits="userSpaceOnUse">
+    <rect width="256" height="512" fill="#e8dec7"/>
+    <rect x="0" width="68" height="512" fill="#a94e3e"/>
+    <rect x="68" width="30" height="512" fill="#d9c9a9"/>
+    <rect x="98" width="60" height="512" fill="#6c8050"/>
+    <rect x="158" width="30" height="512" fill="#e7ddc6"/>
+    <rect x="188" width="68" height="512" fill="#b45c43"/>
+  </pattern>
+  <filter id="weave">
+    <feTurbulence type="fractalNoise" baseFrequency=".72 .48" numOctaves="2" seed="41"/>
+    <feColorMatrix values=".22 0 0 0 .35 0 .20 0 0 .30 0 0 .16 0 .22 0 0 0 .14 0"/>
+  </filter>
+</defs>
+<rect width="1024" height="512" fill="url(#stripes)"/>
+<path d="M0 28H1024 M0 482H1024" stroke="#f7edda" stroke-width="9" opacity=".62"/>
+<path d="M0 38H1024 M0 472H1024" stroke="#6b4a34" stroke-width="2" stroke-dasharray="7 8" opacity=".60"/>
+<g fill="none" stroke="#fff4df" stroke-width="2" opacity=".32">
+  <path d="M18 78V438 M274 78V438 M530 78V438 M786 78V438"/>
+  <path d="M36 122H242 M292 122H498 M548 122H754 M804 122H1010"/>
+</g>
+<rect width="1024" height="512" filter="url(#weave)" opacity=".48"/>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs>
+ <linearGradient id="base" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#456f35"/><stop offset=".48" stop-color="#79a94b"/><stop offset="1" stop-color="#315b2e"/></linearGradient>
+ <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c2d778"/><stop offset=".48" stop-color="#77a94a"/><stop offset="1" stop-color="#3c7337"/></linearGradient>
+ <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="2" seed="8"/><feColorMatrix values="0 0 0 0 0.3 0 0 0 0 0.45 0 0 0 0 0.2 0 0 0 .13 0"/></filter>
+</defs>
+<rect width="512" height="512" fill="url(#base)"/>
+<g fill="url(#leaf)" stroke="#345c2d" stroke-width="2" opacity=".96">
+ <path d="M30 72 Q52 20 105 44 Q96 88 30 72Z"/><path d="M112 36 Q153 8 178 54 Q145 81 112 36Z"/>
+ <path d="M198 58 Q232 16 271 52 Q250 90 198 58Z"/><path d="M300 34 Q349 12 367 57 Q333 82 300 34Z"/>
+ <path d="M400 58 Q445 18 482 62 Q454 98 400 58Z"/><path d="M54 154 Q84 104 128 139 Q107 182 54 154Z"/>
+ <path d="M150 132 Q191 94 221 139 Q194 177 150 132Z"/><path d="M250 147 Q286 99 327 137 Q307 180 250 147Z"/>
+ <path d="M354 135 Q393 91 431 132 Q407 177 354 135Z"/><path d="M438 176 Q470 132 504 171 Q482 207 438 176Z"/>
+ <path d="M18 246 Q54 194 92 230 Q68 276 18 246Z"/><path d="M112 230 Q154 184 188 229 Q159 268 112 230Z"/>
+ <path d="M211 236 Q246 187 288 226 Q267 271 211 236Z"/><path d="M315 231 Q357 184 393 225 Q368 271 315 231Z"/>
+ <path d="M414 250 Q450 202 492 240 Q469 282 414 250Z"/><path d="M43 344 Q81 296 118 337 Q89 378 43 344Z"/>
+ <path d="M145 337 Q183 290 218 333 Q194 375 145 337Z"/><path d="M249 345 Q286 294 325 336 Q301 382 249 345Z"/>
+ <path d="M355 340 Q393 294 431 337 Q407 380 355 340Z"/><path d="M74 437 Q108 392 151 430 Q126 474 74 437Z"/>
+ <path d="M184 433 Q223 389 258 432 Q231 474 184 433Z"/><path d="M291 434 Q328 389 367 431 Q340 474 291 434Z"/>
+ <path d="M394 438 Q431 392 475 432 Q447 477 394 438Z"/>
+</g>
+<g stroke="#d0e18b" stroke-width="2" opacity=".5" fill="none">
+ <path d="M33 68 L88 50 M116 34 L165 53 M202 58 L260 56 M304 34 L356 57 M404 58 L472 63"/>
+ <path d="M58 153 L115 145 M154 132 L210 139 M254 147 L314 143 M358 135 L420 137"/>
+ <path d="M23 245 L81 235 M117 230 L180 234 M216 236 L280 232 M320 231 L385 230"/>
+ <path d="M47 343 L110 341 M149 337 L210 340 M253 345 L316 342 M359 340 L424 342"/>
+</g>
+<rect width="512" height="512" filter="url(#grain)" opacity=".55"/>
+</svg>

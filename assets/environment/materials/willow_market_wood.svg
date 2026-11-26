@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<title>GTA GHIBLI market timber surface</title>
+<desc>Original warm aged timber boards with grain, small knots, edge wear and subtle nail heads.</desc>
+<defs>
+  <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+    <stop stop-color="#a7784b"/><stop offset=".35" stop-color="#8d603a"/><stop offset="1" stop-color="#68452d"/>
+  </linearGradient>
+  <filter id="grain">
+    <feTurbulence type="fractalNoise" baseFrequency=".018 .42" numOctaves="3" seed="29"/>
+    <feColorMatrix values=".30 0 0 0 .25 0 .24 0 0 .17 0 0 .16 0 .10 0 0 0 .18 0"/>
+  </filter>
+  <pattern id="boards" width="1024" height="256" patternUnits="userSpaceOnUse">
+    <rect width="1024" height="256" fill="#69472e"/>
+    <rect x="0" y="4" width="1024" height="119" fill="url(#wood)" stroke="#4f3525" stroke-width="7"/>
+    <rect x="0" y="132" width="1024" height="119" fill="url(#wood)" stroke="#4f3525" stroke-width="7"/>
+    <path d="M0 18Q190 4 360 20T720 15T1024 22 M0 105Q210 88 410 108T790 100T1024 106 M0 145Q190 130 360 150T720 142T1024 149 M0 231Q240 215 450 234T820 225T1024 232"
+      fill="none" stroke="#d5a36c" stroke-width="4" opacity=".28"/>
+    <path d="M0 58Q210 42 410 61T760 55T1024 61 M0 188Q180 172 390 191T780 184T1024 191"
+      fill="none" stroke="#3c291d" stroke-width="3" opacity=".36"/>
+  </pattern>
+</defs>
+<rect width="1024" height="1024" fill="url(#boards)"/>
+<g fill="none" stroke="#3c291d" opacity=".40">
+  <ellipse cx="190" cy="70" rx="39" ry="17" stroke-width="5"/>
+  <ellipse cx="190" cy="70" rx="19" ry="8" stroke-width="3"/>
+  <ellipse cx="765" cy="326" rx="46" ry="19" stroke-width="5"/>
+  <ellipse cx="765" cy="326" rx="22" ry="9" stroke-width="3"/>
+  <path d="M80 445q120 -28 230 -5t210 -4 M570 680q130 -30 240 -6t190 -7 M40 915q160 -32 300 -4t240 -6" stroke-width="5"/>
+</g>
+<g fill="#30251e" opacity=".62">
+  <circle cx="38" cy="30" r="7"/><circle cx="986" cy="30" r="7"/>
+  <circle cx="38" cy="286" r="7"/><circle cx="986" cy="286" r="7"/>
+  <circle cx="38" cy="542" r="7"/><circle cx="986" cy="542" r="7"/>
+  <circle cx="38" cy="798" r="7"/><circle cx="986" cy="798" r="7"/>
+</g>
+<rect width="1024" height="1024" filter="url(#grain)" opacity=".52"/>
+</svg>

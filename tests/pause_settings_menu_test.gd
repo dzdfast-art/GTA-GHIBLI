@@ -64,6 +64,11 @@ func _run_test() -> void:
 	if map_page == null or not map_page.visible:
 		_fail("Selecting MAP did not open the world map page.")
 		return
+	var map_frame := map_page.get_node_or_null("MapFrame") as PanelContainer
+	var map_frame_style := map_frame.get_theme_stylebox("panel") if map_frame != null else null
+	if map_frame_style == null or not (map_frame_style is StyleBoxFlat):
+		_fail("The MAP frame does not own its panel style resource.")
+		return
 	var map_canvas := map_page.get_node_or_null("MapFrame/MapCanvas")
 	if map_canvas == null or not map_canvas.has_method("get_region_markers"):
 		_fail("The MAP page does not contain the interactive world map canvas.")
@@ -86,6 +91,22 @@ func _run_test() -> void:
 		_fail("Closing pause did not resume the game.")
 		return
 	print("PASS: pause menu, settings page, pause/resume and save.")
+
+	# Release the temporary UI and world nodes before the headless test exits.
+	map_markers.clear()
+	map_frame_style = null
+	map_frame = null
+	map_canvas = null
+	map_page = null
+	menu.free()
+	world.free()
+	sun.free()
+	menu = null
+	world = null
+	sun = null
+	movement_event = null
+	await process_frame
+	await process_frame
 	quit(0)
 
 func _fail(message: String) -> void:

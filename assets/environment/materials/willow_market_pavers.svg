@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<title>GTA GHIBLI village market stone paving</title>
+<desc>Original warm limestone and muted sandstone pavers with offset joints, softened edges and weathered surface variation.</desc>
+<defs>
+  <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1">
+    <stop stop-color="#c9bea5"/><stop offset=".55" stop-color="#b7a98d"/><stop offset="1" stop-color="#95866d"/>
+  </linearGradient>
+  <pattern id="pavers" width="256" height="160" patternUnits="userSpaceOnUse">
+    <rect width="256" height="160" fill="#786c59"/>
+    <path d="M4 4H124V76H4Z M132 4H252V76H132Z M-60 84H60V156H-60Z M68 84H188V156H68Z M196 84H316V156H196Z"
+      fill="url(#stone)" stroke="#746955" stroke-width="8"/>
+    <path d="M12 12H116 M140 12H244 M-52 92H52 M76 92H180 M204 92H308"
+      stroke="#eee4cd" stroke-width="5" opacity=".30"/>
+    <path d="M16 66H112 M144 66H240 M-48 146H48 M80 146H176 M208 146H304"
+      stroke="#615847" stroke-width="4" opacity=".24"/>
+  </pattern>
+  <filter id="weather">
+    <feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="3" seed="17"/>
+    <feColorMatrix values=".24 0 0 0 .30 0 .20 0 0 .27 0 0 .14 0 .20 0 0 0 .22 0"/>
+  </filter>
+</defs>
+<rect width="1024" height="1024" fill="url(#pavers)"/>
+<g fill="none" stroke="#756850" stroke-width="3" opacity=".20">
+  <path d="M55 205l32 -10 M380 360l44 -8 M730 174l26 -8 M862 690l43 -11 M194 830l31 -9 M610 950l36 -10"/>
+  <path d="M220 118l18 4 M525 500l28 5 M968 475l15 3 M440 744l20 4 M90 640l16 3"/>
+</g>
+<rect width="1024" height="1024" filter="url(#weather)" opacity=".54"/>
+</svg>

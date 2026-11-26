@@ -138,7 +138,13 @@ func _process(delta: float) -> void:
 	if not _active:
 		return
 	if _cinematic_camera != null and is_instance_valid(_cinematic_camera) and _player != null:
-		_cinematic_camera.look_at(_player.global_position + Vector3(0.0, 1.0, 0.0), Vector3.UP)
+		var look_target := _player.global_position + Vector3(0.0, 1.0, 0.0)
+		var look_direction := look_target - _cinematic_camera.global_position
+		if look_direction.length_squared() > 0.0001:
+			var camera_up := Vector3.UP
+			if absf(look_direction.normalized().dot(camera_up)) > 0.985:
+				camera_up = Vector3.FORWARD
+			_cinematic_camera.look_at(look_target, camera_up)
 	_line_time -= delta
 	if _line_time <= 0.0:
 		_advance()

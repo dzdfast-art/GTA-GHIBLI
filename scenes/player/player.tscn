@@ -1,27 +1,319 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=35 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/camera/third_person_camera.gd" id="2_camera"]
 [ext_resource type="Script" path="res://scripts/systems/player_interactor.gd" id="3_interactor"]
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_Player"]
-radius = 0.38
-height = 1.8
-
-[sub_resource type="StandardMaterial3D" id="Material_Player"]
-albedo_color = Color(0.24, 0.38, 0.72, 1)
-roughness = 0.9
+[ext_resource type="Script" path="res://scripts/player/player_visual_animator.gd" id="4_animator"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape_Player"]
 radius = 0.38
 height = 1.8
 
+[sub_resource type="CapsuleMesh" id="TorsoMesh"]
+radius = 0.29
+height = 0.78
+radial_segments = 12
+rings = 6
+
+[sub_resource type="CapsuleMesh" id="HeadMesh"]
+radius = 0.205
+height = 0.43
+radial_segments = 12
+rings = 6
+
+[sub_resource type="CapsuleMesh" id="ArmMesh"]
+radius = 0.085
+height = 0.62
+radial_segments = 8
+rings = 4
+
+[sub_resource type="CapsuleMesh" id="LegMesh"]
+radius = 0.125
+height = 0.72
+radial_segments = 8
+rings = 4
+
+[sub_resource type="BoxMesh" id="ShoeMesh"]
+size = Vector3(0.22, 0.12, 0.34)
+
+[sub_resource type="StandardMaterial3D" id="ShirtMaterial"]
+albedo_color = Color(0.92, 0.91, 0.85, 1)
+roughness = 0.88
+
+[sub_resource type="StandardMaterial3D" id="SkinMaterial"]
+albedo_color = Color(0.72, 0.48, 0.34, 1)
+roughness = 0.92
+
+[sub_resource type="StandardMaterial3D" id="PantsMaterial"]
+albedo_color = Color(0.12, 0.25, 0.58, 1)
+roughness = 0.94
+
+[sub_resource type="StandardMaterial3D" id="ShoesMaterial"]
+albedo_color = Color(0.075, 0.075, 0.085, 1)
+roughness = 0.9
+
+[sub_resource type="SphereMesh" id="HairMesh"]
+radius = 0.23
+height = 0.22
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="EyeMesh"]
+radius = 0.028
+height = 0.04
+radial_segments = 8
+rings = 4
+
+[sub_resource type="SphereMesh" id="EarMesh"]
+radius = 0.055
+height = 0.10
+radial_segments = 8
+rings = 4
+
+[sub_resource type="StandardMaterial3D" id="HairMaterial"]
+albedo_color = Color(0.10, 0.075, 0.06, 1)
+roughness = 0.86
+
+[sub_resource type="StandardMaterial3D" id="EyeMaterial"]
+albedo_color = Color(0.035, 0.028, 0.025, 1)
+roughness = 0.7
+
+[sub_resource type="CylinderMesh" id="NeckMesh"]
+top_radius = 0.11
+bottom_radius = 0.12
+height = 0.20
+radial_segments = 12
+
+[sub_resource type="SphereMesh" id="HandMesh"]
+radius = 0.09
+height = 0.15
+radial_segments = 12
+rings = 8
+
+[sub_resource type="BoxMesh" id="SoleMesh"]
+size = Vector3(0.245, 0.035, 0.37)
+
+[sub_resource type="BoxMesh" id="LaceMesh"]
+size = Vector3(0.12, 0.018, 0.025)
+
+[sub_resource type="CapsuleMesh" id="JeansHipMesh"]
+radius = 0.27
+height = 0.52
+radial_segments = 12
+rings = 6
+
+[sub_resource type="BoxMesh" id="RearPocketMesh"]
+size = Vector3(0.16, 0.15, 0.025)
+
+[sub_resource type="BoxMesh" id="PocketSeamMesh"]
+size = Vector3(0.17, 0.012, 0.012)
+
+[sub_resource type="BoxMesh" id="BackBeltMesh"]
+size = Vector3(0.43, 0.065, 0.035)
+
+[sub_resource type="BoxMesh" id="SideBeltMesh"]
+size = Vector3(0.035, 0.065, 0.31)
+
+[sub_resource type="BoxMesh" id="FrontBeltMesh"]
+size = Vector3(0.36, 0.065, 0.035)
+
+[sub_resource type="BoxMesh" id="BeltBuckleMesh"]
+size = Vector3(0.09, 0.065, 0.018)
+
+[sub_resource type="StandardMaterial3D" id="DenimDetailMaterial"]
+albedo_color = Color(0.075, 0.16, 0.38, 1)
+roughness = 0.96
+
+[sub_resource type="StandardMaterial3D" id="BeltMaterial"]
+albedo_color = Color(0.045, 0.048, 0.055, 1)
+roughness = 0.88
+
+[sub_resource type="StandardMaterial3D" id="DenimStitchMaterial"]
+albedo_color = Color(0.34, 0.43, 0.58, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="BuckleMaterial"]
+albedo_color = Color(0.72, 0.62, 0.35, 1)
+metallic = 0.65
+roughness = 0.38
+
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_player")
 
-[node name="Visual" type="MeshInstance3D" parent="."]
-mesh = SubResource("CapsuleMesh_Player")
-material_override = SubResource("Material_Player")
+[node name="Visual" type="Node3D" parent="."]
+script = ExtResource("4_animator")
+
+[node name="WhiteSleevelessShirt" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.23, 0)
+mesh = SubResource("TorsoMesh")
+material_override = SubResource("ShirtMaterial")
+
+[node name="Head" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.82, 0)
+mesh = SubResource("HeadMesh")
+material_override = SubResource("SkinMaterial")
+
+[node name="HairCap" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.99, -0.01)
+mesh = SubResource("HairMesh")
+material_override = SubResource("HairMaterial")
+
+[node name="LeftEye" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.07, 0.85, -0.19)
+mesh = SubResource("EyeMesh")
+material_override = SubResource("EyeMaterial")
+
+[node name="RightEye" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.07, 0.85, -0.19)
+mesh = SubResource("EyeMesh")
+material_override = SubResource("EyeMaterial")
+
+[node name="LeftEar" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.195, 0.82, 0)
+mesh = SubResource("EarMesh")
+material_override = SubResource("SkinMaterial")
+
+[node name="RightEar" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.195, 0.82, 0)
+mesh = SubResource("EarMesh")
+material_override = SubResource("SkinMaterial")
+
+[node name="Neck" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.64, 0)
+mesh = SubResource("NeckMesh")
+material_override = SubResource("SkinMaterial")
+
+[node name="LeftArm" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.36, 0.22, 0)
+rotation_degrees = Vector3(0, 0, 9)
+mesh = SubResource("ArmMesh")
+material_override = SubResource("SkinMaterial")
+
+[node name="RightArm" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.36, 0.22, 0)
+rotation_degrees = Vector3(0, 0, -9)
+mesh = SubResource("ArmMesh")
+material_override = SubResource("SkinMaterial")
+
+[node name="LeftHand" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.36, -0.11, 0)
+mesh = SubResource("HandMesh")
+material_override = SubResource("SkinMaterial")
+
+[node name="RightHand" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.36, -0.11, 0)
+mesh = SubResource("HandMesh")
+material_override = SubResource("SkinMaterial")
+
+[node name="LeftLeg" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.14, -0.41, 0)
+mesh = SubResource("LegMesh")
+material_override = SubResource("PantsMaterial")
+
+[node name="RightLeg" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.14, -0.41, 0)
+mesh = SubResource("LegMesh")
+material_override = SubResource("PantsMaterial")
+
+[node name="JeansHips" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, -0.13, 0)
+mesh = SubResource("JeansHipMesh")
+material_override = SubResource("PantsMaterial")
+
+[node name="RearPocketLeft" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.13, -0.25, 0.205)
+mesh = SubResource("RearPocketMesh")
+material_override = SubResource("DenimDetailMaterial")
+
+[node name="RearPocketRight" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.13, -0.25, 0.205)
+mesh = SubResource("RearPocketMesh")
+material_override = SubResource("DenimDetailMaterial")
+
+[node name="RearPocketStitchLeft" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.13, -0.17, 0.221)
+mesh = SubResource("PocketSeamMesh")
+material_override = SubResource("DenimStitchMaterial")
+
+[node name="RearPocketStitchRight" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.13, -0.17, 0.221)
+mesh = SubResource("PocketSeamMesh")
+material_override = SubResource("DenimStitchMaterial")
+
+[node name="RearBelt" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, -0.015, 0.235)
+mesh = SubResource("BackBeltMesh")
+material_override = SubResource("BeltMaterial")
+
+[node name="LeftSideBelt" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.225, -0.015, 0)
+mesh = SubResource("SideBeltMesh")
+material_override = SubResource("BeltMaterial")
+
+[node name="RightSideBelt" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.225, -0.015, 0)
+mesh = SubResource("SideBeltMesh")
+material_override = SubResource("BeltMaterial")
+
+[node name="FrontBelt" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, -0.015, -0.235)
+mesh = SubResource("FrontBeltMesh")
+material_override = SubResource("BeltMaterial")
+
+[node name="BeltBuckle" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, -0.015, -0.258)
+mesh = SubResource("BeltBuckleMesh")
+material_override = SubResource("BuckleMaterial")
+
+[node name="LeftShoe" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.14, -0.81, -0.065)
+mesh = SubResource("ShoeMesh")
+material_override = SubResource("ShoesMaterial")
+
+[node name="RightShoe" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.14, -0.81, -0.065)
+mesh = SubResource("ShoeMesh")
+material_override = SubResource("ShoesMaterial")
+
+[node name="LeftSole" type="MeshInstance3D" parent="Visual/LeftShoe"]
+position = Vector3(0, -0.065, 0)
+mesh = SubResource("SoleMesh")
+material_override = SubResource("ShoesMaterial")
+
+[node name="RightSole" type="MeshInstance3D" parent="Visual/RightShoe"]
+position = Vector3(0, -0.065, 0)
+mesh = SubResource("SoleMesh")
+material_override = SubResource("ShoesMaterial")
+
+[node name="LeftLaceFront" type="MeshInstance3D" parent="Visual/LeftShoe"]
+position = Vector3(0, 0.068, -0.095)
+mesh = SubResource("LaceMesh")
+material_override = SubResource("ShirtMaterial")
+
+[node name="LeftLaceMid" type="MeshInstance3D" parent="Visual/LeftShoe"]
+position = Vector3(0, 0.068, -0.015)
+mesh = SubResource("LaceMesh")
+material_override = SubResource("ShirtMaterial")
+
+[node name="LeftLaceBack" type="MeshInstance3D" parent="Visual/LeftShoe"]
+position = Vector3(0, 0.068, 0.065)
+mesh = SubResource("LaceMesh")
+material_override = SubResource("ShirtMaterial")
+
+[node name="RightLaceFront" type="MeshInstance3D" parent="Visual/RightShoe"]
+position = Vector3(0, 0.068, -0.095)
+mesh = SubResource("LaceMesh")
+material_override = SubResource("ShirtMaterial")
+
+[node name="RightLaceMid" type="MeshInstance3D" parent="Visual/RightShoe"]
+position = Vector3(0, 0.068, -0.015)
+mesh = SubResource("LaceMesh")
+material_override = SubResource("ShirtMaterial")
+
+[node name="RightLaceBack" type="MeshInstance3D" parent="Visual/RightShoe"]
+position = Vector3(0, 0.068, 0.065)
+mesh = SubResource("LaceMesh")
+material_override = SubResource("ShirtMaterial")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape_Player")
@@ -31,13 +323,14 @@ position = Vector3(0, 1.45, 0)
 script = ExtResource("2_camera")
 
 [node name="SpringArm3D" type="SpringArm3D" parent="CameraPivot"]
-spring_length = 4.5
+spring_length = 4.0
 margin = 0.2
 collision_mask = 1
 
 [node name="Camera3D" type="Camera3D" parent="CameraPivot/SpringArm3D"]
+rotation_degrees = Vector3(-10.0, 0.0, 0.0)
 current = true
-fov = 70.0
+fov = 67.0
 
 [node name="PlayerInteractor" type="Node" parent="."]
 script = ExtResource("3_interactor")

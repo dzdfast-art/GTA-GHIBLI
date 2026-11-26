@@ -1,6 +1,5 @@
 # Shared terrain materials for the 150 MB world expansion set.
 newmtl terrain_default
-Ka 0.22 0.24 0.20
 Kd 0.42 0.48 0.36
 Ks 0.08 0.08 0.08
 Ns 12.0

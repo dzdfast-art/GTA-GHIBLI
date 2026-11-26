@@ -22,7 +22,11 @@ for test_file in "${tests[@]}"; do
 
   echo "::group::Running $test_name (timeout ${timeout_seconds}s)"
   test_status=0
-  if timeout "${timeout_seconds}s" godot --headless --path . --script "res://$test_file" >"$test_log" 2>&1; then
+  godot_args=(--headless --path . --script "res://$test_file")
+  if [[ "$test_name" == "video_reference_world_flow_test.gd" ]]; then
+    godot_args+=(--verbose)
+  fi
+  if timeout "${timeout_seconds}s" godot "${godot_args[@]}" >"$test_log" 2>&1; then
     test_status=0
   else
     test_status=$?
@@ -32,8 +36,8 @@ for test_file in "${tests[@]}"; do
   if (( test_status != 0 )); then
     echo "::error::$test_name exited with status $test_status."
     failed=$((failed + 1))
-  elif grep -Eqi 'ERROR:|SCRIPT ERROR:|Parse Error:|Assertion failed|Invalid call[.]|Failed loading resource' "$test_log"; then
-    echo "::error::$test_name logged a script, parser, assertion, invalid-call, or resource-load error."
+  elif grep -Eqi 'ERROR:|SCRIPT ERROR:|Parse Error:|Assertion failed|Invalid call[.]|Failed loading resource|WARNING: [0-9]+ (RID|ObjectDB).*leaked|Leaked instance:|[0-9]+ resources still in use at exit' "$test_log"; then
+    echo "::error::$test_name logged a script, parser, assertion, invalid-call, resource-load, or resource-leak error."
     failed=$((failed + 1))
   elif ! grep -Eqi 'PASS([: |]|$)' "$test_log"; then
     echo "::error::$test_name exited without an explicit PASS marker."

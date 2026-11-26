@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<title>GTA GHIBLI terracotta roof tile material</title>
+<desc>Original seamless hand-arranged clay roof shingle texture with offset courses, baked clay variation, edge shadows and subtle weathering.</desc>
+<defs>
+  <linearGradient id="clay" x1="0" y1="0" x2="0.18" y2="1"><stop stop-color="#a85d3e"/><stop offset=".48" stop-color="#88432f"/><stop offset="1" stop-color="#5d3026"/></linearGradient>
+  <linearGradient id="tile" x1="0" y1="0" x2="0.1" y2="1"><stop stop-color="#bd7350"/><stop offset=".18" stop-color="#a85c40"/><stop offset=".78" stop-color="#89432f"/><stop offset="1" stop-color="#653126"/></linearGradient>
+  <pattern id="courses" width="192" height="112" patternUnits="userSpaceOnUse">
+    <rect width="192" height="112" fill="#51291f"/>
+    <g>
+      <path d="M-4 2 Q-4 -5 8 -5 H184 Q196 -5 196 7 V99 Q196 108 185 108 H7 Q-4 108 -4 98Z" fill="url(#tile)" stroke="#4b281f" stroke-width="5"/>
+      <path d="M8 10 Q96 -1 184 10" fill="none" stroke="#dc9470" stroke-width="4" opacity=".48"/>
+      <path d="M7 18 Q96 9 185 18 M8 91 Q96 100 184 91" fill="none" stroke="#4e291f" stroke-width="3" opacity=".42"/>
+      <path d="M18 25 Q92 18 174 25" fill="none" stroke="#c77a57" stroke-width="2" opacity=".24"/>
+      <path d="M24 74l17 -4 M128 46l20 -4 M72 55l11 -2" stroke="#d08a68" stroke-width="2" opacity=".18"/>
+    </g>
+  </pattern>
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".68" numOctaves="2" seed="23"/><feColorMatrix values=".32 0 0 0 .25 0 .22 0 0 .15 0 0 .18 0 .11 0 0 0 .15 0"/></filter>
+</defs>
+<rect width="1024" height="1024" fill="#613126"/>
+<rect x="-96" y="-56" width="1216" height="1136" fill="url(#courses)"/>
+<g fill="none" stroke-linecap="round" opacity=".2">
+  <path d="M40 220l20 -7 M332 338l31 -8 M780 177l22 -9 M904 722l28 -6 M188 849l19 -5 M625 936l25 -8" stroke="#e6aa83" stroke-width="5"/>
+  <path d="M212 114l11 3 M530 485l17 4 M968 470l13 3 M433 741l14 2 M85 638l13 3" stroke="#352019" stroke-width="7"/>
+</g>
+<rect width="1024" height="1024" filter="url(#grain)" opacity=".44"/>
+</svg>

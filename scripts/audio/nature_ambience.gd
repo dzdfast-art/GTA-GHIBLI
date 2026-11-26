@@ -16,12 +16,12 @@ var _field_recording_player: AudioStreamPlayer
 var _field_recording_theme := ""
 var _field_recording_segment := 0
 const FIELD_RECORDING_PATHS := {
-	"dawn": ["res://audio/ambience/dawn_01.wav", "res://audio/ambience/dawn_02.wav", "res://audio/ambience/dawn_03.wav", "res://audio/ambience/dawn_04.wav", "res://audio/ambience/dawn_05.wav", "res://audio/ambience/dawn_06.wav"],
-	"forest_day": ["res://audio/ambience/forest_day_01.wav", "res://audio/ambience/forest_day_02.wav", "res://audio/ambience/forest_day_03.wav", "res://audio/ambience/forest_day_04.wav", "res://audio/ambience/forest_day_05.wav", "res://audio/ambience/forest_day_06.wav"],
-	"night": ["res://audio/ambience/night_01.wav", "res://audio/ambience/night_02.wav", "res://audio/ambience/night_03.wav", "res://audio/ambience/night_04.wav", "res://audio/ambience/night_05.wav", "res://audio/ambience/night_06.wav"],
-	"coast": ["res://audio/ambience/coast_01.wav", "res://audio/ambience/coast_02.wav", "res://audio/ambience/coast_03.wav", "res://audio/ambience/coast_04.wav", "res://audio/ambience/coast_05.wav", "res://audio/ambience/coast_06.wav"],
-	"rain": ["res://audio/ambience/rain_01.wav", "res://audio/ambience/rain_02.wav", "res://audio/ambience/rain_03.wav", "res://audio/ambience/rain_04.wav", "res://audio/ambience/rain_05.wav", "res://audio/ambience/rain_06.wav"],
-	"storm": ["res://audio/ambience/storm_01.wav", "res://audio/ambience/storm_02.wav", "res://audio/ambience/storm_03.wav", "res://audio/ambience/storm_04.wav", "res://audio/ambience/storm_05.wav", "res://audio/ambience/storm_06.wav"]
+	"dawn": ["res://audio/ambience/dawn_01.wav", "res://audio/ambience/dawn_02.wav", "res://audio/ambience/dawn_03.wav", "res://audio/ambience/dawn_04.wav", "res://audio/ambience/dawn_05.wav", "res://audio/ambience/dawn_06.wav", "res://audio/ambience/dawn_07.wav"],
+	"forest_day": ["res://audio/ambience/forest_day_01.wav", "res://audio/ambience/forest_day_02.wav", "res://audio/ambience/forest_day_03.wav", "res://audio/ambience/forest_day_04.wav", "res://audio/ambience/forest_day_05.wav", "res://audio/ambience/forest_day_06.wav", "res://audio/ambience/forest_day_07.wav"],
+	"night": ["res://audio/ambience/night_01.wav", "res://audio/ambience/night_02.wav", "res://audio/ambience/night_03.wav", "res://audio/ambience/night_04.wav", "res://audio/ambience/night_05.wav", "res://audio/ambience/night_06.wav", "res://audio/ambience/night_07.wav"],
+	"coast": ["res://audio/ambience/coast_01.wav", "res://audio/ambience/coast_02.wav", "res://audio/ambience/coast_03.wav", "res://audio/ambience/coast_04.wav", "res://audio/ambience/coast_05.wav", "res://audio/ambience/coast_06.wav", "res://audio/ambience/coast_07.wav"],
+	"rain": ["res://audio/ambience/rain_01.wav", "res://audio/ambience/rain_02.wav", "res://audio/ambience/rain_03.wav", "res://audio/ambience/rain_04.wav", "res://audio/ambience/rain_05.wav", "res://audio/ambience/rain_06.wav", "res://audio/ambience/rain_07.wav"],
+	"storm": ["res://audio/ambience/storm_01.wav", "res://audio/ambience/storm_02.wav", "res://audio/ambience/storm_03.wav", "res://audio/ambience/storm_04.wav", "res://audio/ambience/storm_05.wav", "res://audio/ambience/storm_06.wav", "res://audio/ambience/storm_07.wav"]
 }
 var _sample_clock := 0.0
 var _wind_state := 0.0
@@ -71,6 +71,26 @@ func _ready() -> void:
 		_build_field_recording_player()
 	_update_targets()
 	_sync_field_recording(true)
+
+func _exit_tree() -> void:
+	_stop_audio_players()
+
+
+func _stop_audio_players() -> void:
+	if _transition_tween != null:
+		if _transition_tween.is_running():
+			_transition_tween.kill()
+		_transition_tween = null
+	if _player != null:
+		_player.stop()
+		_player.stream = null
+		_playback = null
+		_player = null
+	if _field_recording_player != null:
+		_field_recording_player.stop()
+		_field_recording_player.stream = null
+		_field_recording_player = null
+
 
 func _process(delta: float) -> void:
 	elapsed_game_seconds += delta

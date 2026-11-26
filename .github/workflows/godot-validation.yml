@@ -15,7 +15,6 @@ on:
       - "tests/**"
       - "tools/**"
       - ".github/workflows/godot-validation.yml"
-      - ".github/workflows/godot-validation.yml"
   pull_request:
     paths:
       - "main.gd"
@@ -77,6 +76,7 @@ jobs:
           for script in \
             res://main.gd \
             res://scripts/audio/nature_ambience.gd \
+            res://scripts/player/player_visual_animator.gd \
             res://scripts/player/player_controller.gd \
             res://scripts/vehicles/driveable_car.gd \
             res://scripts/vehicles/bicycle_controller.gd \
@@ -86,14 +86,17 @@ jobs:
             res://scripts/systems/interactable_door.gd \
             res://scripts/systems/carryable_prop.gd \
             res://scripts/systems/npc_brain.gd \
+            res://scripts/systems/player_vitals.gd \
             res://scripts/systems/player_needs.gd \
             res://scripts/systems/consumable_inventory.gd \
             res://scripts/systems/player_wallet.gd \
             res://scripts/world/consumable_shop.gd \
             res://scripts/camera/third_person_camera.gd \
+            res://scripts/ui/minimap_widget.gd \
             res://scripts/ui/mobile_controls.gd \
             res://scripts/ui/pause_settings_menu.gd \
             res://scripts/ui/virtual_joystick.gd \
+            res://scripts/world/reference_mission_marker.gd \
             res://scripts/world/willow_village.gd \
             res://scripts/characters/mira_npc.gd \
             res://scripts/characters/world_npc_actor.gd \
@@ -117,9 +120,9 @@ jobs:
             godot --headless --path . --check-only --script "$script"
           done
 
+      - name: Run main scene smoke test with clean teardown
+        run: bash tools/run_main_scene_smoke.sh
+
       - name: Run all root GDScript regressions with strict log checks
         shell: bash
         run: bash tools/run_root_regressions.sh
-
-      - name: Run main scene smoke test
-        run: godot --headless --path . --quit-after 180

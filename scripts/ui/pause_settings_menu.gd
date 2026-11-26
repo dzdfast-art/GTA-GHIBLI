@@ -148,12 +148,12 @@ func _build_interface() -> void:
 	var pause_button := _make_button("Ⅱ", 22)
 	_pause_touch_button = pause_button
 	pause_button.name = "PauseTouchButton"
-	pause_button.anchor_left = 1.0
-	pause_button.anchor_right = 1.0
-	pause_button.offset_left = -82.0
-	pause_button.offset_top = 18.0
-	pause_button.offset_right = -18.0
-	pause_button.offset_bottom = 82.0
+	pause_button.anchor_left = 0.5
+	pause_button.anchor_right = 0.5
+	pause_button.offset_left = -32.0
+	pause_button.offset_top = 14.0
+	pause_button.offset_right = 32.0
+	pause_button.offset_bottom = 78.0
 	pause_button.custom_minimum_size = Vector2(64.0, 64.0)
 	pause_button.pressed.connect(toggle_pause)
 	add_child(pause_button)
@@ -356,14 +356,18 @@ func _make_button(caption: String, font_size: int) -> Button:
 	button.add_theme_stylebox_override("pressed", hover)
 	return button
 
-func _make_panel() -> PanelContainer:
-	var panel := PanelContainer.new()
+func _make_panel_style() -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = PANEL_COLOR
 	style.border_color = Color(0.68, 0.58, 0.34, 0.95)
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(10)
-	panel.add_theme_stylebox_override("panel", style)
+	return style
+
+
+func _make_panel() -> PanelContainer:
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", _make_panel_style())
 	panel.add_theme_constant_override("margin_left", 24)
 	panel.add_theme_constant_override("margin_right", 24)
 	panel.add_theme_constant_override("margin_top", 22)
@@ -399,7 +403,7 @@ func _build_map_page() -> void:
 	frame.offset_top = 88.0
 	frame.offset_right = -22.0
 	frame.offset_bottom = -88.0
-	frame.add_theme_stylebox_override("panel", _make_panel().get_theme_stylebox("panel"))
+	frame.add_theme_stylebox_override("panel", _make_panel_style())
 	_map_panel.add_child(frame)
 
 	_map_view = WORLD_MAP_VIEW_SCRIPT.new() as Control

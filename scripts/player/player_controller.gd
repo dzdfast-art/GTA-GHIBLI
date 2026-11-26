@@ -7,15 +7,21 @@ extends CharacterBody3D
 
 var is_driving := false
 
-@onready var camera_pivot: Node3D = $CameraPivot
+@onready var camera_pivot: Node3D = get_node_or_null("CameraPivot") as Node3D
+@onready var follow_camera: Camera3D = get_node_or_null("CameraPivot/SpringArm3D/Camera3D") as Camera3D
 
 func _physics_process(delta: float) -> void:
 	if is_driving:
 		velocity = Vector3.ZERO
 		return
 	var input_vector: Vector2 = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	var camera_right: Vector3 = camera_pivot.global_basis.x
-	var camera_forward: Vector3 = -camera_pivot.global_basis.z
+	var movement_basis: Basis = global_basis
+	if is_instance_valid(follow_camera):
+		movement_basis = follow_camera.global_basis
+	elif is_instance_valid(camera_pivot):
+		movement_basis = camera_pivot.global_basis
+	var camera_right: Vector3 = movement_basis.x
+	var camera_forward: Vector3 = -movement_basis.z
 	camera_right.y = 0.0
 	camera_forward.y = 0.0
 	camera_right = camera_right.normalized()
