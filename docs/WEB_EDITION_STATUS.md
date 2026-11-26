@@ -50,7 +50,8 @@ Current game root: `web-edition/` — Godot 4.7, single-threaded WebAssembly, Co
 | Chromium page-reload persistence | **TESTED — same browser context and origin** | CI writes through the actual game scene, reloads the page, then checks that the same selected live-game state is restored |
 | User-visible storage status | **TESTED** | HUD distinguishes browser storage, session-only storage and write failure; English and Arabic warning strings are covered by GDScript regression tests |
 | Godot `OS.is_userfs_persistent()` signal | **TESTED as a status hint** | The Chromium probe reports `true` before and after page reload in the normal CI context; Godot documents that this method can produce false positives |
-| Private/blocked IndexedDB behavior | **NOT VERIFIED** | No browser run has yet denied IndexedDB or simulated private-mode storage restrictions |
+| IndexedDB API unavailable in Chromium | **TESTED — controlled simulation** | PR #114 removes `window.indexedDB` before Godot starts; WebGL 2 initializes, Godot reports non-persistent storage, a successful save is readable in the active page, and the HUD says session-only; not a full private-mode/quota/policy test |
+| Private browsing, storage quotas and browser policy restrictions | **NOT VERIFIED** | No separate full private-mode, quota-exhaustion or enterprise-policy test has been run |
 | Browser close/reopen or a new browser context | **NOT VERIFIED** | Current browser persistence gate reloads the page inside one persistent Playwright context; it is not a full browser restart test |
 | Complete save/restore of all gameplay systems and Missions 001–004 | **PARTIALLY IMPLEMENTED** | The live serializer covers multiple registries, but the current reload probe verifies selected fields only; not every future entity/system is integrated or proven |
 
@@ -61,7 +62,7 @@ Current game root: `web-edition/` — Godot 4.7, single-threaded WebAssembly, Co
 - A failed save write produces an explicit save-error message.
 - Arabic and English status messages are implemented.
 - `OS.is_userfs_persistent()` is not treated as proof by itself. Godot's documentation explicitly warns that it can give false positives. Actual page-reload restoration remains a separate CI check.
-- Godot's Web export documentation says IndexedDB must be allowed for `user://` persistence; private browsing and blocked storage prevent persistence. This specific blocked/private case remains untested in our browser gate. See [Godot 4.7 Web export — data persistence](https://docs.godotengine.org/en/4.7/tutorials/export/exporting_for_web.html#using-cookies-for-data-persistence).
+- Godot's Web export documentation says IndexedDB must be allowed for `user://` persistence. PR #114 now verifies a controlled Chromium API-unavailable simulation; full private-browsing, quota and enterprise-policy behavior remains unverified. See [Godot 4.7 Web export — data persistence](https://docs.godotengine.org/en/4.7/tutorials/export/exporting_for_web.html#using-cookies-for-data-persistence).
 
 ## Verification — tested PR head `24ed445`
 
@@ -92,7 +93,7 @@ Current game root: `web-edition/` — Godot 4.7, single-threaded WebAssembly, Co
 
 ## Next technical steps
 
-1. Add a Chromium test with IndexedDB deliberately blocked and verify that the game displays the session-only warning without claiming durable saves.
+1. **Completed in PR #114:** Chromium test with the IndexedDB API unavailable before Godot startup; it verifies session-only readback or explicit save failure, no durable-storage claim, no runtime errors and no external requests.
 2. Add a separate browser-context close/reopen test to distinguish page reload from a fresh browser session.
 3. Continue integrating every mission, player, NPC, vehicle, inventory, activity and world-state owner into the live save/restore contract, with per-system restart assertions.
 4. Continue expanding original world geometry, interiors, roads, character rigs/animations, real mission content and locally bundled audio. The current foundation systems are not a finished game.
