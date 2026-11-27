@@ -46,8 +46,24 @@ func _run() -> void:
 		_fail("Mission 002 did not complete with the expected $300 reward.")
 		return
 	manager.call("handle_interaction", "nora")
-	if int(manager.call("get_wallet")) != 900:
-		_fail("A repeated post-completion Nora interaction duplicated a mission reward.")
+	if int(manager.get("mission_stage")) != 6:
+		_fail("Nora did not unlock Mission 003 after Mission 002.")
+		return
+	if not bool(manager.call("set_wallet_balance", 888, "test_shop_purchase")):
+		_fail("The simulated shop purchase could not update the wallet.")
+		return
+	manager.call("handle_interaction", "market_shop_purchase")
+	if int(manager.get("mission_stage")) != 7:
+		_fail("The Mission 003 purchase step did not advance the campaign.")
+		return
+	manager.call("handle_interaction", "claire")
+	if int(manager.get("mission_stage")) != 8 or int(manager.call("get_wallet")) != 1038:
+		_fail("Mission 003 did not complete with the expected $150 reward.")
+		return
+	manager.call("handle_interaction", "claire")
+	manager.call("handle_interaction", "nora")
+	if int(manager.call("get_wallet")) != 1038:
+		_fail("A repeated post-completion interaction duplicated a campaign reward.")
 		return
 
 	var expected_steps: Array[String] = [
@@ -55,7 +71,10 @@ func _run() -> void:
 		"mission_001:meet_nora",
 		"mission_002:start_at_nora",
 		"mission_002:inspect_noticeboard",
-		"mission_002:return_to_nora"
+		"mission_002:return_to_nora",
+		"mission_003:start_at_nora",
+		"mission_003:buy_water",
+		"mission_003:return_to_claire"
 	]
 	if completed_steps != expected_steps:
 		_fail("Mission step completion signals were incomplete or out of order: " + str(completed_steps))
@@ -64,15 +83,15 @@ func _run() -> void:
 	var restored: Node = manager_script.new()
 	root.add_child(restored)
 	await process_frame
-	if int(restored.get("mission_stage")) != 5 or int(restored.call("get_wallet")) != 900:
-		_fail("The complete two-mission campaign did not restore from the local save.")
+	if int(restored.get("mission_stage")) != 8 or int(restored.call("get_wallet")) != 1038:
+		_fail("The complete three-mission campaign did not restore from the local save.")
 		return
 
 	manager.call("reset_progress")
 	restored.queue_free()
 	manager.queue_free()
 	await process_frame
-	print("PASS: the original two-mission campaign enforces stage order, emits objective steps, saves and pays each reward once.")
+	print("PASS: the original three-mission campaign enforces stage order, emits objective steps, saves and pays each reward once.")
 	quit(0)
 
 
