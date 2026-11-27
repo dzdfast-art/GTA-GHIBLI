@@ -472,21 +472,31 @@ func _run() -> void:
 		_fail("The in-world market counter did not open the clickable shop panel.")
 		return
 	var shop: RefCounted = game.call("get_runtime_system", "shop_inventory")
-	if not bool(game.call("_purchase_market_item", "fruit_basket")):
-		_fail("The player could not purchase a stocked market item.")
+	var shop_items_column := hud.get("_shop_items_column") as VBoxContainer
+	var fruit_buy_button := _find_shop_button(shop_items_column, "Fruit basket", 1)
+	if fruit_buy_button == null or fruit_buy_button.disabled:
+		_fail("The market UI did not expose an enabled Buy button for stocked fruit.")
 		return
+	fruit_buy_button.pressed.emit()
+	await process_frame
 	if int(missions.call("get_wallet")) != 875 or int(shop.call("get_quantity", "fruit_basket")) != 1:
-		_fail("The market purchase did not update both the wallet and player inventory.")
+		_fail("Clicking the market Buy button did not update both the wallet and player inventory.")
 		return
-	if not bool(game.call("_sell_market_item", "fruit_basket")):
-		_fail("The player could not sell an owned market item back to the shop.")
+	var fruit_sell_button := _find_shop_button(shop_items_column, "Fruit basket", 2)
+	if fruit_sell_button == null or fruit_sell_button.disabled:
+		_fail("The market UI did not enable Sell for an owned item.")
 		return
+	fruit_sell_button.pressed.emit()
+	await process_frame
 	if int(missions.call("get_wallet")) != 887 or int(shop.call("get_quantity", "fruit_basket")) != 0:
-		_fail("The market sale did not return the correct value or remove the sold item.")
+		_fail("Clicking the market Sell button did not return the correct value or remove the sold item.")
 		return
-	if not bool(game.call("_purchase_market_item", "bottled_water")):
-		_fail("The player could not purchase the required Mission 003 water.")
+	var water_buy_button := _find_shop_button(shop_items_column, "Bottled water", 1)
+	if water_buy_button == null or water_buy_button.disabled:
+		_fail("The market UI did not expose an enabled Buy button for Mission 003 water.")
 		return
+	water_buy_button.pressed.emit()
+	await process_frame
 	if int(missions.get("mission_stage")) != 7 or int(missions.call("get_wallet")) != 875:
 		_fail("Buying bottled water did not advance Mission 003 and charge the correct price.")
 		return
@@ -590,6 +600,18 @@ func _run() -> void:
 	quit(0)
 
 
-func _fail(message: String) -> void:
+func _find_shop_button(items_column: VBoxContainer, item_name: String, button_index: int) -> Button:
+	if items_column == null:
+		return null
+	for row in items_column.get_children():
+		if row.get_child_count() <= button_index:
+			continue
+		var description := row.get_child(0) as Label
+		if description != null and description.text.contains(item_name):
+			return row.get_child(button_index) as Button
+	return null
+
+
+func _fail(message: String) -> void
 	push_error("FAIL: " + message)
 	quit(1)
