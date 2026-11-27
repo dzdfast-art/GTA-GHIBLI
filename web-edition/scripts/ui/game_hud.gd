@@ -2,6 +2,8 @@ extends CanvasLayer
 class_name GhibliWebHUD
 
 signal waypoint_selected(point_id: String, point_name: String, world_position: Vector3)
+signal shop_purchase_requested(item_id: String)
+signal shop_sell_requested(item_id: String)
 
 const WORLD_MAP_SCRIPT = preload("res://scripts/ui/world_map.gd")
 
@@ -95,6 +97,12 @@ var _vehicle_label: Label
 var _map_panel: PanelContainer
 var _minimap: MinimapCanvas
 var _map_canvas: Node
+var _shop_panel: PanelContainer
+var _shop_items_column: VBoxContainer
+var _shop_message_label: Label
+var _shop_catalog: Array[Dictionary] = []
+var _shop_inventory: Dictionary = {}
+var _shop_wallet: int = 0
 
 
 func _ready() -> void:
@@ -226,6 +234,36 @@ func _ready() -> void:
 	map_column.add_child(_make_label("Click a marker to set a waypoint • Wheel: zoom • Right-drag: pan • M: close", 14, Color(0.78, 0.84, 0.86)))
 	map_column.add_child(_make_label("Gold route follows the current connected starter-road graph.", 12, Color(0.70, 0.76, 0.77)))
 
+	_shop_panel = _make_panel()
+	_shop_panel.name = "MarketShopPanel"
+	_shop_panel.anchor_left = 0.5
+	_shop_panel.anchor_right = 0.5
+	_shop_panel.anchor_top = 0.5
+	_shop_panel.anchor_bottom = 0.5
+	_shop_panel.offset_left = -285.0
+	_shop_panel.offset_right = 285.0
+	_shop_panel.offset_top = -205.0
+	_shop_panel.offset_bottom = 205.0
+	_shop_panel.visible = false
+	_shop_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	root.add_child(_shop_panel)
+
+	var shop_column := VBoxContainer.new()
+	shop_column.add_theme_constant_override("separation", 8)
+	_shop_panel.add_child(shop_column)
+	shop_column.add_child(_make_label("HARBOR MARKET — BUY & SELL", 22, Color(1.0, 0.86, 0.54)))
+	shop_column.add_child(_make_label("Local goods • purchases and sales are saved with your game.", 13, Color(0.78, 0.84, 0.86)))
+	_shop_items_column = VBoxContainer.new()
+	_shop_items_column.add_theme_constant_override("separation", 6)
+	shop_column.add_child(_shop_items_column)
+	_shop_message_label = _make_label("Choose an item to trade.", 14, Color(0.88, 0.92, 0.82))
+	_shop_message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	shop_column.add_child(_shop_message_label)
+	var close_button := Button.new()
+	close_button.text = "Close shop"
+	close_button.pressed.connect(close_market_shop)
+	shop_column.add_child(close_button)
+
 
 func set_objective(text: String) -> void:
 	_objective_label.text = text
@@ -319,7 +357,89 @@ func toggle_map() -> void:
 	_map_panel.visible = not _map_panel.visible
 
 
-func _make_label(text: String, size: int, color: Color) -> Label:
+func open_market_shop(catalog: Array[Dictionary], inventory: Dictionary, wallet: int) -> void:
+	_shop_catalog = catalog.duplicate(true)
+	_shop_inventory = inventory.duplicate(true)
+	_shop_wallet = wallet
+	_shop_panel.visible = true
+	_shop_message_label.text = "Wallet: $%d — choose an item to trade." % wallet
+	_rebuild_market_shop()
+
+
+func update_market_shop(catalog: Array[Dictionary], inventory: Dictionary, wallet: int) -> void:
+	_shop_catalog = catalog.duplicate(true)
+	_shop_inventory = inventory.duplicate(true)
+	_shop_wallet = wallet
+	if _shop_panel.visible:
+		_rebuild_market_shop()
+
+
+func set_market_shop_message(message: String) -> void:
+	if _shop_message_label != null:
+		_shop_message_label.text = message
+
+
+func close_market_shop() -> void:
+	if _shop_panel != null:
+		_shop_panel.visible = false
+
+
+func is_market_shop_open() -> bool:
+	return _shop_panel != null and _shop_panel.visible
+
+
+func _rebuild_market_shop() -> void:
+	for child in _shop_items_column.get_children():
+		child.queue_free()
+	for item in _shop_catalog:
+		var item_id := str(item.get("id", ""))
+		var price := int(item.get("price", 0))
+		var stock := int(item.get("quantity", 0))
+		var owned := int(_shop_inventory.get(item_id, 0))
+		var row := HBoxContainer.new()
+		var description := _make_label(
+			"%s — $%d | Stock %d | Owned %d" % [_shop_item_name(item_id), price, stock, owned],
+			14,
+			Color(0.94, 0.91, 0.82)
+		)
+		description.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(description)
+
+		var buy_button := Button.new()
+		buy_button.text = "Buy ×1"
+		buy_button.disabled = stock <= 0 or _shop_wallet < price
+		buy_button.pressed.connect(_emit_shop_purchase.bind(item_id))
+		row.add_child(buy_button)
+
+		var sell_button := Button.new()
+		sell_button.text = "Sell ×1"
+		sell_button.disabled = owned <= 0
+		sell_button.pressed.connect(_emit_shop_sell.bind(item_id))
+		row.add_child(sell_button)
+		_shop_items_column.add_child(row)
+
+
+func _shop_item_name(item_id: String) -> String:
+	match item_id:
+		"bottled_water":
+			return "Bottled water / ماء معبأ"
+		"fruit_basket":
+			return "Fruit basket / سلة فواكه"
+		"first_aid_kit":
+			return "First-aid kit / حقيبة إسعاف"
+		_:
+			return item_id
+
+
+func _emit_shop_purchase(item_id: String) -> void:
+	shop_purchase_requested.emit(item_id)
+
+
+func _emit_shop_sell(item_id: String) -> void:
+	shop_sell_requested.emit(item_id)
+
+
+func _make_label(text: String, size: int, color: Color)
 	var label := Label.new()
 	label.text = text
 	label.add_theme_font_size_override("font_size", size)
