@@ -164,22 +164,28 @@ func handle_interaction(action_id: String) -> void:
 				notification_requested.emit("دخلت متجر Harbor Market — اختر المؤونة المطلوبة.")
 				_save_game()
 		"market_shop_purchase":
-			if mission_stage == 6:
-				mission_stage = 7
-				mission_step_completed.emit("mission_003", "buy_water")
-				dialogue_changed.emit(
-					"Harbor Market",
-					"حصلت على زجاجة الماء. عُد بها إلى Claire في Harbor City."
-				)
-				objective_changed.emit(get_objective())
-				notification_requested.emit("تم شراء المؤونة — عُد إلى Claire")
-				_save_game()
-			else:
-				notification_requested.emit("لا يوجد طلب شراء للمهمة الآن.")
+			notification_requested.emit("أكمل الشراء من واجهة متجر Harbor Market أولاً.")
 		"mia":
 			dialogue_changed.emit("Mia Bennett", "لا تنسَ أن تستكشف المدينة قبل أن تغادرها.")
 		_:
 			notification_requested.emit("لا يوجد تفاعل متاح هنا.")
+
+
+
+func record_market_purchase(item_id: String, owned_quantity: int) -> bool:
+	if mission_stage != 6 or item_id != "bottled_water" or owned_quantity < 1:
+		notification_requested.emit("يجب شراء زجاجة الماء المطلوبة أولاً.")
+		return false
+	mission_stage = 7
+	mission_step_completed.emit("mission_003", "buy_water")
+	dialogue_changed.emit(
+		"Harbor Market",
+		"حصلت على زجاجة الماء. عُد بها إلى Claire في Harbor City."
+	)
+	objective_changed.emit(get_objective())
+	notification_requested.emit("تم شراء المؤونة — عُد إلى Claire")
+	_save_game()
+	return true
 
 
 func reset_progress() -> void:
