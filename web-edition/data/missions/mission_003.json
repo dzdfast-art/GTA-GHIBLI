@@ -41,6 +41,7 @@
     "This is a provisional original story proposal and not a final approved chapter outline.",
     "The shop is an enterable in-world room with collision, entry/exit interactions, a clickable purchase/sell panel, stock limits and player inventory.",
     "Shop stock, player inventory, wallet, mission progress and economy ledger are part of the versioned live-game save payload.",
+    "Successful delivery consumes one bottled_water from player inventory without restoring shop stock.",
     "Dialogue remains text-only. No Arabic voice performance is claimed."
   ]
 }
