@@ -49,13 +49,33 @@ func _run() -> void:
 	if int(manager.get("mission_stage")) != 6:
 		_fail("Nora did not unlock Mission 003 after Mission 002.")
 		return
-	manager.call("handle_interaction", "market_enter")
-	if not bool(manager.call("set_wallet_balance", 888, "test_shop_purchase")):
-		_fail("The simulated shop purchase could not update the wallet.")
+	var shop: RefCounted = load("res://scripts/world/shop_inventory.gd").new()
+	if not bool(shop.call("add_item", "bottled_water", 12, 8)):
+		_fail("The Mission 003 test shop could not create its bottled-water stock.")
 		return
+	manager.call("handle_interaction", "market_enter")
 	manager.call("handle_interaction", "market_shop_purchase")
+	if int(manager.get("mission_stage")) != 6:
+		_fail("A direct purchase interaction bypassed the real shop transaction.")
+		return
+	if bool(manager.call("record_market_purchase", "bottled_water", 0)):
+		_fail("Mission 003 accepted a purchase without owned bottled water.")
+		return
+	var purchase: Dictionary = shop.call("purchase", "bottled_water", int(manager.call("get_wallet")), 1)
+	if not bool(purchase.get("ok", false)):
+		_fail("The real shop transaction could not buy the mission water.")
+		return
+	if not bool(manager.call("set_wallet_balance", int(purchase.get("wallet", -1)), "test_shop_purchase")):
+		_fail("The real shop purchase could not update the wallet.")
+		return
+	if not bool(manager.call("record_market_purchase", "bottled_water", int(shop.call("get_quantity", "bottled_water")))):
+		_fail("Mission 003 did not accept the purchased water inventory.")
+		return
 	if int(manager.get("mission_stage")) != 7:
-		_fail("The Mission 003 purchase step did not advance the campaign.")
+		_fail("The verified Mission 003 purchase step did not advance the campaign.")
+		return
+	if not bool(shop.call("consume", "bottled_water", 1)) or int(shop.call("get_quantity", "bottled_water")) != 0:
+		_fail("Delivering the mission water did not consume the carried item.")
 		return
 	manager.call("handle_interaction", "claire")
 	if int(manager.get("mission_stage")) != 8 or int(manager.call("get_wallet")) != 1038:
