@@ -65,6 +65,54 @@ func _run() -> void:
 		_fail("Minimap did not receive the live player world position.")
 		return
 
+	var points_of_interest: Array[Dictionary] = world.call("get_points_of_interest")
+	if points_of_interest.size() < 6:
+		_fail("The world map is missing its expected point-of-interest registry.")
+		return
+	var point_ids := {}
+	for point in points_of_interest:
+		var point_id := str(point.get("id", ""))
+		if point_id.is_empty() or point_ids.has(point_id):
+			_fail("Point-of-interest IDs must be present and unique.")
+			return
+		point_ids[point_id] = true
+		var point_position: Vector3 = point.get("position", Vector3.ZERO)
+		if world.call("get_region_name_at", point_position) != str(point.get("region", "")):
+			_fail("Point-of-interest region does not match its world coordinates.")
+			return
+
+	var world_map := hud.get_node_or_null(
+		"HUDRoot/WorldMapPanel/MapColumn/WorldMapCanvas"
+	) as Control
+	if world_map == null:
+		_fail("The interactive world-map canvas is missing.")
+		return
+	world_map.size = Vector2(740.0, 360.0)
+	hud.call("set_points_of_interest", points_of_interest)
+	var lighthouse_position: Vector3 = points_of_interest[0].get("position")
+	var lighthouse_map_position: Vector2 = world_map.call("world_to_map", lighthouse_position)
+	var selected_waypoint := {"id": ""}
+	hud.connect(
+		"waypoint_selected",
+		func(point_id: String, _point_name: String, _world_position: Vector3) -> void:
+			selected_waypoint["id"] = point_id
+	)
+	if not bool(world_map.call("select_nearest_point", lighthouse_map_position)):
+		_fail("Clicking a known map marker did not select a waypoint.")
+		return
+	if str(selected_waypoint["id"]) != "marsa_al_noor":
+		_fail("The world map selected the wrong point of interest.")
+		return
+	game.call("_on_waypoint_selected", "marsa_al_noor", "Marsa Al-Noor Lighthouse", lighthouse_position)
+	game.call("_process", 0.2)
+	var expected_direct_distance := "%.0f m" % player.global_position.distance_to(lighthouse_position)
+	if not str(hud.call("get_waypoint_status_text")).contains(expected_direct_distance):
+		_fail("The HUD did not show the live straight-line distance to the selected waypoint.")
+		return
+	if not bool(minimap.get("has_waypoint")) or minimap.get("waypoint_world_position") != lighthouse_position:
+		_fail("The minimap did not receive the selected waypoint marker.")
+		return
+
 	var start_position: Vector3 = player.global_position
 	Input.action_press("move_forward")
 	for _frame in range(24):
@@ -129,6 +177,8 @@ func _run() -> void:
 	print("PASS: fresh Web project main scene starts.")
 	print("PASS: four named region coordinates and three named interactive characters exist.")
 	print("PASS: minimap maps world bounds correctly and receives the live player position.")
+	print("PASS: world-map POIs have unique IDs and correct region coordinates.")
+	print("PASS: selecting a map marker sets the waypoint and updates direct-distance HUD/minimap state.")
 	print("PASS: keyboard movement moves the player.")
 	print("PASS: nearby E interaction enters the starter sedan; driving and E exit work.")
 	print("PASS: Claire and Nora world interactions complete Mission 001 and grant $250 once.")

@@ -11,6 +11,10 @@ var _missions: Node
 var _hud: CanvasLayer
 var _location_elapsed: float = 0.0
 var _minimap_elapsed: float = 0.0
+var _points_of_interest: Array[Dictionary] = []
+var _active_waypoint_id: String = ""
+var _active_waypoint_name: String = ""
+var _active_waypoint_position: Vector3 = Vector3.ZERO
 
 
 func _ready() -> void:
@@ -24,6 +28,7 @@ func _ready() -> void:
 	_world.name = "World"
 	add_child(_world)
 	_world.call("build_world")
+	_points_of_interest = _world.call("get_points_of_interest")
 
 	_player = PLAYER_SCRIPT.new()
 	_player.name = "Player"
@@ -33,12 +38,13 @@ func _ready() -> void:
 	_hud = HUD_SCRIPT.new()
 	_hud.name = "GameplayHUD"
 	add_child(_hud)
+	_hud.call("set_points_of_interest", _points_of_interest)
 
 	_connect_gameplay_signals()
 	_hud.call("set_objective", _missions.call("get_objective"))
 	_hud.call("set_wallet", _missions.call("get_wallet"))
 	_hud.call("set_location", _world.call("get_region_name_at", _player.global_position))
-	_hud.call("update_minimap", _player.global_position, _player.global_rotation.y)
+	_hud.call("update_minimap", _player.global_position, _player.global_rotation.y, _active_waypoint_position, false)
 
 
 func _process(delta: float) -> void:
@@ -49,7 +55,10 @@ func _process(delta: float) -> void:
 		_hud.call("set_location", _world.call("get_region_name_at", _player.global_position))
 	if _minimap_elapsed >= 0.12 and _player != null and _hud != null:
 		_minimap_elapsed = 0.0
-		_hud.call("update_minimap", _player.global_position, _player.global_rotation.y)
+		_hud.call("update_minimap", _player.global_position, _player.global_rotation.y, _active_waypoint_position, not _active_waypoint_id.is_empty())
+		if not _active_waypoint_id.is_empty():
+			var distance := _player.global_position.distance_to(_active_waypoint_position)
+			_hud.call("set_waypoint_status", _active_waypoint_name, distance)
 
 
 func _connect_gameplay_signals() -> void:
@@ -60,6 +69,7 @@ func _connect_gameplay_signals() -> void:
 	_player.prompt_changed.connect(_hud.set_prompt)
 	_player.map_toggled.connect(_hud.toggle_map)
 	_player.vehicle_state_changed.connect(_hud.set_vehicle_state)
+	_hud.connect("waypoint_selected", Callable(self, "_on_waypoint_selected"))
 
 	for actor in get_tree().get_nodes_in_group("interactables"):
 		if actor.has_signal("activated"):
@@ -83,3 +93,10 @@ func _create_environment() -> void:
 	sun.light_energy = 1.25
 	sun.shadow_enabled = true
 	add_child(sun)
+
+
+func _on_waypoint_selected(point_id: String, point_name: String, world_position: Vector3) -> void:
+	_active_waypoint_id = point_id
+	_active_waypoint_name = point_name
+	_active_waypoint_position = world_position
+	_hud.call("show_notification", "Waypoint selected — " + point_name)

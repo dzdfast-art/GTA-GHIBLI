@@ -29,6 +29,53 @@ func get_region_name_at(position: Vector3) -> String:
 	return REGION_NAMES[index]
 
 
+func get_points_of_interest() -> Array[Dictionary]:
+	return [
+		{
+			"id": "marsa_al_noor",
+			"name": "Marsa Al-Noor Lighthouse",
+			"region": "Harbor City",
+			"category": "landmark",
+			"position": Vector3(-79.0, 0.0, 17.0)
+		},
+		{
+			"id": "harbor_market",
+			"name": "Harbor Market",
+			"region": "Harbor City",
+			"category": "shop",
+			"position": Vector3(-81.0, 0.0, 21.0)
+		},
+		{
+			"id": "nora_blake",
+			"name": "Nora Blake",
+			"region": "Harbor City",
+			"category": "mission",
+			"position": Vector3(-75.0, 0.0, 11.0)
+		},
+		{
+			"id": "sapphire_cafe",
+			"name": "Sapphire Coast Cafe",
+			"region": "Sapphire Coast",
+			"category": "service",
+			"position": Vector3(-50.0, 0.0, -19.0)
+		},
+		{
+			"id": "pine_cabin",
+			"name": "Pine Highlands Cabin",
+			"region": "Pine Highlands",
+			"category": "rest",
+			"position": Vector3(14.0, 0.0, -18.0)
+		},
+		{
+			"id": "amber_farm",
+			"name": "Amber Valley Farm",
+			"region": "Amber Valley",
+			"category": "farm",
+			"position": Vector3(113.0, 0.0, -18.0)
+		}
+	]
+
+
 func _create_region(index: int) -> void:
 	var center_x: float = REGION_CENTERS[index]
 	var colors := [

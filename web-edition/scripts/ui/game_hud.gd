@@ -1,9 +1,15 @@
 extends CanvasLayer
 class_name GhibliWebHUD
 
+signal waypoint_selected(point_id: String, point_name: String, world_position: Vector3)
+
+const WORLD_MAP_SCRIPT = preload("res://scripts/ui/world_map.gd")
+
 class MinimapCanvas extends Control:
 	var player_world_position := Vector3(-114.0, 0.0, 0.0)
 	var player_heading: float = 0.0
+	var waypoint_world_position := Vector3.ZERO
+	var has_waypoint: bool = false
 	const WORLD_MIN := Vector2(-128.0, -32.0)
 	const WORLD_SIZE := Vector2(256.0, 64.0)
 	const REGION_COLORS := [
@@ -17,6 +23,11 @@ class MinimapCanvas extends Control:
 	func set_player_state(world_position: Vector3, heading: float) -> void:
 		player_world_position = world_position
 		player_heading = heading
+		queue_redraw()
+
+	func set_waypoint(world_position: Vector3, active: bool) -> void:
+		waypoint_world_position = world_position
+		has_waypoint = active
 		queue_redraw()
 
 	func world_to_map(world_position: Vector3, map_size: Vector2 = Vector2(180.0, 132.0)) -> Vector2:
@@ -51,10 +62,16 @@ class MinimapCanvas extends Control:
 		draw_line(player_point, player_point + heading_vector * 11.0, Color(0.98, 0.98, 0.94), 2.0)
 		draw_circle(player_point, 5.0, Color(0.20, 0.82, 1.0))
 		draw_arc(player_point, 7.0, 0.0, TAU, 20, Color(0.97, 0.98, 0.92), 1.3)
+		if has_waypoint:
+			var waypoint_point := world_to_map(waypoint_world_position, size)
+			draw_line(player_point, waypoint_point, Color(1.0, 0.78, 0.26, 0.9), 1.8)
+			draw_circle(waypoint_point, 4.0, Color(1.0, 0.78, 0.26))
+			draw_arc(waypoint_point, 7.0, 0.0, TAU, 20, Color(1.0, 0.90, 0.58), 1.2)
 
 
 var _objective_label: Label
 var _location_label: Label
+var _waypoint_label: Label
 var _cash_label: Label
 var _prompt_label: Label
 var _dialogue_label: Label
@@ -62,6 +79,7 @@ var _notice_label: Label
 var _vehicle_label: Label
 var _map_panel: PanelContainer
 var _minimap: MinimapCanvas
+var _map_canvas: Node
 
 
 func _ready() -> void:
@@ -73,14 +91,16 @@ func _ready() -> void:
 
 	var info_panel := _make_panel()
 	info_panel.position = Vector2(22.0, 20.0)
-	info_panel.custom_minimum_size = Vector2(370.0, 112.0)
+	info_panel.custom_minimum_size = Vector2(390.0, 142.0)
 	root.add_child(info_panel)
 	var info_column := VBoxContainer.new()
 	info_panel.add_child(info_column)
 	_objective_label = _make_label("Mission 001 — تحدث إلى Claire Bennett", 19, Color(1.0, 0.91, 0.69))
 	_location_label = _make_label("Harbor City", 15, Color(0.82, 0.88, 0.89))
+	_waypoint_label = _make_label("", 14, Color(1.0, 0.82, 0.43))
 	info_column.add_child(_objective_label)
 	info_column.add_child(_location_label)
+	info_column.add_child(_waypoint_label)
 
 	var status_panel := _make_panel()
 	status_panel.anchor_left = 1.0
@@ -158,25 +178,29 @@ func _ready() -> void:
 	root.add_child(_notice_label)
 
 	_map_panel = _make_panel()
+	_map_panel.name = "WorldMapPanel"
 	_map_panel.anchor_left = 0.5
 	_map_panel.anchor_right = 0.5
 	_map_panel.anchor_top = 0.5
 	_map_panel.anchor_bottom = 0.5
-	_map_panel.offset_left = -250.0
-	_map_panel.offset_right = 250.0
-	_map_panel.offset_top = -175.0
-	_map_panel.offset_bottom = 175.0
+	_map_panel.offset_left = -390.0
+	_map_panel.offset_right = 390.0
+	_map_panel.offset_top = -250.0
+	_map_panel.offset_bottom = 250.0
 	_map_panel.visible = false
 	root.add_child(_map_panel)
 
 	var map_column := VBoxContainer.new()
+	map_column.name = "MapColumn"
 	_map_panel.add_child(map_column)
 	map_column.add_child(_make_label("GTA GHIBLI — WORLD MAP", 22, Color(1.0, 0.86, 0.54)))
-	map_column.add_child(_make_label("Harbor City  ───  Sapphire Coast", 18, Color(0.83, 0.90, 0.91)))
-	map_column.add_child(_make_label("       │                         │", 18, Color(0.83, 0.90, 0.91)))
-	map_column.add_child(_make_label("Pine Highlands ─── Amber Valley", 18, Color(0.83, 0.90, 0.91)))
-	map_column.add_child(_make_label("Marsa Al-Noor: Harbor City (موقع أولي)", 15, Color(0.94, 0.84, 0.63)))
-	map_column.add_child(_make_label("M — إغلاق الخريطة", 14, Color(0.78, 0.84, 0.86)))
+	_map_canvas = WORLD_MAP_SCRIPT.new()
+	_map_canvas.name = "WorldMapCanvas"
+	_map_canvas.set("custom_minimum_size", Vector2(740.0, 360.0))
+	map_column.add_child(_map_canvas)
+	_map_canvas.connect("waypoint_selected", Callable(self, "_forward_waypoint_selection"))
+	map_column.add_child(_make_label("Click a marker to set a waypoint • Wheel: zoom • Right-drag: pan • M: close", 14, Color(0.78, 0.84, 0.86)))
+	map_column.add_child(_make_label("Waypoint distance is direct-line distance, not road GPS.", 12, Color(0.70, 0.76, 0.77)))
 
 
 func set_objective(text: String) -> void:
@@ -199,8 +223,38 @@ func set_vehicle_state(is_driving: bool, vehicle_name: String) -> void:
 	_vehicle_label.text = ("DRIVING — " + vehicle_name + "   W/S move  A/D steer  Ctrl brake  E exit") if is_driving else ""
 
 
-func update_minimap(world_position: Vector3, heading: float) -> void:
+func set_points_of_interest(points: Array[Dictionary]) -> void:
+	_map_canvas.call("set_points_of_interest", points)
+
+
+func update_minimap(
+	world_position: Vector3,
+	heading: float,
+	waypoint_position: Vector3 = Vector3.ZERO,
+	has_waypoint: bool = false
+) -> void:
 	_minimap.set_player_state(world_position, heading)
+	_minimap.set_waypoint(waypoint_position, has_waypoint)
+	_map_canvas.call("set_player_state", world_position, heading)
+
+
+func set_waypoint_status(point_name: String, distance: float) -> void:
+	if point_name.is_empty():
+		_waypoint_label.text = ""
+		return
+	_waypoint_label.text = "WAYPOINT — %s · %.0f m (direct)" % [point_name, distance]
+
+
+func get_waypoint_status_text() -> String:
+	return _waypoint_label.text
+
+
+func _forward_waypoint_selection(
+	point_id: String,
+	point_name: String,
+	world_position: Vector3
+) -> void:
+	waypoint_selected.emit(point_id, point_name, world_position)
 
 
 func show_dialogue(speaker: String, line: String) -> void:

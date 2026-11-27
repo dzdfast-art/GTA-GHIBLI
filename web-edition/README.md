@@ -21,7 +21,8 @@ Controls:
 - **E** — interact / enter or exit the starter sedan.
 - **Right mouse button + drag** — orbit the third-person camera.
 - **Mouse wheel** — zoom camera.
-- **M** — open or close the map overlay.
+- **M** — open or close the interactive world map.
+- **Map** — click a point-of-interest marker to set a waypoint; use the mouse wheel to zoom and right-drag to pan.
 - **Ctrl** — brake the starter sedan.
 
 For a Web export, select the `Web` preset and export to `build/web/index.html`. Serve the exported folder over HTTP(S); do not launch it through `file://`.
@@ -33,10 +34,10 @@ For a Web export, select the `Web` preset and export to `build/web/index.html`. 
 - Original temporary placeholder representations for Leo, Claire, Mia and Nora.
 - A first text-only mission with two interactive stages, a $250 reward and a local save file.
 - A first functional sedan with basic acceleration, steering, reverse and braking.
-- Basic HUD, region label and a preliminary map overlay.
+- Gameplay HUD, region label, a live minimap and an interactive world map with six original points of interest and selectable waypoints.
 
 ## Important limitations
 
-The region geometry and character/vehicle models are blockout placeholders, not finished art. This milestone does not yet contain the full open world, a complete road/GPS network, detailed interiors, a final rig/animation set, weapon combat, traffic/police simulation, all vehicle classes, a complete mission campaign, weather, original music or verified Arabic voice performances. Those requirements are tracked in `../docs/WEB_EDITION_MASTER_SPEC.md` and `../docs/WEB_EDITION_STATUS.md`.
+The region geometry and character/vehicle models are blockout placeholders, not finished art. Waypoint distance is currently straight-line guidance; road-graph GPS routing, route snapping and turn-by-turn guidance are not implemented yet. This milestone does not yet contain the full open world, a complete road/GPS network, detailed interiors, a final rig/animation set, weapon combat, traffic/police simulation, all vehicle classes, a complete mission campaign, weather, original music or verified Arabic voice performances. Those requirements are tracked in `../docs/WEB_EDITION_MASTER_SPEC.md` and `../docs/WEB_EDITION_STATUS.md`.
 
 CI builds and tests the Web export, then retains a downloadable `GTA-GHIBLI-Web-Edition` Actions artifact for 14 days. The artifact is available to repository users with Actions access; this does not publish or host the game publicly.
