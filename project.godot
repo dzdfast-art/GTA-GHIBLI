@@ -3,6 +3,7 @@ config_version=5
 
 [application]
 config/name="GTA GHIBLI"
+config/icon="res://assets/ui/gta_ghibli_icon.svg"
 run/main_scene="res://main.tscn"
 
 [audio]
