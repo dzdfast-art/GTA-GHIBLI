@@ -89,7 +89,8 @@ func get_points_of_interest() -> Array[Dictionary]:
 			"name": "Claire Bennett",
 			"region": "Harbor City",
 			"category": "mission",
-			"position": Vector3(-113.0, 0.0, -4.0)
+			"position": Vector3(-113.0, 0.0, -4.0),
+			"road_access_x": -128.0
 		}
 	]
 
@@ -99,7 +100,7 @@ func get_road_graph() -> Dictionary:
 	var road_x_values: Array[float] = [-128.0, -96.0, -64.0, -32.0, 0.0, 32.0, 64.0, 96.0, 128.0]
 	for point in points:
 		var position: Vector3 = point["position"]
-		road_x_values.append(position.x)
+		road_x_values.append(float(point.get("road_access_x", position.x)))
 	road_x_values.sort()
 
 	var unique_x_values: Array[float] = []
@@ -171,14 +172,15 @@ func get_road_graph() -> Dictionary:
 	for point in points:
 		var point_id := str(point["id"])
 		var point_position: Vector3 = point["position"]
-		var road_node_id := str(road_node_ids[point_position.x])
+		var road_access_x := float(point.get("road_access_x", point_position.x))
+		var road_node_id := str(road_node_ids[road_access_x])
 		var poi_node_id := "poi_" + point_id
 		nodes.append({"id": poi_node_id, "position": point_position, "kind": "poi"})
 		edges.append({
 			"id": "access_" + point_id,
 			"from": road_node_id,
 			"to": poi_node_id,
-			"cost": point_position.distance_to(Vector3(point_position.x, 0.0, 0.0))
+			"cost": point_position.distance_to(Vector3(road_access_x, 0.0, 0.0))
 		})
 
 	return {"nodes": nodes, "edges": edges}
