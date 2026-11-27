@@ -232,7 +232,43 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p web-edition/build
-          (cd web-edition/build/web && zip -q -r ../GTA-GHIBLI-Web.zip .)
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
+
+          source = Path("web-edition/build/web")
+          output = Path("web-edition/build/GTA-GHIBLI-Web.zip")
+          repeat = Path("web-edition/build/GTA-GHIBLI-Web-repeat.zip")
+
+          def write_archive(target: Path) -> None:
+              with ZipFile(target, "w", compression=ZIP_DEFLATED, compresslevel=9) as archive:
+                  for path in sorted(item for item in source.rglob("*") if item.is_file()):
+                      info = ZipInfo(
+                          path.relative_to(source).as_posix(),
+                          date_time=(2020, 1, 1, 0, 0, 0)
+                      )
+                      info.create_system = 3
+                      info.external_attr = 0o100644 << 16
+                      info.compress_type = ZIP_DEFLATED
+                      info.compresslevel = 9
+                      archive.writestr(
+                          info,
+                          path.read_bytes(),
+                          compress_type=ZIP_DEFLATED,
+                          compresslevel=9
+                      )
+
+          write_archive(output)
+          write_archive(repeat)
+          first_hash = hashlib.sha256(output.read_bytes()).hexdigest()
+          repeat_hash = hashlib.sha256(repeat.read_bytes()).hexdigest()
+          if first_hash != repeat_hash:
+              raise SystemExit("The temporary Web ZIP is not reproducible.")
+          repeat.unlink()
+          print("WEB_ZIP_REPRODUCIBLE=true")
+          print(f"WEB_ZIP_SHA256_CHECK={first_hash}")
+          PY
           bytes="$(stat -c%s web-edition/build/GTA-GHIBLI-Web.zip)"
           python3 - "$bytes" <<'PY' > web-edition/build/web-size.txt
           import hashlib
