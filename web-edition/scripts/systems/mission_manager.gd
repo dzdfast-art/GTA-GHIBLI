@@ -158,6 +158,11 @@ func handle_interaction(action_id: String) -> void:
 				notification_requested.emit("تحدث إلى Nora أولاً لمعرفة ما يجب فحصه.")
 			else:
 				notification_requested.emit("لا يوجد إشعار جديد لفحصه الآن.")
+		"market_enter":
+			if mission_stage == 6:
+				mission_step_completed.emit("mission_003", "enter_market")
+				notification_requested.emit("دخلت متجر Harbor Market — اختر المؤونة المطلوبة.")
+				_save_game()
 		"market_shop_purchase":
 			if mission_stage == 6:
 				mission_stage = 7
