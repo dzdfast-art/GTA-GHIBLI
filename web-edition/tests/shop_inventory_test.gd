@@ -36,6 +36,12 @@ func _run() -> void:
 	assert(restored.call("add_item", "water", 5, 3))
 	assert(restored.call("restore", saved))
 	assert(restored.call("snapshot") == saved)
+	assert(restored.call("consume", "water", 1))
+	assert(restored.call("get_quantity", "water") == 0)
+	assert(int(restored.get("stock").water.quantity) == 2)
+	assert(not bool(restored.call("consume", "water", 1)))
+	assert(restored.call("restore", saved))
+	assert(restored.call("get_quantity", "water") == 1)
 
 	var invalid_snapshot: Dictionary = saved.duplicate(true)
 	invalid_snapshot.stock.water.price = 99
