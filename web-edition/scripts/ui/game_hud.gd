@@ -439,7 +439,7 @@ func _emit_shop_sell(item_id: String) -> void:
 	shop_sell_requested.emit(item_id)
 
 
-func _make_label(text: String, size: int, color: Color)
+func _make_label(text: String, size: int, color: Color) -> Label:
 	var label := Label.new()
 	label.text = text
 	label.add_theme_font_size_override("font_size", size)
