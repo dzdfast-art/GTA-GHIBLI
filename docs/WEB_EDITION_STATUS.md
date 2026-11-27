@@ -451,9 +451,9 @@ Next: build a third mission slice only after the current two-mission save/waypoi
 - The original clean-project branch `web/standalone-from-empty-2026-11-22` remains at `9cdcec813aa874532e9c4c5d3113f967a9a0a26a`.
 - PR #35 is closed and merged since 2026-11-22; it is not an open Draft. This run did not merge, close or retarget any PR.
 - PR #114, #115 and #116 are Draft/open. PR #116 is stacked on PR #115's branch `feature/web-mission-002-harbor-market-20261126`; it remains unmerged.
-- Mission 003 gameplay code was tested at `4a4ad91714b394d02139643570132dbc2002f42d`. The documentation/mission-note follow-up was tested on `25e6bf932a0907e4a6ea1d3f5437c3ea136913ef` by PR CI #45981335814; this status-only correction does not change Web source or export inputs.
+- Mission 003 gameplay code first passed at `4a4ad91714b394d02139643570132dbc2002f42d`; the documentation/mission-note follow-up passed at `25e6bf932a0907e4a6ea1d3f5437c3ea136913ef`. The current head `51775afefc2f30107747fbbad2bea42a83af920e` adds deterministic temporary ZIP packaging and passed PR Web CI #45982581835 plus Security Audit #45982581734.
 - Earlier Web CI [#45979482404](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45979482404) failed because the market-entry interaction did not record its objective. That failure is retained as evidence and is not counted as a pass. The missing objective registration and entry-step signal were corrected.
-- Corrected Web CI [#45980722964 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45980722964) and Security Audit [#45980987636 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45980987636) both tested the gameplay commit above.
+- Corrected gameplay Web CI [#45980722964 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45980722964) and Security Audit [#45980987636 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45980987636) tested the mission fixes. Latest full PR Web CI [#45982581835 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45982581835) and Security Audit [#45982581734 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45982581734) tested the current deterministic-packaging head.
 
 ### What changed
 - Mission 003, `مؤونة الطريق`, now progresses from Nora to the physical Harbor Market interior, through a real shop purchase, and back to Claire for delivery and a one-time $150 reward.
@@ -470,6 +470,7 @@ Next: build a third mission slice only after the current two-mission save/waypoi
 - Chromium served the exported game from `127.0.0.1`; WebGL 2 initialized at 1280×720, keyboard/mouse events were delivered, and no browser runtime errors or external runtime requests were observed.
 - The live game save passed same-origin page reload and separate Chromium process restart using the same persistent profile. The controlled IndexedDB-unavailable test retained session-only readability and did not claim durable storage.
 - The CI job completed successfully and removed the temporary export and ZIP. The Actions artifact list was empty.
+- The ZIP is now generated from sorted file paths with fixed timestamps and permissions. CI builds it twice and compares SHA-256; `WEB_ZIP_REPRODUCIBLE=true` passed. An earlier attempt failed on an unsupported `ZipInfo.compresslevel` attribute; that line was removed before the successful run.
 
 ### Exact source and Web export measurements
 | Measurement | Result |
@@ -480,8 +481,9 @@ Next: build a third mission slice only after the current two-mission save/waypoi
 | Unique tracked content bytes | 319,060 bytes (0.304 MiB) |
 | Temporary Web export files | 8 |
 | Uncompressed Web export | 40,023,216 bytes (40.023 MB; 38.169 MiB) |
-| Compressed Web ZIP | 10,402,800 bytes (10.403 MB; 9.921 MiB) |
-| ZIP SHA-256 | `59a948401e9ffe3311e6ec66e1a9f6705c0e41128c084ccdb704ad8ad418c675` |
+| Compressed Web ZIP | 10,312,719 bytes (10.313 MB; 9.835 MiB) |
+| ZIP reproducibility | **TESTED** | Two archives built in one CI run had identical SHA-256 using sorted paths and fixed timestamps/permissions |
+| ZIP SHA-256 | `ca24cfb78a6c07ff34c1cbd57b0155bbc1e3665bbdc3c1d599e16dd5f985079e` |
 
 The export and ZIP were created only on the ephemeral runner, measured and deleted. No downloadable Actions artifact was retained. These measurements include the Godot Web runtime and current game pack; they are not all unique authored art. The long-term 4 GB genuine-content target is **NOT REACHED**.
 
