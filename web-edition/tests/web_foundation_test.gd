@@ -494,6 +494,10 @@ func _run() -> void:
 	if int(missions.call("get_wallet")) != 887 or int(shop.call("get_quantity", "fruit_basket")) != 0:
 		_fail("Clicking the market Sell button did not return the correct value or remove the sold item.")
 		return
+	claire.call("activate")
+	if int(missions.get("mission_stage")) != 6 or int(missions.call("get_wallet")) != 887:
+		_fail("Claire accepted Mission 003 delivery before the water was purchased.")
+		return
 	var water_buy_button := _find_shop_button(shop_items_column, "Bottled water", 1)
 	if water_buy_button == null or water_buy_button.disabled:
 		_fail("The market UI did not expose an enabled Buy button for Mission 003 water.")
@@ -506,15 +510,21 @@ func _run() -> void:
 	if int(shop.call("get_quantity", "bottled_water")) != 1 or str(game.get("_active_waypoint_id")) != "claire_bennett":
 		_fail("Mission 003 did not retain its purchased water and route back to Claire.")
 		return
+	if bool(game.call("_sell_market_item", "bottled_water")) or int(shop.call("get_quantity", "bottled_water")) != 1 or int(missions.call("get_wallet")) != 875:
+		_fail("The mission water could be sold before delivery.")
+		return
 	claire.call("activate")
 	if int(missions.get("mission_stage")) != 8 or int(missions.call("get_wallet")) != 1025:
 		_fail("Delivering the purchased water to Claire did not complete Mission 003 with its $150 reward.")
 		return
+	if int(shop.call("get_quantity", "bottled_water")) != 0:
+		_fail("Claire's successful delivery did not consume the bottled-water inventory item.")
+		return
 	claire.call("activate")
-	if int(missions.call("get_wallet")) != 1025:
+	if int(missions.call("get_wallet")) != 1025 or int(shop.call("get_quantity", "bottled_water")) != 0:
 		_fail("Mission 003 reward was paid more than once.")
 		return
-	if not bool(objectives.call("is_complete", "mission_003_nora_start")) or not bool(objectives.call("is_complete", "mission_003_buy_water")) or not bool(objectives.call("is_complete", "mission_003_return_to_claire")):
+	if not bool(objectives.call("is_complete", "mission_003_nora_start")) or not bool(objectives.call("is_complete", "mission_003_enter_market")) or not bool(objectives.call("is_complete", "mission_003_buy_water")) or not bool(objectives.call("is_complete", "mission_003_return_to_claire")):
 		_fail("Mission 003 objective progress was not recorded.")
 		return
 	if not bool(rewards.call("is_settled", "mission_003")) or int(rewards.call("get_reward", "mission_003").get("cash", 0)) != 150:
@@ -538,8 +548,8 @@ func _run() -> void:
 	if int(autosave_payload.get("schema_version", 0)) != 1 or int(autosave_missions.get("stage", -1)) != 8 or int(autosave_missions.get("wallet", -1)) != 1025:
 		_fail("The game root did not persist Mission 003 stage and wallet in its versioned live-game autosave slot.")
 		return
-	if int(autosave_inventory.get("bottled_water", 0)) != 1 or int(autosave_stock.get("bottled_water", {}).get("quantity", -1)) != 7:
-		_fail("The game root did not persist market inventory and remaining stock.")
+	if int(autosave_inventory.get("bottled_water", 0)) != 0 or int(autosave_stock.get("bottled_water", {}).get("quantity", -1)) != 7:
+		_fail("The game root did not persist consumed delivery inventory and remaining market stock.")
 		return
 
 	var pause_save_position: Vector3 = player.global_position + Vector3(1.25, 0.0, 0.75)
