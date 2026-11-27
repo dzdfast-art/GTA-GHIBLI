@@ -86,8 +86,8 @@ func find_route(
 	if _nodes.is_empty() or max_snap_distance <= 0.0:
 		return _unreachable("Road graph is not configured.")
 
-	var start_id := _find_nearest_node(start_position, max_snap_distance)
-	var destination_id := _find_nearest_node(destination_position, max_snap_distance)
+	var start_id := _find_nearest_node(start_position, max_snap_distance, true)
+	var destination_id := _find_nearest_node(destination_position, max_snap_distance, false)
 	if start_id.is_empty() or destination_id.is_empty():
 		return _unreachable("Start or destination is too far from the road graph.")
 
@@ -257,11 +257,14 @@ func _build_maneuvers(path: Array[Vector3]) -> Array[Dictionary]:
 	return maneuvers
 
 
-func _find_nearest_node(position: Vector3, max_distance: float) -> String:
+func _find_nearest_node(position: Vector3, max_distance: float, road_nodes_only: bool = false) -> String:
 	var nearest_id := ""
 	var nearest_distance := max_distance
 	for node_id in _nodes:
-		var node_position: Vector3 = _nodes[node_id]["position"]
+		var node: Dictionary = _nodes[node_id]
+		if road_nodes_only and str(node.get("kind", "")) == "poi":
+			continue
+		var node_position: Vector3 = node["position"]
 		var distance := position.distance_to(node_position)
 		if distance <= nearest_distance:
 			nearest_distance = distance
