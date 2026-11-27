@@ -593,6 +593,8 @@ func _on_mission_step_completed(mission_id: String, step_id: String) -> void:
 			match step_id:
 				"start_at_nora":
 					objective_id = "mission_003_nora_start"
+				"enter_market":
+					objective_id = "mission_003_enter_market"
 				"buy_water":
 					objective_id = "mission_003_buy_water"
 				"return_to_claire":
@@ -668,6 +670,7 @@ func _synchronize_campaign_runtime_from_manager() -> void:
 	if stage >= 6:
 		objectives.call("add_progress", "mission_003_nora_start", 1)
 	if stage >= 7:
+		objectives.call("add_progress", "mission_003_enter_market", 1)
 		objectives.call("add_progress", "mission_003_buy_water", 1)
 	if stage >= 8:
 		objectives.call("add_progress", "mission_003_return_to_claire", 1)
