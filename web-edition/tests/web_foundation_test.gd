@@ -458,8 +458,8 @@ func _run() -> void:
 		_fail("The enterable Harbor Market interior or its entry, exit and counter interactions are missing.")
 		return
 	var market_floor := market_room.get_node_or_null("MarketFloor") as StaticBody3D
-	var market_floor_collision := market_room.get_node_or_null("MarketFloor/CollisionShape3D")
-	var north_wall_collision := market_room.get_node_or_null("NorthWallLeft/CollisionShape3D")
+	var market_floor_collision := market_room.get_node_or_null("MarketFloor/FloorCollision")
+	var north_wall_collision := market_room.get_node_or_null("NorthWallLeft/WallCollision")
 	if market_floor == null or market_floor_collision == null or north_wall_collision == null:
 		_fail("The shop interior is missing its floor or wall collision.")
 		return
