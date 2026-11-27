@@ -70,6 +70,20 @@ func sell(item_id: String, wallet: int, quantity: int = 1) -> Dictionary:
 	}
 
 
+func consume(item_id: String, quantity: int = 1) -> bool:
+	if item_id.is_empty() or quantity <= 0 or not inventory.has(item_id):
+		return false
+	var owned := int(inventory.get(item_id, 0))
+	if owned < quantity:
+		return false
+	var remaining := owned - quantity
+	if remaining == 0:
+		inventory.erase(item_id)
+	else:
+		inventory[item_id] = remaining
+	return true
+
+
 func get_quantity(item_id: String) -> int:
 	return int(inventory.get(item_id, 0))
 
