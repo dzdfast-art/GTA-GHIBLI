@@ -180,6 +180,9 @@ jobs:
       - name: Test four open-world districts
         run: godot --headless --path . --script res://tests/open_world_regions_test.gd
 
+      - name: Test Harbor City gantry crane interaction and hoist
+        run: godot --headless --path . --script res://tests/harbor_gantry_crane_test.gd
+
       - name: Test regional terrain expansion attachment
         run: godot --headless --path . --script res://tests/terrain_expansion_runtime_test.gd
 
