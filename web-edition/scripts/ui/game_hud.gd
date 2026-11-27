@@ -55,6 +55,7 @@ class MinimapCanvas extends Control:
 
 var _objective_label: Label
 var _location_label: Label
+var _clock_label: Label
 var _cash_label: Label
 var _prompt_label: Label
 var _dialogue_label: Label
@@ -83,15 +84,23 @@ func _ready() -> void:
 	info_column.add_child(_location_label)
 
 	var status_panel := _make_panel()
+	status_panel.name = "StatusPanel"
 	status_panel.anchor_left = 1.0
 	status_panel.anchor_right = 1.0
 	status_panel.offset_left = -190.0
 	status_panel.offset_right = -22.0
 	status_panel.offset_top = 20.0
-	status_panel.offset_bottom = 76.0
+	status_panel.offset_bottom = 98.0
 	root.add_child(status_panel)
+	var status_column := VBoxContainer.new()
+	status_column.name = "StatusColumn"
+	status_panel.add_child(status_column)
+	_clock_label = _make_label("TIME 08:00", 16, Color(0.86, 0.90, 0.95))
+	_clock_label.name = "WorldClockLabel"
 	_cash_label = _make_label("$350", 22, Color(1.0, 0.87, 0.47))
-	status_panel.add_child(_cash_label)
+	_cash_label.name = "WalletLabel"
+	status_column.add_child(_clock_label)
+	status_column.add_child(_cash_label)
 
 	_vehicle_label = _make_label("", 16, Color(0.90, 0.93, 0.98))
 	_vehicle_label.anchor_left = 1.0
@@ -100,8 +109,8 @@ func _ready() -> void:
 	_vehicle_label.anchor_bottom = 0.0
 	_vehicle_label.offset_left = -250.0
 	_vehicle_label.offset_right = -22.0
-	_vehicle_label.offset_top = 88.0
-	_vehicle_label.offset_bottom = 118.0
+	_vehicle_label.offset_top = 110.0
+	_vehicle_label.offset_bottom = 140.0
 	_vehicle_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	root.add_child(_vehicle_label)
 
@@ -111,8 +120,8 @@ func _ready() -> void:
 	minimap_panel.anchor_right = 1.0
 	minimap_panel.offset_left = -218.0
 	minimap_panel.offset_right = -22.0
-	minimap_panel.offset_top = 132.0
-	minimap_panel.offset_bottom = 286.0
+	minimap_panel.offset_top = 154.0
+	minimap_panel.offset_bottom = 308.0
 	root.add_child(minimap_panel)
 	_minimap = MinimapCanvas.new()
 	_minimap.name = "WorldMinimap"
@@ -185,6 +194,10 @@ func set_objective(text: String) -> void:
 
 func set_location(text: String) -> void:
 	_location_label.text = "Location — " + text
+
+
+func set_clock(time_text: String) -> void:
+	_clock_label.text = "TIME " + time_text
 
 
 func set_wallet(amount: int) -> void:

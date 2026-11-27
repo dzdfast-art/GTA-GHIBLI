@@ -19,9 +19,14 @@ func _run() -> void:
 	var player := game.get_node_or_null("Player")
 	var world := game.get_node_or_null("World")
 	var missions := game.get_node_or_null("MissionManager")
+	var world_clock := game.get_node_or_null("WorldClock")
+	var world_sun := game.get_node_or_null("WorldSun") as DirectionalLight3D
 	var hud := game.get_node_or_null("GameplayHUD")
 	if player == null or world == null or missions == null or hud == null:
-		_fail("Player, World, or MissionManager is missing from the new project.")
+		_fail("Player, World, MissionManager, or HUD is missing from the new project.")
+		return
+	if world_clock == null or world_sun == null:
+		_fail("The world clock or its directional sun is missing.")
 		return
 
 	var interactables := get_nodes_in_group("interactables")
@@ -38,6 +43,33 @@ func _run() -> void:
 	var vehicles := get_nodes_in_group("drivable_vehicles")
 	if vehicles.size() != 1:
 		_fail("Expected one functional starter sedan in the foundation milestone.")
+		return
+
+	world_clock.call("set_time", 6, 0)
+	var dawn_energy := float(world_sun.get("light_energy"))
+	world_clock.call("set_time", 12, 0)
+	var midday_energy := float(world_sun.get("light_energy"))
+	if midday_energy <= dawn_energy:
+		_fail("Daylight did not brighten the sun between sunrise and noon.")
+		return
+	world_clock.call("set_time", 12, 34)
+	if str(world_clock.call("get_time_text")) != "12:34":
+		_fail("The world clock did not format the requested game time.")
+		return
+
+	var clock_label := hud.get_node_or_null(
+		"HUDRoot/StatusPanel/StatusColumn/WorldClockLabel"
+	) as Label
+	if clock_label == null or clock_label.text != "TIME 12:34":
+		_fail("The HUD did not display the live world clock.")
+		return
+
+	world_clock.call("_save_time")
+	var restored_clock: Node = load("res://scripts/systems/world_clock.gd").new()
+	root.add_child(restored_clock)
+	await process_frame
+	if str(restored_clock.call("get_time_text")) != "12:34":
+		_fail("The world clock did not restore its saved time.")
 		return
 
 	var expected_regions := [
@@ -128,6 +160,8 @@ func _run() -> void:
 
 	print("PASS: fresh Web project main scene starts.")
 	print("PASS: four named region coordinates and three named interactive characters exist.")
+	print("PASS: world clock formats time, updates the sun/daylight and is saved/restored.")
+	print("PASS: HUD displays the live in-game clock.")
 	print("PASS: minimap maps world bounds correctly and receives the live player position.")
 	print("PASS: keyboard movement moves the player.")
 	print("PASS: nearby E interaction enters the starter sedan; driving and E exit work.")
@@ -135,6 +169,7 @@ func _run() -> void:
 	print("PASS: Mission 001 stage and $600 wallet restore through a new manager instance.")
 	print("NOTE: this is foundation regression coverage, not full-game acceptance.")
 	restored_manager.queue_free()
+	restored_clock.queue_free()
 	game.queue_free()
 	await process_frame
 	quit(0)
