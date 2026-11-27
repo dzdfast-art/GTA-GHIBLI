@@ -464,6 +464,9 @@ func _run() -> void:
 		_fail("The shop interior is missing its floor or wall collision.")
 		return
 	market_entry.call("activate")
+	if not bool(objectives.call("is_complete", "mission_003_enter_market")):
+		_fail("Entering the market did not record the Mission 003 interior objective.")
+		return
 	if player.global_position.distance_to(Vector3(-81.0, 0.05, 31.2)) > 0.1:
 		_fail("The market entrance did not move the player into the shop interior.")
 		return
