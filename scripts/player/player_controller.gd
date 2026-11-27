@@ -1,6 +1,7 @@
 extends CharacterBody3D
 
 @export var move_speed: float = 5.0
+@export_range(1.0, 2.5, 0.05) var sprint_multiplier: float = 1.6
 @export var acceleration: float = 18.0
 @export var gravity: float = 18.0
 @export var turn_speed: float = 12.0
@@ -35,6 +36,8 @@ func _physics_process(delta: float) -> void:
 	if move_direction.length_squared() > 1.0:
 		move_direction = move_direction.normalized()
 	var effective_move_speed := move_speed
+	if InputMap.has_action("sprint") and Input.is_action_pressed("sprint"):
+		effective_move_speed *= maxf(1.0, sprint_multiplier)
 	var needs := get_node_or_null("PlayerNeeds")
 	if needs != null and needs.has_method("get_movement_multiplier"):
 		effective_move_speed *= clampf(float(needs.call("get_movement_multiplier")), 0.4, 1.0)
