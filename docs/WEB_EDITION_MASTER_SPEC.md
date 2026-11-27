@@ -349,14 +349,18 @@ Required Web CI coverage:
 
 A Chromium test that removes `window.indexedDB` is a controlled API-unavailable simulation. It does not establish behavior for every private-browsing mode, storage quota exhaustion, enterprise browser policy, browser shutdown/reopen, Firefox or Safari. Those cases remain separate acceptance gates until tested.
 
-## Original campaign implementation slice — Missions 001 and 002
+## Original campaign and Harbor Market implementation slice — Missions 001–003
 
-The opening campaign must remain original and provisional until the maintainer approves the full story outline. The first two playable mission slices establish this testable progression contract:
+The opening campaign must remain original and provisional until the maintainer approves the full story outline. The first three playable mission slices establish this testable progression contract:
 
 - **Mission 001 — رسالة عند المرسى:** speak to Claire Bennett, meet Nora Blake at the lighthouse, receive $250.
 - **Mission 002 — إشعار السوق:** after Mission 001, speak to Nora again, inspect the physical Harbor Market noticeboard, return to Nora, receive $300.
-- The mission state machine uses stages 0–5, with explicit step-completed and mission-completed signals. Objective progress, prerequisite completion, reward settlement, mission GPS targets and save restoration must remain synchronized.
-- The market noticeboard must be a real in-world interactable, not only a HUD label or map marker. Its point of interest must be reachable by the road graph.
-- Both mission rewards must be idempotent. A repeated interaction after a mission is complete must never pay the same reward twice.
-- Save and restore must preserve the active stage and wallet, including stage 3/4 of Mission 002. Legacy stage values must be clamped only to the expanded valid range, not silently collapsed to Mission 001.
-- The current dialogue remains text-only and the story remains a provisional original proposal. Expressive Arabic voice performance, fail/retry branches, cinematic presentation and the full campaign remain separate requirements and must not be marked complete.
+- **Mission 003 — مؤونة الطريق:** after Mission 002, speak to Nora, enter the physical Harbor Market interior, buy one bottle of water through the shop transaction UI, deliver it to Claire Bennett, receive $150.
+- The mission state machine uses stages 0–8, with explicit step-completed and mission-completed signals. Objective progress, prerequisite completion, reward settlement, mission GPS targets, wallet changes and save restoration must remain synchronized.
+- The noticeboard, market entry, market exit and shop counter must be real in-world interactables. The shop interior requires floor and wall collision, a navigable entrance, visible counter/shelf/stock props and an exit interaction; a HUD-only shop or teleport-only mockup is not sufficient.
+- The shop catalog must have bounded stock and stable item prices. Buying reduces wallet and stock and increases player inventory. Selling requires owned inventory, increases stock and returns a defined resale value. Failed trades (unknown item, out of stock, insufficient funds, not owned, full stock) must not partially mutate state.
+- Mission 003 requires a real `bottled_water` inventory item. The game root must reject delivery if the item is absent and prevent selling the mission item before delivery. Completing Mission 003 must settle its $150 reward once only.
+- Shop stock, player inventory, wallet, economy ledger, mission stage, objective progress and reward/prerequisite records must be captured in the versioned `user://` save payload. Restore must validate saved item IDs and prices against the current catalog before applying quantities; an invalid shop snapshot must not inject items or alter catalog prices.
+- Browser reload and a separate Godot process restart must restore purchased inventory and remaining shop stock, not only the displayed wallet. When IndexedDB is unavailable, the existing session-only save behavior remains explicit.
+- Legacy save stage values must be clamped only to the expanded valid range, not silently collapsed to Mission 001. Missing shop data in older saves must initialize the current default stock without failing the whole save.
+- Mission 001–003 dialogue remains text-only and the story remains a provisional original proposal. Expressive Arabic voice performance, fail/retry branches, cinematic presentation and the full campaign remain separate requirements and must not be marked complete.
