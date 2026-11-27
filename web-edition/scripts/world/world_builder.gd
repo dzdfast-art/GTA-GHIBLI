@@ -545,6 +545,7 @@ func _create_market_interior() -> void:
 	floor_mesh.material_override = _make_material(Color(0.42, 0.34, 0.25))
 	floor_body.add_child(floor_mesh)
 	var floor_collision := CollisionShape3D.new()
+	floor_collision.name = "FloorCollision"
 	var floor_shape := BoxShape3D.new()
 	floor_shape.size = floor_box.size
 	floor_collision.shape = floor_shape
@@ -606,7 +607,7 @@ func _create_market_interior() -> void:
 	entry.set("action_id", "market_enter")
 	entry.set("display_name", "Enter Harbor Market")
 	entry.set("interaction_text", "E — Enter shop")
-	entry.position = Vector3(-81.0, 0.0, 27.0)
+	entry.position = Vector3(-74.5, 0.0, 21.0)
 	add_child(entry)
 
 	var exit_actor := INTERACTABLE_SCRIPT.new() as Node3D
@@ -646,6 +647,7 @@ func _create_market_wall(
 	wall.add_child(wall_mesh)
 
 	var collision := CollisionShape3D.new()
+	collision.name = "WallCollision"
 	var shape := BoxShape3D.new()
 	shape.size = size
 	collision.shape = shape
