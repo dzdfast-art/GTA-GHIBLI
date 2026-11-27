@@ -91,6 +91,7 @@ func _write_live_game_state(game: Node) -> void:
 	var wanted: RefCounted = game.call("get_runtime_system", "wanted_level")
 	var objectives: RefCounted = game.call("get_runtime_system", "mission_objectives")
 	var rewards: RefCounted = game.call("get_runtime_system", "mission_rewards")
+	var shop: RefCounted = game.call("get_runtime_system", "shop_inventory")
 	var vehicles: Array = get_tree().get_nodes_in_group("drivable_vehicles")
 	if vehicles.size() != 1:
 		_fail("starter_vehicle_missing")
@@ -98,6 +99,10 @@ func _write_live_game_state(game: Node) -> void:
 
 	missions.set("mission_stage", 1)
 	missions.set("wallet", 825)
+	var shop_purchase: Dictionary = shop.call("purchase", "bottled_water", 825, 2)
+	if not bool(shop_purchase.get("ok", false)) or not bool(missions.call("set_wallet_balance", int(shop_purchase.get("wallet", 0)), "browser_probe")):
+		_fail("shop_transaction_setup_failed")
+		return
 	player.global_position = SAVED_POSITION
 	player.global_rotation = Vector3(0.0, 0.72, 0.0)
 	player.velocity = Vector3.ZERO
@@ -137,8 +142,14 @@ func _write_live_game_state(game: Node) -> void:
 	var manager: RefCounted = SAVE_MANAGER_SCRIPT.new()
 	var record: Dictionary = manager.call("load_slot", SLOT_ID)
 	var payload: Dictionary = record.get("payload", {})
-	if int(payload.get("schema_version", 0)) != 1 or int(payload.get("missions", {}).get("wallet", 0)) != 825:
+	var saved_shop: Dictionary = payload.get("shop", {})
+	var saved_inventory: Dictionary = saved_shop.get("inventory", {})
+	var saved_stock: Dictionary = saved_shop.get("stock", {})
+	if int(payload.get("schema_version", 0)) != 1 or int(payload.get("missions", {}).get("wallet", 0)) != 801:
 		_fail("saved_payload_verification_failed")
+		return
+	if int(saved_inventory.get("bottled_water", 0)) != 2 or int(saved_stock.get("bottled_water", {}).get("quantity", -1)) != 6:
+		_fail("saved_shop_payload_verification_failed")
 		return
 	_publish("written")
 
@@ -159,6 +170,7 @@ func _verify_live_game_state(game: Node) -> void:
 	var objectives: RefCounted = game.call("get_runtime_system", "mission_objectives")
 	var rewards: RefCounted = game.call("get_runtime_system", "mission_rewards")
 	var settings: RefCounted = game.call("get_runtime_system", "settings_profile")
+	var shop: RefCounted = game.call("get_runtime_system", "shop_inventory")
 	var vehicles: Array = get_tree().get_nodes_in_group("drivable_vehicles")
 	if vehicles.size() != 1:
 		_fail("restored_vehicle_missing")
@@ -168,7 +180,7 @@ func _verify_live_game_state(game: Node) -> void:
 	if player.global_position.distance_to(SAVED_POSITION) > 0.05 or absf(player.global_rotation.y - 0.72) > 0.01:
 		_fail("player_transform_not_restored")
 		return
-	if int(missions.get("mission_stage")) != 1 or int(missions.call("get_wallet")) != 825:
+	if int(missions.get("mission_stage")) != 1 or int(missions.call("get_wallet")) != 801:
 		_fail("mission_progress_not_restored")
 		return
 	if absf(float(vitals.get("health")) - 73.5) > 0.001 or absf(float(vitals.get("stamina")) - 41.25) > 0.001:
@@ -197,6 +209,9 @@ func _verify_live_game_state(game: Node) -> void:
 		return
 	if str(settings.call("get_value", "language")) != "ar":
 		_fail("language_setting_not_restored")
+		return
+	if int(shop.call("get_quantity", "bottled_water")) != 2 or int(shop.get("stock").bottled_water.quantity) != 6:
+		_fail("shop_inventory_and_stock_not_restored")
 		return
 	if vehicle.global_position.distance_to(SAVED_POSITION) > 0.05:
 		_fail("vehicle_transform_not_restored")
