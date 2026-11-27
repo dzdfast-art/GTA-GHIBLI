@@ -192,9 +192,17 @@ func _on_world_interaction(action_id: String) -> void:
 		"claire":
 			if int(_missions.get("mission_stage")) == 7:
 				var shop: RefCounted = get_runtime_system("shop_inventory")
-				if int(shop.call("get_quantity", "bottled_water")) < 1:
+				var previous_state: Dictionary = shop.call("snapshot")
+				if not bool(shop.call("consume", "bottled_water", 1)):
 					_hud.call("show_notification", "أحضر زجاجة الماء من Harbor Market إلى Claire أولاً.")
 					return
+				_missions.call("handle_interaction", action_id)
+				if int(_missions.get("mission_stage")) != 8:
+					shop.call("restore", previous_state)
+					_save_game_state(true)
+					return
+				_save_game_state(true)
+				return
 			_missions.call("handle_interaction", action_id)
 		_:
 			_missions.call("handle_interaction", action_id)
@@ -213,7 +221,10 @@ func _enter_market_interior() -> void:
 		return
 	_player.global_position = Vector3(-81.0, 0.05, 31.2)
 	_player.velocity = Vector3.ZERO
-	_hud.call("show_notification", "دخلت متجر Harbor Market.")
+	if int(_missions.get("mission_stage")) == 6:
+		_missions.call("handle_interaction", "market_enter")
+	else:
+		_hud.call("show_notification", "دخلت متجر Harbor Market.")
 
 
 func _exit_market_interior() -> void:
@@ -259,7 +270,13 @@ func _purchase_market_item(item_id: String) -> bool:
 		_hud.call("set_market_shop_message", "Purchase could not be committed. No item was kept.")
 		return false
 	if item_id == "bottled_water" and int(_missions.get("mission_stage")) == 6:
-		_missions.call("handle_interaction", "market_shop_purchase")
+		if not bool(_missions.call(
+			"record_market_purchase", item_id, int(shop.call("get_quantity", item_id))
+		)):
+			shop.call("restore", previous_state)
+			_missions.call("set_wallet_balance", wallet, "market_purchase_rollback")
+			_hud.call("set_market_shop_message", "Mission purchase could not be recorded. No item was kept.")
+			return false
 	_save_game_state(true)
 	_hud.call("update_market_shop", shop.call("get_catalog"), shop.get("inventory"), new_wallet)
 	_hud.call("set_market_shop_message", "Purchased %s for $%d." % [item_id.replace("_", " "), int(result.get("cost", 0))])
@@ -401,6 +418,7 @@ func _initialize_runtime_systems() -> void:
 	get_runtime_system("mission_objectives").call("add_objective", "mission_002_noticeboard", 1)
 	get_runtime_system("mission_objectives").call("add_objective", "mission_002_return_to_nora", 1)
 	get_runtime_system("mission_objectives").call("add_objective", "mission_003_nora_start", 1)
+	get_runtime_system("mission_objectives").call("add_objective", "mission_003_enter_market", 1)
 	get_runtime_system("mission_objectives").call("add_objective", "mission_003_buy_water", 1)
 	get_runtime_system("mission_objectives").call("add_objective", "mission_003_return_to_claire", 1)
 	var shop: RefCounted = get_runtime_system("shop_inventory")
@@ -604,6 +622,8 @@ func _on_mission_step_completed(mission_id: String, step_id: String) -> void:
 	var objectives: RefCounted = get_runtime_system("mission_objectives")
 	if not bool(objectives.call("add_progress", objective_id, 1)):
 		push_warning("Could not record mission objective progress: %s" % objective_id)
+		return
+	_save_game_state(true)
 
 
 func _on_mission_completed(mission_id: String) -> void:
