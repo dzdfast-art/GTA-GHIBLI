@@ -612,6 +612,6 @@ func _find_shop_button(items_column: VBoxContainer, item_name: String, button_in
 	return null
 
 
-func _fail(message: String) -> void
+func _fail(message: String) -> void:
 	push_error("FAIL: " + message)
 	quit(1)
