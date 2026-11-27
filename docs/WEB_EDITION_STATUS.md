@@ -451,7 +451,7 @@ Next: build a third mission slice only after the current two-mission save/waypoi
 - The original clean-project branch `web/standalone-from-empty-2026-11-22` remains at `9cdcec813aa874532e9c4c5d3113f967a9a0a26a`.
 - PR #35 is closed and merged since 2026-11-22; it is not an open Draft. This run did not merge, close or retarget any PR.
 - PR #114, #115 and #116 are Draft/open. PR #116 is stacked on PR #115's branch `feature/web-mission-002-harbor-market-20261126`; it remains unmerged.
-- Mission 003 gameplay code was tested at `4a4ad91714b394d02139643570132dbc2002f42d`. This status/spec/README follow-up changes documentation and mission notes only; the final branch head still requires its own CI result.
+- Mission 003 gameplay code was tested at `4a4ad91714b394d02139643570132dbc2002f42d`. The documentation/mission-note follow-up was tested on `25e6bf932a0907e4a6ea1d3f5437c3ea136913ef` by PR CI #45981335814; this status-only correction does not change Web source or export inputs.
 - Earlier Web CI [#45979482404](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45979482404) failed because the market-entry interaction did not record its objective. That failure is retained as evidence and is not counted as a pass. The missing objective registration and entry-step signal were corrected.
 - Corrected Web CI [#45980722964 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45980722964) and Security Audit [#45980987636 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45980987636) both tested the gameplay commit above.
 
@@ -475,13 +475,13 @@ Next: build a third mission slice only after the current two-mission save/waypoi
 | Measurement | Result |
 |---|---:|
 | Tracked Web source files | 142 |
-| Tracked Web source bytes | 318,868 bytes (0.319 MB) |
+| Tracked Web source bytes | 319,060 bytes (0.319 MB) |
 | Unique tracked content items | 142 |
-| Unique tracked content bytes | 318,868 bytes (0.304 MiB) |
+| Unique tracked content bytes | 319,060 bytes (0.304 MiB) |
 | Temporary Web export files | 8 |
-| Uncompressed Web export | 40,023,104 bytes (40.023 MB; 38.169 MiB) |
-| Compressed Web ZIP | 10,402,744 bytes (10.403 MB; 9.921 MiB) |
-| ZIP SHA-256 | `0ba7eee2ddc25610cd56766b4cfc0745e283accb755c85952f1d0c80aa4cbffa` |
+| Uncompressed Web export | 40,023,216 bytes (40.023 MB; 38.169 MiB) |
+| Compressed Web ZIP | 10,402,800 bytes (10.403 MB; 9.921 MiB) |
+| ZIP SHA-256 | `59a948401e9ffe3311e6ec66e1a9f6705c0e41128c084ccdb704ad8ad418c675` |
 
 The export and ZIP were created only on the ephemeral runner, measured and deleted. No downloadable Actions artifact was retained. These measurements include the Godot Web runtime and current game pack; they are not all unique authored art. The long-term 4 GB genuine-content target is **NOT REACHED**.
 
@@ -495,7 +495,7 @@ The export and ZIP were created only on the ephemeral runner, measured and delet
 | Mission 003 | **TESTED — first playable pass** | Nora → enter market → buy water → deliver to Claire; $150 one-time reward; bottle consumed |
 | Harbor Market transactions | **TESTED — first playable pass** | Bounded stock, buy/sell, mission-item protection and delivery consumption |
 | Mission/shop autosave | **TESTED — selected live-game state** | Mission stage 8, wallet $1,025, carried water 0, shop water stock 7 |
-| Browser save persistence | **TESTED — Chromium only** | Same-origin page reload and separate browser-process restart |
+| Browser save persistence | **TESTED — Chromium only** | Same-origin page reload and separate browser-process restart restored player, mission, vehicle, shop inventory/stock, NPC and world state |
 | Browser storage degradation | **TESTED — controlled IndexedDB-unavailable simulation** | Session-only save remains readable in active page; no durable claim |
 | World map and GPS | **PARTIALLY IMPLEMENTED** | Eight POIs and connected prototype street grid; not a complete city network |
 | Four world regions | **PARTIALLY IMPLEMENTED** | Connected blockout geometry, not final terrain/buildings/interiors |
