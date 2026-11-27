@@ -13,6 +13,8 @@ newmtl ground_forest
 Kd 0.17 0.30 0.14
 newmtl ground_soil
 Kd 0.39 0.29 0.18
+newmtl ground_crop
+Kd 0.58 0.50 0.24
 newmtl ground_park
 Kd 0.27 0.45 0.21
 newmtl ground_sand
