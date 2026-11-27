@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "mission_004",
+  "title": "رسالة إلى الساحل",
+  "status": "implemented_first_playable_pass",
+  "story_status": "provisional_original_story",
+  "prerequisites": ["mission_003"],
+  "starting_condition": "Complete Mission 003, then speak to Nora Blake near the Marsa Al-Noor lighthouse.",
+  "stages": [
+    {
+      "id": "start_at_nora",
+      "interaction": "nora",
+      "objective": "Speak to Nora and accept the original Sapphire Coast delivery request."
+    },
+    {
+      "id": "enter_market",
+      "interaction": "market_enter",
+      "objective": "Enter the physical Harbor Market shop interior."
+    },
+    {
+      "id": "buy_fruit_basket",
+      "interaction": "market_shop_purchase",
+      "objective": "Purchase one fruit basket through the live shop transaction and wallet."
+    },
+    {
+      "id": "arrive_by_vehicle",
+      "interaction": "vehicle_arrival",
+      "objective": "Follow the reachable GPS road route and arrive within 8 metres of Sapphire Coast Cafe while driving the starter sedan."
+    },
+    {
+      "id": "deliver_basket",
+      "interaction": "sapphire_cafe_delivery",
+      "objective": "Exit the sedan and deliver the carried fruit basket at the cafe counter."
+    },
+    {
+      "id": "complete",
+      "objective": "Receive the $200 reward and continue exploring."
+    }
+  ],
+  "shop_items": ["fruit_basket"],
+  "destination": {
+    "point_of_interest": "sapphire_cafe",
+    "region": "Sapphire Coast",
+    "arrival_radius_metres": 8
+  },
+  "required_vehicle": "starter_sedan",
+  "reward": {
+    "currency": 200,
+    "respect": 1
+  },
+  "notes": [
+    "This is a provisional original story proposal and not a final approved campaign chapter.",
+    "Vehicle arrival is only accepted while the player is actually seated in a drivable vehicle and the active GPS route is reachable.",
+    "The delivery basket is protected from sale until the cafe delivery is completed.",
+    "Successful delivery consumes one fruit_basket from player inventory; market stock remains reduced.",
+    "Mission stage, wallet, inventory, stock and objective/reward/prerequisite state are persisted in the versioned live-game save.",
+    "Dialogue remains text-only. No Arabic voice performance is claimed.",
+    "No fail/retry timer or cinematic branch is implemented in this first playable pass."
+  ]
+}

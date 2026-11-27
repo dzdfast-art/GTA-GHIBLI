@@ -25,6 +25,7 @@ func build_world() -> void:
 	_create_characters()
 	_create_market_noticeboard()
 	_create_market_interior()
+	_create_sapphire_cafe_delivery_counter()
 	_create_starting_vehicle()
 
 
@@ -625,6 +626,46 @@ func _create_market_interior() -> void:
 	shop_actor.set("interaction_text", "E — Browse and trade")
 	shop_actor.position = Vector3(0.0, 0.0, 1.4)
 	room.add_child(shop_actor)
+
+
+func _create_sapphire_cafe_delivery_counter() -> void:
+	var counter := Node3D.new()
+	counter.name = "SapphireCoastCafeCounter"
+	counter.position = Vector3(-50.0, 0.0, -17.2)
+	add_child(counter)
+
+	var counter_mesh := MeshInstance3D.new()
+	var counter_box := BoxMesh.new()
+	counter_box.size = Vector3(2.8, 1.0, 0.8)
+	counter_mesh.mesh = counter_box
+	counter_mesh.position = Vector3.ZERO
+	counter_mesh.material_override = _make_material(Color(0.36, 0.24, 0.17))
+	counter.add_child(counter_mesh)
+
+	var awning := MeshInstance3D.new()
+	var awning_box := BoxMesh.new()
+	awning_box.size = Vector3(3.6, 0.16, 1.8)
+	awning.mesh = awning_box
+	awning.position = Vector3(0.0, 2.25, 0.0)
+	awning.material_override = _make_material(Color(0.72, 0.43, 0.26))
+	counter.add_child(awning)
+
+	var sign := Label3D.new()
+	sign.text = "SAPPHIRE COAST CAFE"
+	sign.position = Vector3(0.0, 2.65, -0.52)
+	sign.font_size = 24
+	sign.outline_size = 4
+	sign.modulate = Color(1.0, 0.88, 0.62)
+	sign.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	counter.add_child(sign)
+
+	var delivery := INTERACTABLE_SCRIPT.new() as Node3D
+	delivery.name = "SapphireCafeDeliveryPoint"
+	delivery.set("action_id", "sapphire_cafe_delivery")
+	delivery.set("display_name", "Sapphire Coast Cafe delivery counter")
+	delivery.set("interaction_text", "E — Deliver fruit basket")
+	delivery.position = Vector3(-50.0, 0.0, -16.5)
+	add_child(delivery)
 
 
 func _create_market_wall(
