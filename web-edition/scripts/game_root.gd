@@ -145,6 +145,7 @@ func _process(delta: float) -> void:
 		if _navigation_elapsed >= 0.30:
 			_navigation_elapsed = 0.0
 			_update_navigation_route()
+			_check_mission_004_vehicle_arrival()
 	_autosave_elapsed += delta
 	if _autosave_elapsed >= 5.0:
 		_autosave_elapsed = 0.0
@@ -204,6 +205,22 @@ func _on_world_interaction(action_id: String) -> void:
 				_save_game_state(true)
 				return
 			_missions.call("handle_interaction", action_id)
+		"sapphire_cafe_delivery":
+			if int(_missions.get("mission_stage")) != 11:
+				_missions.call("handle_interaction", action_id)
+				return
+			var shop: RefCounted = get_runtime_system("shop_inventory")
+			var previous_state: Dictionary = shop.call("snapshot")
+			if not bool(shop.call("consume", "fruit_basket", 1)):
+				_hud.call("show_notification", "أحضر سلة الفواكه من Harbor Market إلى مقهى الساحل أولاً.")
+				return
+			_missions.call("handle_interaction", action_id)
+			if int(_missions.get("mission_stage")) != 12:
+				shop.call("restore", previous_state)
+				_save_game_state(true)
+				return
+			_save_game_state(true)
+			return
 		_:
 			_missions.call("handle_interaction", action_id)
 
@@ -221,7 +238,7 @@ func _enter_market_interior() -> void:
 		return
 	_player.global_position = Vector3(-81.0, 0.05, 31.2)
 	_player.velocity = Vector3.ZERO
-	if int(_missions.get("mission_stage")) == 6:
+	if int(_missions.get("mission_stage")) in [6, 9]:
 		_missions.call("handle_interaction", "market_enter")
 	else:
 		_hud.call("show_notification", "دخلت متجر Harbor Market.")
@@ -269,7 +286,8 @@ func _purchase_market_item(item_id: String) -> bool:
 		shop.call("restore", previous_state)
 		_hud.call("set_market_shop_message", "Purchase could not be committed. No item was kept.")
 		return false
-	if item_id == "bottled_water" and int(_missions.get("mission_stage")) == 6:
+	var required_mission_item := str(_missions.call("get_required_market_item"))
+	if not required_mission_item.is_empty() and item_id == required_mission_item:
 		if not bool(_missions.call(
 			"record_market_purchase", item_id, int(shop.call("get_quantity", item_id))
 		)):
@@ -292,8 +310,12 @@ func _sell_market_item(item_id: String) -> bool:
 	if not _is_player_inside_market():
 		_hud.call("set_market_shop_message", "Enter Harbor Market before selling.")
 		return false
-	if item_id == "bottled_water" and int(_missions.get("mission_stage")) == 7:
+	var mission_stage := int(_missions.get("mission_stage"))
+	if item_id == "bottled_water" and mission_stage == 7:
 		_hud.call("set_market_shop_message", "Keep the mission water until you deliver it to Claire.")
+		return false
+	if item_id == "fruit_basket" and mission_stage in [10, 11]:
+		_hud.call("set_market_shop_message", "Keep the mission fruit basket until you deliver it to Sapphire Coast Cafe.")
 		return false
 	var shop: RefCounted = get_runtime_system("shop_inventory")
 	var previous_state: Dictionary = shop.call("snapshot")
@@ -409,9 +431,11 @@ func _initialize_runtime_systems() -> void:
 	var prerequisites: Array[String] = []
 	var mission_one: Array[String] = ["mission_001"]
 	var mission_two: Array[String] = ["mission_002"]
+	var mission_three: Array[String] = ["mission_003"]
 	get_runtime_system("mission_prerequisites").call("define", "mission_001", prerequisites)
 	get_runtime_system("mission_prerequisites").call("define", "mission_002", mission_one)
 	get_runtime_system("mission_prerequisites").call("define", "mission_003", mission_two)
+	get_runtime_system("mission_prerequisites").call("define", "mission_004", mission_three)
 	get_runtime_system("mission_objectives").call("add_objective", "mission_001_claire_contact", 1)
 	get_runtime_system("mission_objectives").call("add_objective", "mission_001_nora_meeting", 1)
 	get_runtime_system("mission_objectives").call("add_objective", "mission_002_nora_start", 1)
@@ -421,6 +445,11 @@ func _initialize_runtime_systems() -> void:
 	get_runtime_system("mission_objectives").call("add_objective", "mission_003_enter_market", 1)
 	get_runtime_system("mission_objectives").call("add_objective", "mission_003_buy_water", 1)
 	get_runtime_system("mission_objectives").call("add_objective", "mission_003_return_to_claire", 1)
+	get_runtime_system("mission_objectives").call("add_objective", "mission_004_nora_start", 1)
+	get_runtime_system("mission_objectives").call("add_objective", "mission_004_enter_market", 1)
+	get_runtime_system("mission_objectives").call("add_objective", "mission_004_buy_fruit_basket", 1)
+	get_runtime_system("mission_objectives").call("add_objective", "mission_004_vehicle_arrival", 1)
+	get_runtime_system("mission_objectives").call("add_objective", "mission_004_deliver_basket", 1)
 	var shop: RefCounted = get_runtime_system("shop_inventory")
 	shop.call("add_item", "bottled_water", 12, 8)
 	shop.call("add_item", "fruit_basket", 25, 5)
@@ -617,6 +646,18 @@ func _on_mission_step_completed(mission_id: String, step_id: String) -> void:
 					objective_id = "mission_003_buy_water"
 				"return_to_claire":
 					objective_id = "mission_003_return_to_claire"
+		"mission_004":
+			match step_id:
+				"start_at_nora":
+					objective_id = "mission_004_nora_start"
+				"enter_market":
+					objective_id = "mission_004_enter_market"
+				"buy_fruit_basket":
+					objective_id = "mission_004_buy_fruit_basket"
+				"arrive_by_vehicle":
+					objective_id = "mission_004_vehicle_arrival"
+				"deliver_basket":
+					objective_id = "mission_004_deliver_basket"
 	if objective_id.is_empty():
 		return
 	var objectives: RefCounted = get_runtime_system("mission_objectives")
@@ -630,7 +671,8 @@ func _on_mission_completed(mission_id: String) -> void:
 	var reward_values: Dictionary = {
 		"mission_001": {"cash": 250, "respect": 1},
 		"mission_002": {"cash": 300, "respect": 2},
-		"mission_003": {"cash": 150, "respect": 1}
+		"mission_003": {"cash": 150, "respect": 1},
+		"mission_004": {"cash": 200, "respect": 1}
 	}
 	if not reward_values.has(mission_id):
 		return
@@ -699,6 +741,20 @@ func _synchronize_campaign_runtime_from_manager() -> void:
 			prerequisites.call("complete", "mission_003")
 		if not bool(rewards.call("is_settled", "mission_003")):
 			rewards.call("settle", "mission_003", 150, 1)
+	if stage >= 9:
+		objectives.call("add_progress", "mission_004_nora_start", 1)
+	if stage >= 10:
+		objectives.call("add_progress", "mission_004_enter_market", 1)
+		objectives.call("add_progress", "mission_004_buy_fruit_basket", 1)
+	if stage >= 11:
+		objectives.call("add_progress", "mission_004_vehicle_arrival", 1)
+	if stage >= 12:
+		objectives.call("add_progress", "mission_004_deliver_basket", 1)
+		completed = prerequisites.get("completed")
+		if not completed.has("mission_004"):
+			prerequisites.call("complete", "mission_004")
+		if not bool(rewards.call("is_settled", "mission_004")):
+			rewards.call("settle", "mission_004", 200, 1)
 
 
 func _update_mission_waypoint() -> void:
@@ -706,16 +762,18 @@ func _update_mission_waypoint() -> void:
 		return
 	var stage := int(_missions.get("mission_stage"))
 	var target_id := ""
-	if stage == 1 or stage == 2 or stage == 4:
+	if stage == 1 or stage == 2 or stage == 4 or stage == 8:
 		target_id = "nora_blake"
 	elif stage == 3:
 		target_id = "harbor_market_noticeboard"
-	elif stage == 6:
+	elif stage == 6 or stage == 9:
 		target_id = "harbor_market"
 	elif stage == 7:
 		target_id = "claire_bennett"
+	elif stage == 10 or stage == 11:
+		target_id = "sapphire_cafe"
 	if target_id.is_empty():
-		if _active_waypoint_id in ["nora_blake", "harbor_market_noticeboard", "harbor_market", "claire_bennett"]:
+		if _active_waypoint_id in ["nora_blake", "harbor_market_noticeboard", "harbor_market", "claire_bennett", "sapphire_cafe"]:
 			_active_waypoint_id = ""
 			_active_waypoint_name = ""
 			_active_waypoint_position = Vector3.ZERO
@@ -735,6 +793,25 @@ func _update_mission_waypoint() -> void:
 		_arrival_notified = false
 		_update_navigation_route()
 		return
+
+
+func _check_mission_004_vehicle_arrival() -> void:
+	if _missions == null or _player == null:
+		return
+	if int(_missions.get("mission_stage")) != 10 or _active_waypoint_id != "sapphire_cafe":
+		return
+	var driven_vehicle: Node3D = _player.call("get_driven_vehicle")
+	if driven_vehicle == null:
+		return
+	if not bool(_active_route.get("reachable", false)):
+		return
+	var destination := Vector3(-50.0, 0.0, -19.0)
+	var distance := Vector2(
+		driven_vehicle.global_position.x - destination.x,
+		driven_vehicle.global_position.z - destination.z
+	).length()
+	if distance <= 8.0:
+		_missions.call("record_vehicle_delivery_arrival")
 
 
 func _on_wallet_changed(amount: int) -> void:
@@ -938,7 +1015,7 @@ func _restore_game_state() -> bool:
 	var payload: Dictionary = payload_value
 	var payload_version := int(payload.get("schema_version", 0))
 	if payload_version == 0 and (payload.has("mission_stage") or payload.has("wallet")):
-		_missions.set("mission_stage", clampi(int(payload.get("mission_stage", 0)), 0, 8))
+		_missions.set("mission_stage", clampi(int(payload.get("mission_stage", 0)), 0, 12))
 		_missions.set("wallet", maxi(0, int(payload.get("wallet", 350))))
 		_hud.call("set_objective", _missions.call("get_objective"))
 		_hud.call("set_wallet", _missions.call("get_wallet"))
@@ -960,7 +1037,7 @@ func _restore_game_state() -> bool:
 
 	var mission_state: Variant = payload.get("missions", {})
 	if mission_state is Dictionary:
-		_missions.set("mission_stage", clampi(int(mission_state.get("stage", 0)), 0, 8))
+		_missions.set("mission_stage", clampi(int(mission_state.get("stage", 0)), 0, 12))
 		_missions.set("wallet", maxi(0, int(mission_state.get("wallet", 350))))
 
 	var vitals: RefCounted = get_runtime_system("player_vitals")

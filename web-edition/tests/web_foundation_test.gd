@@ -538,6 +538,64 @@ func _run() -> void:
 		_fail("The market exit did not return the player outside and close the shop panel.")
 		return
 
+	nora.call("activate")
+	if int(missions.get("mission_stage")) != 9 or str(game.get("_active_waypoint_id")) != "harbor_market":
+		_fail("Nora did not unlock Mission 004 and set the Harbor Market waypoint.")
+		return
+	market_entry.call("activate")
+	if not bool(objectives.call("is_complete", "mission_004_enter_market")):
+		_fail("Entering Harbor Market did not record the Mission 004 shop objective.")
+		return
+	market_counter.call("activate")
+	var fruit_delivery_buy_button := _find_shop_button(shop_items_column, "Fruit basket", 1)
+	if fruit_delivery_buy_button == null or fruit_delivery_buy_button.disabled:
+		_fail("Mission 004 did not expose an enabled fruit-basket purchase.")
+		return
+	fruit_delivery_buy_button.pressed.emit()
+	await process_frame
+	if int(missions.get("mission_stage")) != 10 or int(missions.call("get_wallet")) != 1000 or int(shop.call("get_quantity", "fruit_basket")) != 1:
+		_fail("Buying the Mission 004 fruit basket did not charge the wallet, add inventory and advance the mission.")
+		return
+	var mission_route: Dictionary = game.get("_active_route")
+	if str(game.get("_active_waypoint_id")) != "sapphire_cafe" or not bool(mission_route.get("reachable", false)):
+		_fail("Mission 004 did not create a reachable GPS route to Sapphire Coast Cafe.")
+		return
+	market_exit.call("activate")
+	if bool(game.call("_sell_market_item", "fruit_basket")) or int(shop.call("get_quantity", "fruit_basket")) != 1 or int(missions.call("get_wallet")) != 1000:
+		_fail("The Mission 004 fruit basket could be sold before delivery.")
+		return
+
+	var cafe_delivery := world.get_node_or_null("SapphireCafeDeliveryPoint")
+	if cafe_delivery == null:
+		_fail("The Sapphire Coast Cafe delivery counter is missing from the world.")
+		return
+	var delivery_vehicle: Node3D = vehicles[0] as Node3D
+	delivery_vehicle.global_position = Vector3(-50.0, 0.05, -19.0)
+	delivery_vehicle.global_rotation = Vector3.ZERO
+	game.call("_process", 0.31)
+	if int(missions.get("mission_stage")) != 10:
+		_fail("Mission 004 incorrectly accepted arrival while Leo was not driving.")
+		return
+	player.call("_enter_vehicle", delivery_vehicle)
+	game.call("_process", 0.31)
+	if int(missions.get("mission_stage")) != 11 or not bool(objectives.call("is_complete", "mission_004_vehicle_arrival")):
+		_fail("Driving the starter sedan into the Sapphire Coast arrival radius did not advance Mission 004.")
+		return
+	player.call("_exit_vehicle")
+	cafe_delivery.call("activate")
+	if int(missions.get("mission_stage")) != 12 or int(missions.call("get_wallet")) != 1200:
+		_fail("Delivering the fruit basket at Sapphire Coast Cafe did not complete Mission 004 with its $200 reward.")
+		return
+	if int(shop.call("get_quantity", "fruit_basket")) != 0:
+		_fail("The successful cafe delivery did not consume the carried fruit basket.")
+		return
+	if not bool(objectives.call("is_complete", "mission_004_nora_start")) or not bool(objectives.call("is_complete", "mission_004_enter_market")) or not bool(objectives.call("is_complete", "mission_004_buy_fruit_basket")) or not bool(objectives.call("is_complete", "mission_004_vehicle_arrival")) or not bool(objectives.call("is_complete", "mission_004_deliver_basket")):
+		_fail("Mission 004 objective progress was not fully recorded.")
+		return
+	if not bool(rewards.call("is_settled", "mission_004")) or int(rewards.call("get_reward", "mission_004").get("cash", 0)) != 200 or bool(prerequisites.call("is_available", "mission_004")):
+		_fail("Mission 004 reward settlement or prerequisite completion was not recorded.")
+		return
+
 	var autosave_manager: RefCounted = load("res://scripts/world/save_slot_manager.gd").new()
 	var autosave_record: Dictionary = autosave_manager.call("load_slot", "autosave")
 	var autosave_payload: Dictionary = autosave_record.get("payload", {})
@@ -545,11 +603,11 @@ func _run() -> void:
 	var autosave_shop: Dictionary = autosave_payload.get("shop", {})
 	var autosave_inventory: Dictionary = autosave_shop.get("inventory", {})
 	var autosave_stock: Dictionary = autosave_shop.get("stock", {})
-	if int(autosave_payload.get("schema_version", 0)) != 1 or int(autosave_missions.get("stage", -1)) != 8 or int(autosave_missions.get("wallet", -1)) != 1025:
+	if int(autosave_payload.get("schema_version", 0)) != 1 or int(autosave_missions.get("stage", -1)) != 12 or int(autosave_missions.get("wallet", -1)) != 1200:
 		_fail("The game root did not persist Mission 003 stage and wallet in its versioned live-game autosave slot.")
 		return
-	if int(autosave_inventory.get("bottled_water", 0)) != 0 or int(autosave_stock.get("bottled_water", {}).get("quantity", -1)) != 7:
-		_fail("The game root did not persist consumed delivery inventory and remaining market stock.")
+	if int(autosave_inventory.get("bottled_water", 0)) != 0 or int(autosave_stock.get("bottled_water", {}).get("quantity", -1)) != 7 or int(autosave_inventory.get("fruit_basket", 0)) != 0 or int(autosave_stock.get("fruit_basket", {}).get("quantity", -1)) != 4:
+		_fail("The game root did not persist both mission deliveries, consumed inventory and remaining market stock.")
 		return
 
 	var pause_save_position: Vector3 = player.global_position + Vector3(1.25, 0.0, 0.75)
@@ -575,11 +633,11 @@ func _run() -> void:
 	var restored_manager: Node = load("res://scripts/systems/mission_manager.gd").new()
 	root.add_child(restored_manager)
 	await process_frame
-	if int(restored_manager.get("mission_stage")) != 8:
-		_fail("Mission 003 progress was not restored by a new manager instance.")
+	if int(restored_manager.get("mission_stage")) != 12:
+		_fail("Mission 004 progress was not restored by a new manager instance.")
 		return
-	if int(restored_manager.call("get_wallet")) != 1025:
-		_fail("The wallet balance was not restored by a new manager instance.")
+	if int(restored_manager.call("get_wallet")) != 1200:
+		_fail("The wallet balance after Mission 004 was not restored by a new manager instance.")
 		return
 
 	print("PASS: fresh Web project main scene starts.")
@@ -601,9 +659,11 @@ func _run() -> void:
 	print("PASS: nearby E interaction enters the starter sedan; driving and E exit work.")
 	print("PASS: Claire and Nora complete Mission 001; its $250 reward and prerequisite are recorded.")
 	print("PASS: Nora, the Harbor Market noticeboard and Nora complete Mission 002 with a $300 one-time reward.")
-	print("PASS: the player enters a collision-backed Harbor Market interior, buys and sells goods, saves stock/inventory and completes Mission 003.")
-	print("PASS: both mission objective sets, reward ledgers and prerequisite state are integrated.")
-	print("PASS: Mission 003 stage and $1,025 wallet restore through a new manager instance.")
+	print("PASS: the player enters Harbor Market, trades goods, completes Mission 003 and protects its delivery item.")
+	print("PASS: Mission 004 requires a real shop purchase, a reachable GPS route and arrival in the driven sedan.")
+	print("PASS: Sapphire Coast Cafe delivery consumes the fruit basket, pays $200 once and records all mission objectives.")
+	print("PASS: all four mission reward ledgers and prerequisite states are integrated.")
+	print("PASS: Mission 004 stage and $1,200 wallet restore through a new manager instance.")
 	print("PASS: game-root wallet changes persist the mission stage and balance in a durable autosave slot.")
 	print("PASS: application-pause notification immediately flushes the latest player position.")
 	print("NOTE: this is foundation regression coverage, not full-game acceptance.")

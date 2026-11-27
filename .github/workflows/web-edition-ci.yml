@@ -59,6 +59,7 @@ jobs:
           python3 -m json.tool web-edition/data/missions/mission_001.json >/dev/null
           python3 -m json.tool web-edition/data/missions/mission_002.json >/dev/null
           python3 -m json.tool web-edition/data/missions/mission_003.json >/dev/null
+          python3 -m json.tool web-edition/data/missions/mission_004.json >/dev/null
           python3 -m json.tool web-edition/data/story/cast.json >/dev/null
 
       - name: Validate research registry and helper tools
