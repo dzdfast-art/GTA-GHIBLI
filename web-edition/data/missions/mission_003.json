@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "id": "mission_003",
+  "title": "مؤونة الطريق",
+  "status": "implemented_first_playable_pass",
+  "story_status": "provisional_original_story",
+  "prerequisites": ["mission_002"],
+  "starting_condition": "Complete Mission 002, then speak to Nora Blake near the Marsa Al-Noor lighthouse.",
+  "stages": [
+    {
+      "id": "start_at_nora",
+      "interaction": "nora",
+      "objective": "Speak to Nora to receive the supply request."
+    },
+    {
+      "id": "enter_market",
+      "interaction": "market_enter",
+      "objective": "Enter the physical Harbor Market shop interior."
+    },
+    {
+      "id": "buy_water",
+      "interaction": "market_shop_purchase",
+      "objective": "Buy one bottle of water using the live shop inventory and wallet."
+    },
+    {
+      "id": "return_to_claire",
+      "interaction": "claire",
+      "objective": "Deliver the purchased bottle of water to Claire Bennett."
+    },
+    {
+      "id": "complete",
+      "objective": "Receive the $150 reward and continue exploring."
+    }
+  ],
+  "shop_items": ["bottled_water", "fruit_basket", "first_aid_kit"],
+  "reward": {
+    "currency": 150,
+    "respect": 1
+  },
+  "notes": [
+    "This is a provisional original story proposal and not a final approved chapter outline.",
+    "The shop is an enterable in-world room with collision, entry/exit interactions, a clickable purchase/sell panel, stock limits and player inventory.",
+    "Shop stock, player inventory, wallet, mission progress and economy ledger are part of the versioned live-game save payload.",
+    "Successful delivery consumes one bottled_water from player inventory without restoring shop stock.",
+    "Dialogue remains text-only. No Arabic voice performance is claimed."
+  ]
+}

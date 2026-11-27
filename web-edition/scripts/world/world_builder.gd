@@ -24,6 +24,7 @@ func build_world() -> void:
 	_create_landmarks()
 	_create_characters()
 	_create_market_noticeboard()
+	_create_market_interior()
 	_create_starting_vehicle()
 
 
@@ -82,6 +83,14 @@ func get_points_of_interest() -> Array[Dictionary]:
 			"region": "Amber Valley",
 			"category": "farm",
 			"position": Vector3(113.0, 0.0, -18.0)
+		},
+		{
+			"id": "claire_bennett",
+			"name": "Claire Bennett",
+			"region": "Harbor City",
+			"category": "mission",
+			"position": Vector3(-113.0, 0.0, -4.0),
+			"road_access_x": -128.0
 		}
 	]
 
@@ -91,7 +100,7 @@ func get_road_graph() -> Dictionary:
 	var road_x_values: Array[float] = [-128.0, -96.0, -64.0, -32.0, 0.0, 32.0, 64.0, 96.0, 128.0]
 	for point in points:
 		var position: Vector3 = point["position"]
-		road_x_values.append(position.x)
+		road_x_values.append(float(point.get("road_access_x", position.x)))
 	road_x_values.sort()
 
 	var unique_x_values: Array[float] = []
@@ -163,14 +172,15 @@ func get_road_graph() -> Dictionary:
 	for point in points:
 		var point_id := str(point["id"])
 		var point_position: Vector3 = point["position"]
-		var road_node_id := str(road_node_ids[point_position.x])
+		var road_access_x := float(point.get("road_access_x", point_position.x))
+		var road_node_id := str(road_node_ids[road_access_x])
 		var poi_node_id := "poi_" + point_id
 		nodes.append({"id": poi_node_id, "position": point_position, "kind": "poi"})
 		edges.append({
 			"id": "access_" + point_id,
 			"from": road_node_id,
 			"to": poi_node_id,
-			"cost": point_position.distance_to(Vector3(point_position.x, 0.0, 0.0))
+			"cost": point_position.distance_to(Vector3(road_access_x, 0.0, 0.0))
 		})
 
 	return {"nodes": nodes, "edges": edges}
@@ -516,6 +526,132 @@ func _create_market_noticeboard() -> void:
 	notice.outline_size = 2
 	notice.modulate = Color(0.25, 0.20, 0.14)
 	board.add_child(notice)
+
+
+func _create_market_interior() -> void:
+	var room := Node3D.new()
+	room.name = "HarborMarketInterior"
+	room.position = Vector3(-81.0, 0.0, 36.0)
+	add_child(room)
+
+	var floor_body := StaticBody3D.new()
+	floor_body.name = "MarketFloor"
+	floor_body.position = Vector3(0.0, -0.25, 0.0)
+	room.add_child(floor_body)
+	var floor_mesh := MeshInstance3D.new()
+	var floor_box := BoxMesh.new()
+	floor_box.size = Vector3(12.0, 0.5, 14.0)
+	floor_mesh.mesh = floor_box
+	floor_mesh.material_override = _make_material(Color(0.42, 0.34, 0.25))
+	floor_body.add_child(floor_mesh)
+	var floor_collision := CollisionShape3D.new()
+	floor_collision.name = "FloorCollision"
+	var floor_shape := BoxShape3D.new()
+	floor_shape.size = floor_box.size
+	floor_collision.shape = floor_shape
+	floor_body.add_child(floor_collision)
+
+	_create_market_wall(room, "WestWall", Vector3(-6.0, 1.8, 0.0), Vector3(0.35, 3.6, 14.0), Color(0.63, 0.53, 0.41))
+	_create_market_wall(room, "EastWall", Vector3(6.0, 1.8, 0.0), Vector3(0.35, 3.6, 14.0), Color(0.63, 0.53, 0.41))
+	_create_market_wall(room, "SouthWall", Vector3(0.0, 1.8, 7.0), Vector3(12.0, 3.6, 0.35), Color(0.63, 0.53, 0.41))
+	_create_market_wall(room, "NorthWallLeft", Vector3(-3.75, 1.8, -7.0), Vector3(4.5, 3.6, 0.35), Color(0.63, 0.53, 0.41))
+	_create_market_wall(room, "NorthWallRight", Vector3(3.75, 1.8, -7.0), Vector3(4.5, 3.6, 0.35), Color(0.63, 0.53, 0.41))
+	_create_market_wall(room, "EntranceLintel", Vector3(0.0, 3.25, -7.0), Vector3(3.0, 0.7, 0.35), Color(0.45, 0.31, 0.20))
+
+	var awning := MeshInstance3D.new()
+	var awning_mesh := BoxMesh.new()
+	awning_mesh.size = Vector3(11.5, 0.18, 5.5)
+	awning.mesh = awning_mesh
+	awning.position = Vector3(0.0, 3.85, 3.8)
+	awning.material_override = _make_material(Color(0.69, 0.38, 0.25))
+	room.add_child(awning)
+
+	var rear_shelf := MeshInstance3D.new()
+	var shelf_mesh := BoxMesh.new()
+	shelf_mesh.size = Vector3(0.7, 2.3, 4.5)
+	rear_shelf.mesh = shelf_mesh
+	rear_shelf.position = Vector3(-4.8, 1.15, 1.0)
+	rear_shelf.material_override = _make_material(Color(0.29, 0.20, 0.14))
+	room.add_child(rear_shelf)
+
+	var counter := MeshInstance3D.new()
+	var counter_mesh := BoxMesh.new()
+	counter_mesh.size = Vector3(4.4, 1.0, 0.9)
+	counter.mesh = counter_mesh
+	counter.position = Vector3(0.0, 0.5, 2.4)
+	counter.material_override = _make_material(Color(0.34, 0.22, 0.14))
+	room.add_child(counter)
+
+	for item_index in range(3):
+		var crate := MeshInstance3D.new()
+		var crate_mesh := BoxMesh.new()
+		crate_mesh.size = Vector3(0.72, 0.42, 0.62)
+		crate.mesh = crate_mesh
+		crate.position = Vector3(-1.25 + item_index * 1.25, 1.22, 2.35)
+		crate.material_override = _make_material(
+			[Color(0.48, 0.62, 0.29), Color(0.76, 0.48, 0.22), Color(0.72, 0.28, 0.19)][item_index]
+		)
+		room.add_child(crate)
+
+	var shop_title := Label3D.new()
+	shop_title.text = "HARBOR MARKET — LOCAL GOODS"
+	shop_title.position = Vector3(0.0, 3.0, 6.7)
+	shop_title.font_size = 28
+	shop_title.outline_size = 5
+	shop_title.modulate = Color(1.0, 0.88, 0.60)
+	shop_title.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	room.add_child(shop_title)
+
+	var entry := INTERACTABLE_SCRIPT.new() as Node3D
+	entry.name = "HarborMarketEntry"
+	entry.set("action_id", "market_enter")
+	entry.set("display_name", "Enter Harbor Market")
+	entry.set("interaction_text", "E — Enter shop")
+	entry.position = Vector3(-74.5, 0.0, 21.0)
+	add_child(entry)
+
+	var exit_actor := INTERACTABLE_SCRIPT.new() as Node3D
+	exit_actor.name = "HarborMarketExit"
+	exit_actor.set("action_id", "market_exit")
+	exit_actor.set("display_name", "Exit Harbor Market")
+	exit_actor.set("interaction_text", "E — Exit shop")
+	exit_actor.position = Vector3(0.0, 0.0, -5.6)
+	room.add_child(exit_actor)
+
+	var shop_actor := INTERACTABLE_SCRIPT.new() as Node3D
+	shop_actor.name = "MarketShopCounter"
+	shop_actor.set("action_id", "market_shop")
+	shop_actor.set("display_name", "Harbor Market counter")
+	shop_actor.set("interaction_text", "E — Browse and trade")
+	shop_actor.position = Vector3(0.0, 0.0, 1.4)
+	room.add_child(shop_actor)
+
+
+func _create_market_wall(
+	parent: Node3D,
+	wall_name: String,
+	local_position: Vector3,
+	size: Vector3,
+	color: Color
+) -> void:
+	var wall := StaticBody3D.new()
+	wall.name = wall_name
+	wall.position = local_position
+	parent.add_child(wall)
+
+	var wall_mesh := MeshInstance3D.new()
+	var box := BoxMesh.new()
+	box.size = size
+	wall_mesh.mesh = box
+	wall_mesh.material_override = _make_material(color)
+	wall.add_child(wall_mesh)
+
+	var collision := CollisionShape3D.new()
+	collision.name = "WallCollision"
+	var shape := BoxShape3D.new()
+	shape.size = size
+	collision.shape = shape
+	wall.add_child(collision)
 
 
 func _create_starting_vehicle() -> void:

@@ -442,3 +442,73 @@ The export and ZIP were created only on the ephemeral runner, measured and delet
 The Mission 002 story beat is a provisional original proposal, not a maintainer-approved final narrative. It has no fail/retry branch, cinematic scene or voiced dialogue. The noticeboard interaction is tested through the Godot world-signal path, but a human visual/playthrough review is still outstanding. The world remains blockout-scale, character models remain placeholders, the road network is small, and the game is not complete. Firefox/Safari, private-browsing/storage-quota edge cases and complete visual acceptance are not verified.
 
 Next: build a third mission slice only after the current two-mission save/waypoint flow is stable, then expand the Harbor City market block with a real enterable shop interior and persistent shop transactions, with browser reload coverage.
+
+
+## Authoritative Web development update — 2026-11-27 — Mission 003 first playable pass
+
+### Repository and review state
+- `main` was observed at `e4c26a0e4e9d6945233b3032ed6966a7356103ab`; this work did not modify it.
+- The original clean-project branch `web/standalone-from-empty-2026-11-22` remains at `9cdcec813aa874532e9c4c5d3113f967a9a0a26a`.
+- PR #35 is closed and merged since 2026-11-22; it is not an open Draft. This run did not merge, close or retarget any PR.
+- PR #114, #115 and #116 are Draft/open. PR #116 is stacked on PR #115's branch `feature/web-mission-002-harbor-market-20261126`; it remains unmerged.
+- Mission 003 gameplay code first passed at `4a4ad91714b394d02139643570132dbc2002f42d`; the documentation/mission-note follow-up passed at `25e6bf932a0907e4a6ea1d3f5437c3ea136913ef`. The tested deterministic-packaging commit `51775afefc2f30107747fbbad2bea42a83af920e` passed PR Web CI #45982581835 plus Security Audit #45982581734. This status record is a documentation-only follow-up and does not change game code or export inputs.
+- Earlier Web CI [#45979482404](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45979482404) failed because the market-entry interaction did not record its objective. That failure is retained as evidence and is not counted as a pass. The missing objective registration and entry-step signal were corrected.
+- Corrected gameplay Web CI [#45980722964 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45980722964) and Security Audit [#45980987636 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45980987636) tested the mission fixes. Latest full PR Web CI [#45982581835 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45982581835) and Security Audit [#45982581734 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/45982581734) tested the current deterministic-packaging head.
+
+### What changed
+- Mission 003, `مؤونة الطريق`, now progresses from Nora to the physical Harbor Market interior, through a real shop purchase, and back to Claire for delivery and a one-time $150 reward.
+- The market-entry step now updates the registered mission objective and is included in autosave.
+- The mission can no longer advance through a raw `market_shop_purchase` interaction. The game root accepts the mission purchase only after the player is inside the shop and the inventory transaction succeeds.
+- The required bottle cannot be sold while delivery is pending. A successful delivery consumes one bottle from player inventory without restoring shop stock.
+- The post-delivery save records mission stage 8, wallet $1,025, zero carried mission water and seven bottles remaining in shop stock.
+- Added regression checks for premature delivery, direct-purchase bypass, protected mission inventory, consumption on delivery, objective progress and autosave restoration.
+
+### Exact validation evidence
+- Godot 4.7 project import, mission/world JSON validation and research helper checks passed.
+- **63 GDScript regression tests passed**, with runtime-error detection enabled. This includes the campaign, shop transaction, game-root integration, world foundation and save-state tests.
+- WebAssembly export and required HTML, JavaScript, WASM and PCK checks passed. The CI-only browser save-probe scene/script were excluded from the normal game PCK.
+- Chromium served the exported game from `127.0.0.1`; WebGL 2 initialized at 1280×720, keyboard/mouse events were delivered, and no browser runtime errors or external runtime requests were observed.
+- The live game save passed same-origin page reload and separate Chromium process restart using the same persistent profile. The controlled IndexedDB-unavailable test retained session-only readability and did not claim durable storage.
+- The CI job completed successfully and removed the temporary export and ZIP. The Actions artifact list was empty.
+- The ZIP is now generated from sorted file paths with fixed timestamps and permissions. CI builds it twice and compares SHA-256; `WEB_ZIP_REPRODUCIBLE=true` passed. An earlier attempt failed on an unsupported `ZipInfo.compresslevel` attribute; that line was removed before the successful run.
+
+### Exact source and Web export measurements
+| Measurement | Result |
+|---|---:|
+| Tracked Web source files | 142 |
+| Tracked Web source bytes | 319,060 bytes (0.319 MB) |
+| Unique tracked content items | 142 |
+| Unique tracked content bytes | 319,060 bytes (0.304 MiB) |
+| Temporary Web export files | 8 |
+| Uncompressed Web export | 40,023,216 bytes (40.023 MB; 38.169 MiB) |
+| Compressed Web ZIP | 10,312,719 bytes (10.313 MB; 9.835 MiB) |
+| ZIP reproducibility | **TESTED** | Two archives built in one CI run had identical SHA-256 using sorted paths and fixed timestamps/permissions |
+| ZIP SHA-256 | `ca24cfb78a6c07ff34c1cbd57b0155bbc1e3665bbdc3c1d599e16dd5f985079e` |
+
+The export and ZIP were created only on the ephemeral runner, measured and deleted. No downloadable Actions artifact was retained. These measurements include the Godot Web runtime and current game pack; they are not all unique authored art. The long-term 4 GB genuine-content target is **NOT REACHED**.
+
+### System status after this increment
+| System | Status | Evidence / limit |
+|---|---|---|
+| Godot 4.7 import, WebAssembly export and export-file validation | **TESTED** | CI #45980722964 |
+| Chromium WebGL 2 runtime and keyboard/mouse delivery | **TESTED** | 1280×720 localhost smoke; no runtime errors/external requests |
+| Mission 001 | **TESTED — first playable pass** | Claire → Nora; $250 one-time reward |
+| Mission 002 | **TESTED — first playable pass** | Nora → physical noticeboard → Nora; $300 one-time reward |
+| Mission 003 | **TESTED — first playable pass** | Nora → enter market → buy water → deliver to Claire; $150 one-time reward; bottle consumed |
+| Harbor Market transactions | **TESTED — first playable pass** | Bounded stock, buy/sell, mission-item protection and delivery consumption |
+| Mission/shop autosave | **TESTED — selected live-game state** | Mission stage 8, wallet $1,025, carried water 0, shop water stock 7 |
+| Browser save persistence | **TESTED — Chromium only** | Same-origin page reload and separate browser-process restart restored player, mission, vehicle, shop inventory/stock, NPC and world state |
+| Browser storage degradation | **TESTED — controlled IndexedDB-unavailable simulation** | Session-only save remains readable in active page; no durable claim |
+| World map and GPS | **PARTIALLY IMPLEMENTED** | Eight POIs and connected prototype street grid; not a complete city network |
+| Four world regions | **PARTIALLY IMPLEMENTED** | Connected blockout geometry, not final terrain/buildings/interiors |
+| Leo/Claire/Mia/Nora presentation | **PARTIALLY IMPLEMENTED** | Placeholder models; final rigs, facial animation and acting absent |
+| Vehicles | **PARTIALLY IMPLEMENTED** | One playable sedan and tested vehicle services; other classes and final handling/audio incomplete |
+| Pedestrian, traffic and police simulation | **PARTIALLY IMPLEMENTED** | Individual services and regression tests exist; complete live simulation is not established |
+| Arabic voice acting and regional environmental audio | **PLANNED / NOT IMPLEMENTED** | Dialogue remains text-only; no recorded voice performance is claimed |
+| Full campaign, fail/retry and cinematics | **PLANNED** | Only the first three provisional mission slices are playable |
+| 4 GB unique Web content | **NOT REACHED** | Exact source/export measurements above; no filler or duplicated files counted |
+
+### Remaining limits and next technical increment
+Mission 003 remains a provisional original story proposal, not a maintainer-approved final campaign chapter. It has no fail/retry branch, cinematic scene or voiced dialogue. The market is one prototype interior; the rest of the city, character art, vehicle classes and open-world simulation remain incomplete. This is foundation regression and Chromium smoke coverage, not full-game acceptance. Human visual review, Firefox/Safari, private-browsing and storage-quota edge cases remain unverified.
+
+Next: build Mission 004 as an original vehicle-and-GPS delivery across a second region, with checkpoint/fail/retry rules and save/reload tests. Keep the mission linked to real world locations and road routes rather than a menu-only objective.

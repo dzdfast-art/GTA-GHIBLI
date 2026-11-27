@@ -436,10 +436,6 @@ func _run() -> void:
 	if int(missions.get("mission_stage")) != 5 or int(missions.call("get_wallet")) != 900:
 		_fail("Returning to Nora did not complete Mission 002 and grant its $300 reward.")
 		return
-	nora.call("activate")
-	if int(missions.call("get_wallet")) != 900:
-		_fail("Mission 002 reward was not idempotent after campaign completion.")
-		return
 	if not bool(objectives.call("is_complete", "mission_002_nora_start")) or not bool(objectives.call("is_complete", "mission_002_noticeboard")) or not bool(objectives.call("is_complete", "mission_002_return_to_nora")):
 		_fail("Mission 002 objective progress was not recorded.")
 		return
@@ -450,12 +446,110 @@ func _run() -> void:
 		_fail("Completed Mission 002 remained available.")
 		return
 
+	nora.call("activate")
+	if int(missions.get("mission_stage")) != 6 or str(game.get("_active_waypoint_id")) != "harbor_market":
+		_fail("Mission 003 did not activate and set a Harbor Market waypoint.")
+		return
+	var market_room := world.get_node_or_null("HarborMarketInterior")
+	var market_entry := world.get_node_or_null("HarborMarketEntry")
+	var market_exit := world.get_node_or_null("HarborMarketInterior/HarborMarketExit")
+	var market_counter := world.get_node_or_null("HarborMarketInterior/MarketShopCounter")
+	if market_room == null or market_entry == null or market_exit == null or market_counter == null:
+		_fail("The enterable Harbor Market interior or its entry, exit and counter interactions are missing.")
+		return
+	var market_floor := market_room.get_node_or_null("MarketFloor") as StaticBody3D
+	var market_floor_collision := market_room.get_node_or_null("MarketFloor/FloorCollision")
+	var north_wall_collision := market_room.get_node_or_null("NorthWallLeft/WallCollision")
+	if market_floor == null or market_floor_collision == null or north_wall_collision == null:
+		_fail("The shop interior is missing its floor or wall collision.")
+		return
+	market_entry.call("activate")
+	if not bool(objectives.call("is_complete", "mission_003_enter_market")):
+		_fail("Entering the market did not record the Mission 003 interior objective.")
+		return
+	if player.global_position.distance_to(Vector3(-81.0, 0.05, 31.2)) > 0.1:
+		_fail("The market entrance did not move the player into the shop interior.")
+		return
+	market_counter.call("activate")
+	if not bool(hud.call("is_market_shop_open")):
+		_fail("The in-world market counter did not open the clickable shop panel.")
+		return
+	var shop: RefCounted = game.call("get_runtime_system", "shop_inventory")
+	var shop_items_column := hud.get("_shop_items_column") as VBoxContainer
+	var fruit_buy_button := _find_shop_button(shop_items_column, "Fruit basket", 1)
+	if fruit_buy_button == null or fruit_buy_button.disabled:
+		_fail("The market UI did not expose an enabled Buy button for stocked fruit.")
+		return
+	fruit_buy_button.pressed.emit()
+	await process_frame
+	if int(missions.call("get_wallet")) != 875 or int(shop.call("get_quantity", "fruit_basket")) != 1:
+		_fail("Clicking the market Buy button did not update both the wallet and player inventory.")
+		return
+	var fruit_sell_button := _find_shop_button(shop_items_column, "Fruit basket", 2)
+	if fruit_sell_button == null or fruit_sell_button.disabled:
+		_fail("The market UI did not enable Sell for an owned item.")
+		return
+	fruit_sell_button.pressed.emit()
+	await process_frame
+	if int(missions.call("get_wallet")) != 887 or int(shop.call("get_quantity", "fruit_basket")) != 0:
+		_fail("Clicking the market Sell button did not return the correct value or remove the sold item.")
+		return
+	claire.call("activate")
+	if int(missions.get("mission_stage")) != 6 or int(missions.call("get_wallet")) != 887:
+		_fail("Claire accepted Mission 003 delivery before the water was purchased.")
+		return
+	var water_buy_button := _find_shop_button(shop_items_column, "Bottled water", 1)
+	if water_buy_button == null or water_buy_button.disabled:
+		_fail("The market UI did not expose an enabled Buy button for Mission 003 water.")
+		return
+	water_buy_button.pressed.emit()
+	await process_frame
+	if int(missions.get("mission_stage")) != 7 or int(missions.call("get_wallet")) != 875:
+		_fail("Buying bottled water did not advance Mission 003 and charge the correct price.")
+		return
+	if int(shop.call("get_quantity", "bottled_water")) != 1 or str(game.get("_active_waypoint_id")) != "claire_bennett":
+		_fail("Mission 003 did not retain its purchased water and route back to Claire.")
+		return
+	if bool(game.call("_sell_market_item", "bottled_water")) or int(shop.call("get_quantity", "bottled_water")) != 1 or int(missions.call("get_wallet")) != 875:
+		_fail("The mission water could be sold before delivery.")
+		return
+	claire.call("activate")
+	if int(missions.get("mission_stage")) != 8 or int(missions.call("get_wallet")) != 1025:
+		_fail("Delivering the purchased water to Claire did not complete Mission 003 with its $150 reward.")
+		return
+	if int(shop.call("get_quantity", "bottled_water")) != 0:
+		_fail("Claire's successful delivery did not consume the bottled-water inventory item.")
+		return
+	claire.call("activate")
+	if int(missions.call("get_wallet")) != 1025 or int(shop.call("get_quantity", "bottled_water")) != 0:
+		_fail("Mission 003 reward was paid more than once.")
+		return
+	if not bool(objectives.call("is_complete", "mission_003_nora_start")) or not bool(objectives.call("is_complete", "mission_003_enter_market")) or not bool(objectives.call("is_complete", "mission_003_buy_water")) or not bool(objectives.call("is_complete", "mission_003_return_to_claire")):
+		_fail("Mission 003 objective progress was not recorded.")
+		return
+	if not bool(rewards.call("is_settled", "mission_003")) or int(rewards.call("get_reward", "mission_003").get("cash", 0)) != 150:
+		_fail("Mission 003 reward settlement was not recorded.")
+		return
+	if bool(prerequisites.call("is_available", "mission_003")):
+		_fail("Completed Mission 003 remained available.")
+		return
+	market_exit.call("activate")
+	if player.global_position.distance_to(Vector3(-81.0, 0.05, 27.0)) > 0.1 or bool(hud.call("is_market_shop_open")):
+		_fail("The market exit did not return the player outside and close the shop panel.")
+		return
+
 	var autosave_manager: RefCounted = load("res://scripts/world/save_slot_manager.gd").new()
 	var autosave_record: Dictionary = autosave_manager.call("load_slot", "autosave")
 	var autosave_payload: Dictionary = autosave_record.get("payload", {})
 	var autosave_missions: Dictionary = autosave_payload.get("missions", {})
-	if int(autosave_payload.get("schema_version", 0)) != 1 or int(autosave_missions.get("stage", -1)) != 5 or int(autosave_missions.get("wallet", -1)) != 900:
-		_fail("The game root did not persist Mission 002 stage and wallet in its versioned live-game autosave slot.")
+	var autosave_shop: Dictionary = autosave_payload.get("shop", {})
+	var autosave_inventory: Dictionary = autosave_shop.get("inventory", {})
+	var autosave_stock: Dictionary = autosave_shop.get("stock", {})
+	if int(autosave_payload.get("schema_version", 0)) != 1 or int(autosave_missions.get("stage", -1)) != 8 or int(autosave_missions.get("wallet", -1)) != 1025:
+		_fail("The game root did not persist Mission 003 stage and wallet in its versioned live-game autosave slot.")
+		return
+	if int(autosave_inventory.get("bottled_water", 0)) != 0 or int(autosave_stock.get("bottled_water", {}).get("quantity", -1)) != 7:
+		_fail("The game root did not persist consumed delivery inventory and remaining market stock.")
 		return
 
 	var pause_save_position: Vector3 = player.global_position + Vector3(1.25, 0.0, 0.75)
@@ -481,10 +575,10 @@ func _run() -> void:
 	var restored_manager: Node = load("res://scripts/systems/mission_manager.gd").new()
 	root.add_child(restored_manager)
 	await process_frame
-	if int(restored_manager.get("mission_stage")) != 5:
-		_fail("Mission 002 progress was not restored by a new manager instance.")
+	if int(restored_manager.get("mission_stage")) != 8:
+		_fail("Mission 003 progress was not restored by a new manager instance.")
 		return
-	if int(restored_manager.call("get_wallet")) != 900:
+	if int(restored_manager.call("get_wallet")) != 1025:
 		_fail("The wallet balance was not restored by a new manager instance.")
 		return
 
@@ -493,7 +587,7 @@ func _run() -> void:
 	print("PASS: minimap maps world bounds correctly and receives the live player position.")
 	print("PASS: world-map POIs have unique IDs and correct region coordinates.")
 	print("PASS: the expanded north-south and cross-street grid connects across multiple regions.")
-	print("PASS: all seven points of interest are reachable through the connected road graph.")
+	print("PASS: all eight points of interest are reachable through the connected road graph.")
 	print("PASS: off-network starts are reported unreachable beyond the configured snap distance.")
 	print("PASS: selecting a map marker produces a road-following route, distance and map/minimap polyline.")
 	print("PASS: GPS derives the next-turn instruction and remaining distance for the HUD.")
@@ -507,8 +601,9 @@ func _run() -> void:
 	print("PASS: nearby E interaction enters the starter sedan; driving and E exit work.")
 	print("PASS: Claire and Nora complete Mission 001; its $250 reward and prerequisite are recorded.")
 	print("PASS: Nora, the Harbor Market noticeboard and Nora complete Mission 002 with a $300 one-time reward.")
+	print("PASS: the player enters a collision-backed Harbor Market interior, buys and sells goods, saves stock/inventory and completes Mission 003.")
 	print("PASS: both mission objective sets, reward ledgers and prerequisite state are integrated.")
-	print("PASS: Mission 002 stage and $900 wallet restore through a new manager instance.")
+	print("PASS: Mission 003 stage and $1,025 wallet restore through a new manager instance.")
 	print("PASS: game-root wallet changes persist the mission stage and balance in a durable autosave slot.")
 	print("PASS: application-pause notification immediately flushes the latest player position.")
 	print("NOTE: this is foundation regression coverage, not full-game acceptance.")
@@ -516,6 +611,18 @@ func _run() -> void:
 	game.queue_free()
 	await process_frame
 	quit(0)
+
+
+func _find_shop_button(items_column: VBoxContainer, item_name: String, button_index: int) -> Button:
+	if items_column == null:
+		return null
+	for row in items_column.get_children():
+		if row.get_child_count() <= button_index:
+			continue
+		var description := row.get_child(0) as Label
+		if description != null and description.text.contains(item_name):
+			return row.get_child(button_index) as Button
+	return null
 
 
 func _fail(message: String) -> void:
