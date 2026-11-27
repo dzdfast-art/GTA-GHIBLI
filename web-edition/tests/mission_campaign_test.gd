@@ -49,6 +49,7 @@ func _run() -> void:
 	if int(manager.get("mission_stage")) != 6:
 		_fail("Nora did not unlock Mission 003 after Mission 002.")
 		return
+	manager.call("handle_interaction", "market_enter")
 	if not bool(manager.call("set_wallet_balance", 888, "test_shop_purchase")):
 		_fail("The simulated shop purchase could not update the wallet.")
 		return
@@ -73,6 +74,7 @@ func _run() -> void:
 		"mission_002:inspect_noticeboard",
 		"mission_002:return_to_nora",
 		"mission_003:start_at_nora",
+		"mission_003:enter_market",
 		"mission_003:buy_water",
 		"mission_003:return_to_claire"
 	]
