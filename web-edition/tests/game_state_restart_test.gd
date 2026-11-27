@@ -98,6 +98,7 @@ func _run_writer_process() -> void:
 	var wanted: RefCounted = game.call("get_runtime_system", "wanted_level")
 	var objectives: RefCounted = game.call("get_runtime_system", "mission_objectives")
 	var rewards: RefCounted = game.call("get_runtime_system", "mission_rewards")
+	var shop: RefCounted = game.call("get_runtime_system", "shop_inventory")
 	var vehicles: Array = get_nodes_in_group("drivable_vehicles")
 	if vehicles.size() != 1:
 		_fail("The writer process did not find the starter sedan.")
@@ -105,6 +106,10 @@ func _run_writer_process() -> void:
 
 	missions.set("mission_stage", 1)
 	missions.set("wallet", 825)
+	var shop_purchase: Dictionary = shop.call("purchase", "bottled_water", 825, 2)
+	if not bool(shop_purchase.get("ok", false)) or not bool(missions.call("set_wallet_balance", int(shop_purchase.get("wallet", 0)), "restart_test")):
+		_fail("The writer process could not create a transactional shop purchase.")
+		return
 	player.global_position = SAVED_VEHICLE_POSITION
 	player.global_rotation = Vector3(0.0, 0.72, 0.0)
 	player.velocity = Vector3.ZERO
@@ -162,6 +167,7 @@ func _run_reader_process() -> void:
 	var objectives: RefCounted = game.call("get_runtime_system", "mission_objectives")
 	var rewards: RefCounted = game.call("get_runtime_system", "mission_rewards")
 	var settings: RefCounted = game.call("get_runtime_system", "settings_profile")
+	var shop: RefCounted = game.call("get_runtime_system", "shop_inventory")
 	var vehicles: Array = get_nodes_in_group("drivable_vehicles")
 	if vehicles.size() != 1:
 		_fail("The reader process did not find the starter sedan.")
@@ -199,8 +205,8 @@ func _run_reader_process() -> void:
 	if absf(float(vitals.get("health")) - 73.5) > 0.001 or absf(float(vitals.get("stamina")) - 41.25) > 0.001:
 		_fail("The fresh game did not restore player health and stamina.")
 		return
-	if int(missions.get("mission_stage")) != 1 or int(missions.call("get_wallet")) != 825:
-		_fail("The fresh game did not restore Mission 001 stage and wallet.")
+	if int(missions.get("mission_stage")) != 1 or int(missions.call("get_wallet")) != 801:
+		_fail("The fresh game did not restore Mission 001 stage and the post-purchase wallet.")
 		return
 	if int(clock.get("minute_of_day")) != 1275 or str(clock.get("weather")) != "rain":
 		_fail("The fresh game did not restore world time and weather.")
@@ -227,6 +233,9 @@ func _run_reader_process() -> void:
 	if str(settings.call("get_value", "language")) != "ar":
 		_fail("The fresh game did not restore the selected Arabic language setting.")
 		return
+	if int(shop.call("get_quantity", "bottled_water")) != 2 or int(shop.get("stock").bottled_water.quantity) != 6:
+		_fail("The fresh game did not restore purchased shop inventory and remaining market stock.")
+		return
 	if vehicle.global_position.distance_to(SAVED_VEHICLE_POSITION) > 0.05:
 		_fail("The fresh game did not restore the parked vehicle transform.")
 		return
@@ -238,7 +247,7 @@ func _run_reader_process() -> void:
 		return
 
 	_cleanup_save()
-	print("PASS: fresh game restored player transform/vitals, mission progress/rewards, active vehicle, weapon inventory, world time/weather, activity, landmark, relationship, wanted state and Arabic setting.")
+	print("PASS: fresh game restored player transform/vitals, mission progress/rewards, active vehicle, weapon inventory, shop inventory/stock, world time/weather, activity, landmark, relationship, wanted state and Arabic setting.")
 	quit(0)
 
 
