@@ -523,7 +523,7 @@ Next: build Mission 004 as an original vehicle-and-GPS delivery across a second 
 - `main` remained at `e4c26a0e4e9d6945233b3032ed6966a7356103ab`; no main-branch update was made in this run.
 - Original clean-start branch `web/standalone-from-empty-2026-11-22` remains at `9cdcec813aa874532e9c4c5d3113f967a9a0a26a`. PR #35 was already closed and merged on 2026-11-22; this run did not merge, close, approve or retarget any PR.
 - Current review head: PR #118, Draft/open/unmerged, branch `fix/web-save-cleanup-verification-20261127`, final head `bdcbd809075b382db33083f376fa8ba177f35a18`, based on PR #117's Mission 004 branch at `202c8aea37566611c5c2fd5de25c3fc303ff94ba`.
-- PR #118 changes six files: the Chromium restart helper, two Web save regression files, the master specification, the Web README and the asset provenance register. It does not change `main`, old game scenes, old Android source or legacy assets.
+- The implementation/documentation follow-up changed six files: the Chromium restart helper, two Web save regression files, the master specification, the Web README and the asset provenance register. This status-ledger update is the seventh file. No old game scenes, old Android source or legacy assets were changed.
 
 ### What changed
 - The browser cleanup probe now JSON-serializes values before placing them in DOM attributes. A JavaScript empty array previously became an empty DOM string through implicit array-to-string conversion; the browser assertion therefore could not distinguish a valid empty array from missing evidence.
