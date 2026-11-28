@@ -534,25 +534,25 @@ Next: build Mission 004 as an original vehicle-and-GPS delivery across a second 
 - `docs/OWNERSHIP_AND_ASSET_REGISTER.md` records the original procedural Sapphire Coast Cafe counter and delivery interaction. No externally sourced model or texture was added.
 
 ### Exact validation evidence
-- Web CI [run 46130730568 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/46130730568), on exact head `bdcbd809075b382db33083f376fa8ba177f35a18`.
-- Security Audit [run 46130730547 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/46130730547), on the same exact head; Gitleaks found no leaked secrets.
+- Web CI [run 46131072944 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/46131072944), on exact head `bdcbd809075b382db33083f376fa8ba177f35a18`.
+- Security Audit [run 46131072933 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/46131072933), on the same exact head; Gitleaks found no leaked secrets.
 - **63 GDScript regression tests passed** with runtime-error detection. Godot 4.7 import, JSON/research-helper validation, WebAssembly export, required HTML/JS/WASM/PCK checks and CI-only probe exclusion passed.
 - Chromium served the game from `127.0.0.1`; the 1280×720 WebGL 2 canvas initialized, WASD/right-mouse/map input arrived, and no runtime errors or external requests were observed.
 - The live game restored selected player, mission, vehicle, inventory, NPC and world state after a same-origin page reload and after Chromium was fully closed and relaunched with the same persistent profile.
 - The process-restart probe confirmed that cleanup reported success and that the autosave, backup, temporary and recovery files were absent. The separate IndexedDB-unavailable test remained readable only within the active page session and made no durable-storage claim.
 - Web CI removed the temporary export and ZIP after measurement. Its artifact list was empty. The separate security workflow retained only its 6,772-byte Gitleaks SARIF report; no Web export or game ZIP was uploaded.
 
-### Exact measurements from Web CI run 46130730568
+### Exact measurements from Web CI run 46131072944
 | Measurement | Bytes | Decimal MB | MiB |
 |---|---:|---:|---:|
 | Tracked `web-edition/` source | 338,843 | 0.339 | 0.323 |
 | Deduplicated unique source content | 338,843 | 0.339 | 0.323 |
 | Uncompressed Web export | 40,026,200 | 40.026 | 38.172 |
-| Compressed Web ZIP | 10,313,995 | 10.314 | 9.836 |
+| Compressed Web ZIP | 10,313,996 | 10.314 | 9.836 |
 
 - Tracked Web source files: **143**; unique content blobs: **143**; temporary export files: **8**.
 - ZIP reproducibility: **TESTED** — two archives from the same run had identical hashes.
-- ZIP SHA-256: `cdfadb5186a543e68da02446d38a5503c60a96c225cec741a99b806580a249b6`.
+- ZIP SHA-256: `2fca994a9db84830e6c895ca8916654f0826f10945b84ff14c8236d01f37bbc8`.
 - The 4 GB unique-content target is **NOT REACHED**. The export includes the Godot Web runtime and game pack; it is not 40 MB of unique authored assets.
 
 ### Current system status
