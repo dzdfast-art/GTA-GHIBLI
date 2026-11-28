@@ -57,6 +57,29 @@ func _run() -> void:
 		_fail("Deleting a save slot did not remove its primary and recovery files.")
 		return
 
+	if not bool(manager.call("save_slot", "cleanup_probe", {"cash": 1}, 402)):
+		_fail("The cleanup regression probe could not create its primary save file.")
+		return
+	var cleanup_base_path := "user://gta_ghibli_web_saves/cleanup_probe.json"
+	for suffix in [".bak", ".tmp", ".recover"]:
+		var sidecar := FileAccess.open(cleanup_base_path + str(suffix), FileAccess.WRITE)
+		if sidecar == null:
+			_fail("The cleanup regression probe could not create sidecar " + str(suffix))
+			return
+		sidecar.store_string("temporary test data")
+		sidecar.close()
+	if not bool(manager.call("delete_slot", "cleanup_probe")):
+		_fail("Deleting a slot with backup, temporary and recovery sidecars did not report success.")
+		return
+	for suffix in ["", ".bak", ".tmp", ".recover"]:
+		var candidate_path := cleanup_base_path + str(suffix)
+		if FileAccess.file_exists(candidate_path):
+			_fail("Save-slot cleanup left a file behind: " + candidate_path)
+			return
+	if bool(manager.call("delete_slot", "cleanup_probe")):
+		_fail("Deleting an already absent save slot incorrectly reported success.")
+		return
+
 	var invalid_payload_json: String = "{broken"
 	var invalid_payload_envelope: Dictionary = {
 		"version": 1,
