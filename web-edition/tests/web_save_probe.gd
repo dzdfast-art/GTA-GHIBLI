@@ -14,7 +14,17 @@ func _run_probe() -> void:
 	var mode := str(JavaScriptBridge.eval("(new URLSearchParams(window.location.search)).get('save_probe') || ''"))
 	if mode == "cleanup":
 		var manager: RefCounted = SAVE_MANAGER_SCRIPT.new()
-		manager.call("delete_slot", SLOT_ID)
+		var delete_reported_success := bool(manager.call("delete_slot", SLOT_ID))
+		var base_path := "user://gta_ghibli_web_saves/" + SLOT_ID + ".json"
+		var remaining_paths: Array[String] = []
+		for suffix in ["", ".bak", ".tmp", ".recover"]:
+			var candidate_path := base_path + str(suffix)
+			if FileAccess.file_exists(candidate_path) or DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(candidate_path)):
+				remaining_paths.append(candidate_path)
+		_publish_cleanup(delete_reported_success, remaining_paths)
+		if not remaining_paths.is_empty():
+			_fail("cleanup_leftover_files")
+			return
 		_publish("cleaned")
 		return
 	if mode == "session":
@@ -233,6 +243,15 @@ func _publish_storage_status(save_succeeded: bool, status_text: String) -> void:
 	JavaScriptBridge.eval(
 		"document.documentElement.setAttribute('data-ghibli-save-succeeded', " + success_literal + ");" +
 		"document.documentElement.setAttribute('data-ghibli-save-status', " + status_literal + ");"
+	)
+
+
+func _publish_cleanup(delete_reported_success: bool, remaining_paths: Array[String]) -> void:
+	var delete_literal := JSON.stringify(delete_reported_success)
+	var remaining_literal := JSON.stringify(remaining_paths)
+	JavaScriptBridge.eval(
+		"document.documentElement.setAttribute('data-ghibli-save-cleanup-delete-result', JSON.stringify(" + delete_literal + "));" +
+		"document.documentElement.setAttribute('data-ghibli-save-cleanup-remaining', JSON.stringify(" + remaining_literal + "));"
 	)
 
 

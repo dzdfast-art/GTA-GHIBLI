@@ -147,6 +147,10 @@ async function main() {
     });
     assert.equal(cleanupResponse && cleanupResponse.status(), 200, "Cleanup probe did not return HTTP 200");
     await waitForProbeStatus(readPage, "cleaned");
+    const cleanupDeleteResult = await readPage.locator("html").getAttribute("data-ghibli-save-cleanup-delete-result");
+    const cleanupRemaining = await readPage.locator("html").getAttribute("data-ghibli-save-cleanup-remaining");
+    assert.equal(cleanupDeleteResult, "true", "The save-slot cleanup operation did not report deleting the written slot");
+    assert.equal(cleanupRemaining, "[]", "The save slot or one of its backup/temp/recovery files remained after cleanup");
 
     assert.deepEqual(externalRequests, [], "The browser-restart probe requested an external network resource");
     assert.deepEqual(runtimeErrors, [], "The browser reported errors during the profile restart probe");
@@ -154,7 +158,7 @@ async function main() {
     console.log("PASS: the Chromium browser process was closed and relaunched with the same profile directory.");
     console.log("PASS: the new process restored player, mission, vehicle, inventory, NPC and world state.");
     console.log("PASS: Godot reported persistent user:// storage before and after process restart.");
-    console.log("PASS: the temporary autosave slot was removed from the profile after verification.");
+    console.log("PASS: the cleanup operation reported deletion and verified that autosave, backup, temporary and recovery files are absent.");
     console.log("PASS: no external network requests or browser runtime errors occurred.");
   } finally {
     if (context) await context.close();

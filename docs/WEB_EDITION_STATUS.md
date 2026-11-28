@@ -1,9 +1,9 @@
 # GTA GHIBLI Web Edition — Verified Status Ledger
 
-Updated: 2026-11-26 — blocked IndexedDB session-only behavior verified  
+Updated: 2026-11-28 — Mission 004 documentation and Chromium process-restart save cleanup verified  
 Current game root: `web-edition/` — Godot 4.7, single-threaded WebAssembly, Compatibility renderer / WebGL 2
 
-## Latest verified increment — PR #114 — 2026-11-26
+## Historical verified increment — PR #114 — 2026-11-26
 
 - PR #114: https://github.com/dzdfast-art/GTA-GHIBLI/pull/114 — Draft/open/unmerged; branch `fix/web-indexeddb-blocked-session-only-20261126`, stacked on PR #111 branch `feature/web-save-persistence-warning-20261125`.
 - Tested functional-code head: `ebf6b01ad4e01b201838cfbb07fa750980d18613`; base head: `2c62e183ef6c05e1398bac8e483a4a9245d9c849`.
@@ -34,7 +34,7 @@ Current game root: `web-edition/` — Godot 4.7, single-threaded WebAssembly, Co
 
 - `main`: `e4c26a0e4e9d6945233b3032ed6966a7356103ab`; unchanged by this increment.
 - PR #35 was closed and merged on 2026-11-22 at 13:56:51 UTC. The original clean-start branch `web/standalone-from-empty-2026-11-22` currently points to `9cdcec813aa874532e9c4c5d3113f967a9a0a26a`; it is no longer the active review head.
-- Active Web review chain: PR #105 (durable save backend) → PR #108 (live-game state integration) → PR #109 (Chromium page-reload verification) → [PR #111](https://github.com/dzdfast-art/GTA-GHIBLI/pull/111) (storage-status feedback).
+- The earlier PR #105 → #108 → #109 → #111 save-persistence chain is historical. The current mission/save review sequence is PR #115 → #116 → #117 → [PR #118](https://github.com/dzdfast-art/GTA-GHIBLI/pull/118); all remain Draft/open/unmerged. PR #118 is stacked on PR #117's Mission 004 branch. PR #114 is closed without merge; its branch remains in the ancestry of PR #115.
 - PR #111 is Draft/open/unmerged. Branch: `feature/web-save-persistence-warning-20261125`. Code changes were introduced at `fb16cf06a3d6d03404bb7e58900d4b38de4f90aa`; the last fully verified PR head before this ledger refresh was `24ed445c5edc48d97692e91e62abe0015471dbfe`.
 - PR #111 is stacked on PR #109 branch `feature/web-browser-save-reload-20261125` at `bbf4959b43fd768798bdba706b592ae5dccf2925`. No merge or approval was performed.
 - The original PR #35 state supplied in the earlier request is historical, not current. No changes from this increment were written to `main`.
@@ -52,7 +52,7 @@ Current game root: `web-edition/` — Godot 4.7, single-threaded WebAssembly, Co
 | Godot `OS.is_userfs_persistent()` signal | **TESTED as a status hint** | The Chromium probe reports `true` before and after page reload in the normal CI context; Godot documents that this method can produce false positives |
 | IndexedDB API unavailable in Chromium | **TESTED — controlled simulation** | PR #114 removes `window.indexedDB` before Godot starts; WebGL 2 initializes, Godot reports non-persistent storage, a successful save is readable in the active page, and the HUD says session-only; not a full private-mode/quota/policy test |
 | Private browsing, storage quotas and browser policy restrictions | **NOT VERIFIED** | No separate full private-mode, quota-exhaustion or enterprise-policy test has been run |
-| Browser close/reopen or a new browser context | **NOT VERIFIED** | Current browser persistence gate reloads the page inside one persistent Playwright context; it is not a full browser restart test |
+| Browser process close/reopen with the same persistent profile | **TESTED — selected live-game state** | PR #118 closes Chromium and relaunches it with the same profile; selected player, mission, vehicle, inventory, NPC and world state restore. A fresh profile/context is not tested |
 | Complete save/restore of all gameplay systems and Missions 001–004 | **PARTIALLY IMPLEMENTED** | The live serializer covers multiple registries, but the current reload probe verifies selected fields only; not every future entity/system is integrated or proven |
 
 ### User-facing storage behavior
@@ -94,7 +94,7 @@ Current game root: `web-edition/` — Godot 4.7, single-threaded WebAssembly, Co
 ## Next technical steps
 
 1. **Completed in PR #114:** Chromium test with the IndexedDB API unavailable before Godot startup; it verifies session-only readback or explicit save failure, no durable-storage claim, no runtime errors and no external requests.
-2. Add a separate browser-context close/reopen test to distinguish page reload from a fresh browser session.
+2. **Completed in PR #118:** close the Chromium process and relaunch it with the same persistent profile; restore selected live-game state and verify deletion of the autosave and `.bak`, `.tmp`, `.recover` sidecars. A fresh profile, private mode, quota exhaustion and other browsers remain unverified.
 3. Continue integrating every mission, player, NPC, vehicle, inventory, activity and world-state owner into the live save/restore contract, with per-system restart assertions.
 4. Continue expanding original world geometry, interiors, roads, character rigs/animations, real mission content and locally bundled audio. The current foundation systems are not a finished game.
 5. Add Firefox and Safari jobs only when suitable runners are available; do not claim cross-browser support before those jobs pass.
@@ -512,3 +512,71 @@ The export and ZIP were created only on the ephemeral runner, measured and delet
 Mission 003 remains a provisional original story proposal, not a maintainer-approved final campaign chapter. It has no fail/retry branch, cinematic scene or voiced dialogue. The market is one prototype interior; the rest of the city, character art, vehicle classes and open-world simulation remain incomplete. This is foundation regression and Chromium smoke coverage, not full-game acceptance. Human visual review, Firefox/Safari, private-browsing and storage-quota edge cases remain unverified.
 
 Next: build Mission 004 as an original vehicle-and-GPS delivery across a second region, with checkpoint/fail/retry rules and save/reload tests. Keep the mission linked to real world locations and road routes rather than a menu-only objective.
+
+
+---
+
+## Authoritative Web development update — 2026-11-28 — PR #118 save cleanup and Mission 004 documentation
+
+### Repository and review state
+- Repository: `dzdfast-art/GTA-GHIBLI`.
+- `main` remained at `e4c26a0e4e9d6945233b3032ed6966a7356103ab`; no main-branch update was made in this run.
+- Original clean-start branch `web/standalone-from-empty-2026-11-22` remains at `9cdcec813aa874532e9c4c5d3113f967a9a0a26a`. PR #35 was already closed and merged on 2026-11-22; this run did not merge, close, approve or retarget any PR.
+- Current review head: PR #118, Draft/open/unmerged, branch `fix/web-save-cleanup-verification-20261127`, final head `bdcbd809075b382db33083f376fa8ba177f35a18`, based on PR #117's Mission 004 branch at `202c8aea37566611c5c2fd5de25c3fc303ff94ba`.
+- The implementation/documentation follow-up changed six files: the Chromium restart helper, two Web save regression files, the master specification, the Web README and the asset provenance register. This status-ledger update is the seventh file. No old game scenes, old Android source or legacy assets were changed.
+
+### What changed
+- The browser cleanup probe now JSON-serializes values before placing them in DOM attributes. A JavaScript empty array previously became an empty DOM string through implicit array-to-string conversion; the browser assertion therefore could not distinguish a valid empty array from missing evidence.
+- The save-slot manager regression test creates a primary save plus `.bak`, `.tmp` and `.recover` sidecars, verifies that `delete_slot` removes all four files and reports success, then verifies that a second deletion of the absent slot reports false.
+- The Chromium process-restart test now requires an explicit successful deletion result and confirms that the primary autosave and all three sidecar paths are absent.
+- `docs/WEB_EDITION_MASTER_SPEC.md` now documents Missions 001–004 and the process-restart/cleanup acceptance requirement.
+- `web-edition/README.md` now describes four playable provisional mission slices and corrects the road-closure limitation.
+- `docs/OWNERSHIP_AND_ASSET_REGISTER.md` records the original procedural Sapphire Coast Cafe counter and delivery interaction. No externally sourced model or texture was added.
+
+### Exact validation evidence
+- Web CI [run 46131072944 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/46131072944), on exact head `bdcbd809075b382db33083f376fa8ba177f35a18`.
+- Security Audit [run 46131072933 — PASS](https://github.com/dzdfast-art/GTA-GHIBLI/actions/runs/46131072933), on the same exact head; Gitleaks found no leaked secrets.
+- **63 GDScript regression tests passed** with runtime-error detection. Godot 4.7 import, JSON/research-helper validation, WebAssembly export, required HTML/JS/WASM/PCK checks and CI-only probe exclusion passed.
+- Chromium served the game from `127.0.0.1`; the 1280×720 WebGL 2 canvas initialized, WASD/right-mouse/map input arrived, and no runtime errors or external requests were observed.
+- The live game restored selected player, mission, vehicle, inventory, NPC and world state after a same-origin page reload and after Chromium was fully closed and relaunched with the same persistent profile.
+- The process-restart probe confirmed that cleanup reported success and that the autosave, backup, temporary and recovery files were absent. The separate IndexedDB-unavailable test remained readable only within the active page session and made no durable-storage claim.
+- Web CI removed the temporary export and ZIP after measurement. Its artifact list was empty. The separate security workflow retained only its 6,772-byte Gitleaks SARIF report; no Web export or game ZIP was uploaded.
+
+### Exact measurements from Web CI run 46131072944
+| Measurement | Bytes | Decimal MB | MiB |
+|---|---:|---:|---:|
+| Tracked `web-edition/` source | 338,843 | 0.339 | 0.323 |
+| Deduplicated unique source content | 338,843 | 0.339 | 0.323 |
+| Uncompressed Web export | 40,026,200 | 40.026 | 38.172 |
+| Compressed Web ZIP | 10,313,996 | 10.314 | 9.836 |
+
+- Tracked Web source files: **143**; unique content blobs: **143**; temporary export files: **8**.
+- ZIP reproducibility: **TESTED** — two archives from the same run had identical hashes.
+- ZIP SHA-256: `2fca994a9db84830e6c895ca8916654f0826f10945b84ff14c8236d01f37bbc8`.
+- The 4 GB unique-content target is **NOT REACHED**. The export includes the Godot Web runtime and game pack; it is not 40 MB of unique authored assets.
+
+### Current system status
+| System | Status | Evidence / limit |
+|---|---|---|
+| Godot 4.7 import, WebAssembly export and required-file checks | **TESTED** | Web CI #46130730568 |
+| Chromium WebGL 2 and keyboard/mouse input | **TESTED** | 1280×720 localhost; no runtime errors/external requests |
+| Missions 001–004 | **TESTED — first playable passes** | Four provisional slices; campaign is not complete |
+| Mission 004 vehicle delivery | **TESTED — first playable pass** | Real fruit-basket purchase, reachable GPS route, driven-sedan arrival, counter delivery and one-time $200 reward |
+| Harbor Market transaction system | **TESTED — first playable pass** | Bounded stock, wallet/inventory mutation, protected mission items and delivery consumption |
+| Chromium page-reload persistence | **TESTED — selected fields** | Same origin and persistent browser context |
+| Chromium process-restart persistence | **TESTED — selected fields** | New Chromium process with the same persistent profile |
+| Save-slot primary/sidecar cleanup | **TESTED** | Primary, `.bak`, `.tmp`, `.recover` absent after cleanup; repeat deletion correctly reports false |
+| IndexedDB-unavailable fallback | **TESTED — controlled simulation** | Session-only readback or explicit save failure; no durable claim |
+| Four regions, buildings and interiors | **PARTIALLY IMPLEMENTED** | Connected blockout and one prototype market interior, not finished world art |
+| World map and road GPS | **PARTIALLY IMPLEMENTED** | Eight reachable POIs and prototype street graph; not a complete city network |
+| Leo/Claire/Mia/Nora presentation | **PARTIALLY IMPLEMENTED** | Placeholder models; final rigs, facial animation and acting absent |
+| Vehicles | **PARTIALLY IMPLEMENTED** | One playable sedan; other classes, final handling and audio incomplete |
+| Traffic, pedestrians and police | **PARTIALLY IMPLEMENTED** | Services and regression tests exist; complete live simulation is not established |
+| Arabic voice acting and regional environmental audio | **PLANNED / NOT IMPLEMENTED** | No recorded Arabic voice performance is claimed |
+| Full campaign, fail/retry and cinematics | **PLANNED** | Only four provisional mission slices are playable |
+| 4 GB unique Web content | **NOT REACHED** | Exact measurements above; no filler or duplicate files counted |
+
+### Remaining limits and next technical increment
+The browser process-restart test uses one persistent Chromium profile; it does not prove private-browsing, quota-exhaustion, enterprise-policy, fresh-profile or Firefox/Safari behavior. The four missions remain provisional and text-only; Mission 004 has no fail/retry timer or cinematic branch. Human visual review and full-game acceptance remain incomplete.
+
+Next: create Mission 005 with a distinct gameplay loop rather than another shop delivery, including activation, objectives, fail/retry, one-time reward, live save/reload and a real world location. Continue expanding original world assets and roads without reusing the legacy project.
