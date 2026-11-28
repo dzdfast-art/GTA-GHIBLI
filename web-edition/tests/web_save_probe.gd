@@ -250,8 +250,8 @@ func _publish_cleanup(delete_reported_success: bool, remaining_paths: Array[Stri
 	var delete_literal := JSON.stringify(delete_reported_success)
 	var remaining_literal := JSON.stringify(remaining_paths)
 	JavaScriptBridge.eval(
-		"document.documentElement.setAttribute('data-ghibli-save-cleanup-delete-result', " + delete_literal + ");" +
-		"document.documentElement.setAttribute('data-ghibli-save-cleanup-remaining', " + remaining_literal + ");"
+		"document.documentElement.setAttribute('data-ghibli-save-cleanup-delete-result', JSON.stringify(" + delete_literal + "));" +
+		"document.documentElement.setAttribute('data-ghibli-save-cleanup-remaining', JSON.stringify(" + remaining_literal + "));"
 	)
 
 
